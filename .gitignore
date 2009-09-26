@@ -1,0 +1,9 @@
+log/*.log
+tmp/**/*
+doc/api
+doc/app
+*~
+db/*.sqlite3
+db/*.sql
+db/schema.rb
+db/uploads
