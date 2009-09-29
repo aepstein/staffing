@@ -1,0 +1,19 @@
+# Read about fixtures at http://ar.rubyonrails.org/classes/Fixtures.html
+
+one:
+  authority: 
+  committee: 
+  quiz: 
+  schedule: 
+  slots: 1
+  voting: false
+  name: MyString
+
+two:
+  authority: 
+  committee: 
+  quiz: 
+  schedule: 
+  slots: 1
+  voting: false
+  name: MyString

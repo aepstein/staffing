@@ -1,0 +1,18 @@
+<p>
+  <b>Name:</b>
+  <%=h @question.name %>
+</p>
+
+<p>
+  <b>Content:</b>
+  <%=h @question.content %>
+</p>
+
+<p>
+  <b>Global:</b>
+  <%=h @question.global %>
+</p>
+
+
+<%= link_to 'Edit', edit_question_path(@question) %> |
+<%= link_to 'Back', questions_path %>

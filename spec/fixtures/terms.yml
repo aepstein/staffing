@@ -1,0 +1,11 @@
+# Read about fixtures at http://ar.rubyonrails.org/classes/Fixtures.html
+
+one:
+  schedule: 
+  starts_at: 2009-09-28
+  ends_at: 2009-09-28
+
+two:
+  schedule: 
+  starts_at: 2009-09-28
+  ends_at: 2009-09-28
