@@ -5,7 +5,6 @@ class CreatePositions < ActiveRecord::Migration
       t.references :quiz
       t.references :schedule
       t.integer :slots
-      t.boolean :voting
       t.string :name
 
       t.timestamps

@@ -3,37 +3,14 @@
 <% form_for(@position) do |f| %>
   <%= f.error_messages %>
 
-  <p>
-    <%= f.label :authority %><br />
-    <%= f.text_field :authority %>
-  </p>
-  <p>
-    <%= f.label :committee %><br />
-    <%= f.text_field :committee %>
-  </p>
-  <p>
-    <%= f.label :quiz %><br />
-    <%= f.text_field :quiz %>
-  </p>
-  <p>
-    <%= f.label :schedule %><br />
-    <%= f.text_field :schedule %>
-  </p>
-  <p>
-    <%= f.label :slots %><br />
-    <%= f.text_field :slots %>
-  </p>
-  <p>
-    <%= f.label :voting %><br />
-    <%= f.check_box :voting %>
-  </p>
-  <p>
-    <%= f.label :name %><br />
-    <%= f.text_field :name %>
-  </p>
+  <%= render :partial => 'form', :object => f %>
+
   <p>
     <%= f.submit 'Create' %>
   </p>
 <% end %>
 
+<p>
 <%= link_to 'Back', positions_path %>
+</p>
+

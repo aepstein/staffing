@@ -3,22 +3,15 @@
 <% form_for(@term) do |f| %>
   <%= f.error_messages %>
 
-  <p>
-    <%= f.label :schedule %><br />
-    <%= f.text_field :schedule %>
-  </p>
-  <p>
-    <%= f.label :starts_at %><br />
-    <%= f.date_select :starts_at %>
-  </p>
-  <p>
-    <%= f.label :ends_at %><br />
-    <%= f.date_select :ends_at %>
-  </p>
+  <%= render :partial => 'form', :object => f %>
+
   <p>
     <%= f.submit 'Update' %>
   </p>
 <% end %>
 
+<p>
 <%= link_to 'Show', @term %> |
 <%= link_to 'Back', terms_path %>
+</p>
+

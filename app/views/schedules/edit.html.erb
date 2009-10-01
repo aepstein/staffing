@@ -3,14 +3,15 @@
 <% form_for(@schedule) do |f| %>
   <%= f.error_messages %>
 
-  <p>
-    <%= f.label :name %><br />
-    <%= f.text_field :name %>
-  </p>
+  <%= render :partial => 'form', :object => f %>
+
   <p>
     <%= f.submit 'Update' %>
   </p>
 <% end %>
 
+<p>
 <%= link_to 'Show', @schedule %> |
 <%= link_to 'Back', schedules_path %>
+</p>
+

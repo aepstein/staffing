@@ -3,53 +3,14 @@
 <% form_for(@user) do |f| %>
   <%= f.error_messages %>
 
-  <p>
-    <%= f.label :first_name %><br />
-    <%= f.text_field :first_name %>
-  </p>
-  <p>
-    <%= f.label :middle_name %><br />
-    <%= f.text_field :middle_name %>
-  </p>
-  <p>
-    <%= f.label :last_name %><br />
-    <%= f.text_field :last_name %>
-  </p>
-  <p>
-    <%= f.label :email %><br />
-    <%= f.text_field :email %>
-  </p>
-  <p>
-    <%= f.label :mobile_phone %><br />
-    <%= f.text_field :mobile_phone %>
-  </p>
-  <p>
-    <%= f.label :work_phone %><br />
-    <%= f.text_field :work_phone %>
-  </p>
-  <p>
-    <%= f.label :home_phone %><br />
-    <%= f.text_field :home_phone %>
-  </p>
-  <p>
-    <%= f.label :work_address %><br />
-    <%= f.text_field :work_address %>
-  </p>
-  <p>
-    <%= f.label :date_of_birth %><br />
-    <%= f.date_select :date_of_birth %>
-  </p>
-  <p>
-    <%= f.label :net_id %><br />
-    <%= f.text_field :net_id %>
-  </p>
-  <p>
-    <%= f.label :status %><br />
-    <%= f.text_field :status %>
-  </p>
+  <%= render :partial => 'form', :object => f %>
+
   <p>
     <%= f.submit 'Create' %>
   </p>
 <% end %>
 
+<p>
 <%= link_to 'Back', users_path %>
+</p>
+
