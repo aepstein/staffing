@@ -1,29 +1,22 @@
 ActionController::Routing::Routes.draw do |map|
-  map.resources :enrollments
-
-  map.resources :answers
-
-  map.resources :memberships
-
-  map.resources :requests
-
-  map.resources :terms
-
-  map.resources :positions
-
-  map.resources :schedules
-
-  map.resources :questions
-
-  map.resources :quizzes
-
+  map.resources :users do |user|
+    user.resources :memberships
+  end
+  map.resources :committees, :shallow => true do |committee|
+    committee.resources :positions do |position|
+      position.resources :enrollments
+      position.resources :requests
+    end
+  end
   map.resources :authorities
-
-  map.resources :committees
-
   map.resources :qualifications
-
-  map.resources :users
+  map.resources :questions do |question|
+    question.resources :answers
+  end
+  map.resources :schedules, :shallow => true do |schedule|
+    schedule.resources :terms
+  end
+  map.resources :quizzes
 
   # The priority is based upon order of creation: first created -> highest priority.
 
@@ -43,7 +36,7 @@ ActionController::Routing::Routes.draw do |map|
 
   # Sample resource route with sub-resources:
   #   map.resources :products, :has_many => [ :comments, :sales ], :has_one => :seller
-  
+
   # Sample resource route with more complex sub-resources
   #   map.resources :products do |products|
   #     products.resources :comments
@@ -67,3 +60,4 @@ ActionController::Routing::Routes.draw do |map|
   map.connect ':controller/:action/:id'
   map.connect ':controller/:action/:id.:format'
 end
+

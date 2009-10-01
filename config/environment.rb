@@ -38,10 +38,6 @@ Rails::Initializer.run do |config|
   # The default locale is :en and all translations from config/locales/*.rb,yml are auto loaded.
   # config.i18n.load_path += Dir[Rails.root.join('my', 'locales', '*.{rb,yml}')]
   # config.i18n.default_locale = :de
-  config.gem 'rspec', :lib => false
-  config.gem 'rspec-rails', :lib => false
-  config.gem 'cucumber', :lib => false
-  config.gem 'webrat', :lib => false
   config.gem 'validates_timeliness'
 end
 
