@@ -2,7 +2,6 @@ class CreatePositions < ActiveRecord::Migration
   def self.up
     create_table :positions do |t|
       t.references :authority
-      t.references :committee
       t.references :quiz
       t.references :schedule
       t.integer :slots
@@ -11,7 +10,7 @@ class CreatePositions < ActiveRecord::Migration
 
       t.timestamps
     end
-    add_index :positions, [ :committee_id, :name ], :unique => true
+    add_index :positions, [ :authority_id, :name ], :unique => true
   end
 
   def self.down

@@ -10,6 +10,10 @@ describe "/users/edit.html.erb" do
       :middle_name => "value for middle_name",
       :last_name => "value for last_name",
       :email => "value for email",
+      :mobile_phone => "value for mobile_phone",
+      :work_phone => "value for work_phone",
+      :home_phone => "value for home_phone",
+      :work_address => "value for work_address",
       :net_id => "value for net_id",
       :status => "value for status"
     )
@@ -23,6 +27,10 @@ describe "/users/edit.html.erb" do
       with_tag('input#user_middle_name[name=?]', "user[middle_name]")
       with_tag('input#user_last_name[name=?]', "user[last_name]")
       with_tag('input#user_email[name=?]', "user[email]")
+      with_tag('input#user_mobile_phone[name=?]', "user[mobile_phone]")
+      with_tag('input#user_work_phone[name=?]', "user[work_phone]")
+      with_tag('input#user_home_phone[name=?]', "user[home_phone]")
+      with_tag('input#user_work_address[name=?]', "user[work_address]")
       with_tag('input#user_net_id[name=?]', "user[net_id]")
       with_tag('input#user_status[name=?]', "user[status]")
     end

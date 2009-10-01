@@ -1,4 +1,6 @@
 ActionController::Routing::Routes.draw do |map|
+  map.resources :enrollments
+
   map.resources :answers
 
   map.resources :memberships

@@ -5,6 +5,11 @@ one:
   middle_name: MyString
   last_name: MyString
   email: MyString
+  mobile_phone: MyString
+  work_phone: MyString
+  home_phone: MyString
+  work_address: MyString
+  date_of_birth: 2009-10-01
   net_id: MyString
   status: MyString
 
@@ -13,5 +18,10 @@ two:
   middle_name: MyString
   last_name: MyString
   email: MyString
+  mobile_phone: MyString
+  work_phone: MyString
+  home_phone: MyString
+  work_address: MyString
+  date_of_birth: 2009-10-01
   net_id: MyString
   status: MyString

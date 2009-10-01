@@ -5,6 +5,11 @@ class CreateUsers < ActiveRecord::Migration
       t.string :middle_name
       t.string :last_name, :null => false
       t.string :email, :null => false
+      t.string :mobile_phone
+      t.string :work_phone
+      t.string :home_phone
+      t.string :work_address
+      t.date :date_of_birth
       t.string :net_id
       t.string :status
 

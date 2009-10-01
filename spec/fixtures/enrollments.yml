@@ -1,0 +1,13 @@
+# Read about fixtures at http://ar.rubyonrails.org/classes/Fixtures.html
+
+one:
+  position: 
+  committee: 
+  title: MyString
+  votes: 1
+
+two:
+  position: 
+  committee: 
+  title: MyString
+  votes: 1
