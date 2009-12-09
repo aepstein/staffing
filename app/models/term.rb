@@ -2,7 +2,7 @@ class Term < ActiveRecord::Base
   belongs_to :schedule
 
   has_many :memberships
-  has_many :requests
+  has_and_belongs_to_many :requests
 
   validates_presence_of :schedule
   validates_date :starts_at

@@ -1,6 +1,6 @@
 Factory.define :answer do |f|
   f.association :request
-  f.association(:question) { |a| Factory(:question, :quiz => a.request.position.quiz) }
+  f.question { |a| a.association(:question, :quizzes => [ a.request.position.quiz ]) }
   f.content 'blue'
 end
 
@@ -22,7 +22,7 @@ end
 Factory.define :membership do |f|
   f.association :user
   f.association :position
-  f.association(:term) { |m| Factory(:term, :schedule => m.position.schedule) }
+  f.term { |m| m.association(:term, :schedule => m.position.schedule) }
   f.starts_at { |m| m.term.starts_at }
   f.ends_at { |m| m.term.ends_at }
 end
@@ -51,7 +51,7 @@ end
 Factory.define :request do |f|
   f.association :user
   f.association :position
-  f.association(:term) { |r| Factory(:term, :schedule => r.position.schedule) }
+  f.terms { |r| [ r.association(:term, :schedule => r.position.schedule) ] }
 end
 
 Factory.define :schedule do |f|
