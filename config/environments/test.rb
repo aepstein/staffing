@@ -30,5 +30,6 @@ config.gem 'rspec', :lib => false
 config.gem 'rspec-rails', :lib => false
 config.gem 'cucumber', :lib => false
 config.gem 'webrat', :lib => false
-config.gem 'thoughtbot-factory_girl', :lib => 'factory_girl', :source => 'http://gems.github.com'
+config.gem 'factory_girl', :lib => 'factory_girl', :source => 'http://gems.github.com'
+config.gem 'pickle', :lib => false, :source => 'http://gems.github.com'
 

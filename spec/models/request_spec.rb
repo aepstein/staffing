@@ -2,15 +2,26 @@ require File.expand_path(File.dirname(__FILE__) + '/../spec_helper')
 
 describe Request do
   before(:each) do
-    @valid_attributes = {
-      :term_id => 1,
-      :position_id => 1,
-      :user_id => 1,
-      :state => "value for state"
-    }
+    @request = Factory(:request)
   end
 
   it "should create a new instance given valid attributes" do
-    Request.create!(@valid_attributes)
+    @request.id.should_not be_nil
+  end
+
+  it 'should not save without a term' do
+    @request.term = nil
+    @request.save.should be_false
+  end
+
+  it 'should not save without a position' do
+    @request.position = nil
+    @request.save.should be_false
+  end
+
+  it 'should not save without a user' do
+    @request.user = nil
+    @request.save.should be_false
   end
 end
+

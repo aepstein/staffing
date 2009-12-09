@@ -2,17 +2,51 @@ require File.expand_path(File.dirname(__FILE__) + '/../spec_helper')
 
 describe Membership do
   before(:each) do
-    @valid_attributes = {
-      :user_id => 1,
-      :term_id => 1,
-      :position_id => 1,
-      :request_id => 1,
-      :starts_at => Date.today,
-      :ends_at => Date.today
-    }
+    @membership = Factory(:membership)
   end
 
   it "should create a new instance given valid attributes" do
-    Membership.create!(@valid_attributes)
+    @membership.id.should_not be_nil
+  end
+
+  it 'should not save without a user' do
+    @membership.user = nil
+    @membership.save.should be_false
+  end
+
+  it 'should not save without a term' do
+    @membership.term = nil
+    @membership.save.should be_false
+  end
+
+  it 'should not save without a position' do
+    @membership.position = nil
+    @membership.save.should be_false
+  end
+
+  it 'should not save without a start date' do
+    @membership.starts_at = nil
+    @membership.save.should be_false
+  end
+
+  it 'should not save with a start date before the term start date' do
+    @membership.starts_at = @membership.term.starts_at - 1.day
+    @membership.save.should be_false
+  end
+
+  it 'should not save without an end date' do
+    @membership.ends_at = nil
+    @membership.save.should be_false
+  end
+
+  it 'should not save with an end date that is after the term end date' do
+    @membership.ends_at = @membership.term.ends_at + 1.day
+    @membership.save.should be_false
+  end
+
+  it 'should not save with an end date that is before the start date' do
+    @membership.ends_at = @membership.starts_at - 1.day
+    @membership.save.should be_false
   end
 end
+
