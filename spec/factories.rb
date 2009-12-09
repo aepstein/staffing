@@ -22,9 +22,9 @@ end
 Factory.define :membership do |f|
   f.association :user
   f.association :position
-  f.term { |m| m.association(:term, :schedule => m.position.schedule) }
-  f.starts_at { |m| m.term.starts_at }
-  f.ends_at { |m| m.term.ends_at }
+  f.period { |m| m.association(:period, :schedule => m.position.schedule) }
+  f.starts_at { |m| m.period.starts_at }
+  f.ends_at { |m| m.period.ends_at }
 end
 
 Factory.define :position do |f|
@@ -51,14 +51,14 @@ end
 Factory.define :request do |f|
   f.association :user
   f.association :position
-  f.terms { |r| [ r.association(:term, :schedule => r.position.schedule) ] }
+  f.periods { |r| [ r.association(:period, :schedule => r.position.schedule) ] }
 end
 
 Factory.define :schedule do |f|
   f.sequence(:name) { |n| "Schedule #{n}" }
 end
 
-Factory.define :term do |f|
+Factory.define :period do |f|
   f.association :schedule
   f.starts_at Date.today
   f.ends_at Date.today + 1.year
@@ -66,6 +66,8 @@ end
 
 Factory.define :user do |f|
   f.sequence(:net_id) { |n| "jd#{n}" }
+  f.password 'secret'
+  f.password_confirmation { |u| u.password }
   f.first_name "John"
   f.last_name "Doe"
   f.email "jd@example.com"

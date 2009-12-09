@@ -3,7 +3,7 @@
 <table>
   <tr>
     <th>User</th>
-    <th>Term</th>
+    <th>period</th>
     <th>Position</th>
     <th>Request</th>
     <th>Starts at</th>
@@ -13,7 +13,7 @@
 <% @memberships.each do |membership| %>
   <tr>
     <td><%=h membership.user %></td>
-    <td><%=h membership.term %></td>
+    <td><%=h membership.period %></td>
     <td><%=h membership.position %></td>
     <td><%=h membership.request %></td>
     <td><%=h membership.starts_at %></td>
@@ -28,3 +28,4 @@
 <br />
 
 <%= link_to 'New membership', new_membership_path %>
+

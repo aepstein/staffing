@@ -1,6 +1,6 @@
 class Schedule < ActiveRecord::Base
   has_many :positions
-  has_many :terms
+  has_many :periods
   has_many :authorities, :through => :positions
   has_many :committees, :through => :positions
   has_many :quizzes, :through => :positions

@@ -12,7 +12,10 @@ class CreateUsers < ActiveRecord::Migration
       t.date :date_of_birth
       t.string :net_id
       t.string :status
-
+      t.string :crypted_password
+      t.string :password_salt
+      t.string :persistence_token
+      t.boolean :admin
       t.timestamps
     end
     add_index :users, :net_id, :unique => true

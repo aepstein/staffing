@@ -1,5 +1,5 @@
 class Request < ActiveRecord::Base
-  has_and_belongs_to_many :terms
+  has_and_belongs_to_many :periods
   belongs_to :position
   belongs_to :user
 
@@ -7,10 +7,10 @@ class Request < ActiveRecord::Base
 
   validates_presence_of :position
   validates_presence_of :user
-  validate :must_have_terms
+  validate :must_have_periods
 
-  def must_have_terms
-    errors.add :terms, "must be selected." if terms.empty?
+  def must_have_periods
+    errors.add :periods, "must be selected." if periods.empty?
   end
 end
 

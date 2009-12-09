@@ -9,8 +9,8 @@ describe Request do
     @request.id.should_not be_nil
   end
 
-  it 'should not save without any terms specified' do
-    @request.terms = []
+  it 'should not save without any periods specified' do
+    @request.periods = []
     @request.save.should be_false
   end
 

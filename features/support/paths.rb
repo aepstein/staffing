@@ -7,9 +7,16 @@ module NavigationHelpers
   #
   def path_to(page_name)
     case page_name
-    
+
     when /the homepage/
       '/'
+
+    when /the login page/
+      login_url
+
+    when /the logout page/
+      logout_path
+
     when /the new user page/
       new_user_path
 
@@ -22,8 +29,8 @@ module NavigationHelpers
     when /the new request page/
       new_request_path
 
-    when /the new term page/
-      new_term_path
+    when /the new period page/
+      new_period_path
 
     when /the new position page/
       new_position_path
@@ -46,7 +53,7 @@ module NavigationHelpers
     when /the new user page/
       new_user_path
 
-    
+
     # Add more mappings here.
     # Here is a more fancy example:
     #
@@ -61,3 +68,4 @@ module NavigationHelpers
 end
 
 World(NavigationHelpers)
+

@@ -7,15 +7,15 @@ class CreateRequests < ActiveRecord::Migration
 
       t.timestamps
     end
-    create_table :requests_terms, :id => false do |t|
+    create_table :periods_requests, :id => false do |t|
       t.references :request, :null => false
-      t.references :term, :null => false
+      t.references :period, :null => false
     end
-    add_index :requests_terms, [ :request_id, :term_id ], :unique => true
+    add_index :periods_requests, [ :period_id, :request_id ], :unique => true
   end
 
   def self.down
-    drop_table :requests_terms
+    drop_table :periods_requests
     drop_table :requests
   end
 end

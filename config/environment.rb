@@ -39,5 +39,7 @@ Rails::Initializer.run do |config|
   # config.i18n.load_path += Dir[Rails.root.join('my', 'locales', '*.{rb,yml}')]
   # config.i18n.default_locale = :de
   config.gem 'validates_timeliness'
+  config.gem 'searchlogic', :source => 'http://gemcutter.org'
+  config.gem 'authlogic', :source => 'http://gemcutter.org'
 end
 

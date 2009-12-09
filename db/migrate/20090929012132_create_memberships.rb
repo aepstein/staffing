@@ -2,7 +2,7 @@ class CreateMemberships < ActiveRecord::Migration
   def self.up
     create_table :memberships do |t|
       t.references :user
-      t.references :term
+      t.references :period
       t.references :position
       t.references :request
       t.date :starts_at
@@ -10,7 +10,7 @@ class CreateMemberships < ActiveRecord::Migration
 
       t.timestamps
     end
-    add_index :memberships, [ :user_id, :position_id, :term_id ], :unique => true
+    add_index :memberships, [ :user_id, :position_id, :period_id ], :unique => true
   end
 
   def self.down

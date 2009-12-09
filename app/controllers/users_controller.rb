@@ -1,4 +1,6 @@
 class UsersController < ApplicationController
+  before_filter :require_user
+
   # GET /users
   # GET /users.xml
   def index
@@ -20,6 +22,14 @@ class UsersController < ApplicationController
       format.xml  { render :xml => @user }
     end
   end
+
+  # GET /profile
+  def profile
+    respond_to do |format|
+      format.html # profile.html.erb
+    end
+  end
+
 
   # GET /users/new
   # GET /users/new.xml
@@ -83,3 +93,4 @@ class UsersController < ApplicationController
     end
   end
 end
+

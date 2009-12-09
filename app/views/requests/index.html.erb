@@ -2,7 +2,6 @@
 
 <table>
   <tr>
-    <th>Term</th>
     <th>Position</th>
     <th>User</th>
     <th>State</th>
@@ -10,7 +9,6 @@
 
 <% @requests.each do |request| %>
   <tr>
-    <td><%=h request.term %></td>
     <td><%=h request.position %></td>
     <td><%=h request.user %></td>
     <td><%=h request.state %></td>
@@ -24,3 +22,4 @@
 <br />
 
 <%= link_to 'New request', new_request_path %>
+

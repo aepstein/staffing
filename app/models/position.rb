@@ -7,7 +7,7 @@ class Position < ActiveRecord::Base
   has_many :memberships
   has_many :requests
   has_many :users, :through => :memberships
-  has_many :terms, :through => :memberships
+  has_many :periods, :through => :memberships
   has_many :answers, :through => :requests
 
   validates_presence_of :name

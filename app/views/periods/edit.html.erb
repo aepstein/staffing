@@ -1,0 +1,17 @@
+<h1>Editing period</h1>
+
+<% form_for(@period) do |f| %>
+  <%= f.error_messages %>
+
+  <%= render :partial => 'form', :object => f %>
+
+  <p>
+    <%= f.submit 'Update' %>
+  </p>
+<% end %>
+
+<p>
+<%= link_to 'Show', @period %> |
+<%= link_to 'Back', periods_path %>
+</p>
+

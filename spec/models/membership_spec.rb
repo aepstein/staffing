@@ -14,8 +14,8 @@ describe Membership do
     @membership.save.should be_false
   end
 
-  it 'should not save without a term' do
-    @membership.term = nil
+  it 'should not save without a period' do
+    @membership.period = nil
     @membership.save.should be_false
   end
 
@@ -29,8 +29,8 @@ describe Membership do
     @membership.save.should be_false
   end
 
-  it 'should not save with a start date before the term start date' do
-    @membership.starts_at = @membership.term.starts_at - 1.day
+  it 'should not save with a start date before the period start date' do
+    @membership.starts_at = @membership.period.starts_at - 1.day
     @membership.save.should be_false
   end
 
@@ -39,8 +39,8 @@ describe Membership do
     @membership.save.should be_false
   end
 
-  it 'should not save with an end date that is after the term end date' do
-    @membership.ends_at = @membership.term.ends_at + 1.day
+  it 'should not save with an end date that is after the period end date' do
+    @membership.ends_at = @membership.period.ends_at + 1.day
     @membership.save.should be_false
   end
 
