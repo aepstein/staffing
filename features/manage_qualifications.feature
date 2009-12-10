@@ -1,8 +1,9 @@
+@stub
 Feature: Manage qualifications
   In order to [goal]
   [stakeholder]
   wants [behaviour]
-  
+
   Scenario: Register new qualification
     Given I am on the new qualification page
     When I fill in "Name" with "name 1"
@@ -22,3 +23,4 @@ Feature: Manage qualifications
       |name 1|
       |name 2|
       |name 4|
+

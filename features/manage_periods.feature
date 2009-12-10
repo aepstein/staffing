@@ -1,3 +1,4 @@
+@stub
 Feature: Manage periods
   In order to [goal]
   [stakeholder]

@@ -1,20 +1,19 @@
 <h1>Listing committees</h1>
 
 <table>
+  <thead>
   <tr>
     <th>Name</th>
   </tr>
-
-<% @committees.each do |committee| %>
-  <tr>
-    <td><%=h committee.name %></td>
-    <td><%= link_to 'Show', committee %></td>
-    <td><%= link_to 'Edit', edit_committee_path(committee) %></td>
-    <td><%= link_to 'Destroy', committee, :confirm => 'Are you sure?', :method => :delete %></td>
-  </tr>
-<% end %>
+  </thead>
+  <tbody>
+  <%= render :partial => 'committee', :collection => @committees %>
+  </tbody>
 </table>
 
 <br />
 
+<p>
 <%= link_to 'New committee', new_committee_path %>
+</p>
+

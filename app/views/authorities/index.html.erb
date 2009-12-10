@@ -1,20 +1,19 @@
 <h1>Listing authorities</h1>
 
 <table>
+  <thead>
   <tr>
     <th>Name</th>
   </tr>
-
-<% @authorities.each do |authority| %>
-  <tr>
-    <td><%=h authority.name %></td>
-    <td><%= link_to 'Show', authority %></td>
-    <td><%= link_to 'Edit', edit_authority_path(authority) %></td>
-    <td><%= link_to 'Destroy', authority, :confirm => 'Are you sure?', :method => :delete %></td>
-  </tr>
-<% end %>
+  </thead>
+  <tbody>
+  <%= render :partial => 'authority', :collection => @authorities %>
+  </tbody>
 </table>
 
 <br />
 
+<p>
 <%= link_to 'New authority', new_authority_path %>
+</p>
+

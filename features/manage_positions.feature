@@ -1,8 +1,9 @@
+@stub
 Feature: Manage positions
   In order to [goal]
   [stakeholder]
   wants [behaviour]
-  
+
   Scenario: Register new position
     Given I am on the new position page
     When I fill in "Authority" with "authority 1"
@@ -34,3 +35,4 @@ Feature: Manage positions
       |authority 1|committee 1|quiz 1|schedule 1|slots 1|false|name 1|
       |authority 2|committee 2|quiz 2|schedule 2|slots 2|true|name 2|
       |authority 4|committee 4|quiz 4|schedule 4|slots 4|true|name 4|
+

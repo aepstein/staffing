@@ -1,8 +1,9 @@
 <p>
-  <b>Name:</b>
-  <%=h @committee.name %>
+  <b>Name:</b> <%=h @committee.name %>
 </p>
 
-
+<p>
 <%= link_to 'Edit', edit_committee_path(@committee) %> |
 <%= link_to 'Back', committees_path %>
+</p>
+

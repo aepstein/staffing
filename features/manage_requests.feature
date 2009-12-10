@@ -1,8 +1,9 @@
+@stub
 Feature: Manage requests
   In order to [goal]
   [stakeholder]
   wants [behaviour]
-  
+
   Scenario: Register new request
     Given I am on the new request page
     When I fill in "Term" with "term 1"
@@ -28,3 +29,4 @@ Feature: Manage requests
       |term 1|position 1|user 1|state 1|
       |term 2|position 2|user 2|state 2|
       |term 4|position 4|user 4|state 4|
+

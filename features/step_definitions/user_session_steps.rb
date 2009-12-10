@@ -1,9 +1,9 @@
-Given /^I logged in as the administrator$/ do
+Given /^I log in as the administrator$/ do
   Given %{a user exists with password: "secret", net_id: "admin", admin: true}
-  And %{I logged in as "admin" with password "secret"}
+  And %{I log in as "admin" with password "secret"}
 end
 
-Given /^I logged in as "(\w+)" with password "(\w+)"$/ do |net_id, password|
+Given /^I log in as "(\w+)" with password "(\w+)"$/ do |net_id, password|
   When %{I go to the login page}
   And %{I fill in "Username" with "#{net_id}"}
   And %{I fill in "Password" with "#{password}"}

@@ -1,4 +1,6 @@
 class Committee < ActiveRecord::Base
+  default_scope :order => 'committees.name ASC'
+
   has_many :enrollments
   has_many :positions, :through => :enrollments
 

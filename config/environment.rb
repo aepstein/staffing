@@ -41,5 +41,7 @@ Rails::Initializer.run do |config|
   config.gem 'validates_timeliness'
   config.gem 'searchlogic', :source => 'http://gemcutter.org'
   config.gem 'authlogic', :source => 'http://gemcutter.org'
+  config.gem 'formtastic', :source => 'http://gemcutter.org'
+  config.gem 'calendar_date_select'
 end
 

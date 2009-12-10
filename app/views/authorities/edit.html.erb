@@ -1,13 +1,9 @@
 <h1>Editing authority</h1>
 
-<% form_for(@authority) do |f| %>
-  <%= f.error_messages %>
+<% semantic_form_for(@authority) do |f| %>
 
   <%= render :partial => 'form', :object => f %>
 
-  <p>
-    <%= f.submit 'Update' %>
-  </p>
 <% end %>
 
 <p>

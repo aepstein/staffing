@@ -1,8 +1,9 @@
+@stub
 Feature: Manage answers
   In order to [goal]
   [stakeholder]
   wants [behaviour]
-  
+
   Scenario: Register new answer
     Given I am on the new answer page
     When I fill in "Question" with "question 1"
@@ -26,3 +27,4 @@ Feature: Manage answers
       |question 1|request 1|content 1|
       |question 2|request 2|content 2|
       |question 4|request 4|content 4|
+

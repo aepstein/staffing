@@ -1,8 +1,9 @@
+@stub
 Feature: Manage users
   In order to [goal]
   [stakeholder]
   wants [behaviour]
-  
+
   Scenario: Register new user
     Given I am on the new user page
     When I fill in "First name" with "first_name 1"
@@ -42,3 +43,4 @@ Feature: Manage users
       |first_name 1|middle_name 1|last_name 1|email 1|mobile_phone 1|work_phone 1|home_phone 1|work_address 1|date_of_birth 1|net_id 1|status 1|
       |first_name 2|middle_name 2|last_name 2|email 2|mobile_phone 2|work_phone 2|home_phone 2|work_address 2|date_of_birth 2|net_id 2|status 2|
       |first_name 4|middle_name 4|last_name 4|email 4|mobile_phone 4|work_phone 4|home_phone 4|work_address 4|date_of_birth 4|net_id 4|status 4|
+

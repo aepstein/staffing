@@ -1,3 +1,4 @@
+@stub
 Feature: Manage memberships
   In order to [goal]
   [stakeholder]

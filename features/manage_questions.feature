@@ -1,8 +1,9 @@
+@stub
 Feature: Manage questions
   In order to [goal]
   [stakeholder]
   wants [behaviour]
-  
+
   Scenario: Register new question
     Given I am on the new question page
     When I fill in "Name" with "name 1"
@@ -24,3 +25,4 @@ Feature: Manage questions
       |name 1|content 1|
       |name 2|content 2|
       |name 4|content 4|
+

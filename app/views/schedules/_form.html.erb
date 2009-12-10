@@ -1,5 +1,6 @@
-  <p>
-    <%= form.label :name %><br />
-    <%= form.text_field :name %>
-  </p>
+  <%= form.error_messages %>
+  <% form.inputs do %>
+  <%= form.input :name %>
+  <% end %>
+  <%= form.buttons %>
 

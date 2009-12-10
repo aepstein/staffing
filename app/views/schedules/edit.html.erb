@@ -1,13 +1,9 @@
 <h1>Editing schedule</h1>
 
-<% form_for(@schedule) do |f| %>
-  <%= f.error_messages %>
+<% semantic_form_for(@schedule) do |f| %>
 
   <%= render :partial => 'form', :object => f %>
 
-  <p>
-    <%= f.submit 'Update' %>
-  </p>
 <% end %>
 
 <p>

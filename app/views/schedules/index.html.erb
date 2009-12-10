@@ -1,20 +1,19 @@
 <h1>Listing schedules</h1>
 
 <table>
+  <thead>
   <tr>
     <th>Name</th>
   </tr>
-
-<% @schedules.each do |schedule| %>
-  <tr>
-    <td><%=h schedule.name %></td>
-    <td><%= link_to 'Show', schedule %></td>
-    <td><%= link_to 'Edit', edit_schedule_path(schedule) %></td>
-    <td><%= link_to 'Destroy', schedule, :confirm => 'Are you sure?', :method => :delete %></td>
-  </tr>
-<% end %>
+  </thead>
+  <tbody>
+  <%= render :partial => 'schedule', :collection => @schedules %>
+  </tbody>
 </table>
 
 <br />
 
+<p>
 <%= link_to 'New schedule', new_schedule_path %>
+</p>
+
