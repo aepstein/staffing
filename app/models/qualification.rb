@@ -1,4 +1,6 @@
 class Qualification < ActiveRecord::Base
+  default_scope :order => 'qualifications.name ASC'
+
   has_and_belongs_to_many :positions
   has_and_belongs_to_many :users
 

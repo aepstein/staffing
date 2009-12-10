@@ -1,24 +1,23 @@
 <h1>Listing questions</h1>
 
 <table>
+  <thead>
   <tr>
     <th>Name</th>
     <th>Content</th>
     <th>Global</th>
   </tr>
+  </thead>
 
-<% @questions.each do |question| %>
-  <tr>
-    <td><%=h question.name %></td>
-    <td><%=h question.content %></td>
-    <td><%=h question.global %></td>
-    <td><%= link_to 'Show', question %></td>
-    <td><%= link_to 'Edit', edit_question_path(question) %></td>
-    <td><%= link_to 'Destroy', question, :confirm => 'Are you sure?', :method => :delete %></td>
-  </tr>
-<% end %>
+  <tbody>
+  <%= render :partial => 'question', :collection => @questions %>
+  </tbody>
+
 </table>
 
 <br />
 
+<p>
 <%= link_to 'New question', new_question_path %>
+</p>
+

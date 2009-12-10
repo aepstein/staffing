@@ -1,13 +1,14 @@
 <p>
-  <b>Name:</b>
-  <%=h @qualification.name %>
+  <b>Name:</b> <%=h @qualification.name %>
 </p>
 
 <p>
   <b>Description:</b>
-  <%=h @qualification.description %>
+  <%=markdown @qualification.description %>
 </p>
 
-
+<p>
 <%= link_to 'Edit', edit_qualification_path(@qualification) %> |
 <%= link_to 'Back', qualifications_path %>
+</p>
+

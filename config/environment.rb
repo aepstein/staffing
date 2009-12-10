@@ -43,5 +43,6 @@ Rails::Initializer.run do |config|
   config.gem 'authlogic', :source => 'http://gemcutter.org'
   config.gem 'formtastic', :source => 'http://gemcutter.org'
   config.gem 'calendar_date_select'
+  config.gem 'bluecloth', :source => 'http://gemcutter.org'
 end
 

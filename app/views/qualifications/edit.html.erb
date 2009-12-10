@@ -1,13 +1,7 @@
 <h1>Editing qualification</h1>
 
-<% form_for(@qualification) do |f| %>
-  <%= f.error_messages %>
-
+<% semantic_form_for(@qualification) do |f| %>
   <%= render :partial => 'form', :object => f %>
-
-  <p>
-    <%= f.submit 'Update' %>
-  </p>
 <% end %>
 
 <p>

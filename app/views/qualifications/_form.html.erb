@@ -1,9 +1,7 @@
-  <p>
-    <%= form.label :name %><br />
-    <%= form.text_field :name %>
-  </p>
-  <p>
-    <%= form.label :description %><br />
-    <%= form.text_area :description %>
-  </p>
+  <%= form.error_messages %>
+  <% form.inputs do %>
+  <%= form.input :name %>
+  <%= form.input :description %>
+  <% end %>
+  <%= form.buttons %>
 

@@ -1,13 +1,8 @@
-  <p>
-    <%= form.label :name %><br />
-    <%= form.text_field :name %>
-  </p>
-  <p>
-    <%= form.label :content %><br />
-    <%= form.text_field :content %>
-  </p>
-  <p>
-    <%= form.label :global %><br />
-    <%= form.check_box :global %>
-  </p>
+  <%= form.error_messages %>
+  <% form.inputs do %>
+  <%= form.input :name %>
+  <%= form.input :content %>
+  <%= form.input :global, :as => :radio %>
+  <% end %>
+  <%= form.buttons %>
 
