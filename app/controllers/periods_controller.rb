@@ -1,8 +1,9 @@
 class PeriodsController < ApplicationController
-  # GET /periods
-  # GET /periods.xml
+  # GET /schedule/:schedule_id/periods
+  # GET /schedule/:schedule_id/periods.xml
   def index
-    @periods = Period.all
+    @schedule = Schedule.find(params[:schedule_id])
+    @periods = @schedule.periods
 
     respond_to do |format|
       format.html # index.html.erb
@@ -21,10 +22,10 @@ class PeriodsController < ApplicationController
     end
   end
 
-  # GET /periods/new
-  # GET /periods/new.xml
+  # GET /schedule/:schedule_id/periods/new
+  # GET /schedule/:schedule_id/periods/new.xml
   def new
-    @period = Period.new
+    @period = Schedule.find(params[:schedule_id]).periods.build
 
     respond_to do |format|
       format.html # new.html.erb
@@ -37,10 +38,10 @@ class PeriodsController < ApplicationController
     @period = Period.find(params[:id])
   end
 
-  # POST /periods
-  # POST /periods.xml
+  # POST /schedule/:schedule_id/periods
+  # POST /schedule/:schedule_id/periods.xml
   def create
-    @period = Period.new(params[:period])
+    @period = Schedule.find(params[:schedule_id]).periods.build(params[:period])
 
     respond_to do |format|
       if @period.save
@@ -78,7 +79,7 @@ class PeriodsController < ApplicationController
     @period.destroy
 
     respond_to do |format|
-      format.html { redirect_to(periods_url) }
+      format.html { redirect_to schedule_periods_url @period.schedule  }
       format.xml  { head :ok }
     end
   end

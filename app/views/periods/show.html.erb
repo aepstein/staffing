@@ -1,19 +1,17 @@
 <p>
-  <b>Schedule:</b>
-  <%=h @period.schedule %>
+  <b>Schedule:</b> <%=h @period.schedule %>
 </p>
 
 <p>
-  <b>Starts at:</b>
-  <%=h @period.starts_at %>
+  <b>Starts at:</b> <%=h @period.starts_at.to_s :long %>
 </p>
 
 <p>
-  <b>Ends at:</b>
-  <%=h @period.ends_at %>
+  <b>Ends at:</b> <%=h @period.ends_at.to_s :long %>
 </p>
 
-
+<p>
 <%= link_to 'Edit', edit_period_path(@period) %> |
-<%= link_to 'Back', periods_path %>
+<%= link_to 'Back', schedule_periods_path(@period.schedule) %>
+</p>
 

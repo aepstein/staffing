@@ -1,4 +1,6 @@
 class Period < ActiveRecord::Base
+  default_scope :order => 'periods.starts_at DESC'
+
   belongs_to :schedule
 
   has_many :memberships

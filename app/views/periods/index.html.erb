@@ -1,25 +1,21 @@
 <h1>Listing periods</h1>
 
 <table>
+  <thead>
   <tr>
     <th>Schedule</th>
     <th>Starts at</th>
     <th>Ends at</th>
   </tr>
-
-<% @periods.each do |period| %>
-  <tr>
-    <td><%=h period.schedule %></td>
-    <td><%=h period.starts_at %></td>
-    <td><%=h period.ends_at %></td>
-    <td><%= link_to 'Show', period %></td>
-    <td><%= link_to 'Edit', edit_period_path(period) %></td>
-    <td><%= link_to 'Destroy', period, :confirm => 'Are you sure?', :method => :delete %></td>
-  </tr>
-<% end %>
+  </thead>
+  <tbody>
+  <%= render :partial => 'period', :collection => @periods %>
+  </tbody>
 </table>
 
 <br />
 
-<%= link_to 'New period', new_period_path %>
+<p>
+<%= link_to 'New period', new_schedule_period_path(@schedule) %>
+</p>
 

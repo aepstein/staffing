@@ -1,13 +1,7 @@
-  <p>
-    <%= form.label :schedule %><br />
-    <%= form.text_field :schedule %>
-  </p>
-  <p>
-    <%= form.label :starts_at %><br />
-    <%= form.date_select :starts_at %>
-  </p>
-  <p>
-    <%= form.label :ends_at %><br />
-    <%= form.date_select :ends_at %>
-  </p>
+  <%= form.error_messages %>
+  <% form.inputs do %>
+  <%= form.input :starts_at, :as => :ft_calendar_date_select %>
+  <%= form.input :ends_at, :as => :ft_calendar_date_select %>
+  <% end %>
+  <%= form.buttons %>
 
