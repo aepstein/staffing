@@ -1,40 +1,27 @@
 <h1>Listing users</h1>
 
 <table>
+  <thead>
   <tr>
-    <th>First name</th>
-    <th>Middle name</th>
-    <th>Last name</th>
+    <th>Name</th>
+    <th>Net id</th>
     <th>Email</th>
     <th>Mobile phone</th>
     <th>Work phone</th>
     <th>Home phone</th>
     <th>Work address</th>
     <th>Date of birth</th>
-    <th>Net</th>
     <th>Status</th>
   </tr>
-
-<% @users.each do |user| %>
-  <tr>
-    <td><%=h user.first_name %></td>
-    <td><%=h user.middle_name %></td>
-    <td><%=h user.last_name %></td>
-    <td><%=h user.email %></td>
-    <td><%=h user.mobile_phone %></td>
-    <td><%=h user.work_phone %></td>
-    <td><%=h user.home_phone %></td>
-    <td><%=h user.work_address %></td>
-    <td><%=h user.date_of_birth %></td>
-    <td><%=h user.net_id %></td>
-    <td><%=h user.status %></td>
-    <td><%= link_to 'Show', user %></td>
-    <td><%= link_to 'Edit', edit_user_path(user) %></td>
-    <td><%= link_to 'Destroy', user, :confirm => 'Are you sure?', :method => :delete %></td>
-  </tr>
-<% end %>
+  </thead>
+  <tbody>
+  <%= render :partial => 'user', :collection => @users %>
+  </tbody>
 </table>
 
 <br />
 
+<p>
 <%= link_to 'New user', new_user_path %>
+</p>
+

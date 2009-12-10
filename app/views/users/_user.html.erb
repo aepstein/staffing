@@ -1,0 +1,15 @@
+  <tr>
+    <td><%=h user.name( :last_first ) %></td>
+    <td><%=h user.net_id %></td>
+    <td><%=h user.email %></td>
+    <td><%=h user.mobile_phone %></td>
+    <td><%=h user.work_phone %></td>
+    <td><%=h user.home_phone %></td>
+    <td><%=h user.work_address %></td>
+    <td><%=h user.date_of_birth.to_formatted_s(:db) if user.date_of_birth %></td>
+    <td><%=h user.status %></td>
+    <td><%= link_to 'Show', user %></td>
+    <td><%= link_to 'Edit', edit_user_path(user) %></td>
+    <td><%= link_to 'Destroy', user, :confirm => 'Are you sure?', :method => :delete %></td>
+  </tr>
+

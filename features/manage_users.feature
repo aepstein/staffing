@@ -1,46 +1,45 @@
-@stub
 Feature: Manage users
-  In order to [goal]
-  [stakeholder]
-  wants [behaviour]
+  In order to represent people in committees
+  As an administrator
+  I want to create, modify, list, show, and destroy users
 
   Scenario: Register new user
-    Given I am on the new user page
-    When I fill in "First name" with "first_name 1"
-    And I fill in "Middle name" with "middle_name 1"
-    And I fill in "Last name" with "last_name 1"
-    And I fill in "Email" with "email 1"
-    And I fill in "Mobile phone" with "mobile_phone 1"
-    And I fill in "Work phone" with "work_phone 1"
-    And I fill in "Home phone" with "home_phone 1"
-    And I fill in "Work address" with "work_address 1"
-    And I fill in "Date of birth" with "date_of_birth 1"
-    And I fill in "Net" with "net_id 1"
-    And I fill in "Status" with "status 1"
+    Given I log in as the administrator
+    And I am on the new user page
+    When I fill in "First name" with "John"
+    And I fill in "Middle name" with "Nobody"
+    And I fill in "Last name" with "Doe"
+    And I fill in "Net" with "fake"
+    And I fill in "Email" with "jd@example.com"
+    And I fill in "Mobile phone" with "607-555-1212"
+    And I fill in "Work phone" with "607-555-1234"
+    And I fill in "Home phone" with "607-555-4321"
+    And I fill in "Work address" with "100 Day Hall"
+    And I fill in "Date of birth" with "1982-06-04"
     And I press "Create"
-    Then I should see "first_name 1"
-    And I should see "middle_name 1"
-    And I should see "last_name 1"
-    And I should see "email 1"
-    And I should see "mobile_phone 1"
-    And I should see "work_phone 1"
-    And I should see "home_phone 1"
-    And I should see "work_address 1"
-    And I should see "date_of_birth 1"
-    And I should see "net_id 1"
-    And I should see "status 1"
+    Then I should see "First name: John"
+    And I should see "Middle name: Nobody"
+    And I should see "Last name: Doe"
+    And I should see "Net id: fake"
+    And I should see "Email: jd@example.com"
+    And I should see "Mobile phone: 607-555-1212"
+    And I should see "Work phone: 607-555-1234"
+    And I should see "Home phone: 607-555-4321"
+    And I should see "Work address: 100 Day Hall"
+    And I should see "Date of birth: June  4, 1982"
+    And I should see "Status: unknown"
 
   Scenario: Delete user
-    Given the following users:
-      |first_name|middle_name|last_name|email|mobile_phone|work_phone|home_phone|work_address|date_of_birth|net_id|status|
-      |first_name 1|middle_name 1|last_name 1|email 1|mobile_phone 1|work_phone 1|home_phone 1|work_address 1|date_of_birth 1|net_id 1|status 1|
-      |first_name 2|middle_name 2|last_name 2|email 2|mobile_phone 2|work_phone 2|home_phone 2|work_address 2|date_of_birth 2|net_id 2|status 2|
-      |first_name 3|middle_name 3|last_name 3|email 3|mobile_phone 3|work_phone 3|home_phone 3|work_address 3|date_of_birth 3|net_id 3|status 3|
-      |first_name 4|middle_name 4|last_name 4|email 4|mobile_phone 4|work_phone 4|home_phone 4|work_address 4|date_of_birth 4|net_id 4|status 4|
-    When I delete the 3rd user
+    Given a user exists with first_name: "John", last_name: "Doe 4"
+    And a user exists with first_name: "John", last_name: "Doe 3"
+    And a user exists with first_name: "John", last_name: "Doe 2"
+    And a user exists with first_name: "John", last_name: "Doe 1"
+    And I log in as the administrator
+    When I delete the 4th user
     Then I should see the following users:
-      |First name|Middle name|Last name|Email|Mobile phone|Work phone|Home phone|Work address|Date of birth|Net|Status|
-      |first_name 1|middle_name 1|last_name 1|email 1|mobile_phone 1|work_phone 1|home_phone 1|work_address 1|date_of_birth 1|net_id 1|status 1|
-      |first_name 2|middle_name 2|last_name 2|email 2|mobile_phone 2|work_phone 2|home_phone 2|work_address 2|date_of_birth 2|net_id 2|status 2|
-      |first_name 4|middle_name 4|last_name 4|email 4|mobile_phone 4|work_phone 4|home_phone 4|work_address 4|date_of_birth 4|net_id 4|status 4|
+      |Name        |
+      |Doe, John   |
+      |Doe 1, John |
+      |Doe 2, John |
+      |Doe 4, John |
 

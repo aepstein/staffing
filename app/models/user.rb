@@ -1,4 +1,6 @@
 class User < ActiveRecord::Base
+  default_scope :order => 'users.last_name ASC, users.first_name ASC, users.middle_name ASC'
+
   has_and_belongs_to_many :qualifications
   has_and_belongs_to_many :authorities
   has_many :memberships
@@ -17,8 +19,46 @@ class User < ActiveRecord::Base
   validates_presence_of :email
   validates_date :date_of_birth, :allow_nil => true
 
-  def name
-    "#{first_name} #{last_name}".squeeze(' ').strip
+  before_validation_on_create :import_ldap_attributes, :initialize_password
+
+  def name(style = nil)
+    name = case style
+    when :last_first
+      "#{last_name}, #{first_name}"
+    else
+      "#{first_name} #{last_name}"
+    end
+    name.squeeze(' ').strip
+  end
+
+  protected
+
+  def initialize_password
+    reset_password unless password
+  end
+
+  def ldap_entry=(ldap_entry)
+    @ldap_entry = ldap_entry
+  end
+
+  def ldap_entry
+    return nil if @ldap_entry == false
+    begin
+      @ldap_entry ||= CornellLdap::Record.find net_id
+    rescue Exception
+      @ldap_entry = false
+    end
+  end
+
+  def import_ldap_attributes
+    if ldap_entry
+      self.first_name = ldap_entry.first_name.titleize unless ldap_entry.first_name.nil?
+      self.middle_name = ldap_entry.middle_name.titleize unless ldap_entry.middle_name.nil?
+      self.last_name = ldap_entry.last_name.titleize unless ldap_entry.last_name.nil?
+      self.email ||= "#{self.net_id}@cornell.edu"
+      self.status = ldap_entry.status unless ldap_entry.status.nil?
+      # TODO addresses and phone numbers
+    end
   end
 end
 

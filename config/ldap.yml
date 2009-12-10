@@ -1,0 +1,29 @@
+development:
+  host: directory.cornell.edu
+  port: 389
+  base: o=Cornell University,c=US
+#  bind_dn: cn=admin,dc=local,dc=net
+#  password: secret
+
+test:
+  host: directory.cornell.edu
+  port: 389
+  base: o=Cornell University,c=US
+#  bind_dn: cn=admin,dc=local,dc=net
+#  password: secret
+
+production:
+  host: directory.cornell.edu
+  port: 389
+  base: o=Cornell University,c=US
+#  method: :tls
+#  base: dc=production,dc=local,dc=net
+#  bind_dn: cn=admin,dc=local,dc=net
+#  password: secret
+
+cornell_directory:
+  host: directory.cornell.edu
+  port: 389
+  base: o=Cornell University,c=US
+#  timeout: 10
+

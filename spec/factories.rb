@@ -66,10 +66,10 @@ end
 
 Factory.define :user do |f|
   f.sequence(:net_id) { |n| "jd#{n}" }
+  f.sequence(:email) { |n| "jd#{n}@example.com" }
   f.password 'secret'
   f.password_confirmation { |u| u.password }
   f.first_name "John"
   f.last_name "Doe"
-  f.email "jd@example.com"
 end
 
