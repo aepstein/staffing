@@ -23,5 +23,13 @@ describe Period do
     @period.ends_at = @period.starts_at - 1.day
     @period.save.should be_false
   end
+
+  it 'should not save if it conflicts with another period in the same schedule' do
+    conflict = Factory.build(:period, :schedule => @period.schedule,
+      :ends_at => @period.starts_at + 1.day, :starts_at => @period.starts_at - 1.day)
+    @period.starts_at.should <= conflict.ends_at
+    @period.ends_at.should >= conflict.starts_at
+    conflict.save.should be_false
+  end
 end
 
