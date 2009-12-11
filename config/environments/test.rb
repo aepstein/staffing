@@ -31,6 +31,6 @@ config.gem 'rspec-rails', :lib => false
 config.gem 'cucumber', :lib => false
 config.gem 'cucumber-rails', :lib => false
 config.gem 'webrat', :lib => false
-config.gem 'factory_girl', :lib => 'factory_girl', :source => 'http://gems.github.com'
-config.gem 'pickle', :lib => false, :source => 'http://gems.github.com'
+config.gem 'factory_girl', :source => 'http://gemcutter.org'
+config.gem 'pickle', :lib => false, :source => 'http://gemcutter.org'
 
