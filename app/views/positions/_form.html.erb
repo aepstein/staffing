@@ -1,29 +1,10 @@
-  <p>
-    <%= form.label :authority %><br />
-    <%= form.text_field :authority %>
-  </p>
-  <p>
-    <%= form.label :committee %><br />
-    <%= form.text_field :committee %>
-  </p>
-  <p>
-    <%= form.label :quiz %><br />
-    <%= form.text_field :quiz %>
-  </p>
-  <p>
-    <%= form.label :schedule %><br />
-    <%= form.text_field :schedule %>
-  </p>
-  <p>
-    <%= form.label :slots %><br />
-    <%= form.text_field :slots %>
-  </p>
-  <p>
-    <%= form.label :voting %><br />
-    <%= form.check_box :voting %>
-  </p>
-  <p>
-    <%= form.label :name %><br />
-    <%= form.text_field :name %>
-  </p>
+  <%= form.error_messages %>
+  <% form.inputs do %>
+  <%= form.input :name %>
+  <%= form.input :authority %>
+  <%= form.input :quiz %>
+  <%= form.input :schedule %>
+  <%= form.input :slots %>
+  <% end %>
+  <%= form.buttons %>
 

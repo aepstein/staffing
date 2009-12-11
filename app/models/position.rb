@@ -1,4 +1,6 @@
 class Position < ActiveRecord::Base
+  default_scope :order => 'positions.name ASC'
+
   belongs_to :authority
   belongs_to :quiz
   belongs_to :schedule
@@ -16,5 +18,7 @@ class Position < ActiveRecord::Base
   validates_presence_of :quiz
   validates_presence_of :schedule
   validates_numericality_of :slots, :only_integer => true, :greater_than => 0
+
+  def to_s; name; end
 end
 

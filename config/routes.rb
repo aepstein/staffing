@@ -2,12 +2,11 @@ ActionController::Routing::Routes.draw do |map|
   map.resources :users, :shallow => true do |user|
     user.resources :memberships
   end
-  map.resources :committees, :shallow => true do |committee|
-    committee.resources :positions do |position|
-      position.resources :enrollments
-      position.resources :requests
-    end
+  map.resources :positions do |position|
+    position.resources :enrollments
+    position.resources :requests
   end
+  map.resources :committees
   map.resources :authorities
   map.resources :qualifications
   map.resources :questions, :shallow => true do |question|

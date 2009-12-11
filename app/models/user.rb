@@ -31,6 +31,8 @@ class User < ActiveRecord::Base
     name.squeeze(' ').strip
   end
 
+  def to_s; name; end
+
   protected
 
   def initialize_password

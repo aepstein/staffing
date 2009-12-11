@@ -1,4 +1,6 @@
 class PositionsController < ApplicationController
+  before_filter :require_user
+
   # GET /positions
   # GET /positions.xml
   def index
@@ -83,3 +85,4 @@ class PositionsController < ApplicationController
     end
   end
 end
+

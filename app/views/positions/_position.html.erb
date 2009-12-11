@@ -1,0 +1,11 @@
+  <tr>
+    <td><%=h position.name %></td>
+    <td><%=h position.authority %></td>
+    <td><%=h position.quiz %></td>
+    <td><%=h position.schedule %></td>
+    <td><%=h position.slots %></td>
+    <td><%= link_to 'Show', position %></td>
+    <td><%= link_to 'Edit', edit_position_path(position) %></td>
+    <td><%= link_to 'Destroy', position, :confirm => 'Are you sure?', :method => :delete %></td>
+  </tr>
+

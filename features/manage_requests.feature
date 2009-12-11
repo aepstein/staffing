@@ -1,11 +1,16 @@
 @stub
 Feature: Manage requests
-  In order to [goal]
-  [stakeholder]
-  wants [behaviour]
+  In order to represent applications for membership in committees
+  As a user or reviewier
+  I want to create, modify, list, show, and destroy requests
 
-  Scenario: Register new request
-    Given I am on the new request page
+  Background:
+    Given a user: "applicant" exists with net_id: "applicant", password: "secret"
+    And a position: "popular" exists
+
+  Scenario: Register new request or edit
+    Given I log in as "applicant" with password "secret"
+    And I am on the new request page
     When I fill in "Term" with "term 1"
     And I fill in "Position" with "position 1"
     And I fill in "User" with "user 1"

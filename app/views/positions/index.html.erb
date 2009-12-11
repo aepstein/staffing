@@ -1,32 +1,25 @@
 <h1>Listing positions</h1>
 
 <table>
+  <thead>
   <tr>
+    <th>Name</th>
     <th>Authority</th>
-    <th>Committee</th>
     <th>Quiz</th>
     <th>Schedule</th>
     <th>Slots</th>
-    <th>Voting</th>
-    <th>Name</th>
   </tr>
+  </thead>
 
-<% @positions.each do |position| %>
-  <tr>
-    <td><%=h position.authority %></td>
-    <td><%=h position.committee %></td>
-    <td><%=h position.quiz %></td>
-    <td><%=h position.schedule %></td>
-    <td><%=h position.slots %></td>
-    <td><%=h position.voting %></td>
-    <td><%=h position.name %></td>
-    <td><%= link_to 'Show', position %></td>
-    <td><%= link_to 'Edit', edit_position_path(position) %></td>
-    <td><%= link_to 'Destroy', position, :confirm => 'Are you sure?', :method => :delete %></td>
-  </tr>
-<% end %>
+  <tbody>
+  <%= render :partial => 'position', :collection => @positions %>
+  </tbody>
+
 </table>
 
 <br />
 
+<p>
 <%= link_to 'New position', new_position_path %>
+</p>
+
