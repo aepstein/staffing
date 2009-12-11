@@ -1,25 +1,20 @@
 <h1>Listing requests</h1>
 
 <table>
+  <thead>
   <tr>
-    <th>Position</th>
     <th>User</th>
     <th>State</th>
   </tr>
-
-<% @requests.each do |request| %>
-  <tr>
-    <td><%=h request.position %></td>
-    <td><%=h request.user %></td>
-    <td><%=h request.state %></td>
-    <td><%= link_to 'Show', request %></td>
-    <td><%= link_to 'Edit', edit_request_path(request) %></td>
-    <td><%= link_to 'Destroy', request, :confirm => 'Are you sure?', :method => :delete %></td>
-  </tr>
-<% end %>
+  </thead>
+  <tbody>
+  <%= render :partial => 'request', :collection => @requests %>
+  </tbody>
 </table>
 
 <br />
 
-<%= link_to 'New request', new_request_path %>
+<p>
+<%= link_to 'New request', new_position_request_path( @position ) %>
+</p>
 

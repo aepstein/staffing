@@ -33,7 +33,7 @@ Feature: Manage periods
     When I delete the 3rd period for schedule: "annual"
     Then I should see the following periods:
       |Starts at  |Ends at    |
-      |1 Jun 2008|31 May 2009|
-      |1 Jun 2007|31 May 2008|
-      |1 Jun 2005|31 May 2006|
+      |1 Jun 2008 |31 May 2009|
+      |1 Jun 2007 |31 May 2008|
+      |1 Jun 2005 |31 May 2006|
 

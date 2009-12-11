@@ -1,0 +1,12 @@
+<table>
+  <thead>
+  <tr>
+    <th>Starts at</th>
+    <th>Ends at</th>
+  </tr>
+  </thead>
+  <tbody>
+  <%= render :partial => 'periods/period', :collection => periods, :locals => { :read_only => defined?(read_only) } %>
+  </tbody>
+</table>
+

@@ -11,12 +11,12 @@ class Membership < ActiveRecord::Base
   validates_date :ends_at, :after => :starts_at, :on_or_before => :period_ends_at
 
   def period_starts_at
-    return nil unless period
+    return starts_at unless period
     period.starts_at
   end
 
   def period_ends_at
-    return nil unless period
+    return ends_at unless period
     period.ends_at
   end
 

@@ -30,7 +30,7 @@ describe Membership do
   end
 
   it 'should not save with a start date before the period start date' do
-    @membership.starts_at = @membership.period.starts_at - 1.day
+    @membership.starts_at = (@membership.period.starts_at - 1.day)
     @membership.save.should be_false
   end
 
@@ -40,12 +40,12 @@ describe Membership do
   end
 
   it 'should not save with an end date that is after the period end date' do
-    @membership.ends_at = @membership.period.ends_at + 1.day
+    @membership.ends_at = (@membership.period.ends_at + 1.day)
     @membership.save.should be_false
   end
 
   it 'should not save with an end date that is before the start date' do
-    @membership.ends_at = @membership.starts_at - 1.day
+    @membership.ends_at = (@membership.starts_at - 1.day)
     @membership.save.should be_false
   end
 end

@@ -1,8 +1,9 @@
 class RequestsController < ApplicationController
-  # GET /requests
-  # GET /requests.xml
+  # GET /position/:position_id/requests
+  # GET /position/:position_id/requests.xml
   def index
-    @requests = Request.all
+    @position = Position.find(params[:position_id])
+    @requests = @position.requests
 
     respond_to do |format|
       format.html # index.html.erb
@@ -21,10 +22,13 @@ class RequestsController < ApplicationController
     end
   end
 
-  # GET /requests/new
-  # GET /requests/new.xml
+  # GET /position/:position_id/requests/new
+  # GET /position/:position_id/requests/new.xml
   def new
-    @request = Request.new
+    @request = Position.find(params[:position_id]).requests.build
+    raise AuthorizationError unless current_user
+    @request.user = current_user
+    @request.answers.populate
 
     respond_to do |format|
       format.html # new.html.erb
@@ -37,10 +41,12 @@ class RequestsController < ApplicationController
     @request = Request.find(params[:id])
   end
 
-  # POST /requests
-  # POST /requests.xml
+  # POST /position/:position_id/requests
+  # POST /position/:position_id/requests.xml
   def create
-    @request = Request.new(params[:request])
+    @request = Position.find(params[:position_id]).requests.build(params[:request])
+    raise AuthorizationError unless current_user
+    @request.user = current_user
 
     respond_to do |format|
       if @request.save
@@ -78,8 +84,9 @@ class RequestsController < ApplicationController
     @request.destroy
 
     respond_to do |format|
-      format.html { redirect_to(requests_url) }
+      format.html { redirect_to position_requests_url @request.position }
       format.xml  { head :ok }
     end
   end
 end
+

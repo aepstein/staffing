@@ -1,13 +1,17 @@
-  <p>
-    <%= form.label :position %><br />
-    <%= form.text_field :position %>
-  </p>
-  <p>
-    <%= form.label :user %><br />
-    <%= form.text_field :user %>
-  </p>
-  <p>
-    <%= form.label :state %><br />
-    <%= form.text_field :state %>
-  </p>
+  <%= form.error_messages %>
+  <% form.inputs do %>
+    <% form.object.position.schedule.periods.each do |period| %>
+    <li>
+    <%= check_box_tag 'request[period_ids][]', period.id, form.object.periods.include?(period), :id => "request_period_#{period.id}" %>
+    <%= label_tag "request_period_#{period.id}", period %>
+    </li>
+    <% end %>
+    <% form.object.answers.each do |answer| %>
+      <% form.semantic_fields_for :answers, answer do |subform| %>
+        <%= subform.input( :question_id, :as => :hidden ) if subform.object.new_record? %>
+        <%= subform.input :content, :as => :text, :label => subform.object.question.name %>
+      <% end %>
+    <% end %>
+  <% end %>
+  <%= form.buttons %>
 

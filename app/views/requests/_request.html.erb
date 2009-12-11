@@ -1,0 +1,8 @@
+  <tr>
+    <td><%=h request.user.name :last_first %></td>
+    <td><%=h request.state %></td>
+    <td><%= link_to 'Show', request %></td>
+    <td><%= link_to 'Edit', edit_request_path(request) %></td>
+    <td><%= link_to 'Destroy', request, :confirm => 'Are you sure?', :method => :delete %></td>
+  </tr>
+

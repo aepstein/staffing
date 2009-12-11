@@ -46,5 +46,6 @@ Rails::Initializer.run do |config|
   config.gem 'bluecloth', :source => 'http://gemcutter.org'
   config.gem 'cornell_netid', :source => 'http://gemcutter.org'
   config.gem 'cornell_ldap', :source => 'http://gemcutter.org'
+  config.gem 'aasm', :source => 'http://gemcutter.org'
 end
 

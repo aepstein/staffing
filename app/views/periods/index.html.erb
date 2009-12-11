@@ -1,17 +1,6 @@
 <h1>Listing periods</h1>
 
-<table>
-  <thead>
-  <tr>
-    <th>Schedule</th>
-    <th>Starts at</th>
-    <th>Ends at</th>
-  </tr>
-  </thead>
-  <tbody>
-  <%= render :partial => 'period', :collection => @periods %>
-  </tbody>
-</table>
+<%= render :partial => 'periods', :object => @periods %>
 
 <br />
 

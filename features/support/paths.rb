@@ -26,8 +26,8 @@ module NavigationHelpers
     when /the new membership page/
       new_membership_path
 
-    when /the new request page/
-      new_request_path
+    when /^the new request page for #{capture_model}$/
+      new_position_request_path model $1
 
     when /^the new period page for #{capture_model}$/
       new_schedule_period_path model $1

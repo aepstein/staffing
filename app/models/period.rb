@@ -20,6 +20,6 @@ class Period < ActiveRecord::Base
     errors.add_to_base "Conflicts with #{conflicts.join(', ')}" unless conflicts.empty?
   end
 
-  def to_s; "#{starts_at.to_s :rfc822} - #{ends_at.to_s :rfc822} period"; end
+  def to_s; "#{starts_at.to_s :rfc822} - #{ends_at.to_s :rfc822}"; end
 end
 
