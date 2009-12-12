@@ -1,8 +1,8 @@
-@stub
+@wip
 Feature: Manage memberships
-  In order to [goal]
-  [stakeholder]
-  wants [behaviour]
+  In order to record memberships in positions
+  As an administrator
+  I want to create, modify, show, list and destroy memberships
 
   Scenario: Register new membership
     Given I am on the new membership page
