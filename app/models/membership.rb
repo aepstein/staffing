@@ -1,4 +1,6 @@
 class Membership < ActiveRecord::Base
+  default_scope :include => [:user, :period], :order => "periods.starts_at DESC, memberships.starts_at DESC, users.last_name ASC, users.first_name ASC, users.middle_name ASC"
+
   belongs_to :user
   belongs_to :period
   belongs_to :position
@@ -7,20 +9,23 @@ class Membership < ActiveRecord::Base
   validates_presence_of :user
   validates_presence_of :period
   validates_presence_of :position
-  validates_date :starts_at, :on_or_after => :period_starts_at
-  validates_date :ends_at, :after => :starts_at, :on_or_before => :period_ends_at
-  validate :concurrent_memberships_must_not_exceed_slots
+  validates_date :starts_at
+  validates_date :ends_at
+  validate :concurrent_memberships_must_not_exceed_slots, :must_be_within_period
 
   scope_procedure :overlaps, lambda { |starts, ends| starts_at_lte(ends).ends_at_gte(starts) }
 
-  def period_starts_at
-    return starts_at unless period
-    period.starts_at
-  end
-
-  def period_ends_at
-    return ends_at unless period
-    period.ends_at
+  def must_be_within_period
+    period(true) if period && period_id && period.id != period_id
+    if starts_at && ends_at && ends_at < starts_at
+      errors.add :ends_at, "must be before #{starts_at.to_s :rfc822}"
+    end
+    if starts_at && period && period.starts_at > starts_at
+      errors.add :starts_at, "must be within #{period}"
+    end
+    if ends_at && period && period.ends_at < ends_at
+      errors.add :ends_at, "must be within #{period}"
+    end
   end
 
   def concurrent_membership_edges

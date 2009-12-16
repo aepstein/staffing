@@ -1,8 +1,10 @@
 class MembershipsController < ApplicationController
-  # GET /memberships
-  # GET /memberships.xml
+  # GET /positions/:position_id/memberships
+  # GET /positions/:position_id/memberships.xml
   def index
-    @memberships = Membership.all
+    initialize_position
+    @memberships = @position.memberships if @position
+    @memberships ||= Membership.all
 
     respond_to do |format|
       format.html # index.html.erb
@@ -21,10 +23,10 @@ class MembershipsController < ApplicationController
     end
   end
 
-  # GET /memberships/new
-  # GET /memberships/new.xml
+  # GET /positions/:position_id/memberships/new
+  # GET /positions/:position_id/memberships/new.xml
   def new
-    @membership = Membership.new
+    @membership = initialize_position.memberships.build
 
     respond_to do |format|
       format.html # new.html.erb
@@ -37,10 +39,10 @@ class MembershipsController < ApplicationController
     @membership = Membership.find(params[:id])
   end
 
-  # POST /memberships
-  # POST /memberships.xml
+  # POST /positions/:position_id/memberships
+  # POST /positions/:position_id/memberships.xml
   def create
-    @membership = Membership.new(params[:membership])
+    @membership = initialize_position.memberships.build(params[:membership])
 
     respond_to do |format|
       if @membership.save
@@ -78,8 +80,15 @@ class MembershipsController < ApplicationController
     @membership.destroy
 
     respond_to do |format|
-      format.html { redirect_to(memberships_url) }
+      format.html { redirect_to position_memberships_url @membership.position }
       format.xml  { head :ok }
     end
   end
+
+  private
+
+  def initialize_position
+    @position = Position.find(params[:position_id]) if params[:position_id]
+  end
 end
+

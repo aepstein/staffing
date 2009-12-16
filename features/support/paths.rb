@@ -12,7 +12,7 @@ module NavigationHelpers
       '/'
 
     when /the login page/
-      login_url
+      login_path
 
     when /the logout page/
       logout_path
@@ -23,8 +23,8 @@ module NavigationHelpers
     when /the new answer page/
       new_answer_path
 
-    when /the new membership page/
-      new_membership_path
+    when /^the new membership page for #{capture_model}$/
+      new_position_membership_path model $1
 
     when /^the new request page for #{capture_model}$/
       new_position_request_path model $1

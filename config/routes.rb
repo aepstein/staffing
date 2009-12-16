@@ -1,8 +1,7 @@
 ActionController::Routing::Routes.draw do |map|
-  map.resources :users, :shallow => true do |user|
-    user.resources :memberships
-  end
+  map.resources :users
   map.resources :positions, :shallow => true do |position|
+    position.resources :memberships
     position.resources :enrollments
     position.resources :requests
   end

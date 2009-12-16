@@ -1,25 +1,9 @@
-  <p>
-    <%= form.label :user %><br />
-    <%= form.text_field :user %>
-  </p>
-  <p>
-    <%= form.label :period %><br />
-    <%= form.text_field :period %>
-  </p>
-  <p>
-    <%= form.label :position %><br />
-    <%= form.text_field :position %>
-  </p>
-  <p>
-    <%= form.label :request %><br />
-    <%= form.text_field :request %>
-  </p>
-  <p>
-    <%= form.label :starts_at %><br />
-    <%= form.date_select :starts_at %>
-  </p>
-  <p>
-    <%= form.label :ends_at %><br />
-    <%= form.date_select :ends_at %>
-  </p>
+  <%= form.error_messages %>
+  <% form.inputs do %>
+  <%= form.input :user %>
+  <%= form.input :period %>
+  <%= form.input :starts_at, :as => :ft_calendar_date_select %>
+  <%= form.input :ends_at, :as => :ft_calendar_date_select %>
+  <% end %>
+  <%= form.buttons %>
 
