@@ -48,5 +48,29 @@ describe Membership do
     @membership.ends_at = (@membership.starts_at - 1.day)
     @membership.save.should be_false
   end
+
+  it 'should detect concurrent memberships and prevent overstaffing' do
+    @membership.position.slots = 2
+    @membership.position.save.should eql true
+    second = Factory( :membership, :starts_at => @membership.starts_at + 1.day,
+      :ends_at => @membership.ends_at - 1.day, :position => @membership.position,
+      :period => @membership.period )
+    overlaps = Membership.overlaps(@membership.starts_at,@membership.ends_at).position_id_eq(@membership.position_id)
+    overlaps.should include @membership
+    overlaps.should include second
+    overlaps.size.should eql 2
+    over = Factory.build(:membership, :starts_at => @membership.starts_at,
+      :ends_at => @membership.ends_at, :position => @membership.position,
+      :period => @membership.period )
+    over.concurrent_membership_edges.should eql [@membership.starts_at,
+      second.starts_at, second.ends_at, @membership.ends_at ]
+    counts = over.concurrent_membership_counts
+    counts[@membership.starts_at].should eql 2
+    counts[second.starts_at].should eql 3
+    counts[second.ends_at].should eql 3
+    counts[@membership.ends_at].should eql 2
+    counts.size.should eql 4
+    over.save.should eql false
+  end
 end
 
