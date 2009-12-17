@@ -72,5 +72,14 @@ describe Membership do
     counts.size.should eql 4
     over.save.should eql false
   end
+
+  it 'should populate a membership from a request' do
+    membership = Membership.new( :request_id => Factory(:request).id )
+    membership.period.should eql membership.request.periods.first
+    membership.starts_at.should eql membership.period.starts_at
+    membership.ends_at.should eql membership.period.ends_at
+    membership.user.should eql membership.request.user
+    membership.position.should eql membership.request.position
+  end
 end
 

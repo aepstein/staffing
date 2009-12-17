@@ -27,7 +27,8 @@ module NavigationHelpers
       new_committee_enrollment_path model $1
 
     when /^the new membership page for #{capture_model}$/
-      new_position_membership_path model $1
+      #new_position_membership_path model $1
+      new_polymorphic_path( [ model($1), :membership ] )
 
     when /^the new request page for #{capture_model}$/
       new_position_request_path model $1

@@ -17,6 +17,12 @@ class Membership < ActiveRecord::Base
 
   scope_procedure :overlaps, lambda { |starts, ends| starts_at_lte(ends).ends_at_gte(starts) }
 
+  # Returns the context in which this membership should be framed (useful for polymorphic_path)
+  def context
+    return request if request
+    position
+  end
+
   def must_be_within_period
     period(true) if period && period_id && period.id != period_id
     if starts_at && ends_at && ends_at < starts_at
@@ -54,6 +60,22 @@ class Membership < ActiveRecord::Base
       errors.add_to_base "lacks free slots for the specified time period"
     end
   end
+
+  def request_id=(new_id)
+    self.request = Request.find(new_id) if new_id && ( request.nil? || request.id != new_id.to_i )
+    write_attribute(:request_id, new_id)
+  end
+
+  def request_with_population=(new_request)
+    self.period ||= new_request.periods.last
+    self.starts_at ||= period.starts_at if period
+    self.ends_at ||= period.ends_at if period
+    self.user = new_request.user
+    self.position = new_request.position
+    self.request_without_population = new_request
+  end
+
+  alias_method_chain :request=, :population
 
 end
 

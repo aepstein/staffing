@@ -2,7 +2,9 @@ ActionController::Routing::Routes.draw do |map|
   map.resources :users
   map.resources :positions, :shallow => true do |position|
     position.resources :memberships
-    position.resources :requests
+    position.resources :requests do |request|
+      request.resources :memberships, :only => [ :new, :create, :index ]
+    end
   end
   map.resources :committees, :shallow => true do |committee|
     committee.resources :enrollments

@@ -11,7 +11,7 @@ Feature: Manage memberships
     And a period: "2009" exists with schedule: schedule "annual", starts_at: "2009-06-01", ends_at: "2010-05-31"
     And a position: "officer" exists with name: "Officer", schedule: schedule "annual", slots: 4
 
-  Scenario: Register new membership
+  Scenario: Register new membership given a position or edit
     Given I log in as the administrator
     And I am on the new membership page for position: "officer"
     When I select "Mister Popularity" from "User"
@@ -36,6 +36,18 @@ Feature: Manage memberships
     And I should see "Period:  1 Jun 2009 - 31 May 2010"
     And I should see "Starts at:  1 Jun 2009"
     And I should see "Ends at: 15 Jan 2010"
+
+  Scenario: Register a new membership given a request
+    Given a request: "application" exists with user: user "popular", position: position "officer", state: "submitted"
+    And period: "2008" is one of the periods of request: "application"
+    And I log in as the administrator
+    And I am on the new membership page for request: "application"
+    And I press "Create"
+    Then I should see "Membership was successfully created."
+    And I should see "User: Mister Popularity"
+    And I should see "Position: Officer"
+    And I should see "Starts at:  1 Jun 2008"
+    And I should see "Ends at: 31 May 2009"
 
   Scenario: Delete membership
     Given a user: "user1" exists with first_name: "John", last_name: "Doe 1"

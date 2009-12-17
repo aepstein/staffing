@@ -49,3 +49,5 @@ Rails::Initializer.run do |config|
   config.gem 'aasm', :source => 'http://gemcutter.org'
 end
 
+CalendarDateSelect.format = :hyphen_ampm
+

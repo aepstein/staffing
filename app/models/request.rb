@@ -19,7 +19,7 @@ class Request < ActiveRecord::Base
   belongs_to :position
   belongs_to :user
 
-  has_one :membership
+  has_many :memberships
 
   validates_presence_of :position
   validates_presence_of :user
