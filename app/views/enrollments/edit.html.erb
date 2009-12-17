@@ -1,17 +1,11 @@
 <h1>Editing enrollment</h1>
 
-<% form_for(@enrollment) do |f| %>
-  <%= f.error_messages %>
-
+<% semantic_form_for(@enrollment) do |f| %>
   <%= render :partial => 'form', :object => f %>
-
-  <p>
-    <%= f.submit 'Update' %>
-  </p>
 <% end %>
 
 <p>
 <%= link_to 'Show', @enrollment %> |
-<%= link_to 'Back', enrollments_path %>
+<%= link_to 'Back', committee_enrollments_path( @enrollment.committee ) %>
 </p>
 

@@ -1,17 +1,8 @@
-  <p>
-    <%= form.label :position %><br />
-    <%= form.text_field :position %>
-  </p>
-  <p>
-    <%= form.label :committee %><br />
-    <%= form.text_field :committee %>
-  </p>
-  <p>
-    <%= form.label :title %><br />
-    <%= form.text_field :title %>
-  </p>
-  <p>
-    <%= form.label :votes %><br />
-    <%= form.text_field :votes %>
-  </p>
+  <%= form.error_messages %>
+  <% form.inputs do %>
+  <%= form.input :position %>
+  <%= form.input :title %>
+  <%= form.input :votes %>
+  <% end %>
+  <%= form.buttons %>
 

@@ -1,23 +1,21 @@
 <p>
-  <b>Position:</b>
-  <%=h @enrollment.position %>
+  <b>Position:</b> <%=h @enrollment.position %>
 </p>
 
 <p>
-  <b>Committee:</b>
-  <%=h @enrollment.committee %>
+  <b>Committee:</b> <%=h @enrollment.committee %>
 </p>
 
 <p>
-  <b>Title:</b>
-  <%=h @enrollment.title %>
+  <b>Title:</b> <%=h @enrollment.title %>
 </p>
 
 <p>
-  <b>Votes:</b>
-  <%=h @enrollment.votes %>
+  <b>Votes:</b> <%=h @enrollment.votes %>
 </p>
 
-
+<p>
 <%= link_to 'Edit', edit_enrollment_path(@enrollment) %> |
-<%= link_to 'Back', enrollments_path %>
+<%= link_to 'Back', committee_enrollments_path(@enrollment.committee) %>
+</p>
+

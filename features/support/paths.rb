@@ -23,6 +23,9 @@ module NavigationHelpers
     when /the new answer page/
       new_answer_path
 
+    when /^the new enrollment page for #{capture_model}$/
+      new_committee_enrollment_path model $1
+
     when /^the new membership page for #{capture_model}$/
       new_position_membership_path model $1
 

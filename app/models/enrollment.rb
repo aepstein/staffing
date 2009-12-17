@@ -1,4 +1,6 @@
 class Enrollment < ActiveRecord::Base
+  default_scope :include => [ :position ], :order => 'enrollments.title ASC, positions.name ASC'
+
   belongs_to :position
   belongs_to :committee
 

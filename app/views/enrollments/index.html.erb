@@ -1,26 +1,10 @@
 <h1>Listing enrollments</h1>
 
-<table>
-  <tr>
-    <th>Position</th>
-    <th>Committee</th>
-    <th>Title</th>
-    <th>Votes</th>
-  </tr>
-
-<% @enrollments.each do |enrollment| %>
-  <tr>
-    <td><%=h enrollment.position %></td>
-    <td><%=h enrollment.committee %></td>
-    <td><%=h enrollment.title %></td>
-    <td><%=h enrollment.votes %></td>
-    <td><%= link_to 'Show', enrollment %></td>
-    <td><%= link_to 'Edit', edit_enrollment_path(enrollment) %></td>
-    <td><%= link_to 'Destroy', enrollment, :confirm => 'Are you sure?', :method => :delete %></td>
-  </tr>
-<% end %>
-</table>
+<%= render :partial => "enrollments", :object => @enrollments %>
 
 <br />
 
-<%= link_to 'New enrollment', new_enrollment_path %>
+<p>
+<%= link_to 'New enrollment', new_committee_enrollment_path( @committee ) %>
+</p>
+

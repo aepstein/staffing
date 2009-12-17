@@ -1,8 +1,9 @@
 class EnrollmentsController < ApplicationController
-  # GET /enrollments
-  # GET /enrollments.xml
+  # GET /committees/:committee_id/enrollments
+  # GET /committees/:committee_id/enrollments.xml
   def index
-    @enrollments = Enrollment.all
+    @committee = Committee.find(params[:committee_id])
+    @enrollments = @committee.enrollments
 
     respond_to do |format|
       format.html # index.html.erb
@@ -21,10 +22,10 @@ class EnrollmentsController < ApplicationController
     end
   end
 
-  # GET /enrollments/new
-  # GET /enrollments/new.xml
+  # GET /committees/:committee_id/enrollments/new
+  # GET /committees/:committee_id/enrollments/new.xml
   def new
-    @enrollment = Enrollment.new
+    @enrollment = Committee.find(params[:committee_id]).enrollments.build
 
     respond_to do |format|
       format.html # new.html.erb
@@ -37,10 +38,10 @@ class EnrollmentsController < ApplicationController
     @enrollment = Enrollment.find(params[:id])
   end
 
-  # POST /enrollments
-  # POST /enrollments.xml
+  # POST /committees/:committee_id/enrollments
+  # POST /committees/:committee_id/enrollments.xml
   def create
-    @enrollment = Enrollment.new(params[:enrollment])
+    @enrollment = Committee.find(params[:committee_id]).enrollments.build(params[:enrollment])
 
     respond_to do |format|
       if @enrollment.save
@@ -78,8 +79,9 @@ class EnrollmentsController < ApplicationController
     @enrollment.destroy
 
     respond_to do |format|
-      format.html { redirect_to(enrollments_url) }
+      format.html { redirect_to committee_enrollments_url @enrollment.committee }
       format.xml  { head :ok }
     end
   end
 end
+

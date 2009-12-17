@@ -8,7 +8,7 @@ class CreateEnrollments < ActiveRecord::Migration
 
       t.timestamps
     end
-    add_index :enrollments, [ :title, :committee_id ], :unique => true
+    add_index :enrollments, [ :committee_id, :title ]
   end
 
   def self.down

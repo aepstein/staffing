@@ -1,5 +1,7 @@
 class Membership < ActiveRecord::Base
-  default_scope :include => [:user, :period], :order => "periods.starts_at DESC, memberships.starts_at DESC, users.last_name ASC, users.first_name ASC, users.middle_name ASC"
+  default_scope :include => [:user, :period],
+    :order => "periods.starts_at DESC, memberships.starts_at DESC, " +
+    "users.last_name ASC, users.first_name ASC, users.middle_name ASC"
 
   belongs_to :user
   belongs_to :period
