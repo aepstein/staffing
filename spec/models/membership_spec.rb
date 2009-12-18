@@ -64,7 +64,7 @@ describe Membership do
     second = Factory( :membership, :starts_at => @membership.starts_at + 1.day,
       :ends_at => @membership.ends_at - 1.day, :position => @membership.position,
       :period => @membership.period )
-    overlaps = Membership.overlaps(@membership.starts_at,@membership.ends_at).position_id_eq(@membership.position_id)
+    overlaps = Membership.overlap(@membership.starts_at,@membership.ends_at).position_id_eq(@membership.position_id)
     overlaps.should include @membership
     overlaps.should include second
     overlaps.size.should eql 2

@@ -5,6 +5,12 @@ class Membership < ActiveRecord::Base
   scope_procedure :assigned, lambda { user_id_not_nil }
   scope_procedure :unassigned, lambda { user_id_nil }
 
+  attr_accessor :starts_at_previously_changed, :ends_at_previously_changed,
+    :period_id_previously_changed, :period_id_previously_was
+  alias :starts_at_previously_changed? :starts_at_previously_changed
+  alias :ends_at_previously_changed? :ends_at_previously_changed
+  alias :period_id_previously_changed? :period_id_previously_changed
+
   belongs_to :user
   belongs_to :period
   belongs_to :position
@@ -17,6 +23,33 @@ class Membership < ActiveRecord::Base
   validate :concurrent_memberships_must_not_exceed_slots, :must_be_within_period, :user_must_be_qualified
 
   scope_procedure :overlap, lambda { |starts, ends| starts_at_lte(ends).ends_at_gte(starts) }
+
+  before_save :record_previous_changes
+  before_update { |r|
+    return unless r.user_id?
+    if r.period_id_changed?
+      r.position.memberships.unassigned.period_id_eq(period_id_was).delete_all
+    end
+    if r.starts_at_changed? || r.ends_at_changed?
+      r.position.memberships.unassigned.period_id_eq(period_id).delete_all
+    end
+  }
+  after_update { |r|
+    return unless r.user_id?
+    if r.period_id_previously_changed?
+      r.position.memberships.populate_unassigned_for_period Period.find(period_id_previously_was)
+    end
+    if r.starts_at_previously_changed? || r.ends_at_previously_changed?
+      r.position.memberships.populate_unassigned_for_period period
+    end
+  }
+
+  def record_previous_changes
+    starts_at_previously_changed = starts_at_changed?
+    ends_at_previously_changed = ends_at_changed?
+    period_id_previously_changed = period_id_changed?
+    period_id_previously_was = period_id_was
+  end
 
   # Returns the context in which this membership should be framed (useful for polymorphic_path)
   def context
@@ -46,7 +79,8 @@ class Membership < ActiveRecord::Base
 
   def concurrent_membership_counts
     scope = Membership.position_id_eq(position_id)
-    scope = scope.id_ne(id) unless new_record?
+    scope = scope.id_ne(id) unless new_record? # exclude this record
+    scope = scope.assigned if user
     position.memberships.edges_for(self).inject({}) do |memo, date|
       memo[date] = scope.overlap( date, date ).count
       memo[date] += 1 if starts_at <= date && ends_at >= date
