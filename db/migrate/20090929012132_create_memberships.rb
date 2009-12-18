@@ -2,11 +2,11 @@ class CreateMemberships < ActiveRecord::Migration
   def self.up
     create_table :memberships do |t|
       t.references :user
-      t.references :period
-      t.references :position
+      t.references :period, :null => false
+      t.references :position, :null => false
       t.references :request
-      t.date :starts_at
-      t.date :ends_at
+      t.date :starts_at, :null => false
+      t.date :ends_at, :null => false
 
       t.timestamps
     end

@@ -2,25 +2,33 @@ class Membership < ActiveRecord::Base
   default_scope :include => [:user, :period],
     :order => "periods.starts_at DESC, memberships.starts_at DESC, " +
     "users.last_name ASC, users.first_name ASC, users.middle_name ASC"
+  scope_procedure :assigned, lambda { user_id_not_nil }
+  scope_procedure :unassigned, lambda { user_id_nil }
 
   belongs_to :user
   belongs_to :period
   belongs_to :position
   belongs_to :request
 
-  validates_presence_of :user
   validates_presence_of :period
   validates_presence_of :position
   validates_date :starts_at
   validates_date :ends_at
-  validate :concurrent_memberships_must_not_exceed_slots, :must_be_within_period
+  validate :concurrent_memberships_must_not_exceed_slots, :must_be_within_period, :user_must_be_qualified
 
-  scope_procedure :overlaps, lambda { |starts, ends| starts_at_lte(ends).ends_at_gte(starts) }
+  scope_procedure :overlap, lambda { |starts, ends| starts_at_lte(ends).ends_at_gte(starts) }
 
   # Returns the context in which this membership should be framed (useful for polymorphic_path)
   def context
     return request if request
     position
+  end
+
+  def user_must_be_qualified
+    return unless user && position
+    if (position.qualification_ids - user.qualification_ids).size > 0
+      errors.add :user, "is not qualified for position"
+    end
   end
 
   def must_be_within_period
@@ -36,19 +44,11 @@ class Membership < ActiveRecord::Base
     end
   end
 
-  def concurrent_membership_edges
-    memberships = Membership.overlaps(starts_at, ends_at).position_id_eq(position_id)
-    memberships = memberships.id_ne(id) unless new_record?
-    memberships.inject([starts_at, ends_at]) do |memo, membership|
-      memo << membership.starts_at unless membership.starts_at < starts_at
-      memo << membership.ends_at unless membership.ends_at > ends_at
-      memo
-    end.uniq.sort
-  end
-
   def concurrent_membership_counts
-    concurrent_membership_edges.inject({}) do |memo, date|
-      memo[date] = Membership.overlaps( date, date ).position_id_eq(position_id).count
+    scope = Membership.position_id_eq(position_id)
+    scope = scope.id_ne(id) unless new_record?
+    position.memberships.edges_for(self).inject({}) do |memo, date|
+      memo[date] = scope.overlap( date, date ).count
       memo[date] += 1 if starts_at <= date && ends_at >= date
       memo
     end
