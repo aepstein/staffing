@@ -6,6 +6,8 @@ class CreatePositions < ActiveRecord::Migration
       t.references :schedule
       t.integer :slots
       t.string :name
+      t.text :join_message
+      t.text :leave_message
 
       t.timestamps
     end

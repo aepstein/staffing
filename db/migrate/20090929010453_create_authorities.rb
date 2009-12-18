@@ -2,6 +2,8 @@ class CreateAuthorities < ActiveRecord::Migration
   def self.up
     create_table :authorities do |t|
       t.string :name
+      t.text :join_message
+      t.text :leave_message
 
       t.timestamps
     end
