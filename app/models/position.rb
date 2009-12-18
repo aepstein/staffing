@@ -30,9 +30,11 @@ class Position < ActiveRecord::Base
     end
     # Spaces for period
     def vacancies_for_period(period)
-      edges_for(period).collect do |date|
+      r = edges_for(period).collect do |date|
         [date, proxy_owner.slots - overlap(date,date).position_id_eq(proxy_owner.id).count]
       end
+      return [] unless r.select { |a| a.last < 0 }.empty?
+      r
     end
     # Can take either a period or a membership
     def edges_for(p)

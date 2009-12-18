@@ -31,5 +31,32 @@ describe Period do
     @period.ends_at.should >= conflict.starts_at
     conflict.save.should be_false
   end
+
+  it 'should reallocate start and end dates of memberships that are out of new bounds' do
+    original_start = @period.starts_at
+    original_end = @period.ends_at
+    position = Factory(:position, :schedule => @period.schedule, :slots => 3)
+    first = position.memberships[0]
+    second = position.memberships[1]
+    third = position.memberships[2]
+    first.user = Factory(:user)
+    first.save.should eql true
+    second.user = Factory(:user)
+    second.starts_at = original_start + 2.days
+    second.save.should eql true
+    @period.starts_at += 1.day
+    @period.ends_at -= 1.day
+    @period.save
+    @period.memberships.count.should eql 3
+    @period.memberships.should_not include third
+    @period.memberships.should include first
+    @period.memberships.should include second
+    first.reload
+    first.starts_at.should eql original_start + 1.day
+    first.ends_at.should eql original_end - 1.day
+    second.reload
+    second.starts_at.should eql original_start + 2.days
+    second.ends_at.should eql original_end - 1.day
+  end
 end
 

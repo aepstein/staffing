@@ -25,22 +25,15 @@ class Membership < ActiveRecord::Base
   scope_procedure :overlap, lambda { |starts, ends| starts_at_lte(ends).ends_at_gte(starts) }
 
   before_save :record_previous_changes
-  before_update { |r|
-    return unless r.user_id?
-    if r.period_id_changed?
-      r.position.memberships.unassigned.period_id_eq(period_id_was).delete_all
-    end
-    if r.starts_at_changed? || r.ends_at_changed?
-      r.position.memberships.unassigned.period_id_eq(period_id).delete_all
-    end
-  }
   after_update { |r|
     return unless r.user_id?
     if r.period_id_previously_changed?
-      r.position.memberships.populate_unassigned_for_period Period.find(period_id_previously_was)
+      r.position.memberships.unassigned.period_id_eq(r.period_id_previously_was).delete_all
+      r.position.memberships.populate_unassigned_for_period Period.find(r.period_id_previously_was)
     end
     if r.starts_at_previously_changed? || r.ends_at_previously_changed?
-      r.position.memberships.populate_unassigned_for_period period
+      r.position.memberships.unassigned.period_id_eq(r.period_id).delete_all
+      r.position.memberships.populate_unassigned_for_period r.period
     end
   }
 
@@ -80,7 +73,7 @@ class Membership < ActiveRecord::Base
   def concurrent_membership_counts
     scope = Membership.position_id_eq(position_id)
     scope = scope.id_ne(id) unless new_record? # exclude this record
-    scope = scope.assigned if user
+    scope = scope.assigned if user # unassigned will be regenerated anyways
     position.memberships.edges_for(self).inject({}) do |memo, date|
       memo[date] = scope.overlap( date, date ).count
       memo[date] += 1 if starts_at <= date && ends_at >= date
