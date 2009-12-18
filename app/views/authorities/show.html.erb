@@ -2,6 +2,14 @@
   <b>Name:</b> <%=h @authority.name %>
 </p>
 
+<p><b>Join message:</b></p>
+
+<%=markdown @authority.join_message %>
+
+<p><b>Leave message:</b></p>
+
+<%=markdown @authority.leave_message %>
+
 <p>
 <%= link_to 'Edit', edit_authority_path(@authority) %> |
 <%= link_to 'Back', authorities_path %>
