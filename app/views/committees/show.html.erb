@@ -2,6 +2,14 @@
   <b>Name:</b> <%=h @committee.name %>
 </p>
 
+<p><b>Join message:</b></p>
+
+<%=markdown @committee.join_message %>
+
+<p><b>Leave message:</b></p>
+
+<%=markdown @committee.leave_message %>
+
 <p>
 <%= link_to 'Edit', edit_committee_path(@committee) %> |
 <%= link_to 'Back', committees_path %>
