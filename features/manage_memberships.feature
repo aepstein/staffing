@@ -8,11 +8,11 @@ Feature: Manage memberships
     And a user: "unpopular" exists with first_name: "Mister", last_name: "Cellophane"
     And a schedule: "annual" exists with name: "Annual"
     And a period: "2008" exists with schedule: schedule "annual", starts_at: "2008-06-01", ends_at: "2009-05-31"
-    And a period: "2009" exists with schedule: schedule "annual", starts_at: "2009-06-01", ends_at: "2010-05-31"
     And a position: "officer" exists with name: "Officer", schedule: schedule "annual", slots: 4
 
   Scenario: Register new membership given a position or edit
-    Given I log in as the administrator
+    Given a period: "2009" exists with schedule: schedule "annual", starts_at: "2009-06-01", ends_at: "2010-05-31"
+    And I log in as the administrator
     And I am on the new membership page for position: "officer"
     When I select "Mister Popularity" from "User"
     And I select " 1 Jun 2008 - 31 May 2009" from "Period"
@@ -38,7 +38,8 @@ Feature: Manage memberships
     And I should see "Ends at: 15 Jan 2010"
 
   Scenario: Register a new membership given a request
-    Given a request: "application" exists with user: user "popular", position: position "officer", state: "submitted"
+    Given a period: "2009" exists with schedule: schedule "annual", starts_at: "2009-06-01", ends_at: "2010-05-31"
+    And a request: "application" exists with user: user "popular", position: position "officer", state: "submitted"
     And period: "2008" is one of the periods of request: "application"
     And I log in as the administrator
     And I am on the new membership page for request: "application"
@@ -54,14 +55,15 @@ Feature: Manage memberships
     And a user: "user2" exists with first_name: "John", last_name: "Doe 2"
     And a user: "user3" exists with first_name: "John", last_name: "Doe 3"
     And a user: "user4" exists with first_name: "John", last_name: "Doe 4"
-    And a membership exists with position: position "officer", user: user "user4", period: period "2008"
-    And a membership exists with position: position "officer", user: user "user3", period: period "2008"
-    And a membership exists with position: position "officer", user: user "user2", period: period "2008"
-    And a membership exists with position: position "officer", user: user "user1", period: period "2008"
+    And a membership exists with position: position "officer", user: user "user4", period: period "2008", starts_at: "2008-06-01", ends_at: "2009-05-31"
+    And a membership exists with position: position "officer", user: user "user3", period: period "2008", starts_at: "2008-06-01", ends_at: "2009-05-31"
+    And a membership exists with position: position "officer", user: user "user2", period: period "2008", starts_at: "2008-06-01", ends_at: "2009-05-31"
+    And a membership exists with position: position "officer", user: user "user1", period: period "2008", starts_at: "2008-06-01", ends_at: "2009-05-31"
     And I log in as the administrator
     When I delete the 3rd membership for position: "officer"
     Then I should see the following memberships:
       |User       |Period                  |Starts at |Ends at    |
+      |unassigned |1 Jun 2008 - 31 May 2009|1 Jun 2008|31 May 2009|
       |John Doe 1 |1 Jun 2008 - 31 May 2009|1 Jun 2008|31 May 2009|
       |John Doe 2 |1 Jun 2008 - 31 May 2009|1 Jun 2008|31 May 2009|
       |John Doe 4 |1 Jun 2008 - 31 May 2009|1 Jun 2008|31 May 2009|

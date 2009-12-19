@@ -58,7 +58,7 @@ describe Membership do
     @membership.save.should eql true
   end
 
-  it 'should detect concurrent memberships and prevent overstaffing' do
+  it 'should detect concurrent assigned memberships and prevent overstaffing' do
     @membership.position.slots = 2
     @membership.position.save.should eql true
     second = Factory( :membership, :starts_at => @membership.starts_at + 1.day,
@@ -87,6 +87,21 @@ describe Membership do
     membership.ends_at.should eql membership.period.ends_at
     membership.user.should eql membership.request.user
     membership.position.should eql membership.request.position
+  end
+
+  it 'should regenerate assigned memberships when a membership is created' do
+    period = Factory(:period, :schedule => Factory(:schedule) )
+    position = Factory(:position, :schedule => period.schedule, :slots => 2)
+    position.memberships.unassigned.count.should eql 2
+    unfirst = position.memberships.unassigned.first
+    unsecond = position.memberships.unassigned.last
+    assigned = position.memberships.create( :user => Factory(:user), :period => period,
+      :starts_at => period.starts_at, :ends_at => period.ends_at )
+    position.memberships.should_not include unfirst
+    position.memberships.should_not include unsecond
+    position.memberships.count.should eql 2
+    position.memberships.should include assigned
+    position.memberships.unassigned.count.should eql 1
   end
 end
 

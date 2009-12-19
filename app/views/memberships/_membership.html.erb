@@ -1,5 +1,5 @@
   <tr>
-    <td><%=h membership.user %></td>
+    <td><%= membership.user ? h(membership.user) : "<i>unassigned</i>" %></td>
     <td><%=h membership.period %></td>
     <td><%=h membership.starts_at.to_s :rfc822 %></td>
     <td><%=h membership.ends_at.to_s :rfc822 %></td>

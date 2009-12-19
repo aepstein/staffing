@@ -25,23 +25,26 @@ class Membership < ActiveRecord::Base
   scope_procedure :overlap, lambda { |starts, ends| starts_at_lte(ends).ends_at_gte(starts) }
 
   before_save :record_previous_changes
-  after_update { |r|
-    return unless r.user_id?
-    if r.period_id_previously_changed?
-      r.position.memberships.unassigned.period_id_eq(r.period_id_previously_was).delete_all
-      r.position.memberships.populate_unassigned_for_period Period.find(r.period_id_previously_was)
-    end
-    if r.starts_at_previously_changed? || r.ends_at_previously_changed?
-      r.position.memberships.unassigned.period_id_eq(r.period_id).delete_all
-      r.position.memberships.populate_unassigned_for_period r.period
-    end
-  }
+  after_save :repopulate_unassigned
+  after_destroy { |record| record.position.memberships.populate_unassigned_for_period record.period }
 
   def record_previous_changes
-    starts_at_previously_changed = starts_at_changed?
-    ends_at_previously_changed = ends_at_changed?
-    period_id_previously_changed = period_id_changed?
-    period_id_previously_was = period_id_was
+    self.starts_at_previously_changed = starts_at_changed?
+    self.ends_at_previously_changed = ends_at_changed?
+    self.period_id_previously_changed = period_id_changed?
+    self.period_id_previously_was = period_id_was
+  end
+
+  def repopulate_unassigned
+    return unless user
+    if period_id_previously_changed? && period_id_previously_was
+      position.memberships.unassigned.period_id_eq(period_id_previously_was).delete_all
+      position.memberships(true).populate_unassigned_for_period Period.find(period_id_previously_was)
+    end
+    if starts_at_previously_changed? || ends_at_previously_changed?
+      position.memberships.unassigned.period_id_eq(period_id).delete_all
+      position.memberships(true).populate_unassigned_for_period period
+    end
   end
 
   # Returns the context in which this membership should be framed (useful for polymorphic_path)
