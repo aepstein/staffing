@@ -26,7 +26,7 @@ class Membership < ActiveRecord::Base
 
   before_save :record_previous_changes
   after_save :repopulate_unassigned
-  after_destroy { |record| record.position.memberships.populate_unassigned_for_period record.period }
+  after_destroy { |r| r.position.memberships.populate_unassigned_for_period r.period if r.user }
 
   def record_previous_changes
     self.starts_at_previously_changed = starts_at_changed?
