@@ -6,7 +6,7 @@ class Position < ActiveRecord::Base
   belongs_to :schedule
 
   has_and_belongs_to_many :qualifications
-  has_many :memberships do
+  has_many :memberships, :dependent => :destroy do
     # Create vacant memberships for all periods
     def populate_unassigned
       proxy_owner.periods.each { |p| populate_unassigned_for_period p }
@@ -20,7 +20,7 @@ class Position < ActiveRecord::Base
         elsif previous_vacancies < point.last
           (point.last - previous_vacancies).times { memo << start_unassigned(point.first, period) }
         elsif previous_vacancies > point.last
-          (previous_vacancies - point.last).times { end_unassigned memo.pop, point.first }
+          (previous_vacancies - point.last).times { memo.pop.save }
         end
         memo.each { |membership| membership.ends_at = point.first }
         previous_vacancies = point.last
@@ -49,10 +49,6 @@ class Position < ActiveRecord::Base
     private
     def start_unassigned(starts_at, period)
       build(:starts_at => starts_at, :period => period)
-    end
-    def end_unassigned(membership, ends_at)
-      membership.ends_at = ends_at
-      membership.save
     end
   end
   has_many :requests

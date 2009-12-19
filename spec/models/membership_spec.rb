@@ -58,28 +58,6 @@ describe Membership do
     @membership.save.should eql true
   end
 
-  it 'should detect concurrent assigned memberships and prevent overstaffing' do
-    @membership.position.slots = 2
-    @membership.position.save.should eql true
-    second = Factory( :membership, :starts_at => @membership.starts_at + 1.day,
-      :ends_at => @membership.ends_at - 1.day, :position => @membership.position,
-      :period => @membership.period )
-    overlaps = Membership.overlap(@membership.starts_at,@membership.ends_at).position_id_eq(@membership.position_id)
-    overlaps.should include @membership
-    overlaps.should include second
-    overlaps.size.should eql 2
-    over = Factory.build(:membership, :starts_at => @membership.starts_at,
-      :ends_at => @membership.ends_at, :position => @membership.position,
-      :period => @membership.period )
-    counts = over.concurrent_membership_counts
-    counts[@membership.starts_at].should eql 2
-    counts[second.starts_at].should eql 3
-    counts[second.ends_at].should eql 3
-    counts[@membership.ends_at].should eql 2
-    counts.size.should eql 4
-    over.save.should eql false
-  end
-
   it 'should populate a membership from a request' do
     membership = Membership.new( :request_id => Factory(:request).id )
     membership.period.should eql membership.request.periods.first
@@ -87,6 +65,23 @@ describe Membership do
     membership.ends_at.should eql membership.period.ends_at
     membership.user.should eql membership.request.user
     membership.position.should eql membership.request.position
+  end
+
+  it 'should detect concurrent assigned memberships and prevent overstaffing' do
+    assigned = setup_membership_with_vacancies
+    second = Factory( :membership, :starts_at => assigned.starts_at + 1.day,
+      :ends_at => assigned.ends_at - 1.day, :position => assigned.position,
+      :period => assigned.period )
+    over = Factory.build(:membership, :starts_at => assigned.starts_at,
+      :ends_at => assigned.ends_at, :position => assigned.position,
+      :period => assigned.period, :user => Factory(:user) )
+    counts = over.concurrent_membership_counts
+    counts[assigned.starts_at].should eql 2
+    counts[second.starts_at].should eql 3
+    counts[second.ends_at].should eql 3
+    counts[assigned.ends_at].should eql 2
+    counts.size.should eql 4
+    over.save.should eql false
   end
 
   it 'should regenerate assigned memberships when a membership is created' do

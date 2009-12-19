@@ -63,7 +63,7 @@ class Membership < ActiveRecord::Base
   def must_be_within_period
     period(true) if period && period_id && period.id != period_id
     if starts_at && ends_at && ends_at < starts_at
-      errors.add :ends_at, "must be before #{starts_at.to_s :rfc822}"
+      errors.add :ends_at, "must be at or after #{starts_at.to_s :rfc822}"
     end
     if starts_at && period && period.starts_at > starts_at
       errors.add :starts_at, "must be within #{period}"

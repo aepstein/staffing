@@ -22,12 +22,13 @@ class Period < ActiveRecord::Base
     r.starts_at_previously_changed = r.starts_at_changed?
     r.ends_at_previously_changed = r.ends_at_changed?
   }
+  after_create { |r| r.schedule.positions.each { |p| p.memberships.populate_unassigned_for_period r } }
   after_update { |r|
     return unless r.starts_at_previously_changed? || r.ends_at_previously_changed?
-    r.memberships.unassigned.delete_all
     r.memberships.starts_at_lt(r.starts_at).update_all( "starts_at = #{r.connection.quote r.starts_at}" )
     r.memberships.ends_at_gt(r.ends_at).update_all( "ends_at = #{r.connection.quote r.ends_at}" )
-    r.schedule.positions.each { |position| position.memberships(true).populate_unassigned_for_period r }
+    Membership.unassigned.period_id_eq(r.id).delete_all
+    r.schedule.positions(true).each { |position| position.memberships.populate_unassigned_for_period r }
   }
 
   def must_not_conflict_with_other_period

@@ -45,9 +45,8 @@ describe Position do
 
   it 'should have a memberships.edges_for that shows edges for a period' do
     period = Factory(:period, :schedule => @position.schedule)
-    @position.memberships.delete_all
     @position.memberships.create(:period => period, :starts_at => period.starts_at + 2.days,
-      :ends_at => period.ends_at - 2.days )
+      :ends_at => period.ends_at - 2.days, :user => Factory(:user) )
     edges = @position.memberships.edges_for(period)
     edges.should eql [ period.starts_at, period.starts_at + 1.day,
       period.starts_at + 2.days, period.ends_at - 2.days, period.ends_at - 1.day,
@@ -58,11 +57,11 @@ describe Position do
     @position.slots = 2
     @position.save.should be_true
     period = Factory(:period, :schedule => @position.schedule)
-    @position.memberships.delete_all
     @position.memberships.create(:period => period, :starts_at => period.starts_at + 2.days,
-      :ends_at => period.ends_at - 2.days ).id.should_not be_nil
+      :ends_at => period.ends_at - 2.days, :user => Factory(:user) ).id.should_not be_nil
     @position.memberships.create(:period => period, :starts_at => period.starts_at,
-      :ends_at => period.ends_at - 1.days).id.should_not be_nil
+      :ends_at => period.ends_at - 1.days, :user => Factory(:user) ).id.should_not be_nil
+    Membership.unassigned.delete_all
     vacancies = @position.memberships.vacancies_for_period(period)
     vacancies.should eql [
       [period.starts_at, 1], [period.starts_at + 1.day, 1],

@@ -47,16 +47,23 @@ describe Period do
     @period.starts_at += 1.day
     @period.ends_at -= 1.day
     @period.save
-    @period.memberships.count.should eql 3
     @period.memberships.should_not include third
     @period.memberships.should include first
     @period.memberships.should include second
+    @period.memberships.count.should eql 4
     first.reload
     first.starts_at.should eql original_start + 1.day
     first.ends_at.should eql original_end - 1.day
     second.reload
     second.starts_at.should eql original_start + 2.days
     second.ends_at.should eql original_end - 1.day
+  end
+
+  it 'should populate unassiged memberships for associated positions' do
+    position = Factory(:position)
+    @period = Factory(:period, :schedule => position.schedule)
+    @period.memberships.count.should eql 1
+    @period.memberships.unassigned.count.should eql 1
   end
 end
 

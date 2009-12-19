@@ -20,6 +20,7 @@ Factory.define :enrollment do |f|
 end
 
 Factory.define :membership do |f|
+  f.association :user
   f.association :position
   f.period { |m| m.association(:period, :schedule => m.position.schedule) }
   f.starts_at { |m| m.period.starts_at }
