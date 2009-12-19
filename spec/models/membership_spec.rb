@@ -90,18 +90,37 @@ describe Membership do
   end
 
   it 'should regenerate assigned memberships when a membership is created' do
+    assigned = setup_membership_with_vacancies
+    assigned.position.memberships.count.should eql 2
+    assigned.position.memberships.should include assigned
+    assigned.position.memberships.unassigned.count.should eql 1
+    assigned.position.memberships.unassigned.first.id.should > assigned.id
+  end
+
+  it 'should regenerate assigned memberships when a membership is altered' do
+    assigned = setup_membership_with_vacancies
+    unassigned = assigned.position.memberships.unassigned.first
+    assigned.ends_at -= 1.days
+    assigned.save
+    assigned.position.memberships.count.should eql 3
+    assigned.position.memberships.should include assigned
+    assigned.position.memberships.unassigned.count.should eql 2
+  end
+
+  it 'should regenerate assigned memberships when an assigned membership is destroyed' do
+    assigned = setup_membership_with_vacancies
+    assigned.destroy
+    assigned.position.memberships.count.should eql 2
+    assigned.position.memberships(true).should_not include assigned
+    assigned.position.memberships.unassigned.count.should eql 2
+    assigned.position.memberships.unassigned.each { |m| m.id.should > assigned.id }
+  end
+
+  def setup_membership_with_vacancies
     period = Factory(:period, :schedule => Factory(:schedule) )
     position = Factory(:position, :schedule => period.schedule, :slots => 2)
-    position.memberships.unassigned.count.should eql 2
-    unfirst = position.memberships.unassigned.first
-    unsecond = position.memberships.unassigned.last
-    assigned = position.memberships.create( :user => Factory(:user), :period => period,
+    position.memberships.create( :user => Factory(:user), :period => period,
       :starts_at => period.starts_at, :ends_at => period.ends_at )
-    position.memberships.should_not include unfirst
-    position.memberships.should_not include unsecond
-    position.memberships.count.should eql 2
-    position.memberships.should include assigned
-    position.memberships.unassigned.count.should eql 1
   end
 end
 
