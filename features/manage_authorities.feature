@@ -1,4 +1,3 @@
-@wip
 Feature: Manage authorities
   In order to identify and enable groups to manage committee membership
   As an administrator
