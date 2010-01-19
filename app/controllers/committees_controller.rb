@@ -1,4 +1,6 @@
 class CommitteesController < ApplicationController
+  filter_resource_access
+
   # GET /committees
   # GET /committees.xml
   def index
@@ -83,3 +85,4 @@ class CommitteesController < ApplicationController
     end
   end
 end
+

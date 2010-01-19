@@ -3,7 +3,7 @@ Feature: Manage authorities
   As an administrator
   I want to create, edit, list, delete, and show authorities
 
-  Scenario Outline: Test permissions for candidates controller actions
+  Scenario Outline: Test permissions for authorities controller actions
     Given an authority: "basic" exists
     And a user: "admin" exists with net_id: "admin", password: "secret", admin: true
     And a user: "regular" exists with net_id: "regular", password: "secret", admin: false

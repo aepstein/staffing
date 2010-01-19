@@ -1,11 +1,11 @@
 authorization do
   role :admin do
-    has_permission_on [ :authorities, :commitees, :enrollments, :memberships,
+    has_permission_on [ :authorities, :committees, :enrollments, :memberships,
       :periods, :positions, :qualifications, :quizzes, :requests, :schedules,
       :users ], :to => :manage
   end
   role :user do
-    has_permission_on [ :authorities ], :to => [:show, :index]
+    has_permission_on [ :authorities, :committees ], :to => [:show, :index]
     has_permission_on :requests, :to => :manage do
       if_attribute :user_id => is { user.id }
     end
