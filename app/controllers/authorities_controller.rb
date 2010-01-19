@@ -1,4 +1,6 @@
 class AuthoritiesController < ApplicationController
+  filter_resource_access
+
   # GET /authorities
   # GET /authorities.xml
   def index
@@ -83,3 +85,4 @@ class AuthoritiesController < ApplicationController
     end
   end
 end
+

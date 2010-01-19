@@ -1,4 +1,4 @@
-ENV["RAILS_ENV"] ||= "test"
+require 'pickle/world'
 # Example of configuring pickle:
 #
 # Pickle.configure do |config|

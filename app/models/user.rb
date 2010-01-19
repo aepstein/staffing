@@ -21,6 +21,11 @@ class User < ActiveRecord::Base
 
   before_validation_on_create :import_ldap_attributes, :initialize_password
 
+  def role_symbols
+    return [:admin,:user] if admin?
+    [:user]
+  end
+
   def name(style = nil)
     name = case style
     when :last_first

@@ -1,21 +1,12 @@
-class AuthorizationError < StandardError
-end
-
 class ApplicationController < ActionController::Base
   helper :all
   protect_from_forgery
   helper_method :current_user, :current_user_session
+  before_filter :check_authorization
 
-  def rescue_action(e)
-    case e
-    when AuthorizationError
-#      head :forbidden
-      respond_to do |format|
-        format.html { redirect_to( :controller => '/static', :action => 'unauthorized' ) }
-      end
-    else
-      super(e)
-    end
+  def permission_denied
+    flash[:error] = "You are not authorized to access the page you requested."
+    redirect_to profile_url
   end
 
   # If user has been authenticated with single sign on credentials, logs in immediately
@@ -25,6 +16,10 @@ class ApplicationController < ActionController::Base
   end
 
   private
+  def check_authorization
+    Authorization.current_user = current_user
+  end
+
   def current_user_session
     return @current_user_session if defined?(@current_user_session)
     @current_user_session = UserSession.find

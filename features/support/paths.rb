@@ -17,45 +17,24 @@ module NavigationHelpers
     when /the logout page/
       logout_path
 
-    when /the new user page/
-      new_user_path
+    when /^the edit page for #{capture_model}$/
+      edit_polymorphic_path( [model($1)] )
 
-    when /the new answer page/
-      new_answer_path
+    when /^the new #{capture_factory} page$/
+      new_polymorphic_path( [$1] )
 
-    when /^the new enrollment page for #{capture_model}$/
-      new_committee_enrollment_path model $1
+    when /^the new #{capture_factory} page for #{capture_model}$/
+      new_polymorphic_path( [model($2), $1] )
 
-    when /^the new membership page for #{capture_model}$/
-      #new_position_membership_path model $1
-      new_polymorphic_path( [ model($1), :membership ] )
+    when /^the #{capture_plural_factory} page$/
+      polymorphic_path( [$1] )
 
-    when /^the new request page for #{capture_model}$/
-      new_position_request_path model $1
+    when /^the #{capture_plural_factory} page for #{capture_model}$/
+      polymorphic_path( [model($2), $1] )
 
-    when /^the new period page for #{capture_model}$/
-      new_schedule_period_path model $1
+    when /^the page for #{capture_model}$/
+      polymorphic_path( [model($1)] )
 
-    when /the new position page/
-      new_position_path
-
-    when /the new schedule page/
-      new_schedule_path
-
-    when /the new question page/
-      new_question_path
-
-    when /the new authority page/
-      new_authority_path
-
-    when /the new committee page/
-      new_committee_path
-
-    when /the new qualification page/
-      new_qualification_path
-
-    when /the new user page/
-      new_user_path
 
 
     # Add more mappings here.

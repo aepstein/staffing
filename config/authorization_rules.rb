@@ -2,11 +2,12 @@ authorization do
   role :admin do
     has_permission_on [ :authorities, :commitees, :enrollments, :memberships,
       :periods, :positions, :qualifications, :quizzes, :requests, :schedules,
-      :users ]
+      :users ], :to => :manage
   end
   role :user do
+    has_permission_on [ :authorities ], :to => [:show, :index]
     has_permission_on :requests, :to => :manage do
-      if_attribute :user_id is { user.id }
+      if_attribute :user_id => is { user.id }
     end
   end
   role :guest do
@@ -16,7 +17,7 @@ end
 
 privileges do
   privilege :manage do
-    includes :create, :read, :update, :delete
+    includes :create, :new, :update, :edit, :destroy, :show, :index
   end
 end
 

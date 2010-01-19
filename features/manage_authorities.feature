@@ -1,10 +1,34 @@
+@wip
 Feature: Manage authorities
   In order to identify and enable groups to manage committee membership
   As an administrator
   I want to create, edit, list, delete, and show authorities
 
+  Scenario Outline: Test permissions for candidates controller actions
+    Given an authority: "basic" exists
+    And a user: "admin" exists with net_id: "admin", password: "secret", admin: true
+    And a user: "regular" exists with net_id: "regular", password: "secret", admin: false
+    And I log in as "<user>" with password "secret"
+    And I am on the new authority page
+    Then I should <create>
+    Given I post on the authorities page
+    Then I should <create>
+    And I am on the edit page for authority: "basic"
+    Then I should <update>
+    Given I put on the page for authority: "basic"
+    Then I should <update>
+    Given I am on the page for authority: "basic"
+    Then I should <show>
+    Given I delete on the page for authority: "basic"
+    Then I should <destroy>
+    Examples:
+      | user    | create                   | update                   | destroy                  | show                     |
+      | admin   | not see "not authorized" | not see "not authorized" | not see "not authorized" | not see "not authorized" |
+      | regular | see "not authorized"     | see "not authorized"     | see "not authorized"     | not see "not authorized" |
+
   Scenario: Register new authority and edit
-    Given I am on the new authority page
+    Given I log in as the administrator
+    And I am on the new authority page
     When I fill in "Name" with "Supreme Authority"
     And I fill in "Join message" with "Welcome to *committee*."
     And I fill in "Leave message" with "You were *dropped* from the committee."
@@ -28,6 +52,7 @@ Feature: Manage authorities
     And an authority exists with name: "authority 3"
     And an authority exists with name: "authority 2"
     And an authority exists with name: "authority 1"
+    And I log in as the administrator
     When I delete the 3rd authority
     Then I should see the following authorities:
       |Name       |
