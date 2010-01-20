@@ -1,13 +1,7 @@
 <h1>Editing quiz</h1>
 
-<% form_for(@quiz) do |f| %>
-  <%= f.error_messages %>
-
+<% semantic_form_for(@quiz) do |f| %>
   <%= render :partial => 'form', :object => f %>
-
-  <p>
-    <%= f.submit 'Update' %>
-  </p>
 <% end %>
 
 <p>

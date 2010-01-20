@@ -1,4 +1,6 @@
 class QuizzesController < ApplicationController
+  filter_resource_access
+
   # GET /quizzes
   # GET /quizzes.xml
   def index
@@ -83,3 +85,4 @@ class QuizzesController < ApplicationController
     end
   end
 end
+

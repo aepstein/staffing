@@ -1,4 +1,6 @@
 class Quiz < ActiveRecord::Base
+  default_scope :order => 'quizzes.name ASC'
+
   has_many :positions
   has_and_belongs_to_many :questions
   has_many :enrollments, :through => :positions
