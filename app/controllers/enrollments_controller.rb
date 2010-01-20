@@ -1,4 +1,6 @@
 class EnrollmentsController < ApplicationController
+  filter_resource_access #:nested_in => :committees
+
   # GET /committees/:committee_id/enrollments
   # GET /committees/:committee_id/enrollments.xml
   def index

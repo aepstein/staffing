@@ -5,7 +5,8 @@ authorization do
       :users ], :to => :manage
   end
   role :user do
-    has_permission_on [ :authorities, :committees ], :to => [:show, :index]
+    has_permission_on [ :authorities, :committees, :enrollments ],
+      :to => [:show, :index]
     has_permission_on :requests, :to => :manage do
       if_attribute :user_id => is { user.id }
     end

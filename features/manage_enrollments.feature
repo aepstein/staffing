@@ -8,6 +8,31 @@ Feature: Manage enrollments
     And a position: "ex-officio" exists with name: "Ex-Officio Member of Committee"
     And a committee: "committee" exists with name: "Favorite Committee"
 
+  Scenario Outline: Test permissions for enrollments controller actions
+    Given a committee exists
+    And an enrollment exists with committee: the committee
+    And a user: "admin" exists with net_id: "admin", password: "secret", admin: true
+    And a user: "regular" exists with net_id: "regular", password: "secret", admin: false
+    And I log in as "<user>" with password "secret"
+    And I am on the new enrollment page for the committee
+    Then I should <create>
+    Given I post on the enrollments page for the committee
+    Then I should <create>
+    And I am on the edit page for the enrollment
+    Then I should <update>
+    Given I put on the page for the enrollment
+    Then I should <update>
+    Given I am on the page for the enrollment
+    Then I should <show>
+    Given I am on the enrollments page for the committee
+    Then I should <show>
+    Given I delete on the page for the enrollment
+    Then I should <destroy>
+    Examples:
+      | user    | create                   | update                   | destroy                  | show                     |
+      | admin   | not see "not authorized" | not see "not authorized" | not see "not authorized" | not see "not authorized" |
+      | regular | see "not authorized"     | see "not authorized"     | see "not authorized"     | not see "not authorized" |
+
   Scenario: Register new enrollment
     Given I log in as the administrator
     And I am on the new enrollment page for committee: "committee"
@@ -40,6 +65,7 @@ Feature: Manage enrollments
     And an enrollment: "enrollment3" exists with title: "class 2", committee: committee "committee", position: position "position1"
     And an enrollment: "enrollment2" exists with title: "class 1", committee: committee "committee", position: position "position4"
     And an enrollment: "enrollment1" exists with title: "class 1", committee: committee "committee", position: position "position3"
+    And I log in as the administrator
     When I delete the 3rd enrollment for committee: "committee"
     Then I should see the following enrollments:
       |Position  |Title       |Votes  |
