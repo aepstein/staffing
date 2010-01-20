@@ -1,4 +1,6 @@
 class RequestsController < ApplicationController
+  filter_resource_access
+
   # GET /position/:position_id/requests
   # GET /position/:position_id/requests.xml
   def index

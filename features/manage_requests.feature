@@ -1,3 +1,4 @@
+@wip
 Feature: Manage requests
   In order to represent applications for membership in committees
   As a user or reviewier
@@ -14,6 +15,32 @@ Feature: Manage requests
     And question: "first" is amongst the questions of quiz: "generic"
     And question: "second" is amongst the questions of quiz: "generic"
     And a position: "popular" exists with name: "Most Popular Person", schedule: schedule "annual", quiz: quiz "generic"
+
+  Scenario Outline: Test permissions for quizzes controller actions
+    Given a request exists with position: the position
+    And a user: "admin" exists with net_id: "admin", password: "secret", admin: true
+    And a user: "regular" exists with net_id: "regular", password: "secret", admin: false
+    And I log in as "<user>" with password "secret"
+    And I am on the new request page for the position
+    Then I should <create>
+    Given I post on the requests page for the position
+    Then I should <create>
+    And I am on the edit page for the request
+    Then I should <update>
+    Given I put on the page for the request
+    Then I should <update>
+    Given I am on the page for the request
+    Then I should <show>
+    Given I am on the requests page for the position
+    Then I should <show>
+    Given I delete on the page for the request
+    Then I should <destroy>
+    Examples:
+      | state     | user    | create                   | update                   | destroy                  | show                     |
+      | started   | admin   | not see "not authorized" | not see "not authorized" | not see "not authorized" | not see "not authorized" |
+      | started   | owner   | not see "not authorized" | not see "not authorized" | not see "not authorized" | not see "not authorized" |
+      | completed | owner   | not see "not authorized" | see "not authorized"     | see "not authorized"     | not see "not authorized" |
+      | started   | regular | not see "not authorized" | see "not authorized"     | see "not authorized"     | see "not authorized"     |
 
   Scenario: Register new request or edit
     Given I log in as "applicant" with password "secret"
