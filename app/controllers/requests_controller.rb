@@ -5,7 +5,7 @@ class RequestsController < ApplicationController
   # GET /position/:position_id/requests.xml
   def index
     @position = Position.find(params[:position_id])
-    @requests = @position.requests
+    @requests = @position.requests.with_permissions_to :show
 
     respond_to do |format|
       format.html # index.html.erb

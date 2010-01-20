@@ -1,4 +1,3 @@
-@wip
 Feature: Manage requests
   In order to represent applications for membership in committees
   As a user or reviewier
@@ -17,7 +16,7 @@ Feature: Manage requests
     And a position: "popular" exists with name: "Most Popular Person", schedule: schedule "annual", quiz: quiz "generic"
 
   Scenario Outline: Test permissions for quizzes controller actions
-    Given a request exists with position: the position
+    Given a request exists with position: the position, user: user "applicant", state: "<state>"
     And a user: "admin" exists with net_id: "admin", password: "secret", admin: true
     And a user: "regular" exists with net_id: "regular", password: "secret", admin: false
     And I log in as "<user>" with password "secret"
@@ -32,15 +31,15 @@ Feature: Manage requests
     Given I am on the page for the request
     Then I should <show>
     Given I am on the requests page for the position
-    Then I should <show>
+    Then I should <index>
     Given I delete on the page for the request
     Then I should <destroy>
     Examples:
-      | state     | user    | create                   | update                   | destroy                  | show                     |
-      | started   | admin   | not see "not authorized" | not see "not authorized" | not see "not authorized" | not see "not authorized" |
-      | started   | owner   | not see "not authorized" | not see "not authorized" | not see "not authorized" | not see "not authorized" |
-      | completed | owner   | not see "not authorized" | see "not authorized"     | see "not authorized"     | not see "not authorized" |
-      | started   | regular | not see "not authorized" | see "not authorized"     | see "not authorized"     | see "not authorized"     |
+      | state     | user      | index                    | create                   | update                   | destroy                  | show                     |
+      | started   | admin     | see "Williams, Bill"     | not see "not authorized" | not see "not authorized" | not see "not authorized" | not see "not authorized" |
+      | started   | applicant | see "Williams, Bill"     | not see "not authorized" | not see "not authorized" | not see "not authorized" | not see "not authorized" |
+      | completed | applicant | see "Williams, Bill"     | not see "not authorized" | see "not authorized"     | see "not authorized"     | not see "not authorized" |
+      | started   | regular   | not see "Williams, Bill" | not see "not authorized" | see "not authorized"     | see "not authorized"     | see "not authorized"     |
 
   Scenario: Register new request or edit
     Given I log in as "applicant" with password "secret"
