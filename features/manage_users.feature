@@ -1,4 +1,3 @@
-@wip
 Feature: Manage users
   In order to represent people in committees
   As an administrator
@@ -42,6 +41,7 @@ Feature: Manage users
     And I fill in "Home phone" with "607-555-4321"
     And I fill in "Work address" with "100 Day Hall"
     And I fill in "Date of birth" with "1982-06-04"
+    And I choose "user_admin_true"
     And I press "Create"
     Then I should see "User was successfully created."
     And I should see "First name: John"
@@ -55,6 +55,7 @@ Feature: Manage users
     And I should see "Work address: 100 Day Hall"
     And I should see "Date of birth: June 4, 1982"
     And I should see "Status: unknown"
+    And I should see "Administrator: Yes"
     When I follow "Edit"
     And I fill in "First name" with "Alpha"
     And I fill in "Middle name" with "Beta"
@@ -66,6 +67,7 @@ Feature: Manage users
     And I fill in "Home phone" with "607-555-4300"
     And I fill in "Work address" with "200 Day Hall"
     And I fill in "Date of birth" with "1982-07-10"
+    And I choose "user_admin_false"
     And I press "Update"
     Then I should see "User was successfully updated."
     And I should see "First name: Alpha"
@@ -79,6 +81,7 @@ Feature: Manage users
     And I should see "Work address: 200 Day Hall"
     And I should see "Date of birth: July 10, 1982"
     And I should see "Status: unknown"
+    And I should see "Administrator: No"
 
   Scenario: Delete user
     Given a user exists with first_name: "John", last_name: "Doe 4"

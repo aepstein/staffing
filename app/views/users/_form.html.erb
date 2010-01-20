@@ -10,6 +10,9 @@
   <%= form.input :home_phone %>
   <%= form.input :work_address %>
   <%= form.input :date_of_birth, :as => :ft_calendar_date_select %>
+  <% if current_user.admin? %>
+  <%= form.input :admin, :as => :radio, :label => 'Administrator?' %>
+  <% end %>
   <% end %>
   <%= form.buttons %>
 

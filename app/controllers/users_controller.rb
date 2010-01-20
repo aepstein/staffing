@@ -52,6 +52,7 @@ class UsersController < ApplicationController
   # POST /users.xml
   def create
     @user = User.new(params[:user])
+    @user.admin = params[:user][:admin] if params[:user] && params[:user][:admin] && current_user.admin?
 
     respond_to do |format|
       if @user.save
@@ -69,6 +70,7 @@ class UsersController < ApplicationController
   # PUT /users/1.xml
   def update
     @user = User.find(params[:id])
+    @user.admin = params[:user][:admin] if params[:user] && params[:user][:admin] && current_user.admin?
 
     respond_to do |format|
       if @user.update_attributes(params[:user])
