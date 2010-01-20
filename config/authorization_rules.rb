@@ -15,6 +15,10 @@ authorization do
     has_permission_on :requests, :to => [:show, :index] do
       if_attribute :user_id => is { user.id }
     end
+    has_permission_on :users, :to => [ :profile ]
+    has_permission_on :users, :to => [ :edit, :update, :show, :index ] do
+      if_attribute :id => is { user.id }
+    end
   end
   role :guest do
     has_permission_on :user_sessions, :to => [ :new, :create ]

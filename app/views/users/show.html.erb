@@ -35,7 +35,7 @@
 </p>
 
 <p>
-  <b>Date of birth:</b> <%=h @user.date_of_birth.to_formatted_s :long %>
+  <b>Date of birth:</b> <%=h @user.date_of_birth.to_formatted_s( :long ) if @user.date_of_birth %>
 </p>
 
 <p>

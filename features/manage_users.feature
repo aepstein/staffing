@@ -1,7 +1,33 @@
+@wip
 Feature: Manage users
   In order to represent people in committees
   As an administrator
   I want to create, modify, list, show, and destroy users
+
+  Scenario Outline: Test permissions for schedules controller actions
+    Given a user: "owner" exists with net_id: "owner", password: "secret", admin: false, first_name: "The", last_name: "Owner"
+    And a user: "admin" exists with net_id: "admin", password: "secret", admin: true
+    And a user: "regular" exists with net_id: "regular", password: "secret", admin: false
+    And I log in as "<user>" with password "secret"
+    And I am on the new user page
+    Then I should <create>
+    Given I post on the users page
+    Then I should <create>
+    And I am on the edit page for the user: "owner"
+    Then I should <update>
+    Given I put on the page for the user: "owner"
+    Then I should <update>
+    Given I am on the page for the user: "owner"
+    Then I should <show>
+    Given I am on the users page
+    Then I should <index>
+    Given I delete on the page for the user: "owner"
+    Then I should <destroy>
+    Examples:
+      | user    | index                | create                   | update                   | destroy                  | show                     |
+      | admin   | see "Owner, The"     | not see "not authorized" | not see "not authorized" | not see "not authorized" | not see "not authorized" |
+      | owner   | see "Owner, The"     | see "not authorized"     | not see "not authorized" | see "not authorized"     | not see "not authorized" |
+      | regular | not see "Owner, The" | see "not authorized"     | see "not authorized"     | see "not authorized"     | see "not authorized"     |
 
   Scenario: Register new user and edit
     Given I log in as the administrator
@@ -27,7 +53,7 @@ Feature: Manage users
     And I should see "Work phone: 607-555-1234"
     And I should see "Home phone: 607-555-4321"
     And I should see "Work address: 100 Day Hall"
-    And I should see "Date of birth: June  4, 1982"
+    And I should see "Date of birth: June 4, 1982"
     And I should see "Status: unknown"
     When I follow "Edit"
     And I fill in "First name" with "Alpha"
