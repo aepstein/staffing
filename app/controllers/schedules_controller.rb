@@ -1,4 +1,6 @@
 class SchedulesController < ApplicationController
+  filter_resource_access
+
   # GET /schedules
   # GET /schedules.xml
   def index
@@ -83,3 +85,4 @@ class SchedulesController < ApplicationController
     end
   end
 end
+
