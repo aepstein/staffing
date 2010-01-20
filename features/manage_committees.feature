@@ -4,7 +4,7 @@ Feature: Manage committees
   I want to create, modify, destroy, list, and show committees
 
   Scenario Outline: Test permissions for committees controller actions
-    Given an committee: "basic" exists
+    Given a committee exists
     And a user: "admin" exists with net_id: "admin", password: "secret", admin: true
     And a user: "regular" exists with net_id: "regular", password: "secret", admin: false
     And I log in as "<user>" with password "secret"
@@ -12,15 +12,15 @@ Feature: Manage committees
     Then I should <create>
     Given I post on the committees page
     Then I should <create>
-    And I am on the edit page for committee: "basic"
+    And I am on the edit page for the committee
     Then I should <update>
-    Given I put on the page for committee: "basic"
+    Given I put on the page for the committee
     Then I should <update>
-    Given I am on the page for committee: "basic"
+    Given I am on the page for the committee
     Then I should <show>
     Given I am on the committees page
     Then I should <show>
-    Given I delete on the page for committee: "basic"
+    Given I delete on the page for the committee
     Then I should <destroy>
     Examples:
       | user    | create                   | update                   | destroy                  | show                     |

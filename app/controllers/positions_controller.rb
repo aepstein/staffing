@@ -1,5 +1,6 @@
 class PositionsController < ApplicationController
   before_filter :require_user
+  filter_resource_access
 
   # GET /positions
   # GET /positions.xml

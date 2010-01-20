@@ -1,4 +1,6 @@
 class QualificationsController < ApplicationController
+  filter_resource_access
+
   # GET /qualifications
   # GET /qualifications.xml
   def index
@@ -83,3 +85,4 @@ class QualificationsController < ApplicationController
     end
   end
 end
+

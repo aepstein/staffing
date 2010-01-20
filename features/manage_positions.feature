@@ -11,6 +11,30 @@ Feature: Manage positions
     And a schedule: "annual" exists with name: "Annual Academic"
     And a schedule: "biannual" exists with name: "Annual Academic - Even Two Year"
 
+  Scenario Outline: Test permissions for positions controller actions
+    Given a position exists
+    And a user: "admin" exists with net_id: "admin", password: "secret", admin: true
+    And a user: "regular" exists with net_id: "regular", password: "secret", admin: false
+    And I log in as "<user>" with password "secret"
+    And I am on the new position page
+    Then I should <create>
+    Given I post on the positions page
+    Then I should <create>
+    And I am on the edit page for the position
+    Then I should <update>
+    Given I put on the page for the position
+    Then I should <update>
+    Given I am on the page for the position
+    Then I should <show>
+    Given I am on the positions page
+    Then I should <show>
+    Given I delete on the page for the position
+    Then I should <destroy>
+    Examples:
+      | user    | create                   | update                   | destroy                  | show                     |
+      | admin   | not see "not authorized" | not see "not authorized" | not see "not authorized" | not see "not authorized" |
+      | regular | see "not authorized"     | see "not authorized"     | see "not authorized"     | not see "not authorized" |
+
   Scenario: Register new position and edit
     Given I log in as the administrator
     And I am on the new position page
