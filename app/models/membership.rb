@@ -49,8 +49,7 @@ class Membership < ActiveRecord::Base
 
   # Returns the context in which this membership should be framed (useful for polymorphic_path)
   def context
-    return request if request
-    position
+    request || position || raise( "No context is possible" )
   end
 
   def user_must_be_qualified

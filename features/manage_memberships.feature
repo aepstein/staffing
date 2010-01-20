@@ -10,6 +10,31 @@ Feature: Manage memberships
     And a period: "2008" exists with schedule: schedule "annual", starts_at: "2008-06-01", ends_at: "2009-05-31"
     And a position: "officer" exists with name: "Officer", schedule: schedule "annual", slots: 4
 
+  Scenario Outline: Test permissions for memberships controller actions
+    Given a position exists
+    And a membership exists with position: the position
+    And a user: "admin" exists with net_id: "admin", password: "secret", admin: true
+    And a user: "regular" exists with net_id: "regular", password: "secret", admin: false
+    And I log in as "<user>" with password "secret"
+    And I am on the new membership page for the position
+    Then I should <create>
+    Given I post on the memberships page for the position
+    Then I should <create>
+    And I am on the edit page for the membership
+    Then I should <update>
+    Given I put on the page for the membership
+    Then I should <update>
+    Given I am on the page for the membership
+    Then I should <show>
+    Given I am on the memberships page for the position
+    Then I should <show>
+    Given I delete on the page for the membership
+    Then I should <destroy>
+    Examples:
+      | user    | create                   | update                   | destroy                  | show                     |
+      | admin   | not see "not authorized" | not see "not authorized" | not see "not authorized" | not see "not authorized" |
+      | regular | see "not authorized"     | see "not authorized"     | see "not authorized"     | not see "not authorized" |
+
   Scenario: Register new membership given a position or edit
     Given a period: "2009" exists with schedule: schedule "annual", starts_at: "2009-06-01", ends_at: "2010-05-31"
     And I log in as the administrator
@@ -21,9 +46,9 @@ Feature: Manage memberships
     And I press "Create"
     Then I should see "Membership was successfully created."
     And I should see "User: Mister Popularity"
-    And I should see "Period:  1 Jun 2008 - 31 May 2009"
+    And I should see "Period: 1 Jun 2008 - 31 May 2009"
     And I should see "Position: Officer"
-    And I should see "Starts at:  1 Jun 2008"
+    And I should see "Starts at: 1 Jun 2008"
     And I should see "Ends at: 31 May 2009"
     When I follow "Edit"
     And I select "Mister Cellophane" from "User"
@@ -33,8 +58,8 @@ Feature: Manage memberships
     And I press "Update"
     Then I should see "Membership was successfully updated."
     And I should see "User: Mister Cellophane"
-    And I should see "Period:  1 Jun 2009 - 31 May 2010"
-    And I should see "Starts at:  1 Jun 2009"
+    And I should see "Period: 1 Jun 2009 - 31 May 2010"
+    And I should see "Starts at: 1 Jun 2009"
     And I should see "Ends at: 15 Jan 2010"
 
   Scenario: Register a new membership given a request
@@ -47,7 +72,7 @@ Feature: Manage memberships
     Then I should see "Membership was successfully created."
     And I should see "User: Mister Popularity"
     And I should see "Position: Officer"
-    And I should see "Starts at:  1 Jun 2008"
+    And I should see "Starts at: 1 Jun 2008"
     And I should see "Ends at: 31 May 2009"
 
   Scenario: Delete membership

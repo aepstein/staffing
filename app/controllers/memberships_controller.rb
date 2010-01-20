@@ -1,5 +1,7 @@
 class MembershipsController < ApplicationController
   before_filter :initialize_contexts
+  filter_resource_access
+
   # GET /positions/:position_id/memberships
   # GET /positions/:position_id/memberships.xml
   def index
@@ -27,8 +29,12 @@ class MembershipsController < ApplicationController
   # GET /positions/:position_id/memberships/new
   # GET /positions/:position_id/memberships/new.xml
   def new
-    @membership ||= Membership.new(:request => @request) if @request
-    @membership ||= @position.memberships.build if @position
+    if @request
+      @membership = Membership.new(:request => @request)
+    end
+    if @position
+      @membership = @position.memberships.build
+    end
 
     respond_to do |format|
       format.html # new.html.erb
@@ -44,8 +50,13 @@ class MembershipsController < ApplicationController
   # POST /positions/:position_id/memberships
   # POST /positions/:position_id/memberships.xml
   def create
-    @membership ||= Membership.new( params[:membership].merge( :request => @request ) ) if @request
-    @membership ||= @position.memberships.build( params[:membership] ) if @position
+    if @request
+      @membership = Membership.new(:request => @request)
+      @membership.attributes = params[:membership]
+    end
+    if @position
+      @membership = @position.memberships.build( params[:membership] )
+    end
 
     respond_to do |format|
       if @membership.save
@@ -91,11 +102,8 @@ class MembershipsController < ApplicationController
   private
 
   def initialize_contexts
-    if params[:request_id]
-      @request = Request.find(params[:request_id])
-      @position = @request.position
-    end
-    @position ||= Position.find(params[:position_id]) if params[:position_id]
+    @request = Request.find(params[:request_id]) if params[:request_id]
+    @position = Position.find(params[:position_id]) if params[:position_id]
   end
 end
 
