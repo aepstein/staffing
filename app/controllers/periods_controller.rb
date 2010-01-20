@@ -1,4 +1,6 @@
 class PeriodsController < ApplicationController
+  filter_resource_access
+
   # GET /schedule/:schedule_id/periods
   # GET /schedule/:schedule_id/periods.xml
   def index
