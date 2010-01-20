@@ -1,4 +1,3 @@
-@wip
 Feature: Manage qualifications
   In order to identify and track qualifications of users for various positions
   As an administrator

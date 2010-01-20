@@ -1,8 +1,8 @@
 authorization do
   role :admin do
     has_permission_on [ :authorities, :committees, :enrollments, :memberships,
-      :periods, :positions, :qualifications, :quizzes, :requests, :schedules,
-      :users ], :to => :manage
+      :periods, :positions, :qualifications, :quizzes, :questions, :requests,
+      :schedules, :users ], :to => :manage
   end
   role :user do
     has_permission_on [ :authorities, :committees, :enrollments, :memberships,
