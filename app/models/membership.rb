@@ -4,6 +4,7 @@ class Membership < ActiveRecord::Base
     "users.last_name ASC, users.first_name ASC, users.middle_name ASC"
   scope_procedure :assigned, lambda { user_id_not_nil }
   scope_procedure :unassigned, lambda { user_id_nil }
+  scope_procedure :current, lambda { starts_at_lte(Date.today).ends_at_gte(Date.today) }
 
   attr_accessor :starts_at_previously_changed, :ends_at_previously_changed,
     :period_id_previously_changed, :period_id_previously_was
