@@ -10,7 +10,7 @@ class CreateMemberships < ActiveRecord::Migration
 
       t.timestamps
     end
-    add_index :memberships, [ :user_id, :position_id, :period_id ], :unique => true
+    add_index :memberships, [ :user_id, :position_id, :period_id ], :unique => true, :name => 'memberships_unique'
   end
 
   def self.down

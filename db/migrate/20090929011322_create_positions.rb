@@ -16,7 +16,7 @@ class CreatePositions < ActiveRecord::Migration
       t.references :position, :null => false
       t.references :qualification, :null => false
     end
-    add_index :positions_qualifications, [ :position_id, :qualification_id ], :unique => true
+    add_index :positions_qualifications, [ :position_id, :qualification_id ], :unique => true, :name => 'positions_qualifications_unique'
   end
 
   def self.down
