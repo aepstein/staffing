@@ -1,7 +1,7 @@
 class User < ActiveRecord::Base
   default_scope :order => 'users.last_name ASC, users.first_name ASC, users.middle_name ASC'
 
-  attr_protected :admin
+  attr_protected :admin, :net_id
 
   has_and_belongs_to_many :qualifications
   has_and_belongs_to_many :authorities

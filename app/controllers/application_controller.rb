@@ -11,7 +11,7 @@ class ApplicationController < ActionController::Base
 
   # If user has been authenticated with single sign on credentials, logs in immediately
   def sso_net_id
-    return false unless request.env['REMOTE_USER'] && !request.env['REMOTE_USER'].blank?
+    return false unless request.env['REMOTE_USER'] && request.env['REMOTE_USER'].valid_net_id?
     request.env['REMOTE_USER']
   end
 
@@ -27,7 +27,7 @@ class ApplicationController < ActionController::Base
 
   def current_user
     @current_user = current_user_session && current_user_session.record
-    return nil if sso_net_id && @current_user.net_id != sso_net_id
+    return nil if sso_net_id && (@current_user.nil? || @current_user.net_id != sso_net_id)
     @current_user
   end
 

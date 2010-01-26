@@ -7,7 +7,8 @@ class UserSessionsController < ApplicationController
 
   # GET /login
   def new
-    if sso_net_id && ( user = User.find_by_net_id( sso_net_id ) )
+    if sso_net_id
+      user = User.find_or_create_by_net_id sso_net_id
       @user_session = UserSession.create( user, true )
       flash[:notice] = LOGIN_NOTICE
       redirect_back_or_default root_url
