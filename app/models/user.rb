@@ -67,6 +67,9 @@ class User < ActiveRecord::Base
       self.email ||= "#{self.net_id}@cornell.edu"
       self.status = ldap_entry.status unless ldap_entry.status.nil?
       # TODO addresses and phone numbers
+    else
+      self.first_name ||= 'UNKNOWN'
+      self.last_name ||= 'UNKNOWN'
     end
   end
 end
