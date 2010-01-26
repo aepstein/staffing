@@ -14,6 +14,16 @@
 <p style="color: red"><%= flash[:error] %></p>
 <p style="color: green"><%= flash[:notice] %></p>
 
+<% if current_user.admin? %>
+<%= link_to 'authorities', authorities_path %> |
+<%= link_to 'committees', committees_path %> |
+<%= link_to 'positions', positions_path %> |
+<%= link_to 'qualifications', qualifications_path %> |
+<%= link_to 'questions', questions_path %> |
+<%= link_to 'schedules', schedules_path %> |
+<%= link_to 'quizzes', quizzes_path %>
+<% end %>
+
 <%= yield %>
 
 </body>

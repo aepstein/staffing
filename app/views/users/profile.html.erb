@@ -1,15 +1,5 @@
 <h1>User profile for <%= current_user.name %></h1>
 
-<% if current_user.admin? %>
-<%= link_to 'authorities', authorities_path %> |
-<%= link_to 'committees', committees_path %> |
-<%= link_to 'positions', positions_path %> |
-<%= link_to 'qualifications', qualifications_path %> |
-<%= link_to 'questions', questions_path %> |
-<%= link_to 'schedules', schedules_path %> |
-<%= link_to 'quizzes', quizzes_path %>
-<% end %>
-
 <% if current_user.memberships.current.length > 0 %>
 <h3>Current Memberships</h3>
 <% render :partial => 'memberships/memberships', :object => current_user.memberships.current %>
