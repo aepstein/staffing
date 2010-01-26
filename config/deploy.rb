@@ -1,5 +1,5 @@
 # deploy.rb
-set :application, "cicero"
+set :application, "staffing"
 role :app, "assembly.cornell.edu"
 role :web, "assembly.cornell.edu"
 role :db,  "assembly.cornell.edu", :primary => true
