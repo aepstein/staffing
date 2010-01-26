@@ -43,7 +43,7 @@ class User < ActiveRecord::Base
   protected
 
   def initialize_password
-    reset_password unless password
+    reset_password unless crypted_password?
   end
 
   def ldap_entry=(ldap_entry)
