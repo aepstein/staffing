@@ -14,7 +14,7 @@
 <p style="color: red"><%= flash[:error] %></p>
 <p style="color: green"><%= flash[:notice] %></p>
 
-<% if current_user.admin? %>
+<% if current_user && current_user.admin? %>
 <%= link_to 'authorities', authorities_path %> |
 <%= link_to 'committees', committees_path %> |
 <%= link_to 'positions', positions_path %> |
