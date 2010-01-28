@@ -19,7 +19,7 @@ class User < ActiveRecord::Base
   validates_presence_of :first_name
   validates_presence_of :last_name
   validates_presence_of :email
-  validates_date :date_of_birth, :allow_nil => true
+  validates_date :date_of_birth, :allow_nil => true, :allow_blank => true
 
   before_validation_on_create :import_ldap_attributes, :initialize_password
 
