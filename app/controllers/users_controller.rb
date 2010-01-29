@@ -5,7 +5,8 @@ class UsersController < ApplicationController
   # GET /users
   # GET /users.xml
   def index
-    @users = User.with_permissions_to :show
+    @search = User.with_permissions_to(:show).search( params[:search] )
+    @users = @search.paginate(:page => params[:page])
 
     respond_to do |format|
       format.html # index.html.erb

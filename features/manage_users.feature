@@ -89,6 +89,12 @@ Feature: Manage users
     And a user exists with first_name: "John", last_name: "Doe 2"
     And a user exists with first_name: "John", last_name: "Doe 1"
     And I log in as the administrator
+    And I am on the users page
+    When I fill in "Name" with "Doe 2"
+    And I press "Search"
+    Then I should see the following users:
+      |Name        |
+      |Doe 2, John |
     When I delete the 4th user
     Then I should see the following users:
       |Name        |

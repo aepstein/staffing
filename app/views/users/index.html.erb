@@ -1,5 +1,15 @@
 <h1>Listing users</h1>
 
+<% semantic_form_for @search do |form| %>
+<p>
+  <%= form.label :name_like, 'Name' %>
+  <%= form.text_field :name_like %>
+  <%= form.submit "Search" %>
+</p>
+<% end %>
+
+<% will_paginate @users %>
+
 <table>
   <thead>
   <tr>
@@ -18,6 +28,8 @@
   <%= render :partial => 'user', :collection => @users %>
   </tbody>
 </table>
+
+<% will_paginate @users %>
 
 <br />
 

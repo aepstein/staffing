@@ -14,6 +14,8 @@ class User < ActiveRecord::Base
     c.login_field :net_id
   end
 
+  scope_procedure :name_like, lambda { |name| first_name_or_last_name_or_middle_name_or_net_id_like( name ) }
+
   validates_presence_of :net_id
   validates_uniqueness_of :net_id
   validates_presence_of :first_name
