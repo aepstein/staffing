@@ -4,8 +4,8 @@ Feature: Manage memberships
   I want to create, modify, show, list and destroy memberships
 
   Background:
-    Given a user: "popular" exists with first_name: "Mister", last_name: "Popularity"
-    And a user: "unpopular" exists with first_name: "Mister", last_name: "Cellophane"
+    Given a user: "popular" exists with first_name: "Mister", last_name: "Popularity", net_id: "zzz9999"
+    And a user: "unpopular" exists with first_name: "Mister", last_name: "Cellophane", net_id: "zzz9998"
     And a schedule: "annual" exists with name: "Annual"
     And a period: "2008" exists with schedule: schedule "annual", starts_at: "2008-06-01", ends_at: "2009-05-31"
     And a position: "officer" exists with name: "Officer", schedule: schedule "annual", slots: 4
@@ -39,7 +39,7 @@ Feature: Manage memberships
     Given a period: "2009" exists with schedule: schedule "annual", starts_at: "2009-06-01", ends_at: "2010-05-31"
     And I log in as the administrator
     And I am on the new membership page for position: "officer"
-    When I select "Mister Popularity" from "User"
+    When I fill in "User" with "Mister Popularity (zzz9999)"
     And I select " 1 Jun 2008 - 31 May 2009" from "Period"
     And I fill in "Starts at" with "2008-06-01"
     And I fill in "Ends at" with "2009-05-31"
@@ -51,7 +51,7 @@ Feature: Manage memberships
     And I should see "Starts at: 1 Jun 2008"
     And I should see "Ends at: 31 May 2009"
     When I follow "Edit"
-    And I select "Mister Cellophane" from "User"
+    When I fill in "User" with "Mister Cellophane (zzz9998)"
     And I select " 1 Jun 2009 - 31 May 2010" from "Period"
     And I fill in "Starts at" with "2009-06-01"
     And I fill in "Ends at" with "2010-01-15"

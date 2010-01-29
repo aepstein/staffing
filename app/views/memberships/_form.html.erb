@@ -1,6 +1,8 @@
   <%= form.error_messages %>
   <% form.inputs do %>
-  <%= form.input :user %>
+  <%= form.input( :user_name, :label => 'User', :as => :string_with_auto_complete, :remote => {
+    :url => users_path(:format => :js), :method => :get, :with => "'search[name_like]=' + element.value"
+  } ) %>
   <%= form.input :period %>
   <%= form.input :starts_at, :as => :ft_calendar_date_select %>
   <%= form.input :ends_at, :as => :ft_calendar_date_select %>

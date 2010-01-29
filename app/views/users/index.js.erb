@@ -1,0 +1,6 @@
+<ul>
+<% @users.each do |user| %>
+<li><%= (params[:search] && params[:search][:name_like]) ? highlight(user.name_with_net_id, params[:search][:name_like]) : h(user.name_with_net_id) %></li>
+<% end %>
+</ul>
+

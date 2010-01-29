@@ -29,6 +29,14 @@ class Membership < ActiveRecord::Base
   after_save :repopulate_unassigned
   after_destroy { |r| r.position.memberships.populate_unassigned_for_period r.period if r.user }
 
+  def user_name
+    "#{user.name} (#{user.net_id})" if user
+  end
+
+  def user_name=(name)
+    self.user = User.find_by_net_id name.to_net_ids.first unless name.to_net_ids.empty?
+  end
+
   def record_previous_changes
     self.starts_at_previously_changed = starts_at_changed?
     self.ends_at_previously_changed = ends_at_changed?
