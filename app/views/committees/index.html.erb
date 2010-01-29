@@ -1,5 +1,15 @@
 <h1>Listing committees</h1>
 
+<% semantic_form_for @search do |form| %>
+<p>
+  <%= form.label :name_like, 'Name' %>
+  <%= form.text_field :name_like %>
+  <%= form.submit "Search" %>
+</p>
+<% end %>
+
+<% will_paginate @committees %>
+
 <table>
   <thead>
   <tr>
@@ -10,6 +20,8 @@
   <%= render :partial => 'committee', :collection => @committees %>
   </tbody>
 </table>
+
+<% will_paginate @committees %>
 
 <br />
 

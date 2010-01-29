@@ -54,6 +54,12 @@ Feature: Manage committees
     And a committee exists with name: "committee 2"
     And a committee exists with name: "committee 1"
     And I log in as the administrator
+    When I am on the committees page
+    And I fill in "Name" with "2"
+    And I press "Search"
+    Then I should see the following committees:
+      |Name        |
+      |committee 2 |
     When I delete the 3rd committee
     Then I should see the following committees:
       |Name       |

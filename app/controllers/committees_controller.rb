@@ -4,7 +4,8 @@ class CommitteesController < ApplicationController
   # GET /committees
   # GET /committees.xml
   def index
-    @committees = Committee.all
+    @search = Committee.search( params[:search] )
+    @committees = @search.paginate( :page => params[:page] )
 
     respond_to do |format|
       format.html # index.html.erb
