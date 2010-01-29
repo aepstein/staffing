@@ -63,10 +63,10 @@ class User < ActiveRecord::Base
 
   def import_ldap_attributes
     if ldap_entry
-      self.first_name = ldap_entry.first_name.titleize unless ldap_entry.first_name.nil?
-      self.middle_name = ldap_entry.middle_name.titleize unless ldap_entry.middle_name.nil?
-      self.last_name = ldap_entry.last_name.titleize unless ldap_entry.last_name.nil?
-      self.email ||= "#{self.net_id}@cornell.edu"
+      self.first_name = ldap_entry.first_name.titleize if first_name.blank? && ldap_entry.first_name
+      self.middle_name = ldap_entry.middle_name.titleize if middle_name.blank? && ldap_entry.middle_name
+      self.last_name = ldap_entry.last_name.titleize if last_name.blank? && ldap_entry.last_name
+      self.email = "#{net_id}@cornell.edu" if email.blank? && net_id
       self.status = ldap_entry.status unless ldap_entry.status.nil?
       # TODO addresses and phone numbers
     else
