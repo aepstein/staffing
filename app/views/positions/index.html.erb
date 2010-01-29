@@ -1,5 +1,15 @@
 <h1>Listing positions</h1>
 
+<% semantic_form_for @search do |form| %>
+<p>
+  <%= form.label :name_like, 'Name' %>
+  <%= form.text_field :name_like %>
+  <%= form.submit "Search" %>
+</p>
+<% end %>
+
+<% will_paginate @positions %>
+
 <table>
   <thead>
   <tr>
@@ -16,6 +26,8 @@
   </tbody>
 
 </table>
+
+<% will_paginate @positions %>
 
 <br />
 

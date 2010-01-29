@@ -72,12 +72,18 @@ Feature: Manage positions
     And I should see "Welcome message"
     And I should see "Farewell message"
 
-  Scenario: Delete position
+  Scenario: Search and delete positions
     Given a position exists with name: "position 4"
     And a position exists with name: "position 3"
     And a position exists with name: "position 2"
     And a position exists with name: "position 1"
     And I log in as the administrator
+    And I am on the positions page
+    And fill in "Name" with "2"
+    And I press "Search"
+    Then I should see the following positions:
+      |Name       |
+      |position 2 |
     When I delete the 3rd position
     Then I should see the following positions:
       |Name      |

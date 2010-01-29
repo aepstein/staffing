@@ -5,7 +5,8 @@ class PositionsController < ApplicationController
   # GET /positions
   # GET /positions.xml
   def index
-    @positions = Position.all
+    @search = Position.search( params[:search] )
+    @positions = @search.paginate( :page => params[:page] )
 
     respond_to do |format|
       format.html # index.html.erb
