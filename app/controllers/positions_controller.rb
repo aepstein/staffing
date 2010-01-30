@@ -10,6 +10,7 @@ class PositionsController < ApplicationController
 
     respond_to do |format|
       format.html # index.html.erb
+      format.js # index.js.erb
       format.xml  { render :xml => @positions }
     end
   end

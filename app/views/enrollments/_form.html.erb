@@ -1,6 +1,8 @@
   <%= form.error_messages %>
   <% form.inputs do %>
-  <%= form.input :position %>
+  <%= form.input( :position_name, :label => 'Position', :as => :string_with_auto_complete, :remote => {
+    :url => positions_path(:format => :js), :method => :get, :with => "'search[name_like]=' + element.value"
+  } ) %>
   <%= form.input :title %>
   <%= form.input :votes %>
   <% end %>

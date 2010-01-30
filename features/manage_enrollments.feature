@@ -36,7 +36,7 @@ Feature: Manage enrollments
   Scenario: Register new enrollment
     Given I log in as the administrator
     And I am on the new enrollment page for committee: "committee"
-    When I select "Member of Committee" from "Position"
+    When I fill in "Position" with "Member of Committee"
     And I fill in "Title" with "Voting Member"
     And I fill in "Votes" with "1"
     And I press "Create"
@@ -46,7 +46,7 @@ Feature: Manage enrollments
     And I should see "Title: Voting Member"
     And I should see "Votes: 1"
     When I follow "Edit"
-    And I select "Ex-Officio Member of Committee" from "Position"
+    And I fill in "Position" with "Ex-Officio Member of Committee"
     And I fill in "Title" with "Non-Voting Member"
     And I fill in "Votes" with "0"
     And I press "Update"
