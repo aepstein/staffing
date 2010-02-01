@@ -1,6 +1,10 @@
 class Position < ActiveRecord::Base
   default_scope :order => 'positions.name ASC'
 
+  named_scope :with_status, lambda { |status|
+    { :conditions => "(positions.statuses_mask & #{2**User::STATUSES.index(status.to_s)}) > 0 OR positions.statuses_mask = 0" }
+  }
+
   belongs_to :authority
   belongs_to :quiz
   belongs_to :schedule
@@ -68,6 +72,14 @@ class Position < ActiveRecord::Base
     r.memberships.unassigned.delete_all if r.slots_changed? && r.slots_was > r.slots
     r.memberships.populate_unassigned
   }
+
+  def statuses=(statuses)
+    self.statuses_mask = (statuses & User::STATUSES).map { |status| 2**User::STATUSES.index(status) }.sum
+  end
+
+  def statuses
+    User::STATUSES.reject { |status| ((statuses_mask || 0) & 2**User::STATUSES.index(status)).zero? }
+  end
 
   def to_s; name; end
 end

@@ -34,7 +34,7 @@ Feature: Manage positions
       | user    | create                   | update                   | destroy                  | show                     |
       | admin   | not see "not authorized" | not see "not authorized" | not see "not authorized" | not see "not authorized" |
       | regular | see "not authorized"     | see "not authorized"     | see "not authorized"     | not see "not authorized" |
-
+@wip
   Scenario: Register new position and edit
     Given I log in as the administrator
     And I am on the new position page
@@ -42,6 +42,7 @@ Feature: Manage positions
     And I select "Student Assembly Generic Questionnaire" from "Quiz"
     And I select "Annual Academic" from "Schedule"
     And I fill in "Slots" with "1"
+    And I check "Undergrad"
     And I fill in "Name" with "Popular Committee Member"
     And I fill in "Join message" with "Welcome to *committee*."
     And I fill in "Leave message" with "You were *dropped* from the committee."
@@ -51,6 +52,7 @@ Feature: Manage positions
     And I should see "Quiz: Student Assembly Generic Questionnaire"
     And I should see "Schedule: Annual Academic"
     And I should see "Slots: 1"
+    And I should see "undergrad"
     And I should see "Name: Popular Committee Member"
     And I should see "Welcome to committee."
     And I should see "You were dropped from the committee."
@@ -60,6 +62,7 @@ Feature: Manage positions
     And I select "Annual Academic - Even Two Year" from "Schedule"
     And I fill in "Slots" with "2"
     And I fill in "Name" with "Super-Popular Committee Member"
+    And I uncheck "Undergrad"
     And I fill in "Join message" with "Welcome message"
     And I fill in "Leave message" with "Farewell message"
     And I press "Update"
@@ -68,6 +71,7 @@ Feature: Manage positions
     And I should see "Quiz: Graduate and Professional Student Assembly Generic Questionnaire"
     And I should see "Schedule: Annual Academic - Even Two Year"
     And I should see "Slots: 2"
+    And I should see "No status restrictions."
     And I should see "Name: Super-Popular Committee Member"
     And I should see "Welcome message"
     And I should see "Farewell message"

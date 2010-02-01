@@ -18,6 +18,19 @@
   <b>Slots:</b> <%=h @position.slots %>
 </p>
 
+<p>
+  <b>Statuses:</b>
+  <% if @position.statuses.empty? %>
+  <i>No status restrictions.</i>
+  <% else %>
+  <ul>
+    <% @position.statuses.each do |status| %>
+    <li><%=h status %></li>
+    <% end %>
+  </ul>
+  <% end %>
+</p>
+
 <p><b>Join message:</b></p>
 
 <%=markdown @position.join_message %>
@@ -25,7 +38,6 @@
 <p><b>Leave message:</b></p>
 
 <%=markdown @position.leave_message %>
-
 
 <p>
 <%= link_to 'Edit', edit_position_path(@position) %> |

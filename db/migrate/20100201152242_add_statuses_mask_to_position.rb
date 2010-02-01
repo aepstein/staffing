@@ -1,6 +1,6 @@
 class AddStatusesMaskToPosition < ActiveRecord::Migration
   def self.up
-    add_column :positions, :statuses_mask, :integer
+    add_column :positions, :statuses_mask, :integer, :null => false, :default => 0
   end
 
   def self.down
