@@ -1,6 +1,10 @@
 <h1>Listing memberships</h1>
 
+<%= will_paginate @memberships %>
+
 <%= render :partial => "memberships", :object => @memberships %>
+
+<%= will_paginate @memberships %>
 
 <br />
 

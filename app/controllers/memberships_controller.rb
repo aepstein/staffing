@@ -8,6 +8,9 @@ class MembershipsController < ApplicationController
     @memberships ||= @request.memberships if @request
     @memberships ||= @position.memberships if @position
     @memberships ||= Membership.all
+    @memberships = @memberships.period_current if params[:current_period]
+    @memberships = @memberships.current if params[:current]
+    @memberships = @memberships.paginate(:page => params[:page])
 
     respond_to do |format|
       format.html # index.html.erb
