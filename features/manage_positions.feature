@@ -34,7 +34,7 @@ Feature: Manage positions
       | user    | create                   | update                   | destroy                  | show                     |
       | admin   | not see "not authorized" | not see "not authorized" | not see "not authorized" | not see "not authorized" |
       | regular | see "not authorized"     | see "not authorized"     | see "not authorized"     | not see "not authorized" |
-@wip
+
   Scenario: Register new position and edit
     Given I log in as the administrator
     And I am on the new position page
