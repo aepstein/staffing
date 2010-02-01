@@ -39,7 +39,7 @@
 </p>
 
 <p>
-  <b>Status:</b> <%=h @user.status ? @user.status : 'unknown' %>
+  <b>Status:</b> <%=h @user.status.blank? ? 'unknown' : @user.status %>
 </p>
 
 <p>

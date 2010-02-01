@@ -68,6 +68,7 @@ Feature: Manage users
     And I fill in "Work address" with "200 Day Hall"
     And I fill in "Date of birth" with "1982-07-10"
     And I choose "user_admin_false"
+    And I select "undergrad" from "Status"
     And I press "Update"
     Then I should see "User was successfully updated."
     And I should see "First name: Alpha"
@@ -80,7 +81,7 @@ Feature: Manage users
     And I should see "Home phone: 607-555-4300"
     And I should see "Work address: 200 Day Hall"
     And I should see "Date of birth: July 10, 1982"
-    And I should see "Status: unknown"
+    And I should see "Status: undergrad"
     And I should see "Administrator: No"
 
   Scenario: Delete user

@@ -1,7 +1,9 @@
 class User < ActiveRecord::Base
+  STATUSES = %w( staff faculty undergrad grad alumni temporary unknown )
+
   default_scope :order => 'users.last_name ASC, users.first_name ASC, users.middle_name ASC'
 
-  attr_protected :admin, :net_id
+  attr_protected :admin, :net_id, :status
 
   has_and_belongs_to_many :qualifications
   has_and_belongs_to_many :authorities
@@ -22,6 +24,7 @@ class User < ActiveRecord::Base
   validates_presence_of :last_name
   validates_presence_of :email
   validates_date :date_of_birth, :allow_nil => true, :allow_blank => true
+  validates_inclusion_of :status, :in => STATUSES, :allow_blank => true
 
   before_validation_on_create :import_ldap_attributes, :initialize_password
 

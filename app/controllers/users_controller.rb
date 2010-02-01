@@ -54,8 +54,11 @@ class UsersController < ApplicationController
   # POST /users.xml
   def create
     @user = User.new(params[:user])
-    @user.admin = params[:user][:admin] if params[:user] && params[:user][:admin] && current_user.admin?
-    @user.net_id = params[:user][:net_id] if params[:user] && params[:user][:net_id] && current_user.admin?
+    if current_user.admin? && params[:user]
+      @user.admin = params[:user][:admin] if params[:user][:admin]
+      @user.net_id = params[:user][:net_id] if params[:user][:net_id]
+      @user.status = params[:user][:status] if params[:user][:status]
+    end
 
     respond_to do |format|
       if @user.save
@@ -73,8 +76,11 @@ class UsersController < ApplicationController
   # PUT /users/1.xml
   def update
     @user = User.find(params[:id])
-    @user.admin = params[:user][:admin] if params[:user] && params[:user][:admin] && current_user.admin?
-    @user.net_id = params[:user][:net_id] if params[:user] && params[:user][:net_id] && current_user.admin?
+    if current_user.admin? && params[:user]
+      @user.admin = params[:user][:admin] if params[:user][:admin]
+      @user.net_id = params[:user][:net_id] if params[:user][:net_id]
+      @user.status = params[:user][:status] if params[:user][:status]
+    end
 
     respond_to do |format|
       if @user.update_attributes(params[:user])

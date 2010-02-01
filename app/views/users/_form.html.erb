@@ -12,6 +12,7 @@
   <% if current_user.admin? %>
   <%= form.input :net_id %>
   <%= form.input :admin, :as => :radio, :label => 'Administrator?' %>
+  <%= form.input :status, :as => :select, :collection => User::STATUSES %>
   <% end %>
   <% end %>
   <%= form.buttons %>
