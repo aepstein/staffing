@@ -14,7 +14,7 @@ class CustomFormBuilder < Formtastic::SemanticFormBuilder
     remote_options = options.delete(:remote) || {}
 
     self.label( method, options_for_label(options)) +
-    self.send(:text_field_with_auto_complete, method, html_options, remote_options)
+    self.send(:text_field_with_auto_complete, method, default_string_options(method, :string).merge(html_options), remote_options)
   end
 
   def text_field_with_auto_complete(method, local_options, remote_options)
