@@ -23,5 +23,12 @@ describe Request do
     @request.user = nil
     @request.save.should be_false
   end
+
+  it 'should not save if the user does not meet status requirements of the position' do
+    @request.position.statuses = ['undergrad']
+    @request.position.save
+    @request.user.status.should_not eql 'undergrad'
+    @request.save.should be_false
+  end
 end
 
