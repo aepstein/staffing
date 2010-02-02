@@ -8,6 +8,7 @@ ActionController::Routing::Routes.draw do |map|
   end
   map.resources :committees, :shallow => true do |committee|
     committee.resources :enrollments
+    committee.resources :memberships, :only => [ :index ]
   end
   map.resources :authorities
   map.resources :qualifications

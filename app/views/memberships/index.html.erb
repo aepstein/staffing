@@ -2,7 +2,11 @@
 
 <%= will_paginate @memberships %>
 
+<% if @committee %>
+<%= render :partial => "memberships", :object => @memberships, :locals => { :committee => @committee } %>
+<% else %>
 <%= render :partial => "memberships", :object => @memberships %>
+<% end %>
 
 <%= will_paginate @memberships %>
 

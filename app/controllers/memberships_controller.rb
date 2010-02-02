@@ -7,6 +7,14 @@ class MembershipsController < ApplicationController
   def index
     @memberships ||= @request.memberships if @request
     @memberships ||= @position.memberships if @position
+    if @committee
+      @memberships ||= Membership.position_enrollments_committee_id_eq( @committee.id
+      ).all( :include => { :position => :enrollments, :user => [], :period => [] },
+      :joins => "INNER JOIN periods ON period_id = periods.id " +
+        "LEFT JOIN users ON user_id = users.id",
+      :order => "periods.starts_at DESC, memberships.starts_at DESC, " +
+        "users.last_name ASC, users.first_name ASC, users.middle_name ASC" )
+    end
     @memberships ||= Membership.all
     @memberships = @memberships.period_current if params[:current_period]
     @memberships = @memberships.current if params[:current]
@@ -107,6 +115,7 @@ class MembershipsController < ApplicationController
   def initialize_contexts
     @request = Request.find(params[:request_id]) if params[:request_id]
     @position = Position.find(params[:position_id]) if params[:position_id]
+    @committee = Committee.find(params[:committee_id]) if params[:committee_id]
   end
 end
 

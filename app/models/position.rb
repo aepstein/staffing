@@ -59,6 +59,17 @@ class Position < ActiveRecord::Base
   has_many :users, :through => :memberships
   has_many :periods, :through => :schedule
   has_many :answers, :through => :requests
+  has_many :enrollments, :dependent => :destroy do
+    def for_committee(committee)
+      self.select { |enrollment| enrollment.committee_id == committee.id }
+    end
+    def titles_for_committee(committee)
+      for_committee(committee).map { |e| e.title }.join(', ')
+    end
+    def votes_for_committee(committee)
+      for_committee(committee).inject(0) { |sum, e| sum + e.votes }
+    end
+  end
 
   validates_presence_of :name
   validates_uniqueness_of :name

@@ -5,10 +5,15 @@
     <th>Period</th>
     <th>Starts at</th>
     <th>Ends at</th>
+    <% if defined?(committee) %>
+    <th>Title</th>
+    <th>Votes</th>
+    <% end %>
   </tr>
   </thead>
   <tbody>
-<%= render :partial => "membership", :collection => memberships %>
+<%= render :partial => "membership", :collection => memberships,
+  :locals => { :committee => defined?(committee) ? committee : false } %>
   </tbody>
 </table>
 

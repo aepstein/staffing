@@ -17,6 +17,8 @@ class Membership < ActiveRecord::Base
   belongs_to :position
   belongs_to :request
 
+  delegate :enrollments, :to => :position
+
   validates_presence_of :period
   validates_presence_of :position
   validates_date :starts_at
