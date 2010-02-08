@@ -117,6 +117,8 @@ describe Membership do
     irrelevant_enrollment = Factory(:enrollment)
     irrelevant_enrollment.position.should_not eql @membership.position
     designee = Factory(:designee, :membership => @membership, :committee => enrollment_existing_designee.committee)
+    @membership.designees.reload
+    @membership.designees.size.should eql 1
     new_designees = @membership.designees.populate
     new_designees.size.should eql 1
     new_designees.first.committee.should eql enrollment_no_designee.committee
