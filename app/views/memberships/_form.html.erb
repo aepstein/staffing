@@ -12,7 +12,7 @@
           <%= designee_form.input :committee_id, :as => :hidden %>
           <%= designee_form.input :user_name, :label => "Designee for #{designee_form.object.committee.name}",
               :as => :string_with_auto_complete, :remote => { :url => users_path(:format => :js),
-              :method => :get, :with => "'search[name_like]=' + element.value" } %>
+              :method => :get, :with => "'search[name_like]=' + element.value", :skip_style => true } %>
           <%= designee_form.input :_destroy, :label => "Check to remove this designee", :as => :boolean %>
         <% end %>
       <% end %>
