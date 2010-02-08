@@ -17,9 +17,5 @@ class CustomFormBuilder < Formtastic::SemanticFormBuilder
     self.send(:text_field_with_auto_complete, method, default_string_options(method, :string).merge(html_options), remote_options)
   end
 
-  def text_field_with_auto_complete(method, local_options, remote_options)
-    @template.text_field_with_auto_complete( @object_name, method, objectify_options(local_options), remote_options )
-  end
-
 end
 

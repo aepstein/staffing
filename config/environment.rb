@@ -49,6 +49,7 @@ Rails::Initializer.run do |config|
   config.gem 'aasm', :source => 'http://gemcutter.org'
   config.gem 'declarative_authorization', :source => 'http://gemcutter.org'
   config.gem 'will_paginate', :source => 'http://gemcutter.org'
+  config.gem 'repeated_auto_complete', :source => 'http://gemcutter.org'
 end
 
 CalendarDateSelect.format = :hyphen_ampm
