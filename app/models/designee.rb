@@ -17,6 +17,7 @@ class Designee < ActiveRecord::Base
   end
 
   def user_name=(name)
+    self.user = nil if name.blank?
     self.user = User.find_or_create_by_net_id name.to_net_ids.first unless name.to_net_ids.empty?
     self.user = nil if user.id.nil?
   end
