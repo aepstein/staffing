@@ -16,8 +16,23 @@ class Membership < ActiveRecord::Base
   belongs_to :period
   belongs_to :position
   belongs_to :request
+  has_many :designees, :dependent => :delete_all do
+    def populate
+      return Array.new unless proxy_owner.position
+      proxy_owner.position.committees.inject([]) do |memo, committee|
+        memo << build(:committee => committee) unless committee_ids.include? committee.id
+        memo
+      end
+    end
+    protected
+    def committee_ids
+      self.map { |designee| designee.committee_id }.uniq
+    end
+  end
 
   delegate :enrollments, :to => :position
+
+  accepts_nested_attributes_for :designees, :reject_if => proc { |a| a['user_name'].blank? }, :allow_destroy => true
 
   validates_presence_of :period
   validates_presence_of :position
@@ -27,6 +42,7 @@ class Membership < ActiveRecord::Base
 
   scope_procedure :overlap, lambda { |starts, ends| starts_at_lte(ends).ends_at_gte(starts) }
 
+  before_validation { |r| r.designees.each { |d| d.membership = r } }
   before_save :record_previous_changes
   after_save :repopulate_unassigned
   after_destroy { |r| r.position.memberships.populate_unassigned_for_period r.period if r.user }

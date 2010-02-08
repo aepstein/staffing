@@ -18,6 +18,12 @@
   <b>Ends at:</b> <%=h @membership.ends_at.to_s(:rfc822) %>
 </p>
 
+<% @membership.designees.each do |designee| %>
+<p>
+  <b>Designee for <%=h designee.committee.name %>:</b> <%=h designee.user.name %>
+</p>
+<% end %>
+
 <p>
 <%= link_to 'Edit', edit_membership_path(@membership) %> |
 <%= link_to 'Back', position_memberships_path(@membership.position) %>

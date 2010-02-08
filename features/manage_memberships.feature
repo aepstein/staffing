@@ -37,12 +37,15 @@ Feature: Manage memberships
 
   Scenario: Register new membership given a position or edit
     Given a period: "2009" exists with schedule: schedule "annual", starts_at: "2009-06-01", ends_at: "2010-05-31"
+    And a committee exists with name: "Important Committee"
+    And an enrollment exists with position: position "officer", committee: the committee
     And I log in as the administrator
     And I am on the new membership page for position: "officer"
     When I fill in "User" with "Mister Popularity (zzz9999)"
     And I select " 1 Jun 2008 - 31 May 2009" from "Period"
     And I fill in "Starts at" with "2008-06-01"
     And I fill in "Ends at" with "2009-05-31"
+    And I fill in "Designee for Important Committee" with "Mister Cellophane (zzz9998)"
     And I press "Create"
     Then I should see "Membership was successfully created."
     And I should see "User: Mister Popularity"
@@ -50,17 +53,20 @@ Feature: Manage memberships
     And I should see "Position: Officer"
     And I should see "Starts at: 1 Jun 2008"
     And I should see "Ends at: 31 May 2009"
+    And I should see "Designee for Important Committee: Mister Cellophane"
     When I follow "Edit"
     When I fill in "User" with "Mister Cellophane (zzz9998)"
     And I select " 1 Jun 2009 - 31 May 2010" from "Period"
     And I fill in "Starts at" with "2009-06-01"
     And I fill in "Ends at" with "2010-01-15"
+    And I check "Check to remove this designee"
     And I press "Update"
     Then I should see "Membership was successfully updated."
     And I should see "User: Mister Cellophane"
     And I should see "Period: 1 Jun 2009 - 31 May 2010"
     And I should see "Starts at: 1 Jun 2009"
     And I should see "Ends at: 15 Jan 2010"
+    And I should not see "Designee for Important Committee"
 
   Scenario: Register a new membership given a request
     Given a period: "2009" exists with schedule: schedule "annual", starts_at: "2009-06-01", ends_at: "2010-05-31"

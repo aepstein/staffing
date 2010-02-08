@@ -46,6 +46,7 @@ class MembershipsController < ApplicationController
     if @position
       @membership = @position.memberships.build
     end
+    @membership.designees.populate
 
     respond_to do |format|
       format.html # new.html.erb
@@ -56,6 +57,7 @@ class MembershipsController < ApplicationController
   # GET /memberships/1/edit
   def edit
     @membership = Membership.find(params[:id])
+    @membership.designees.populate
   end
 
   # POST /positions/:position_id/memberships
@@ -75,6 +77,7 @@ class MembershipsController < ApplicationController
         format.html { redirect_to(@membership) }
         format.xml  { render :xml => @membership, :status => :created, :location => @membership }
       else
+        @membership.designees.populate
         format.html { render :action => "new" }
         format.xml  { render :xml => @membership.errors, :status => :unprocessable_entity }
       end
@@ -92,6 +95,7 @@ class MembershipsController < ApplicationController
         format.html { redirect_to(@membership) }
         format.xml  { head :ok }
       else
+        @membership.designees.populate
         format.html { render :action => "edit" }
         format.xml  { render :xml => @membership.errors, :status => :unprocessable_entity }
       end

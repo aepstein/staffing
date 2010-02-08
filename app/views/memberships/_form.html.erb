@@ -6,6 +6,17 @@
   <%= form.input :period %>
   <%= form.input :starts_at, :as => :ft_calendar_date_select %>
   <%= form.input :ends_at, :as => :ft_calendar_date_select %>
+    <% form.object.designees.each do |designee| %>
+      <% form.semantic_fields_for :designees, designee do |designee_form| %>
+        <% designee_form.inputs do %>
+          <%= designee_form.input :committee_id, :as => :hidden %>
+          <%= designee_form.input :user_name, :label => "Designee for #{designee_form.object.committee.name}",
+              :as => :string_with_auto_complete, :remote => { :url => users_path(:format => :js),
+              :method => :get, :with => "'search[name_like]=' + element.value" } %>
+          <%= designee_form.input :_destroy, :label => "Check to remove this designee", :as => :boolean %>
+        <% end %>
+      <% end %>
+    <% end %>
   <% end %>
   <%= form.buttons %>
 

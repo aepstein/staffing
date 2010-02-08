@@ -12,6 +12,12 @@ Factory.define :committee do |f|
   f.sequence(:name) { |n| "Committee #{n}" }
 end
 
+Factory.define :designee do |f|
+  f.association :committee
+  f.membership { |d| d.association :membership, :position => d.association(:enrollment, :committee => d.committee ).position }
+  f.association :user
+end
+
 Factory.define :enrollment do |f|
   f.association :position
   f.association :committee

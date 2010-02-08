@@ -70,6 +70,7 @@ class Position < ActiveRecord::Base
       for_committee(committee).inject(0) { |sum, e| sum + e.votes }
     end
   end
+  has_many :committees, :through => :enrollments
 
   validates_presence_of :name
   validates_uniqueness_of :name

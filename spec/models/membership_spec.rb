@@ -111,6 +111,17 @@ describe Membership do
     assigned.position.memberships.unassigned.each { |m| m.id.should > assigned.id }
   end
 
+  it 'should have a designees.populate method that creates a designee for each committee corresponding position is enrolled in' do
+    enrollment_existing_designee = Factory(:enrollment, :position => @membership.position)
+    enrollment_no_designee = Factory(:enrollment, :position => @membership.position)
+    irrelevant_enrollment = Factory(:enrollment)
+    irrelevant_enrollment.position.should_not eql @membership.position
+    designee = Factory(:designee, :membership => @membership, :committee => enrollment_existing_designee.committee)
+    new_designees = @membership.designees.populate
+    new_designees.size.should eql 1
+    new_designees.first.committee.should eql enrollment_no_designee.committee
+  end
+
   def setup_membership_with_vacancies
     period = Factory(:period, :schedule => Factory(:schedule) )
     position = Factory(:position, :schedule => period.schedule, :slots => 2)
