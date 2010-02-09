@@ -10,12 +10,17 @@ class CustomFormBuilder < Formtastic::SemanticFormBuilder
 
   # A method that deals with auto_complete field
   def string_with_auto_complete_input(method, options = {})
+    @object_name = @object_name.to_s if @object_name.is_a? Symbol
     html_options = options.delete(:input_html) || {}
     remote_options = options.delete(:remote) || {}
 
     self.label( method, options_for_label(options)) +
     self.send(:text_field_with_auto_complete, method, default_string_options(method, :string).merge(html_options), remote_options)
   end
+
+#  def is_used_as_nested_attribute?
+#    /\[#{class_name.pluralize}_attributes\]\[[0-9]+\]/.match @object_name.to_s
+#  end
 
 end
 
