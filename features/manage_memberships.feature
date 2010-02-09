@@ -41,7 +41,6 @@ Feature: Manage memberships
     And an enrollment exists with position: position "officer", committee: the committee
     And I log in as the administrator
     And I am on the new membership page for position: "officer"
-    And I should see "blah"
     When I fill in "User" with "Mister Popularity (zzz9999)"
     And I select " 1 Jun 2008 - 31 May 2009" from "Period"
     And I fill in "Starts at" with "2008-06-01"
