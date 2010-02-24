@@ -5,6 +5,7 @@
   <%= form.input :quiz %>
   <%= form.input :schedule %>
   <%= form.input :slots %>
+  <%= form.input :requestable, :as => :radio, :label => 'Requestable?' %>
   <%= form.input :statuses, :as => :check_boxes, :collection => User::STATUSES,
     :hint => 'What status must a user have to be in this position?  Leave blank if status is not a factor.' %>
   <%= form.input :join_message %>
