@@ -3,9 +3,11 @@ class RequestsController < ApplicationController
 
   # GET /position/:position_id/requests
   # GET /position/:position_id/requests.xml
+  # GET /committee/:committee_id/requests
+  # GET /committee/:committee_id/requests.xml
   def index
-    @position = Position.find(params[:position_id])
-    @requests = @position.requests.with_permissions_to :show
+    initialize_context
+    @requests = @requestable.requests.with_permissions_to :show
 
     respond_to do |format|
       format.html # index.html.erb
@@ -26,8 +28,11 @@ class RequestsController < ApplicationController
 
   # GET /position/:position_id/requests/new
   # GET /position/:position_id/requests/new.xml
+  # GET /committee/:committee_id/requests/new
+  # GET /committee/:committee_id/requests/new.xml
   def new
-    @request = Position.find(params[:position_id]).requests.build
+    initialize_context
+    @request = @requestable.requests.build
     raise AuthorizationError unless current_user
     @request.user = current_user
     @request.answers.populate
@@ -45,8 +50,11 @@ class RequestsController < ApplicationController
 
   # POST /position/:position_id/requests
   # POST /position/:position_id/requests.xml
+  # POST /committee/:committee_id/requests
+  # POST /committee/:committee_id/requests.xml
   def create
-    @request = Position.find(params[:position_id]).requests.build(params[:request])
+    initialize_context
+    @request = @requestable.requests.build(params[:request])
     raise AuthorizationError unless current_user
     @request.user = current_user
 
@@ -70,7 +78,7 @@ class RequestsController < ApplicationController
     respond_to do |format|
       if @request.update_attributes(params[:request])
         flash[:notice] = 'Request was successfully updated.'
-        format.html { redirect_to(@request) }
+        format.html { redirect_to @request }
         format.xml  { head :ok }
       else
         format.html { render :action => "edit" }
@@ -86,9 +94,16 @@ class RequestsController < ApplicationController
     @request.destroy
 
     respond_to do |format|
-      format.html { redirect_to position_requests_url @request.position }
+      format.html { redirect_to polymorphic_url( [ @request.requestable, :requests ] ) }
       format.xml  { head :ok }
     end
+  end
+
+  private
+
+  def initialize_context
+    @requestable = Position.find params[:position_id] if params[:position_id]
+    @requestable = Committee.find params[:committee_id] if params[:committee_id]
   end
 end
 

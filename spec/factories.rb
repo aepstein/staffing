@@ -1,6 +1,6 @@
 Factory.define :answer do |f|
   f.association :request
-  f.question { |a| a.association(:question, :quizzes => [ a.request.position.quiz ]) }
+  f.question { |a| a.association( :question, :quizzes => [ a.request.requestable.quiz ] ) }
   f.content 'blue'
 end
 
@@ -55,9 +55,10 @@ Factory.define :quiz do |f|
 end
 
 Factory.define :request do |f|
+  f.starts_at Date.today
+  f.ends_at { |r| r.starts_at + 1.year }
   f.association :user
-  f.association :position
-  f.periods { |r| [ r.position.schedule.periods.first || r.association(:period, :schedule => r.position.schedule) ] }
+  f.requestable { |r| r.association :position }
 end
 
 Factory.define :schedule do |f|

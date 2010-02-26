@@ -1,4 +1,4 @@
-<h1>Listing requests</h1>
+<h1>Listing requests for <%= @requestable %></h1>
 
 <table>
   <thead>
@@ -15,6 +15,6 @@
 <br />
 
 <p>
-<%= link_to 'New request', new_position_request_path( @position ) %>
+<%= link_to 'New request', new_polymorphic_path( [@requestable, :request] ) %>
 </p>
 

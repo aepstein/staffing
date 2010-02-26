@@ -15,8 +15,8 @@ Feature: Manage requests
     And question: "second" is amongst the questions of quiz: "generic"
     And a position: "popular" exists with name: "Most Popular Person", schedule: schedule "annual", quiz: quiz "generic"
 
-  Scenario Outline: Test permissions for quizzes controller actions
-    Given a request exists with position: the position, user: user "applicant", state: "<state>"
+  Scenario Outline: Test permissions for requests controller actions
+    Given a request exists with requestable: the position, user: user "applicant", state: "<state>"
     And a user: "admin" exists with net_id: "admin", password: "secret", admin: true
     And a user: "regular" exists with net_id: "regular", password: "secret", admin: false
     And I log in as "<user>" with password "secret"
@@ -44,50 +44,39 @@ Feature: Manage requests
   Scenario: Register new request or edit
     Given I log in as "applicant" with password "secret"
     And I am on the new request page for position: "popular"
-    When I check "1 Jun 2008 - 31 May 2009"
+    When I fill in "Desired Start Date" with "2008-06-01"
+    And I fill in "Desired End Date" with "2009-05-31"
     And I fill in "Favorite color" with "*bl*ue"
     And I fill in "Capital of Assyria" with "*Da*mascus"
     And I press "Create"
     Then I should see "Request was successfully created."
-    And I should see "Position: Most Popular Person"
+    And I should see "Requestable: Most Popular Person"
     And I should see "User: Bill Williams"
     And I should see "State: started"
     And I should see "blue"
     And I should see "Damascus"
-    And I should see the following periods:
-      |Starts at  |Ends at     |
-      |1 Jun 2008 |31 May 2009 |
     When I follow "Edit"
+    And I fill in "Desired Start Date" with "2009-06-01"
+    And I fill in "Desired End Date" with "2010-05-31"
     And fill in "Favorite color" with "yellow"
     And fill in "Capital of Assyria" with "Assur"
-    And I check "1 Jun 2009 - 31 May 2010"
     And I press "Update"
     Then I should see "Request was successfully updated."
-    And I should see "Position: Most Popular Person"
+    And I should see "Requestable: Most Popular Person"
     And I should see "User: Bill Williams"
     And I should see "State: started"
     And I should see "yellow"
     And I should see "Assur"
-    And I should see the following periods:
-      |Starts at  |Ends at     |
-      |1 Jun 2009 |31 May 2010 |
-      |1 Jun 2008 |31 May 2009 |
-    When I follow "Edit"
-    And I uncheck "1 Jun 2009 - 31 May 2010"
-    And I press "Update"
-    And I should see the following periods:
-      |Starts at  |Ends at     |
-      |1 Jun 2008 |31 May 2009 |
 
   Scenario: Delete request
     Given a user: "applicant1" exists with last_name: "Doe 1", first_name: "John"
     And a user: "applicant2" exists with last_name: "Doe 2", first_name: "John"
     And a user: "applicant3" exists with last_name: "Doe 3", first_name: "John"
     And a user: "applicant4" exists with last_name: "Doe 4", first_name: "John"
-    And a request exists with position: position "popular", user: user "applicant4"
-    And a request exists with position: position "popular", user: user "applicant3"
-    And a request exists with position: position "popular", user: user "applicant2"
-    And a request exists with position: position "popular", user: user "applicant1"
+    And a request exists with requestable: position "popular", user: user "applicant4"
+    And a request exists with requestable: position "popular", user: user "applicant3"
+    And a request exists with requestable: position "popular", user: user "applicant2"
+    And a request exists with requestable: position "popular", user: user "applicant1"
     And I log in as the administrator
     When I delete the 3rd request for position: "popular"
     Then I should see the following requests:

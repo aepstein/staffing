@@ -59,12 +59,14 @@ describe Membership do
   end
 
   it 'should populate a membership from a request' do
-    membership = Membership.new( :request_id => Factory(:request).id )
-    membership.period.should eql membership.request.periods.first
-    membership.starts_at.should eql membership.period.starts_at
-    membership.ends_at.should eql membership.period.ends_at
+    request = Factory(:request)
+    period = Factory(:period, :schedule => request.requestable.schedule, :starts_at => request.starts_at, :ends_at => request.ends_at)
+    membership = Membership.new( :request_id => request.id )
+    membership.period.should eql period
+    membership.starts_at.should eql period.starts_at
+    membership.ends_at.should eql period.ends_at
     membership.user.should eql membership.request.user
-    membership.position.should eql membership.request.position
+    membership.position.should eql membership.request.requestable
   end
 
   it 'should detect concurrent assigned memberships and prevent overstaffing' do

@@ -4,6 +4,8 @@ class Position < ActiveRecord::Base
   named_scope :with_status, lambda { |status|
     { :conditions => "(positions.statuses_mask & #{2**User::STATUSES.index(status.to_s)}) > 0 OR positions.statuses_mask = 0" }
   }
+  named_scope :requestable, { :conditions => { :requestable => true } }
+  named_scope :unrequestable, { :conditions => { :requestable => false } }
 
   belongs_to :authority
   belongs_to :quiz
@@ -55,7 +57,7 @@ class Position < ActiveRecord::Base
       build(:starts_at => starts_at, :period => period)
     end
   end
-  has_many :requests
+  has_many :requests, :as => :requestable
   has_many :users, :through => :memberships
   has_many :periods, :through => :schedule
   has_many :answers, :through => :requests

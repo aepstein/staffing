@@ -6,6 +6,6 @@
 
 <p>
 <%= link_to 'Show', @request %> |
-<%= link_to 'Back', position_requests_path( @request.position ) %>
+<%= link_to 'Back', polymorphic_path( [@request.requestable, :requests] ) %>
 </p>
 

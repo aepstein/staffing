@@ -124,11 +124,11 @@ class Membership < ActiveRecord::Base
   end
 
   def request_with_population=(new_request)
-    self.period ||= new_request.periods.last
+    self.user = new_request.user
+    self.position = new_request.requestable if new_request.requestable.class == Position
+    self.period ||= position.periods.overlaps(new_request.starts_at,new_request.ends_at).last if position
     self.starts_at ||= period.starts_at if period
     self.ends_at ||= period.ends_at if period
-    self.user = new_request.user
-    self.position = new_request.position
     self.request_without_population = new_request
   end
 

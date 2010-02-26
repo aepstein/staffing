@@ -1,5 +1,5 @@
 <p>
-  <b>Position:</b> <%=h @request.position %>
+  <b>Requestable:</b> <%=h @request.requestable %>
 </p>
 
 <p>
@@ -11,11 +11,12 @@
 </p>
 
 <p>
-  <b>Periods:</b>
+  <b>Desired Start Date:</b> <%=h @request.starts_at %>
 </p>
 
-<%= render :partial => 'periods/periods', :object => @request.periods,
-  :locals => { :read_only => true } %>
+<p>
+  <b>Desired End Date:</b> <%=h @request.ends_at %>
+</p>
 
 <p>
   <b>Answers:</b>
@@ -29,6 +30,6 @@
 <p>
 <%= link_to 'Edit', edit_request_path(@request) %> |
 <%= link_to 'List Memberships', request_memberships_path(@request) %> |
-<%= link_to 'Back', position_requests_path(@request.position) %>
+<%= link_to 'Back', polymorphic_path( [@request.requestable, :requests] ) %>
 </p>
 

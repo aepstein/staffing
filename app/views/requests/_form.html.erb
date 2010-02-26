@@ -1,11 +1,9 @@
   <%= form.error_messages %>
   <% form.inputs do %>
-    <% form.object.position.schedule.periods.each do |period| %>
-    <li>
-    <%= check_box_tag 'request[period_ids][]', period.id, form.object.periods.include?(period), :id => "request_period_#{period.id}" %>
-    <%= label_tag "request_period_#{period.id}", period %>
-    </li>
-    <% end %>
+    <%= form.input :starts_at, :as => :ft_calendar_date_select, :label => 'Desired Start Date',
+      :hint => 'When is the earliest date you are interested in serving?' %>
+    <%= form.input :ends_at, :as => :ft_calendar_date_select, :label => 'Desired End Date',
+      :hint => 'When is the latest date you are interested in serving?' %>
     <% form.object.answers.each do |answer| %>
       <% form.semantic_fields_for :answers, answer do |subform| %>
         <%= subform.input( :question_id, :as => :hidden ) if subform.object.new_record? %>
