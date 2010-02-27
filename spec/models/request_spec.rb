@@ -40,5 +40,28 @@ describe Request do
     @request.user.status.should_not eql 'undergrad'
     @request.save.should be_false
   end
+
+  it 'should have an allowed_questions method that returns only questions in the quiz of requestable if it is a position' do
+    allowed = Factory(:question)
+    @request.requestable.quiz.questions << allowed
+    unallowed = Factory(:question)
+    @request.allowed_questions.size.should eql 1
+    @request.allowed_questions.should include allowed
+  end
+
+  it 'should have an allowed_questions method that returns only questions in the quiz of allowed positions of requestable if it is a committee' do
+    allowed = Factory(:question)
+    committee = Factory(:committee)
+    allowed_position = Factory(:position)
+    allowed_position.quiz.questions << allowed
+    Factory(:enrollment, :committee => committee, :position => allowed_position)
+    disallowed_position = Factory(:position, :statuses => [ 'temporary' ])
+    disallowed_position.statuses.should_not include @request.user.status
+    disallowed_position.quiz.questions << Factory(:question)
+    Factory(:enrollment, :committee => committee, :position => disallowed_position)
+    outside_position = Factory(:position)
+    outside_position.quiz.questions << Factory(:question)
+    @request = Factory(:request, :requestable => committee)
+  end
 end
 
