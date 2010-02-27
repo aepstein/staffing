@@ -36,8 +36,8 @@ class Request < ActiveRecord::Base
     when 'Position'
       requestable.quiz.questions
     else
-      Question.quiz_id_equals_any(
-        requestable.positions.requestable.with_status(proxy_owner.user.status).map { |p| p.quiz_id }
+      Question.quizzes_id_equals_any(
+        requestable.positions.requestable.with_status( user.status ).map { |p| p.quiz_id }
       ).all
     end
   end

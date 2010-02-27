@@ -41,16 +41,18 @@ Feature: Manage requests
       | completed | applicant | see "Williams, Bill"     | not see "not authorized" | see "not authorized"     | see "not authorized"     | not see "not authorized" |
       | started   | regular   | not see "Williams, Bill" | not see "not authorized" | see "not authorized"     | see "not authorized"     | see "not authorized"     |
 
-  Scenario: Register new request or edit
+  Scenario Outline: Register new request or edit (committee)
     Given I log in as "applicant" with password "secret"
-    And I am on the new request page for position: "popular"
+    And a committee exists with name: "Central Committee"
+    And an enrollment exists with committee: the committee, position: position "popular"
+    And I am on the new request page for <requestable>
     When I fill in "Desired Start Date" with "2008-06-01"
     And I fill in "Desired End Date" with "2009-05-31"
     And I fill in "Favorite color" with "*bl*ue"
     And I fill in "Capital of Assyria" with "*Da*mascus"
     And I press "Create"
     Then I should see "Request was successfully created."
-    And I should see "Requestable: Most Popular Person"
+    And I should see "Requestable: <name>"
     And I should see "User: Bill Williams"
     And I should see "State: started"
     And I should see "blue"
@@ -62,11 +64,15 @@ Feature: Manage requests
     And fill in "Capital of Assyria" with "Assur"
     And I press "Update"
     Then I should see "Request was successfully updated."
-    And I should see "Requestable: Most Popular Person"
+    And I should see "Requestable: <name>"
     And I should see "User: Bill Williams"
     And I should see "State: started"
     And I should see "yellow"
     And I should see "Assur"
+    Examples:
+      | requestable         | name                |
+      | the committee       | Central Committee   |
+      | position: "popular" | Most Popular Person |
 
   Scenario: Delete request
     Given a user: "applicant1" exists with last_name: "Doe 1", first_name: "John"

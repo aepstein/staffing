@@ -2,7 +2,7 @@ class Position < ActiveRecord::Base
   default_scope :order => 'positions.name ASC'
 
   named_scope :with_status, lambda { |status|
-    { :conditions => "(positions.statuses_mask & #{2**User::STATUSES.index(status.to_s)}) > 0 OR positions.statuses_mask = 0" }
+    { :conditions => "(positions.statuses_mask & #{status.nil? ? 0 : 2**User::STATUSES.index(status.to_s)}) > 0 OR positions.statuses_mask = 0" }
   }
   named_scope :requestable, { :conditions => { :requestable => true } }
   named_scope :unrequestable, { :conditions => { :requestable => false } }
