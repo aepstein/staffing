@@ -63,5 +63,16 @@ describe Request do
     outside_position.quiz.questions << Factory(:question)
     @request = Factory(:request, :requestable => committee)
   end
+
+  it 'should have a expired and unexpired scopes' do
+    older = Factory(:expired_request)
+    old = Factory(:expired_request, :ends_at => Date.today)
+    @request.ends_at.should > Date.today
+    Request.expired.length.should eql 2
+    Request.expired.should include older
+    Request.expired.should include old
+    Request.unexpired.length.should eql 1
+    Request.unexpired.should include @request
+  end
 end
 

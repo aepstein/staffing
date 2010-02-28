@@ -61,6 +61,10 @@ Factory.define :request do |f|
   f.requestable { |r| r.association :position }
 end
 
+Factory.define :expired_request, :parent => :request do |f|
+  f.starts_at Date.today - 2.years
+end
+
 Factory.define :schedule do |f|
   f.sequence(:name) { |n| "Schedule #{n}" }
 end

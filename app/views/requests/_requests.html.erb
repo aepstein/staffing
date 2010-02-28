@@ -1,8 +1,8 @@
 <% user ||= false; requestable ||= false %>
-<table>
+<table id="requests">
   <thead>
   <tr>
-    <% unless user%>
+    <% unless user %>
     <th>User</th>
     <% end %>
     <% unless requestable %>

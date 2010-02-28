@@ -1,5 +1,7 @@
 ActionController::Routing::Routes.draw do |map|
-  map.resources :users
+  map.resources :users, :shallow => true do |user|
+    user.resources :requests, :collection => { :expired => :get, :unexpired => :get }
+  end
   map.resources :positions, :shallow => true do |position|
     position.resources :memberships
     position.resources :requests, :only => [ :new, :create, :index ] do |request|
@@ -11,7 +13,6 @@ ActionController::Routing::Routes.draw do |map|
     committee.resources :enrollments
     committee.resources :memberships, :only => [ :index ]
   end
-  map.resources :requests, :except => [ :new, :create, :index ]
   map.resources :authorities
   map.resources :qualifications
   map.resources :questions, :shallow => true do |question|
