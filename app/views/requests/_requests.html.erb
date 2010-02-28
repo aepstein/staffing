@@ -1,0 +1,19 @@
+<% user ||= false; requestable ||= false %>
+<table>
+  <thead>
+  <tr>
+    <% unless user%>
+    <th>User</th>
+    <% end %>
+    <% unless requestable %>
+    <th>Requestable</th>
+    <% end %>
+    <th>State</th>
+  </tr>
+  </thead>
+  <tbody>
+  <%= render :partial => 'requests/request', :collection => requests,
+    :locals => { :user => user, :requestable => requestable } %>
+  </tbody>
+</table>
+

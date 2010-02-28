@@ -1,16 +1,6 @@
 <h1>Listing requests for <%= @requestable %></h1>
 
-<table>
-  <thead>
-  <tr>
-    <th>User</th>
-    <th>State</th>
-  </tr>
-  </thead>
-  <tbody>
-  <%= render :partial => 'request', :collection => @requests %>
-  </tbody>
-</table>
+<%= render :partial => "requests", :object => @requests, :locals => { :requestable => @requestable } %>
 
 <br />
 

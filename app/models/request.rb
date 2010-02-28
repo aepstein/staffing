@@ -1,6 +1,8 @@
 class Request < ActiveRecord::Base
   default_scope :include => [ :user ],
-    :order => 'users.last_name ASC, users.first_name ASC, users.middle_name ASC'
+    :order => 'position ASC, users.last_name ASC, users.first_name ASC, users.middle_name ASC'
+  scope_procedure :unexpired, lambda { ends_at_gt Date.today }
+  scope_procedure :expired, lambda { ends_at_lte Date.today }
 
   include AASM
   aasm_column :state
@@ -10,7 +12,7 @@ class Request < ActiveRecord::Base
   aasm_state :reviewed
   aasm_state :released
 
-  acts_as_list :scope => [ :user_id ]
+  acts_as_list :scope => :user_id
 
   has_many :answers do
     def populate
