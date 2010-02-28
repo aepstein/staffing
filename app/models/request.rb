@@ -14,6 +14,8 @@ class Request < ActiveRecord::Base
 
   acts_as_list :scope => :user_id
 
+  attr_accessor :move_to
+
   has_many :answers do
     def populate
       proxy_owner.allowed_questions.each { |q| build :question => q }
@@ -51,11 +53,36 @@ class Request < ActiveRecord::Base
     end
   end
 
+  after_save :do_move_to
+
+  def move_to_options
+    user.requests.unexpired.all
+  end
+
+  def move_to_id=(id)
+    return self.move_to = nil if id.blank?
+    self.move_to = Request.find id
+    self.move_to = nil if move_to.user_id != user_id
+  end
+
+  def move_to_id
+    return unless move_to
+    move_to.id
+  end
+
   accepts_nested_attributes_for :answers
 
   protected
 
+  def do_move_to
+    return if move_to.nil?
+    insert_at move_to.position
+    move_to = nil
+  end
+
   def initialize_answers; answers.each { |a| a.request = self }; end
+
+  def to_s; requestable.to_s; end
 
 end
 

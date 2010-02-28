@@ -133,7 +133,7 @@ class RequestsController < ApplicationController
     elsif @requestable
       "for #{@requestable}"
     elsif @user
-      "for #{user}"
+      "for #{@user}"
     else
       ""
     end

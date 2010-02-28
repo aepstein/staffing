@@ -5,7 +5,9 @@
 
 <br />
 
+<% if @requestable %>
 <p>
 <%= link_to 'New request', new_polymorphic_path( [@requestable, :request] ) %>
 </p>
+<% end %>
 

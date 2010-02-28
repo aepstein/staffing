@@ -14,6 +14,7 @@ Feature: Manage requests
     And question: "first" is amongst the questions of quiz: "generic"
     And question: "second" is amongst the questions of quiz: "generic"
     And a position: "popular" exists with name: "Most Popular Person", schedule: schedule "annual", quiz: quiz "generic"
+    And a position: "unpopular" exists with name: "Least Popular Person"
 
   Scenario Outline: Test permissions for requests controller actions
     Given a request exists with requestable: the position, user: user "applicant", state: "<state>"
@@ -40,16 +41,18 @@ Feature: Manage requests
       | started   | applicant | see "Williams, Bill"     | not see "not authorized" | not see "not authorized" | not see "not authorized" | not see "not authorized" |
       | completed | applicant | see "Williams, Bill"     | not see "not authorized" | see "not authorized"     | see "not authorized"     | not see "not authorized" |
       | started   | regular   | not see "Williams, Bill" | not see "not authorized" | see "not authorized"     | see "not authorized"     | see "not authorized"     |
-
-  Scenario Outline: Register new request or edit (committee)
+@wip
+  Scenario Outline: Register new request or edit
     Given I log in as "applicant" with password "secret"
     And a committee exists with name: "Central Committee"
     And an enrollment exists with committee: the committee, position: position "popular"
+    And a request exists with user: user "applicant", requestable: position "unpopular"
     And I am on the new request page for <requestable>
     When I fill in "Desired Start Date" with "2008-06-01"
     And I fill in "Desired End Date" with "2009-05-31"
     And I fill in "Favorite color" with "*bl*ue"
     And I fill in "Capital of Assyria" with "*Da*mascus"
+    And I select "Least Popular Person" from "Move to"
     And I press "Create"
     Then I should see "Request was successfully created."
     And I should see "Requestable: <name>"
@@ -69,6 +72,11 @@ Feature: Manage requests
     And I should see "State: started"
     And I should see "yellow"
     And I should see "Assur"
+    When I am on the requests page for user: "applicant"
+    Then I should see the following requests:
+      | Requestable          |
+      | <name>               |
+      | Least Popular Person |
     Examples:
       | requestable         | name                |
       | the committee       | Central Committee   |
