@@ -57,6 +57,22 @@ Feature: Manage questions
     And I should see "Desserts"
     And I should not see "Colors"
 
+  Scenario: List questions for a quiz
+    Given a quiz: "colors" exists with name: "Colors"
+    And a question exists with name: "Color question"
+    And the question is amongst the questions of the quiz
+    And question exists with name: "Another question"
+    And I log in as the administrator
+    When I am on the questions page
+    Then I should see the following questions:
+      | Name             |
+      | Another question |
+      | Color question   |
+    When I am on the questions page for quiz: "colors"
+    Then I should see the following questions:
+      | Name           |
+      | Color question |
+
   Scenario: Delete question
     Given a question exists with name: "question 4"
     And a question exists with name: "question 3"

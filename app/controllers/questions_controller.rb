@@ -3,8 +3,10 @@ class QuestionsController < ApplicationController
 
   # GET /questions
   # GET /questions.xml
+  # GET /quizzes/:quiz_id/questions
+  # GET /quizzes/:quiz_id/questions.xml
   def index
-    @questions = Question.all
+    initialize_context
 
     respond_to do |format|
       format.html # index.html.erb
@@ -83,6 +85,12 @@ class QuestionsController < ApplicationController
       format.html { redirect_to(questions_url) }
       format.xml  { head :ok }
     end
+  end
+
+  def initialize_context
+    @quiz = Quiz.find params[:quiz_id] if params[:quiz_id]
+    @questions = @quiz.questions if @quiz
+    @questions ||= Question.all
   end
 end
 

@@ -21,7 +21,9 @@ ActionController::Routing::Routes.draw do |map|
   map.resources :schedules, :shallow => true do |schedule|
     schedule.resources :periods
   end
-  map.resources :quizzes
+  map.resources :quizzes, :shallow => true do |quiz|
+    quiz.resources :questions, :only => [ :index ]
+  end
   map.resource :user_session, :only => [:create]
 
   map.login 'login', :controller => 'user_sessions', :action => 'new'
