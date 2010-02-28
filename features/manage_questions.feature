@@ -28,25 +28,34 @@ Feature: Manage questions
       | regular | see "not authorized"     | see "not authorized"     | see "not authorized"     | see "not authorized"     |
 
   Scenario: Register new question
-    Given I log in as the administrator
+    Given a quiz exists with name: "Colors"
+    And a quiz exists with name: "Desserts"
+    And I log in as the administrator
     And I am on the new question page
     When I fill in "Name" with "Favorite color"
     And I fill in "Content" with "What is your favorite color?"
     And I choose "question_global_true"
+    And I check "Colors"
     And I press "Create"
     Then I should see "Question was successfully created."
     And I should see "Name: Favorite color"
     And I should see "What is your favorite color?"
     And I should see "Global? Yes"
+    And I should see "Colors"
+    And I should not see "Desserts"
     When I follow "Edit"
     And I fill in "Name" with "Favorite dessert"
     And I fill in "Content" with "What is your favorite *dessert*?"
+    And I uncheck "Colors"
+    And I check "Desserts"
     And I choose "question_global_false"
     And I press "Update"
     Then I should see "Question was successfully updated."
     And I should see "Name: Favorite dessert"
     And I should see "What is your favorite dessert?"
     And I should see "Global? No"
+    And I should see "Desserts"
+    And I should not see "Colors"
 
   Scenario: Delete question
     Given a question exists with name: "question 4"

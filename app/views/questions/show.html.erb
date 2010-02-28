@@ -11,6 +11,15 @@
   <b>Global?</b> <%= @question.global ? 'Yes' : 'No' %>
 </p>
 
+<% if @question.quizzes.length > 0 %>
+<h3>Quizzes</h3>
+<ul>
+<% @question.quizzes.each do |quiz| %>
+<li><%= link_to h(quiz), quiz %></li>
+<% end %>
+</ul>
+<% end %>
+
 <p>
 <%= link_to 'Edit', edit_question_path(@question) %> |
 <%= link_to 'Back', questions_path %>

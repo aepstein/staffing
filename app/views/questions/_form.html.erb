@@ -4,5 +4,8 @@
   <%= form.input :content %>
   <%= form.input :global, :as => :radio %>
   <% end %>
+  <% form.inputs :name => 'Quizzes' do %>
+  <%= form.input :quizzes, :as => :check_boxes %>
+  <% end %>
   <%= form.buttons %>
 
