@@ -10,6 +10,7 @@ end
 
 Factory.define :committee do |f|
   f.sequence(:name) { |n| "Committee #{n}" }
+  f.requestable true
 end
 
 Factory.define :designee do |f|
@@ -35,6 +36,7 @@ end
 
 Factory.define :position do |f|
   f.sequence(:name) { |n| "Position #{n}" }
+  f.requestable true
   f.association :authority
   f.association :schedule
   f.association :quiz

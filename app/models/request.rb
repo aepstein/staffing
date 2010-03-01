@@ -22,13 +22,17 @@ class Request < ActiveRecord::Base
   belongs_to :requestable, :polymorphic => true
   belongs_to :user
 
-  has_many :memberships
+  has_many :memberships do
+    def assignable
+      proxy_owner.requestable.memberships.position_with_status(proxy_owner.user.status).unassigned.current
+    end
+  end
 
   validates_presence_of :requestable
   validates_presence_of :user
   validates_date :starts_at
   validates_date :ends_at, :after => :starts_at
-  validate :user_status_must_match_position
+  validate :user_status_must_match_position, :requestable_must_be_requestable
 
   before_validation_on_create :initialize_answers
 
@@ -42,6 +46,11 @@ class Request < ActiveRecord::Base
         requestable.positions.requestable.with_status( user.status ).map { |p| p.quiz_id }
       ).all
     end
+  end
+
+  def requestable_must_be_requestable
+    return unless requestable
+    errors.add :requestable, "is not requestable." unless requestable.requestable?
   end
 
   def user_status_must_match_position
