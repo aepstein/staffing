@@ -2,6 +2,10 @@
   <b>Name:</b> <%=h @committee.name %>
 </p>
 
+<p>
+  <b>Requestable?</b> <%= @committee.requestable? ? 'Yes' : 'No' %>
+</p>
+
 <p><b>Join message:</b></p>
 
 <%=markdown @committee.join_message %>

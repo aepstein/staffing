@@ -1,6 +1,7 @@
   <%= form.error_messages %>
   <% form.inputs do %>
   <%= form.input :name %>
+  <%= form.input :requestable, :as => :radio, :label => 'Requestable?' %>
   <%= form.input :join_message %>
   <%= form.input :leave_message %>
   <% end %>
