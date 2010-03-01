@@ -41,7 +41,7 @@ Feature: Manage requests
       | started   | applicant | see "Williams, Bill"     | not see "not authorized" | not see "not authorized" | not see "not authorized" | not see "not authorized" |
       | completed | applicant | see "Williams, Bill"     | not see "not authorized" | see "not authorized"     | see "not authorized"     | not see "not authorized" |
       | started   | regular   | not see "Williams, Bill" | not see "not authorized" | see "not authorized"     | see "not authorized"     | see "not authorized"     |
-@wip
+
   Scenario Outline: Register new request or edit
     Given I log in as "applicant" with password "secret"
     And a committee exists with name: "Central Committee"

@@ -14,8 +14,6 @@ class Request < ActiveRecord::Base
 
   acts_as_list :scope => :user_id
 
-  attr_accessor :move_to
-
   has_many :answers do
     def populate
       proxy_owner.allowed_questions.each { |q| build :question => q }
@@ -53,31 +51,30 @@ class Request < ActiveRecord::Base
     end
   end
 
-  after_save :do_move_to
+  attr_accessor :new_position
 
-  def move_to_options
-    user.requests.unexpired.all
+  def new_position_options
+    user.requests.inject( new_record? ? { 'Last Position' => '' } : {} ) do |memo, request|
+      if request == self
+        memo[request.to_s] = ''
+      else
+        memo[request.to_s] = request.position
+      end
+      memo
+    end
   end
 
-  def move_to_id=(id)
-    return self.move_to = nil if id.blank?
-    self.move_to = Request.find id
-    self.move_to = nil if move_to.user_id != user_id
-  end
-
-  def move_to_id
-    return unless move_to
-    move_to.id
-  end
+  after_save :insert_at_new_position
 
   accepts_nested_attributes_for :answers
 
   protected
 
-  def do_move_to
-    return if move_to.nil?
-    insert_at move_to.position
-    move_to = nil
+  def insert_at_new_position
+    return if new_position.blank? || new_position == position
+    pos = new_position
+    self.new_position = nil
+    insert_at pos
   end
 
   def initialize_answers; answers.each { |a| a.request = self }; end
