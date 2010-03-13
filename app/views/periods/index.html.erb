@@ -1,8 +1,8 @@
-<h1>Listing periods for <%=h @schedule %></h1>
+<h2>Listing periods for <%=h @schedule %></h2>
 
 <%= render :partial => 'periods', :object => @periods %>
 
-<br />
+<hr />
 
 <p>
 <%= link_to 'New period', new_schedule_period_path(@schedule) %>

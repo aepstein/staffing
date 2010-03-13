@@ -1,43 +1,90 @@
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
-       "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
-
+    "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 <html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
+
 <head>
-  <meta http-equiv="content-type" content="text/html;charset=UTF-8" />
-  <title>Staffing: <%= controller.action_name %></title>
-  <%= javascript_include_tag :defaults %>
-  <%= stylesheet_link_tag 'scaffold', 'formtastic', 'formtastic_changes', :cache => true %>
+	<title>Charon Finance System - Cornell Assemblies</title>
+	<meta http-equiv="Content-Type" content="text/html; charset=ISO-8859-1" />
+	<meta http-equiv="Content-Language" content="en-us" />
+	<link rel="SHORTCUT ICON" href="<%= image_path('favicon.ico') %>" type="image/x-icon" />
+	<%= stylesheet_link_tag 'screen', 'formtastic', 'formtastic_changes' %>
+	<%= javascript_include_tag :defaults %>
   <%= calendar_date_select_includes 'red' %>
 </head>
+
 <body>
+
+<div id="skipnav">
+	<a href="#content">Skip to main content</a>
+</div>
+
+<hr class="banner-separator" />
+
+<div id="cu-identity">
+	<div id="cu-logo">
+		<a id="insignia-link" href="http://www.cornell.edu/"><img src="<%=image_path('layout/unit_signature.gif')%>" alt="Cornell University" width="283" height="76" border="0" /></a>
+		<div id="unit-signature-links">
+			<a id="cornell-link" href="http://www.cornell.edu/">Cornell University</a>
+			<a id="unit-link" href="http://assembly.cornell.edu">Office of the Assemblies</a>
+		</div>
+  </div>
+
+	<div id="search-navigation">
+		<ul>
+			<li><a href="http://assembly.cornell.edu/Site/Search">Search Assemblies</a></li>
+			<li><a href="http://www.cornell.edu/search/">Search Cornell</a></li>
+		</ul>
+	</div>
+</div>
+
+<hr class="banner-separator" />
+<div id="header">
+	<div id="navigation">
+		<ul>
+<% if current_user %>
+<li><%= link_to 'my profile', profile_path %></li>
+<li><%= link_to 'logout', logout_path %></li>
+<% if current_user.admin? %>
+<li><%= link_to 'authorities', authorities_path %></li>
+<li><%= link_to 'committees', committees_path %></li>
+<li><%= link_to 'positions', positions_path %></li>
+<li><%= link_to 'qualifications', qualifications_path %></li>
+<li><%= link_to 'questions', questions_path %></li>
+<li><%= link_to 'schedules', schedules_path %></li>
+<li><%= link_to 'quizzes', quizzes_path %></li>
+<li><%= link_to 'users', users_path %></li>
+<% end %>
+<% else %>
+<%= link_to 'login', login_path %>
+<% end %>
+		</ul>
+	</div>
+	<hr />
+	<div id="identity">
+		<h1>Committees</h1>
+	</div>
+</div>
+<hr />
+<div id="wrap">
+<div id="content">
+	<div id="main">
 
 <p style="color: red"><%= flash[:error] %></p>
 <p style="color: green"><%= flash[:notice] %></p>
 
-<% if current_user %>
-
-<%= link_to 'my profile', profile_path %> |
-<%= link_to 'logout', logout_path %>
-
-<% if current_user.admin? %>
- | <%= link_to 'authorities', authorities_path %> |
-<%= link_to 'committees', committees_path %> |
-<%= link_to 'positions', positions_path %> |
-<%= link_to 'qualifications', qualifications_path %> |
-<%= link_to 'questions', questions_path %> |
-<%= link_to 'schedules', schedules_path %> |
-<%= link_to 'quizzes', quizzes_path %> |
-<%= link_to 'users', users_path %>
-<% end %>
-
-<% else %>
-
-<%= link_to 'login', login_path %>
-
-<% end %>
-
 <%= yield %>
 
+   </div> <!-- id=main -->
+</div> <!-- id=content -->
+</div> <!-- id=wrap -->
+<div id="footer">
+<div id="footer-content">
+&copy; 2008-2010 Office of the Assemblies, Cornell University.
+We use <a href="http://www.fsf.org/">free software</a>.
+Questions? Contact
+<a href="mailto:assembly@cornell.edu">assembly@cornell.edu</a>.
+</div>
+</div>
 </body>
 </html>
 

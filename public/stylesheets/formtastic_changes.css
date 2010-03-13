@@ -9,5 +9,10 @@ form.formtastic fieldset ol li p.inline-hints { color:#333; }
 
 --------------------------------------------------------------------------------------------------*/
 
-form.formtastic fieldset ol li.string_with_auto_complete input { width:74%; }
+form.formtastic fieldset ol li.string input { width:70%; }
+form.formtastic fieldset ol li.password input { width:70%; }
+form.formtastic fieldset ol li.numeric input { width:70%; }
+form.formtastic fieldset ol li.text textarea { width:70%; }
+form.formtastic legend span { font-weight: bold; font-size: 1.3em; }
+form.formtastic { clear: both; }
 

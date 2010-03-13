@@ -1,9 +1,9 @@
-<h1>Listing requests <%= @title %></h1>
+<h2>Listing requests <%= @title %></h2>
 
 <%= render :partial => "requests", :object => @requests,
   :locals => { :requestable => @requestable, :user => @user } %>
 
-<br />
+<hr />
 
 <% if @requestable %>
 <p>

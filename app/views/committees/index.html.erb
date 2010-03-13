@@ -1,4 +1,4 @@
-<h1>Listing committees</h1>
+<h2>Listing committees</h2>
 
 <% semantic_form_for @search do |form| %>
 <p>
@@ -24,7 +24,7 @@
 
 <%= will_paginate @committees %>
 
-<br />
+<hr />
 
 <p>
 <%= link_to 'New committee', new_committee_path %>

@@ -1,4 +1,10 @@
-<h1>Listing memberships</h1>
+<h2>Listing memberships<%=h( if @committee
+" for #{@committee}"
+elsif @user
+" for #{@user}"
+elseif @position
+" for #{@position}"
+end ) %></h2>
 
 <%= will_paginate @memberships %>
 
@@ -10,7 +16,7 @@
 
 <%= will_paginate @memberships %>
 
-<br />
+<hr />
 
 <p>
 <% if @position %>

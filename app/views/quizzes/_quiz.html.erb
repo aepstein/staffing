@@ -1,7 +1,7 @@
-  <tr>
+  <% table_row_tag do %>
     <td><%=h quiz.name %></td>
     <td><%= link_to 'Show', quiz %></td>
     <td><%= link_to 'Edit', edit_quiz_path(quiz) %></td>
     <td><%= link_to 'Destroy', quiz, :confirm => 'Are you sure?', :method => :delete %></td>
-  </tr>
+  <% end %>
 

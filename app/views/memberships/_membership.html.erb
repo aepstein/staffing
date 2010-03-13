@@ -1,4 +1,4 @@
-  <tr>
+  <% table_row_tag do %>
     <td><%= membership.user ? h(membership.user) : "<i>unassigned</i>" %></td>
     <td><%=h membership.period %></td>
     <td><%=h membership.starts_at.to_s :rfc822 %></td>
@@ -10,5 +10,5 @@
     <td><%= link_to 'Show', membership %></td>
     <td><%= link_to 'Edit', edit_membership_path(membership) %></td>
     <td><%= link_to 'Destroy', membership, :confirm => 'Are you sure?', :method => :delete %></td>
-  </tr>
+  <% end %>
 
