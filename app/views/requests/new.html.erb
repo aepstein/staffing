@@ -1,6 +1,7 @@
 <h2>New request</h2>
 
-<% semantic_form_for(:request, @request, :url => polymorphic_path([@request.requestable, :requests]) ) do |f| %>
+<% semantic_form_for(:request, @request, :url => polymorphic_path([@request.requestable, :requests]),
+  :multipart => true ) do |f| %>
   <%= render :partial => 'form', :object => f %>
 <% end %>
 

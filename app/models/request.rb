@@ -76,6 +76,7 @@ class Request < ActiveRecord::Base
   after_save :insert_at_new_position
 
   accepts_nested_attributes_for :answers
+  accepts_nested_attributes_for :user
 
   protected
 

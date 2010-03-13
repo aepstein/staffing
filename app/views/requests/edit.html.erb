@@ -1,6 +1,6 @@
 <h2>Editing request</h2>
 
-<% semantic_form_for(@request) do |f| %>
+<% semantic_form_for(@request, :multipart => true) do |f| %>
   <%= render :partial => 'form', :object => f %>
 <% end %>
 

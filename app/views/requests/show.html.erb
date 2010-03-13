@@ -28,6 +28,10 @@
 <% end %>
 
 <p>
+  <b>Resume?</b> <%= @request.user.resume.file? ? link_to('Yes', @request.user.resume.url) : 'No' %>
+</p>
+
+<p>
 <%= link_to 'Edit', edit_request_path(@request) %> |
 <%= link_to 'List Memberships', request_memberships_path(@request) %> |
 <%= link_to 'Back', polymorphic_path( [@request.requestable, :requests] ) %>

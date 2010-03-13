@@ -13,6 +13,10 @@
         <%= subform.input :content, :as => :text, :label => subform.object.question.name %>
       <% end %>
     <% end %>
+    <% form.semantic_fields_for :user do |subform| %>
+      <%= subform.input :resume, :as => :file,
+        :hint => 'You may optionally provide a resume (pdf only). This resume will appear in all your membership requests.' %>
+    <% end %>
   <% end %>
   <%= form.buttons %>
 

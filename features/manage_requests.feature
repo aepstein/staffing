@@ -60,11 +60,13 @@ Feature: Manage requests
     And I should see "State: started"
     And I should see "blue"
     And I should see "Damascus"
+    And I should see "Resume? No"
     When I follow "Edit"
     And I fill in "Desired Start Date" with "2009-06-01"
     And I fill in "Desired End Date" with "2010-05-31"
     And fill in "Favorite color" with "yellow"
     And fill in "Capital of Assyria" with "Assur"
+    And I attach a file of type "application/pdf" and 1 kilobyte to "Resume"
     And I press "Update"
     Then I should see "Request was successfully updated."
     And I should see "Requestable: <name>"
@@ -72,6 +74,7 @@ Feature: Manage requests
     And I should see "State: started"
     And I should see "yellow"
     And I should see "Assur"
+    And I should see "Resume? Yes"
     When I am on the requests page for user: "applicant"
     Then I should see the following requests:
       | Requestable          |
