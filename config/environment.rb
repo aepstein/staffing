@@ -51,6 +51,7 @@ Rails::Initializer.run do |config|
   config.gem 'will_paginate', :source => 'http://gemcutter.org'
   config.gem 'repeated_auto_complete', :source => 'http://gemcutter.org'
   config.gem 'acts_as_list', :source => 'http://gemcutter.org'
+  config.gem 'paperclip', :source => 'http://gemcutter.org'
 end
 
 CalendarDateSelect.format = :hyphen_ampm

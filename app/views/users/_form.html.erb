@@ -1,19 +1,20 @@
   <%= form.error_messages %>
   <% form.inputs do %>
-  <%= form.input :first_name %>
-  <%= form.input :middle_name %>
-  <%= form.input :last_name %>
-  <%= form.input :email %>
-  <%= form.input :mobile_phone %>
-  <%= form.input :work_phone %>
-  <%= form.input :home_phone %>
-  <%= form.input :work_address %>
-  <%= form.input :date_of_birth, :as => :ft_calendar_date_select %>
-  <% if current_user.admin? %>
-  <%= form.input :net_id %>
-  <%= form.input :admin, :as => :radio, :label => 'Administrator?' %>
-  <%= form.input :status, :as => :select, :collection => User::STATUSES %>
-  <% end %>
+    <%= form.input :first_name %>
+    <%= form.input :middle_name %>
+    <%= form.input :last_name %>
+    <%= form.input :email %>
+    <%= form.input :mobile_phone %>
+    <%= form.input :work_phone %>
+    <%= form.input :home_phone %>
+    <%= form.input :work_address %>
+    <%= form.input :date_of_birth, :as => :ft_calendar_date_select %>
+    <%= form.input :resume, :as => :file, :hint => 'You may optionally provide a resume (pdf only)' %>
+    <% if permitted_to? :manage, form.object %>
+      <%= form.input :net_id %>
+      <%= form.input :admin, :as => :radio, :label => 'Administrator?' %>
+      <%= form.input :status, :as => :select, :collection => User::STATUSES %>
+    <% end %>
   <% end %>
   <%= form.buttons %>
 

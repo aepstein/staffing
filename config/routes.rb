@@ -1,5 +1,5 @@
 ActionController::Routing::Routes.draw do |map|
-  map.resources :users, :shallow => true do |user|
+  map.resources :users, :shallow => true, :member => { :resume => :get } do |user|
     user.resources :requests, :collection => { :expired => :get, :unexpired => :get }
   end
   map.resources :positions, :shallow => true do |position|

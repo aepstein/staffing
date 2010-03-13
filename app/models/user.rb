@@ -12,12 +12,18 @@ class User < ActiveRecord::Base
   has_many :periods, :through => :memberships
   has_many :positions, :through => :memberships
 
+  has_attached_file :resume,
+    :path => ':rails_root/db/uploads/:rails_env/users/:attachment/:id_partition/:style/:basename.:extension',
+    :url => '/users/:id/resume'
+
   acts_as_authentic do |c|
     c.login_field :net_id
   end
 
   scope_procedure :name_like, lambda { |name| first_name_or_last_name_or_middle_name_or_net_id_like( name ) }
 
+  validates_attachment_size :resume, :less_than => 1.megabyte
+  validates_attachment_content_type :resume, :content_type => [ 'application/pdf' ], :if => Proc.new { |u| u.resume.file? }
   validates_presence_of :net_id
   validates_uniqueness_of :net_id
   validates_presence_of :first_name

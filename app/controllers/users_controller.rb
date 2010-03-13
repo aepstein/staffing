@@ -26,6 +26,21 @@ class UsersController < ApplicationController
     end
   end
 
+  # GET /users/1/resume.pdf
+  def resume
+    @user = User.find(params[:id])
+
+    respond_to do |format|
+      format.pdf do
+        if @user.resume.file?
+          send_file @user.resume.path, :type => @user.resume.content_type
+        else
+          head(:not_found)
+        end
+      end
+    end
+  end
+
   # GET /profile
   def profile
     respond_to do |format|

@@ -3,11 +3,15 @@ authorization do
     has_permission_on [ :authorities, :committees, :enrollments, :memberships,
       :periods, :positions, :qualifications, :quizzes, :questions, :requests,
       :schedules, :users ], :to => :manage
+    has_permission_on :users, :to => :resume
   end
   role :user do
     has_permission_on [ :authorities, :committees, :enrollments, :memberships,
       :periods, :positions, :qualifications, :schedules ],
       :to => [:show, :index]
+    has_permission_on :users, :to => :resume do
+      if_attribute :id => is { user.id }
+    end
     has_permission_on :requests, :to => :manage do
       if_attribute :user_id => is { user.id }, :state => is { 'started' }
     end
