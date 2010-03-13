@@ -23,7 +23,7 @@ class User < ActiveRecord::Base
   scope_procedure :name_like, lambda { |name| first_name_or_last_name_or_middle_name_or_net_id_like( name ) }
 
   validates_attachment_size :resume, :less_than => 1.megabyte
-  validates_attachment_content_type :resume, :content_type => [ 'application/pdf' ], :if => Proc.new { |u| u.resume.file? }
+  validates_attachment_content_type :resume, :content_type => [ 'application/pdf' ]
   validates_presence_of :net_id
   validates_uniqueness_of :net_id
   validates_presence_of :first_name
