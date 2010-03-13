@@ -58,7 +58,7 @@ describe User do
   end
 
   def generate_uploaded_file(size, type)
-    file = Tempfile.new('report.pdf')
+    file = Tempfile.new('resume.pdf')
     @temporary_files << file
     size.times { file << 'a' }
     ActionController::TestUploadedFile.new(file.path,type)

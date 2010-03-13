@@ -65,12 +65,16 @@ Spork.each_run do
     end
   end
 
+  Before do
+    $temporary_files ||= []
+  end
+
   After do
-   	# Remove test-generated files on completion of tests
    	data_directory = File.expand_path(File.dirname(__FILE__) + "../../../db/uploads/#{ENV['RAILS_ENV']}")
    	if File.directory?(data_directory)
    	  FileUtils.rm_rf data_directory
    	end
+   	$temporary_files.each { |file| file.close! }
   end
 end
 

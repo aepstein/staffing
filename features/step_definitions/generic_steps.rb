@@ -16,6 +16,18 @@ When /^I delete the (\d+)(?:st|nd|rd|th) #{capture_factory} for #{capture_model}
   end
 end
 
+# Adds support for validates_attachment_content_type. Without the mime-type getting
+# passed to attach_file() you will get a "Photo file is not one of the allowed file types."
+# error message
+When /^(?:|I )attach a file of type "([^\"]*)" and (\d+) (bytes?|kilobytes?|megabytes?) to "([^\"]*)"$/ do |type, size, unit, field|
+  file = Tempfile.new('resume.pdf')
+  $temporary_files << file
+  size.to_i.send( unit.to_sym ).times { file << 'a' }
+  ActionController::TestUploadedFile.new(file.path,type)
+
+  attach_file(field, file.path, type)
+end
+
 Then /^I should see the following #{capture_plural_factory}:$/ do |context, table|
   table.diff!(tableish('table > thead,tbody > tr', 'td,th'))
 end

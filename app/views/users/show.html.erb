@@ -39,11 +39,15 @@
 </p>
 
 <p>
+  <b>Resume?</b> <%= @user.resume.file? ? link_to( 'Yes', @user.resume.url ) : 'No' %>
+</p>
+
+<p>
   <b>Status:</b> <%=h @user.status.blank? ? 'unknown' : @user.status %>
 </p>
 
 <p>
-  <b>Administrator:</b> <%=h @user.admin? ? 'Yes' : 'No' %>
+  <b>Administrator?</b> <%=h @user.admin? ? 'Yes' : 'No' %>
 </p>
 
 <p>
