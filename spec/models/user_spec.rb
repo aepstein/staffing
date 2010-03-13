@@ -57,6 +57,12 @@ describe User do
     @user.save.should be_false
   end
 
+  it 'should have a name method that takes the :file argument' do
+    @user.first_name = 'John'
+    @user.last_name = 'Doe'
+    @user.name(:file).should eql 'john-doe'
+  end
+
   def generate_uploaded_file(size, type)
     file = Tempfile.new('resume.pdf')
     @temporary_files << file

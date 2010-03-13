@@ -14,7 +14,7 @@ class User < ActiveRecord::Base
 
   has_attached_file :resume,
     :path => ':rails_root/db/uploads/:rails_env/users/:attachment/:id_partition/:style/:basename.:extension',
-    :url => '/users/:id/resume'
+    :url => '/users/:id/resume.pdf'
 
   acts_as_authentic do |c|
     c.login_field :net_id
@@ -47,6 +47,8 @@ class User < ActiveRecord::Base
     name = case style
     when :last_first
       "#{last_name}, #{first_name}"
+    when :file
+      self.name.downcase.gsub(/[^a-z]/,'-')
     else
       "#{first_name} #{last_name}"
     end

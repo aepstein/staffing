@@ -33,7 +33,7 @@ class UsersController < ApplicationController
     respond_to do |format|
       format.pdf do
         if @user.resume.file?
-          send_file @user.resume.path, :type => @user.resume.content_type
+          send_file @user.resume.path, :filename => "#{@user.name :file}-resume.pdf", :type => @user.resume.content_type
         else
           head(:not_found)
         end
