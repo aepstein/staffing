@@ -64,5 +64,13 @@ Spork.each_run do
     rescue LoadError => ignore_if_database_cleaner_not_present
     end
   end
+
+  After do
+   	# Remove test-generated files on completion of tests
+   	data_directory = File.expand_path(File.dirname(__FILE__) + "../../../db/uploads/#{ENV['RAILS_ENV']}")
+   	if File.directory?(data_directory)
+   	  FileUtils.rm_rf data_directory
+   	end
+  end
 end
 

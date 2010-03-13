@@ -3,6 +3,11 @@ require File.expand_path(File.dirname(__FILE__) + '/../spec_helper')
 describe User do
   before(:each) do
     @user = Factory(:user)
+    @temporary_files = []
+  end
+
+  after(:each) do
+    @temporary_files.each { |file| file.close! }
   end
 
   it "should create a new instance given valid attributes" do
@@ -54,6 +59,7 @@ describe User do
 
   def generate_uploaded_file(size, type)
     file = Tempfile.new('report.pdf')
+    @temporary_files << file
     size.times { file << 'a' }
     ActionController::TestUploadedFile.new(file.path,type)
   end
