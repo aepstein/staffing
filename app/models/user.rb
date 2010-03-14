@@ -9,6 +9,7 @@ class User < ActiveRecord::Base
   has_and_belongs_to_many :authorities
   has_many :memberships
   has_many :requests
+  has_many :answers, :through => :requests
   has_many :periods, :through => :memberships
   has_many :positions, :through => :memberships
 

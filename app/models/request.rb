@@ -15,8 +15,21 @@ class Request < ActiveRecord::Base
   acts_as_list :scope => :user_id
 
   has_many :answers do
+    def populated_question_ids
+      self.map { |answer| answer.question_id }
+    end
     def populate
-      proxy_owner.allowed_questions.each { |q| build :question => q }
+      # Generate blank answers for any allowed question not in answer set
+      population = proxy_owner.allowed_questions.reject { |q| populated_question_ids.include? q.id }.map do |question|
+        build :question => question
+      end
+      # Fill in most recent prior answer for each global question populated
+      proxy_owner.user.answers.global.question_id_equals_any( population.map { |a| a.question_id }
+      ).descend_by_updated_at.all( :group => 'question_id' ).each do |answer|
+        population.select { |a| a.question_id == answer.question_id }.first.content = answer.content
+      end
+      # Return the populated answers
+      population
     end
   end
   belongs_to :requestable, :polymorphic => true

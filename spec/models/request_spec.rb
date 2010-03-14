@@ -64,6 +64,44 @@ describe Request do
     @request = Factory(:request, :requestable => committee)
   end
 
+  it 'should have answers.populate that populates answers for allowed_questions not yet built' do
+    user = Factory(:user)
+
+    unanswered_local = Factory(:question, :name => 'unanswered local')
+    unanswered_global = Factory(:question, :name => 'unanswered global', :global => true)
+    answered_local = Factory(:question, :name => 'answered local')
+    answered_global = Factory(:question, :name => 'answered global', :global => true)
+    excluded = Factory(:question, :name => 'excluded')
+    questions = [ unanswered_local, unanswered_global, answered_local, answered_global ]
+    answered_questions = [ answered_local, answered_global ]
+
+    short_quiz = Factory(:quiz, :questions => answered_questions)
+    full_quiz = Factory(:quiz, :questions => questions)
+
+    less_recent = generate_answered_request user, short_quiz, 'less recent answer'
+    sleep 2
+    most_recent = generate_answered_request user, short_quiz, 'most recent answer'
+
+    request = Factory.build(:request, :user => user, :requestable => Factory(:position, :quiz => full_quiz))
+    request.answers.build(:question => unanswered_local)
+    request.answers.populated_question_ids.size.should eql 1
+    request.answers.populated_question_ids.should include unanswered_local.id
+    answers = request.answers.populate
+    answers.length.should eql 3
+    question_ids = answers.map { |answer| answer.question_id }
+    question_ids.should include unanswered_global.id
+    question_ids.should include answered_local.id
+    question_ids.should include answered_global.id
+    qa = request.answers.inject({}) do |memo, answer|
+      memo[answer.question] = answer.content
+      memo
+    end
+    qa[unanswered_local].should be_nil
+    qa[unanswered_global].should be_nil
+    qa[answered_local].should be_nil
+    qa[answered_global].should eql 'most recent answer'
+  end
+
   it 'should have a expired and unexpired scopes' do
     older = Factory(:expired_request)
     old = Factory(:expired_request, :ends_at => Date.today)
@@ -73,6 +111,15 @@ describe Request do
     Request.expired.should include old
     Request.unexpired.length.should eql 1
     Request.unexpired.should include @request
+  end
+
+  def generate_answered_request(user, quiz, answer)
+    request = Factory.build(:request, :user => user, :requestable => Factory(:position, :quiz => quiz) )
+    quiz.questions.each do |question|
+      request.answers.build(:content => answer, :question => question)
+    end
+    request.save.should be_true
+    request
   end
 end
 
