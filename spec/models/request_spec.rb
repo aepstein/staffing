@@ -73,6 +73,7 @@ describe Request do
     request = Factory.build(:request, :requestable => committee, :user => user)
     request.allowed_questions.length.should eql 1
     request.allowed_questions.should include allowed
+    @request.allowed_questions.length.should eql 0
   end
 
   it 'should have answers.populate that populates answers for allowed_questions not yet built' do

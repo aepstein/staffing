@@ -55,9 +55,9 @@ class Request < ActiveRecord::Base
     when 'Position'
       requestable.quiz.questions
     else
-      Question.quizzes_id_equals_any(
-        requestable.positions.requestable.with_status( user.status ).map { |p| p.quiz_id }
-      ).all
+      quiz_ids = requestable.positions.with_status( user.status ).map { |p| p.quiz_id }
+      return [] if quiz_ids.empty?
+      Question.quizzes_id_equals_any( quiz_ids ).all
     end
   end
 
