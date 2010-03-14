@@ -11,6 +11,20 @@ class Committee < ActiveRecord::Base
   validates_presence_of :name
   validates_uniqueness_of :name
 
+  def memberships
+    Membership.enrollments_committee_id_equals( id )
+  end
+
+  def current_emails
+    memberships.current.all(:include => {:designees => :user, :user => [] }).inject([]) do |memo,membership|
+      memo << membership.user.name( :email )
+      membership.designees.each do |designee|
+        memo << designee.user.name( :email )
+      end
+      memo
+    end
+  end
+
   def to_s; name; end
 end
 

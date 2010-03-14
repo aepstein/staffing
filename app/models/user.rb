@@ -50,6 +50,8 @@ class User < ActiveRecord::Base
       "#{last_name}, #{first_name}"
     when :file
       self.name.downcase.gsub(/[^a-z]/,'-')
+    when :email
+      "#{email} #{self.name}"
     else
       "#{first_name} #{last_name}"
     end

@@ -19,5 +19,13 @@ describe Committee do
     duplicate.name = @committee.name
     duplicate.save.should eql false
   end
+
+  it 'should have current_emails that returns emails of current members and designees' do
+    designee = Factory(:designee)
+    emails = designee.committee.current_emails
+    emails.length.should eql 2
+    emails.should include designee.user.name :email
+    emails.should include designee.membership.user.name :email
+  end
 end
 
