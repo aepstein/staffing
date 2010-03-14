@@ -50,18 +50,29 @@ describe Request do
   end
 
   it 'should have an allowed_questions method that returns only questions in the quiz of allowed positions of requestable if it is a committee' do
-    allowed = Factory(:question)
-    committee = Factory(:committee)
-    allowed_position = Factory(:position)
-    allowed_position.quiz.questions << allowed
+    user = Factory(:user, :status => 'undergrad')
+    user.status.should eql 'undergrad'
+
+    allowed = Factory(:question, :name => 'allowed')
+    unallowed = Factory(:question, :name => 'unallowed')
+    other = Factory(:question, :name => 'other')
+
+    allowed_quiz = Factory(:quiz, :questions => [ allowed ])
+    unallowed_quiz = Factory(:quiz, :questions => [ unallowed ])
+    other_quiz = Factory(:quiz, :questions => [ allowed, unallowed, other ])
+
+    allowed_position = Factory(:position, :statuses => ['undergrad'], :quiz => allowed_quiz)
+    unallowed_position = Factory(:position, :statuses => ['grad'], :quiz => unallowed_quiz)
+    other_position = Factory(:position, :statuses => ['undergrad'], :quiz => other_quiz)
+
+    committee = Factory(:committee, :requestable => true)
     Factory(:enrollment, :committee => committee, :position => allowed_position)
-    disallowed_position = Factory(:position, :statuses => [ 'temporary' ])
-    disallowed_position.statuses.should_not include @request.user.status
-    disallowed_position.quiz.questions << Factory(:question)
-    Factory(:enrollment, :committee => committee, :position => disallowed_position)
-    outside_position = Factory(:position)
-    outside_position.quiz.questions << Factory(:question)
-    @request = Factory(:request, :requestable => committee)
+    Factory(:enrollment, :committee => committee, :position => unallowed_position)
+    committee.reload
+
+    request = Factory.build(:request, :requestable => committee, :user => user)
+    request.allowed_questions.length.should eql 1
+    request.allowed_questions.should include allowed
   end
 
   it 'should have answers.populate that populates answers for allowed_questions not yet built' do
