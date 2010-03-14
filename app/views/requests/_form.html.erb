@@ -10,7 +10,7 @@
     <% form.object.answers.each do |answer| %>
       <% form.semantic_fields_for :answers, answer do |subform| %>
         <%= subform.input( :question_id, :as => :hidden ) if subform.object.new_record? %>
-        <%= subform.input :content, :as => :text, :label => subform.object.question.name %>
+        <%= render_question subform %>
       <% end %>
     <% end %>
     <% form.semantic_fields_for :user do |subform| %>

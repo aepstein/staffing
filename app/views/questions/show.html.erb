@@ -3,6 +3,10 @@
 </p>
 
 <p>
+  <b>Format:</b> <%=h Question::ALLOWED_FORMATS.invert[@question.format] %>
+</p>
+
+<p>
   <b>Content:</b>
 </p>
 <%=markdown @question.content %>
