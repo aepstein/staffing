@@ -9,6 +9,7 @@ class CommitteesController < ApplicationController
 
     respond_to do |format|
       format.html # index.html.erb
+      format.js # index.js.erb
       format.xml  { render :xml => @committees }
     end
   end

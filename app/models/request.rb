@@ -49,16 +49,23 @@ class Request < ActiveRecord::Base
 
   before_validation_on_create :initialize_answers
 
-  def allowed_questions
-    return unless requestable
+  def allowed_positions
+    return [] unless requestable
     case requestable.class.to_s
     when 'Position'
-      requestable.quiz.questions
+      [requestable]
     else
-      quiz_ids = requestable.positions.with_status( user.status ).map { |p| p.quiz_id }
-      return [] if quiz_ids.empty?
-      Question.quizzes_id_equals_any( quiz_ids ).all
+      requestable.positions.with_status( user.status )
     end
+  end
+
+  def allowed_quizzes
+    allowed_positions.map { |position| position.quiz }
+  end
+
+  def allowed_questions
+    return [] unless allowed_quizzes.length > 0
+    Question.quizzes_id_equals_any( allowed_quizzes.map { |q| q.id }.uniq )
   end
 
   def requestable_must_be_requestable

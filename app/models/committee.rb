@@ -4,6 +4,7 @@ class Committee < ActiveRecord::Base
   named_scope :requestable, { :conditions => { :requestable => true } }
   named_scope :unrequestable, { :conditions => { :requestable => false } }
 
+  has_many :authorities
   has_many :requests, :as => :requestable
   has_many :enrollments
   has_many :positions, :through => :enrollments

@@ -24,25 +24,31 @@ Feature: Manage authorities
       | user    | create                   | update                   | destroy                  | show                     |
       | admin   | not see "not authorized" | not see "not authorized" | not see "not authorized" | not see "not authorized" |
       | regular | see "not authorized"     | see "not authorized"     | see "not authorized"     | not see "not authorized" |
-
+@wip
   Scenario: Register new authority and edit
-    Given I log in as the administrator
+    Given a committee exists with name: "First committee"
+    And a committee exists with name: "Second committee"
+    And I log in as the administrator
     And I am on the new authority page
     When I fill in "Name" with "Supreme Authority"
+    And I fill in "Committee" with "First committee"
     And I fill in "Join message" with "Welcome to *committee*."
     And I fill in "Leave message" with "You were *dropped* from the committee."
     And I press "Create"
     Then I should see "Authority was successfully created."
     And I should see "Name: Supreme Authority"
+    And I should see "Committee: First committee"
     And I should see "Welcome to committee."
     And I should see "You were dropped from the committee."
     When I follow "Edit"
     And I fill in "Name" with "Subordinate Authority"
+    And I fill in "Committee" with "Second committee"
     And I fill in "Join message" with "Welcome message"
     And I fill in "Leave message" with "Farewell message"
     And I press "Update"
     Then I should see "Authority was successfully updated."
     And I should see "Name: Subordinate Authority"
+    And I should see "Committee: Second committee"
     And I should see "Welcome message"
     And I should see "Farewell message"
 
