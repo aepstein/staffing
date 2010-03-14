@@ -60,6 +60,10 @@ class Request < ActiveRecord::Base
     end
   end
 
+  def position_ids
+    positions.map { |position| position.id }
+  end
+
   def quizzes
     positions.map { |position| position.quiz }
   end
@@ -67,6 +71,15 @@ class Request < ActiveRecord::Base
   def questions
     return Question.id_blank unless quizzes.length > 0
     Question.quizzes_id_equals_any( quizzes.map { |q| q.id }.uniq )
+  end
+
+  def authorities
+    return Authority.id_blank unless positions.length > 0
+    Authority.position_id_equals_any( position_ids )
+  end
+
+  def authority_ids
+    authorities.map { |authority| authority.id }
   end
 
   def requestable_must_be_requestable
