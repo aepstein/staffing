@@ -49,7 +49,7 @@ class User < ActiveRecord::Base
     when :last_first
       "#{last_name}, #{first_name}"
     when :file
-      self.name.downcase.gsub(/[^a-z]/,'-')
+      self.name.strip.downcase.gsub(/[^a-z]/,'-').squeeze('-')
     when :email
       "#{email} #{self.name}"
     else

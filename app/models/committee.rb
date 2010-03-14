@@ -17,11 +17,20 @@ class Committee < ActiveRecord::Base
 
   def current_emails
     memberships.current.all(:include => {:designees => :user, :user => [] }).inject([]) do |memo,membership|
-      memo << membership.user.name( :email )
+      memo << membership.user.name( :email ) if membership.user_id
       membership.designees.each do |designee|
         memo << designee.user.name( :email )
       end
       memo
+    end
+  end
+
+  def name(style=nil)
+    case style
+    when :email
+      self.name.strip.downcase.gsub(/[^a-z]/,'-').squeeze('-')
+    else
+      read_attribute(:name)
     end
   end
 
