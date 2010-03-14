@@ -15,12 +15,9 @@ class Request < ActiveRecord::Base
   acts_as_list :scope => :user_id
 
   has_many :answers do
-    def populated_question_ids
-      self.map { |answer| answer.question_id }
-    end
     def populate
       # Generate blank answers for any allowed question not in answer set
-      population = proxy_owner.allowed_questions.reject { |q| populated_question_ids.include? q.id }.map do |question|
+      population = proxy_owner.questions.reject { |q| populated_question_ids.include? q.id }.map do |question|
         build :question => question
       end
       # Fill in most recent prior answer for each global question populated
@@ -30,6 +27,10 @@ class Request < ActiveRecord::Base
       end
       # Return the populated answers
       population
+    end
+    protected
+    def populated_question_ids
+      self.map { |answer| answer.question_id }
     end
   end
   belongs_to :requestable, :polymorphic => true
@@ -49,23 +50,23 @@ class Request < ActiveRecord::Base
 
   before_validation_on_create :initialize_answers
 
-  def allowed_positions
-    return [] unless requestable
+  def positions
+    return Position.id_blank unless requestable
     case requestable.class.to_s
     when 'Position'
-      [requestable]
+      Position.id_equals( requestable.id )
     else
       requestable.positions.with_status( user.status )
     end
   end
 
-  def allowed_quizzes
-    allowed_positions.map { |position| position.quiz }
+  def quizzes
+    positions.map { |position| position.quiz }
   end
 
-  def allowed_questions
-    return [] unless allowed_quizzes.length > 0
-    Question.quizzes_id_equals_any( allowed_quizzes.map { |q| q.id }.uniq )
+  def questions
+    return Question.id_blank unless quizzes.length > 0
+    Question.quizzes_id_equals_any( quizzes.map { |q| q.id }.uniq )
   end
 
   def requestable_must_be_requestable

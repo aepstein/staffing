@@ -12,7 +12,7 @@ class Answer < ActiveRecord::Base
 
   def question_must_be_allowed
     return nil unless request
-    unless request.allowed_questions.include?(question)
+    unless request.questions.include?(question)
       errors.add :question, "is not allowed for this position"
     end
   end

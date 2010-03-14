@@ -41,15 +41,15 @@ describe Request do
     @request.save.should be_false
   end
 
-  it 'should have an allowed_questions method that returns only questions in the quiz of requestable if it is a position' do
+  it 'should have an questions method that returns only questions in the quiz of requestable if it is a position' do
     allowed = Factory(:question)
     @request.requestable.quiz.questions << allowed
     unallowed = Factory(:question)
-    @request.allowed_questions.size.should eql 1
-    @request.allowed_questions.should include allowed
+    @request.questions.size.should eql 1
+    @request.questions.should include allowed
   end
 
-  it 'should have an allowed_questions method that returns only questions in the quiz of allowed positions of requestable if it is a committee' do
+  it 'should have an questions method that returns only questions in the quiz of allowed positions of requestable if it is a committee' do
     user = Factory(:user, :status => 'undergrad')
     user.status.should eql 'undergrad'
 
@@ -71,12 +71,12 @@ describe Request do
     committee.reload
 
     request = Factory.build(:request, :requestable => committee, :user => user)
-    request.allowed_questions.length.should eql 1
-    request.allowed_questions.should include allowed
-    @request.allowed_questions.length.should eql 0
+    request.questions.length.should eql 1
+    request.questions.should include allowed
+    @request.questions.length.should eql 0
   end
 
-  it 'should have answers.populate that populates answers for allowed_questions not yet built' do
+  it 'should have answers.populate that populates answers for questions not yet built' do
     user = Factory(:user)
 
     unanswered_local = Factory(:question, :name => 'unanswered local')
@@ -96,8 +96,8 @@ describe Request do
 
     request = Factory.build(:request, :user => user, :requestable => Factory(:position, :quiz => full_quiz))
     request.answers.build(:question => unanswered_local)
-    request.answers.populated_question_ids.size.should eql 1
-    request.answers.populated_question_ids.should include unanswered_local.id
+    request.answers.send(:populated_question_ids).size.should eql 1
+    request.answers.send(:populated_question_ids).should include unanswered_local.id
     answers = request.answers.populate
     answers.length.should eql 3
     question_ids = answers.map { |answer| answer.question_id }
