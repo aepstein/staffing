@@ -23,8 +23,12 @@
 </p>
 
 <% @request.answers(:include => [:question]).each do |answer| %>
-<%=markdown answer.question.content %>
-<%=markdown answer.content %>
+  <% if answer.question.format == 'boolean' %>
+  <%=markdown( answer.question.content + " #{answer.content == 'true' ? 'Yes' : 'No'}" ) %>
+  <% else %>
+  <%=markdown answer.question.content %>
+  <%=markdown answer.content %>
+  <% end %>
 <% end %>
 
 <p>
