@@ -12,7 +12,7 @@
   </tr>
   </thead>
   <tbody>
-<%= render :partial => "membership", :collection => memberships,
+<%= render :partial => "memberships/membership", :collection => memberships,
   :locals => { :committee => defined?(committee) ? committee : false } %>
   </tbody>
 </table>
