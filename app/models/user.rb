@@ -35,6 +35,12 @@ class User < ActiveRecord::Base
 
   before_validation_on_create :import_ldap_attributes, :initialize_password
 
+  def requestables(reload=false)
+    @requestables = nil if reload
+    return @requestables if @requestables
+    @requestables = requests.map { |request| request.requestable }
+  end
+
   def role_symbols
     return [:admin,:user] if admin?
     [:user]
