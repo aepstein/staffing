@@ -63,6 +63,20 @@ describe User do
     @user.name(:file).should eql 'john-doe'
   end
 
+  it 'should have an enrollments method that returns enrollments of a user' do
+    m1 = Factory(:membership, :user => @user)
+    m2 = Factory(:future_membership, :user => @user)
+    m3 = Factory(:membership)
+    e1 = Factory(:enrollment, :position => m1.position)
+    e2 = Factory(:enrollment, :position => m2.position)
+    e3 = Factory(:enrollment, :position => m3.position)
+    @user.enrollments.length.should eql 2
+    @user.enrollments.should include( e1, e2 )
+    @user.enrollments.should_not include( e3 )
+    @user.current_enrollments.length.should eql 1
+    @user.current_enrollments.should include ( e1 )
+  end
+
   def generate_uploaded_file(size, type)
     file = Tempfile.new('resume.pdf')
     @temporary_files << file

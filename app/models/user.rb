@@ -64,6 +64,14 @@ class User < ActiveRecord::Base
     name.squeeze(' ').strip
   end
 
+  def enrollments
+    Enrollment.memberships_user_id_equals( id )
+  end
+
+  def current_enrollments
+    enrollments.memberships_current
+  end
+
   def to_s; name; end
 
   protected

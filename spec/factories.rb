@@ -34,6 +34,11 @@ Factory.define :membership do |f|
   f.ends_at { |m| m.period.ends_at }
 end
 
+Factory.define :future_membership, :parent => :membership do |f|
+  f.starts_at { |m| Date.today + 1.day }
+  f.ends_at { |m| m.starts_at + 1.day }
+end
+
 Factory.define :position do |f|
   f.sequence(:name) { |n| "Position #{n}" }
   f.requestable true
