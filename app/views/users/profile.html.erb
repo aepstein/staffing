@@ -2,7 +2,7 @@
 
 <% if current_user.memberships.current.length > 0 %>
 <h3>Current Memberships</h3>
-<%= render :partial => 'memberships/memberships', :object => current_user.memberships.current %>
+<%= render :partial => 'memberships/memberships', :object => current_user.memberships.current, :locals => { :user => current_user } %>
 <% end %>
 
 <% if current_user.requests.unexpired.length > 0 %>

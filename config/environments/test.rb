@@ -33,4 +33,5 @@ config.gem 'cucumber-rails', :lib => false
 config.gem 'webrat', :lib => false
 config.gem 'factory_girl', :source => 'http://gemcutter.org'
 config.gem 'pickle', :lib => false, :source => 'http://gemcutter.org'
+config.gem 'email_spec', :source => 'http://gemcutter.org'
 
