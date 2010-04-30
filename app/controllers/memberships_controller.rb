@@ -1,20 +1,34 @@
 class MembershipsController < ApplicationController
   before_filter :initialize_contexts
-  filter_resource_access
+  filter_access_to :new, :create, :edit, :update, :destroy, :show, :index
+  filter_access_to :current, :past, :future do
+    permitted_to!( :show, @user ) || permitted_to!( :index )
+  end
+
+  def current
+    @memberships = @request.memberships.current if @request
+    @memberships = @position.memberships.current if @position
+    @memberships = @committee.memberships.current if @committee
+  end
+
+  def future
+    @memberships = @request.memberships.future if @request
+    @memberships = @position.memberships.future if @position
+    @memberships = @committee.memberships.future if @committee
+  end
+
+  def past
+    @memberships = @request.memberships.past if @request
+    @memberships = @position.memberships.past if @position
+    @memberships = @committee.memberships.past if @committee
+  end
 
   # GET /positions/:position_id/memberships
   # GET /positions/:position_id/memberships.xml
   def index
     @memberships ||= @request.memberships if @request
     @memberships ||= @position.memberships if @position
-    if @committee
-      @memberships ||= Membership.position_enrollments_committee_id_eq( @committee.id
-      ).all( :include => { :position => :enrollments, :user => [], :period => [] },
-      :joins => "INNER JOIN periods ON period_id = periods.id " +
-        "LEFT JOIN users ON user_id = users.id",
-      :order => "periods.starts_at DESC, memberships.starts_at DESC, " +
-        "users.last_name ASC, users.first_name ASC, users.middle_name ASC" )
-    end
+    @memberships ||= @committee.memberships if @committee
     @memberships ||= Membership.all
     @memberships = @memberships.period_current if params[:current_period]
     @memberships = @memberships.current if params[:current]

@@ -5,9 +5,12 @@ class Membership < ActiveRecord::Base
   scope_procedure :assigned, lambda { user_id_not_nil }
   scope_procedure :unassigned, lambda { user_id_nil }
   scope_procedure :current, lambda { starts_at_lte(Date.today).ends_at_gte(Date.today) }
+  scope_procedure :future, lambda { starts_at_gt(Date.today) }
+  scope_procedure :past, lambda { ends_at_lt(Date.today) }
 
-  named_scope :enrollments_committee_id_equals, lambda { |id|
-    { :conditions => ["memberships.position_id IN (SELECT position_id FROM enrollments WHERE committee_id = ?)", id ] }
+  named_scope :enrollments_committee_id_equals, lambda { |committee_id|
+    { :joins => "INNER JOIN enrollments",
+       :conditions => ['enrollments.position_id = memberships.position_id AND enrollments.committee_id = ?', committee_id] }
   }
 
   attr_accessor :starts_at_previously_changed, :ends_at_previously_changed,
