@@ -1,14 +1,41 @@
 class EnrollmentsController < ApplicationController
-  filter_resource_access #:nested_in => :committees
+  before_filter :initialize_context
+  filter_access_to :new, :create, :edit, :update, :destroy, :show, :index
+  filter_access_to :current, :past, :future do
+    permitted_to! :show, @user
+  end
+
+  # GET /users/:user_id/enrollments/current
+  # GET /users/:user_id/enrollments/current.xml
+  def current
+    @enrollments ||= @user.current_enrollments if @user
+    return index
+  end
+
+  # GET /users/:user_id/enrollments/past
+  # GET /users/:user_id/enrollments/past.xml
+  def past
+    @enrollments ||= @user.past_enrollments if @user
+    return index
+  end
+
+  # GET /users/:user_id/enrollments/future
+  # GET /users/:user_id/enrollments/future.xml
+  def future
+    @enrollments ||= @user.future_enrollments if @user
+    return index
+  end
 
   # GET /committees/:committee_id/enrollments
   # GET /committees/:committee_id/enrollments.xml
+  # GET /users/:user_id/enrollments
+  # GET /users/:user_id/enrollments.xml
   def index
-    @committee = Committee.find(params[:committee_id])
-    @enrollments = @committee.enrollments
+    @enrollments ||= @committee.enrollments if @committee
+    @enrollments ||= @user.enrollments if @user
 
     respond_to do |format|
-      format.html # index.html.erb
+      format.html { render :action => 'index' } # index.html.erb
       format.xml  { render :xml => @enrollments }
     end
   end
@@ -84,6 +111,12 @@ class EnrollmentsController < ApplicationController
       format.html { redirect_to committee_enrollments_url @enrollment.committee }
       format.xml  { head :ok }
     end
+  end
+
+  private
+  def initialize_context
+    @committee = Committee.find(params[:committee_id]) if params[:committee_id]
+    @user = User.find(params[:user_id]) if params[:user_id]
   end
 end
 

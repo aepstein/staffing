@@ -1,5 +1,10 @@
   <% table_row_tag do %>
+    <% unless committee %>
+    <td><%=h enrollment.committee %></td>
+    <% end %>
+    <% unless position %>
     <td><%=h enrollment.position %></td>
+    <% end %>
     <td><%=h enrollment.title %></td>
     <td><%=h enrollment.votes %></td>
     <td><%= link_to 'Show', enrollment %></td>

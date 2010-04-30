@@ -1,6 +1,7 @@
 ActionController::Routing::Routes.draw do |map|
   map.resources :users, :shallow => true, :member => { :resume => :get } do |user|
     user.resources :requests, :collection => { :expired => :get, :unexpired => :get }
+    user.resources :enrollments, :collection => { :current => :get, :future => :get, :past => :get }
   end
   map.resources :positions, :shallow => true do |position|
     position.resources :memberships

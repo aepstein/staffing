@@ -1,5 +1,5 @@
 class Enrollment < ActiveRecord::Base
-  default_scope :include => [ :position ], :order => 'enrollments.title ASC, positions.name ASC'
+  default_scope :include => [ :committee, :position ], :order => 'committees.name ASC, enrollments.title ASC, positions.name ASC'
 
   named_scope :memberships_user_id_equals, lambda { |user_id|
     { :joins => 'INNER JOIN memberships',
@@ -11,6 +11,20 @@ class Enrollment < ActiveRecord::Base
       :conditions => [
       'memberships.position_id = enrollments.position_id AND ' +
       'memberships.starts_at <= ? AND memberships.ends_at >= ?', Date.today, Date.today ] }
+  }
+
+  named_scope :memberships_future, lambda {
+    { :joins => 'INNER JOIN memberships',
+      :conditions => [
+      'memberships.position_id = enrollments.position_id AND ' +
+      'memberships.starts_at > ?', Date.today ] }
+  }
+
+  named_scope :memberships_past, lambda {
+    { :joins => 'INNER JOIN memberships',
+      :conditions => [
+      'memberships.position_id = enrollments.position_id AND ' +
+      'memberships.ends_at < ?', Date.today ] }
   }
 
   belongs_to :position

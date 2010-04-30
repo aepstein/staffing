@@ -72,6 +72,14 @@ class User < ActiveRecord::Base
     enrollments.memberships_current
   end
 
+  def past_enrollments
+    enrollments.memberships_past
+  end
+
+  def future_enrollments
+    enrollments.memberships_future
+  end
+
   def to_s; name; end
 
   protected

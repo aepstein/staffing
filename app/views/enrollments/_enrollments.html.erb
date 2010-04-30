@@ -1,13 +1,21 @@
+<% committee = false unless defined? committee %>
+<% position = false unless defined? position %>
 <table>
   <thead>
   <tr>
+  <% unless committee %>
+    <th>Committee</th>
+  <% end %>
+  <% unless position %>
     <th>Position</th>
+  <% end %>
     <th>Title</th>
     <th>Votes</th>
   </tr>
   </thead>
   <tbody>
-<%= render :partial => "enrollment", :collection => enrollments %>
+<%= render :partial => "enrollment", :collection => enrollments,
+  :locals => { :committee => committee, :position => position } %>
   </tbody>
 </table>
 

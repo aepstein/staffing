@@ -24,7 +24,7 @@ Feature: Manage authorities
       | user    | create                   | update                   | destroy                  | show                     |
       | admin   | not see "not authorized" | not see "not authorized" | not see "not authorized" | not see "not authorized" |
       | regular | see "not authorized"     | see "not authorized"     | see "not authorized"     | not see "not authorized" |
-@wip
+
   Scenario: Register new authority and edit
     Given a committee exists with name: "First committee"
     And a committee exists with name: "Second committee"
