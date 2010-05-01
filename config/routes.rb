@@ -13,6 +13,7 @@ ActionController::Routing::Routes.draw do |map|
   map.resources :committees, :shallow => true do |committee|
     committee.resources :requests, :only => [ :new, :create, :index ]
     committee.resources :enrollments
+    committee.resources :positions, :only => [ :index ]
     committee.resources :memberships, :only => [ :index ], :collection => { :current => :get, :future => :get, :past => :get }
   end
   map.resources :authorities, :shallow => true do |authority|

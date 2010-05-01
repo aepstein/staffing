@@ -1,11 +1,14 @@
 class PositionsController < ApplicationController
-  before_filter :require_user
+  before_filter :require_user, :initialize_context
   filter_resource_access
 
   # GET /positions
   # GET /positions.xml
+  # GET /committees/:committee_id/positions
+  # GET /committees/:committee_id/positions.xml
   def index
-    @search = Position.search( params[:search] )
+    @search ||= @committee.positions.search( params[:search] ) if @committee
+    @search ||= Position.search( params[:search] )
     @positions = @search.paginate( :page => params[:page] )
 
     respond_to do |format|
@@ -86,6 +89,12 @@ class PositionsController < ApplicationController
       format.html { redirect_to(positions_url) }
       format.xml  { head :ok }
     end
+  end
+
+  private
+
+  def initialize_context
+    @committee = Committee.find(params[:committee_id]) if params[:committee_id]
   end
 end
 

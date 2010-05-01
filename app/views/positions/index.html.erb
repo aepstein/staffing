@@ -1,4 +1,4 @@
-<h2>Listing positions</h2>
+<h2>Listing positions<%=h @committee ? " for #{@committee}" : "" %></h2>
 
 <% semantic_form_for @search do |form| %>
 <p>
@@ -35,5 +35,8 @@
 
 <p>
 <%= link_to 'New position', new_position_path %>
+<% if @committee %>
+ | <%= link_to @committee.to_s, @committee %>
+<% end %>
 </p>
 
