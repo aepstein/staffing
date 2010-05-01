@@ -5,6 +5,14 @@ class MembershipsController < ApplicationController
     permitted_to!( :show, @user ) || permitted_to!( :index )
   end
 
+  # GET /requests/:request_id/memberships/current
+  # GET /requests/:request_id/memberships/current.xml
+  # GET /positions/:position_id/memberships/current
+  # GET /positions/:position_id/memberships/current.xml
+  # GET /committees/:committee_id/memberships/current
+  # GET /committees/:committee_id/memberships/current.xml
+  # GET /users/:user_id/memberships/current
+  # GET /users/:user_id/memberships/current.xml
   def current
     @memberships = @request.memberships.current if @request
     @memberships = @position.memberships.current if @position
@@ -13,6 +21,14 @@ class MembershipsController < ApplicationController
     index
   end
 
+  # GET /requests/:request_id/memberships/future
+  # GET /requests/:request_id/memberships/future.xml
+  # GET /positions/:position_id/memberships/future
+  # GET /positions/:position_id/memberships/future.xml
+  # GET /committees/:committee_id/memberships/future
+  # GET /committees/:committee_id/memberships/future.xml
+  # GET /users/:user_id/memberships/future
+  # GET /users/:user_id/memberships/future.xml
   def future
     @memberships = @request.memberships.future if @request
     @memberships = @position.memberships.future if @position
@@ -21,6 +37,14 @@ class MembershipsController < ApplicationController
     index
   end
 
+  # GET /requests/:request_id/memberships/past
+  # GET /requests/:request_id/memberships/past.xml
+  # GET /positions/:position_id/memberships/past
+  # GET /positions/:position_id/memberships/past.xml
+  # GET /committees/:committee_id/memberships/past
+  # GET /committees/:committee_id/memberships/past.xml
+  # GET /users/:user_id/memberships/past
+  # GET /users/:user_id/memberships/past.xml
   def past
     @memberships = @request.memberships.past if @request
     @memberships = @position.memberships.past if @position
@@ -29,16 +53,20 @@ class MembershipsController < ApplicationController
     index
   end
 
+  # GET /requests/:request_id/memberships
+  # GET /requests/:request_id/memberships.xml
   # GET /positions/:position_id/memberships
   # GET /positions/:position_id/memberships.xml
+  # GET /committees/:committee_id/memberships
+  # GET /committees/:committee_id/memberships.xml
+  # GET /users/:user_id/memberships
+  # GET /users/:user_id/memberships.xml
   def index
     @memberships ||= @request.memberships if @request
     @memberships ||= @position.memberships if @position
     @memberships ||= @committee.memberships if @committee
     @memberships ||= @user.memberships if @user
     @memberships ||= Membership.all
-    @memberships = @memberships.period_current if params[:current_period]
-    @memberships = @memberships.current if params[:current]
     @memberships = @memberships.paginate(:page => params[:page])
 
     respond_to do |format|

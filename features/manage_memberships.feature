@@ -80,23 +80,6 @@ Feature: Manage memberships
     And I should see "Starts at: 1 Jun 2009"
     And I should see "Ends at: 31 May 2010"
 
-  Scenario: List memberships for a committee
-    Given a committee exists
-    And a user: "in" exists with last_name: "User", first_name: "Included"
-    And a user: "out" exists with last_name: "User", first_name: "Excluded"
-    And a position: "in" exists with slots: 2, schedule: schedule "annual"
-    And an enrollment exists with position: position "in", committee: the committee, votes: 1, title: "Member"
-    And a membership exists with position: position "in", user: user "in", period: period "2008", starts_at: "2008-06-01", ends_at: "2009-05-31"
-    And a position: "out" exists with schedule: schedule "annual"
-    And an enrollment exists with position: position "out"
-    And a membership exists with position: position "out", user: user "out", period: period "2008", starts_at: "2008-06-01", ends_at: "2009-05-31"
-    And I log in as the administrator
-    When I am on the memberships page for the committee
-    Then I should see the following memberships:
-      |User          |Period                  |Starts at |Ends at    |Title  |Votes |
-      |unassigned    |1 Jun 2008 - 31 May 2009|1 Jun 2008|31 May 2009|Member |1     |
-      |Included User |1 Jun 2008 - 31 May 2009|1 Jun 2008|31 May 2009|Member |1     |
-
   Scenario: Delete membership
     Given a user: "user1" exists with first_name: "John", last_name: "Doe 1"
     And a user: "user2" exists with first_name: "John", last_name: "Doe 2"
