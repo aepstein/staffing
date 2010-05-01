@@ -35,8 +35,8 @@ Factory.define :membership do |f|
 end
 
 Factory.define :future_membership, :parent => :membership do |f|
-  f.starts_at { |m| Date.today + 1.day }
-  f.ends_at { |m| m.starts_at + 1.day }
+  f.association :position
+  f.period { |m| m.association(:future_period, :schedule => m.position.schedule) }
 end
 
 Factory.define :past_membership, :parent => :membership do |f|
@@ -90,6 +90,11 @@ end
 Factory.define :past_period, :parent => :period do |f|
   f.ends_at Date.today - 1.day
   f.starts_at { |p| p.ends_at - 1.year }
+end
+
+Factory.define :future_period, :parent => :period do |f|
+  f.starts_at Date.today + 1.day
+  f.ends_at { |p| p.starts_at + 1.year }
 end
 
 Factory.define :user do |f|
