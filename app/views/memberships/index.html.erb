@@ -1,4 +1,4 @@
-<h2>Listing memberships<%=h( if @committee
+<h2><%=h params[:action].titleize %> memberships<%=h( if @committee
 " for #{@committee}"
 elsif @user
 " for #{@user}"

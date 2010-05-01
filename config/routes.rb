@@ -1,7 +1,8 @@
 ActionController::Routing::Routes.draw do |map|
   map.resources :users, :shallow => true, :member => { :resume => :get } do |user|
     user.resources :requests, :collection => { :expired => :get, :unexpired => :get }
-    user.resources :enrollments, :collection => { :current => :get, :future => :get, :past => :get }
+    user.resources :enrollments, :only => [:index], :collection => { :current => :get, :future => :get, :past => :get }
+    user.resources :memberships, :only => [:index], :collection => { :current => :get, :future => :get, :past => :get }
   end
   map.resources :positions, :shallow => true do |position|
     position.resources :memberships
@@ -11,8 +12,8 @@ ActionController::Routing::Routes.draw do |map|
   end
   map.resources :committees, :shallow => true do |committee|
     committee.resources :requests, :only => [ :new, :create, :index ]
-    committee.resources :enrollments
-    committee.resources :memberships, :only => [ :index ]
+    committee.resources :enrollments, :collection => { :current => :get, :future => :get, :past => :get }
+    committee.resources :memberships, :only => [ :index ], :collection => { :current => :get, :future => :get, :past => :get }
   end
   map.resources :authorities
   map.resources :qualifications
