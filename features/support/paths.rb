@@ -10,6 +10,9 @@ module NavigationHelpers
 
     when /the homepage/
       '/'
+    when /the new user_membership page/
+      new_user_membership_path
+
 
     when /the login page/
       login_path
@@ -29,11 +32,11 @@ module NavigationHelpers
     when /^the #{capture_plural_factory} page$/
       polymorphic_path( [$1] )
 
-    when /^the #{capture_plural_factory} page for #{capture_model}$/
-      polymorphic_path( [model($2), $1] )
-
     when /^the (past|current|future) #{capture_plural_factory} page for #{capture_model}$/
       polymorphic_path( [$1, model($3), $2] )
+
+    when /^the #{capture_plural_factory} page for #{capture_model}$/
+      polymorphic_path( [model($2), $1] )
 
     when /^the page for #{capture_model}$/
       polymorphic_path( [model($1)] )

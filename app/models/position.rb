@@ -65,6 +65,9 @@ class Position < ActiveRecord::Base
     def for_committee(committee)
       self.select { |enrollment| enrollment.committee_id == committee.id }
     end
+    def committees
+      self.map { |enrollment| enrollment.committee.to_s }.join (', ')
+    end
     def titles_for_committee(committee)
       for_committee(committee).map { |e| e.title }.join(', ')
     end

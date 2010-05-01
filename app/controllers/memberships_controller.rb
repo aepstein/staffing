@@ -9,18 +9,24 @@ class MembershipsController < ApplicationController
     @memberships = @request.memberships.current if @request
     @memberships = @position.memberships.current if @position
     @memberships = @committee.memberships.current if @committee
+    @memberships = @user.memberships.current if @user
+    index
   end
 
   def future
     @memberships = @request.memberships.future if @request
     @memberships = @position.memberships.future if @position
     @memberships = @committee.memberships.future if @committee
+    @memberships = @user.memberships.future if @user
+    index
   end
 
   def past
     @memberships = @request.memberships.past if @request
     @memberships = @position.memberships.past if @position
     @memberships = @committee.memberships.past if @committee
+    @memberships = @user.memberships.past if @user
+    index
   end
 
   # GET /positions/:position_id/memberships
@@ -29,13 +35,14 @@ class MembershipsController < ApplicationController
     @memberships ||= @request.memberships if @request
     @memberships ||= @position.memberships if @position
     @memberships ||= @committee.memberships if @committee
+    @memberships ||= @user.memberships if @user
     @memberships ||= Membership.all
     @memberships = @memberships.period_current if params[:current_period]
     @memberships = @memberships.current if params[:current]
     @memberships = @memberships.paginate(:page => params[:page])
 
     respond_to do |format|
-      format.html # index.html.erb
+      format.html { render :action => 'index' }
       format.xml  { render :xml => @memberships }
     end
   end
@@ -131,9 +138,10 @@ class MembershipsController < ApplicationController
   private
 
   def initialize_contexts
-    @request = Request.find(params[:request_id]) if params[:request_id]
-    @position = Position.find(params[:position_id]) if params[:position_id]
-    @committee = Committee.find(params[:committee_id]) if params[:committee_id]
+    @request = Request.find params[:request_id] if params[:request_id]
+    @position = Position.find params[:position_id] if params[:position_id]
+    @committee = Committee.find params[:committee_id] if params[:committee_id]
+    @user = User.find params[:user_id] if params[:user_id]
   end
 end
 

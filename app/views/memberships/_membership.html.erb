@@ -2,13 +2,21 @@
     <% unless user -%>
     <td><%= membership.user ? h(membership.user) : "<i>unassigned</i>" %></td>
     <% end -%>
+    <% unless position -%>
+    <td><%=h membership.position %></td>
+    <% end -%>
+    <% if committee -%>
+    <% if committee.class == Committee -%>
+    <td><%=h membership.enrollments.titles_for_committee committee %></td>
+    <td><%= membership.enrollments.votes_for_committee committee %></td>
+    <% else -%>
+    <% end -%>
+    <% else -%>
+    <td><%= membership.enrollments.committees %></td>
+    <% end -%>
     <td><%=h membership.period %></td>
     <td><%=h membership.starts_at.to_s :rfc822 %></td>
     <td><%=h membership.ends_at.to_s :rfc822 %></td>
-    <% if committee %>
-    <td><%=h membership.enrollments.titles_for_committee committee %></td>
-    <td><%= membership.enrollments.votes_for_committee committee %></td>
-    <% end %>
     <td><%= link_to 'Show', membership %></td>
     <td><%= link_to 'Edit', edit_membership_path(membership) %></td>
     <td><%= link_to 'Destroy', membership, :confirm => 'Are you sure?', :method => :delete %></td>

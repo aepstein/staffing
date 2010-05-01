@@ -1,22 +1,31 @@
 <% user ||= false %>
+<% committee ||= false %>
+<% position ||= false %>
 <table>
   <thead>
   <tr>
     <% unless user %>
     <th>User</th>
     <% end %>
-    <th>Period</th>
-    <th>Starts at</th>
-    <th>Ends at</th>
-    <% if defined?(committee) %>
+    <% unless position %>
+    <th>Position</th>
+    <% end %>
+    <% if committee %>
+    <% if committee.class == Committee %>
     <th>Title</th>
     <th>Votes</th>
     <% end %>
+    <% else %>
+    <th>Committees</th>
+    <% end %>
+    <th>Period</th>
+    <th>Starts at</th>
+    <th>Ends at</th>
   </tr>
   </thead>
   <tbody>
 <%= render :partial => "memberships/membership", :collection => memberships,
-  :locals => { :committee => defined?(committee) ? committee : false, :user => user } %>
+  :locals => { :user => user, :committee => committee, :position => position } %>
   </tbody>
 </table>
 
