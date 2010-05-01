@@ -16,6 +16,7 @@
 
 <p>
 <%= link_to 'Edit', edit_authority_path(@authority) %> |
+<%= nested_index @authority, 'memberships', %w( past current future ) %> |
 <%= link_to 'Back', authorities_path %>
 </p>
 

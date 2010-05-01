@@ -52,6 +52,8 @@
 
 <p>
 <%= link_to 'Edit', edit_user_path(@user) %> |
+<%= nested_index @user, 'memberships', %w( past current future ) %> |
+<%= nested_index @user, 'enrollments' %> |
 <%= link_to 'Back', users_path %>
 </p>
 

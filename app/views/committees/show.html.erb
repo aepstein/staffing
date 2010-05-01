@@ -16,8 +16,8 @@
 
 <p>
 <%= link_to 'Edit', edit_committee_path(@committee) %> |
-<%= link_to 'List Enrollments', committee_enrollments_path(@committee) %> |
-<%= link_to 'List Memberships', committee_memberships_path(@committee) %> |
+<%= nested_index @committee, 'memberships', %w( past current future ) %> |
+<%= nested_index @committee, 'enrollments' %> |
 <%= link_to 'List Requests', committee_requests_path(@committee) %> |
 <%= link_to 'Back', committees_path %>
 </p>
