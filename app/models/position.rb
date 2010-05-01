@@ -6,6 +6,8 @@ class Position < ActiveRecord::Base
   }
   named_scope :requestable, { :conditions => { :requestable => true } }
   named_scope :unrequestable, { :conditions => { :requestable => false } }
+  named_scope :renewable, { :conditions => { :renewable => true } }
+  named_scope :unrenewable, { :conditions => { :renewable => false } }
 
   belongs_to :authority
   belongs_to :quiz
