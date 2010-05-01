@@ -1,4 +1,4 @@
-<h2><%=h params[:action].titleize %> memberships<%=h @committee ?  " for #{@committee}" : "" %><%=h @user ?  " for #{@user}" : "" %><%=h @position ?  " for #{@position}" : "" %></h2>
+<h2><%=h params[:action].titleize %> memberships<%=h @committee ?  " for #{@committee}" : "" %><%=h @user ?  " for #{@user}" : "" %><%=h @position ?  " for #{@position}" : "" %><%=h @authority ?  " for #{@authority}" : "" %></h2>
 
 <%= will_paginate @memberships %>
 

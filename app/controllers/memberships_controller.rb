@@ -13,11 +13,14 @@ class MembershipsController < ApplicationController
   # GET /committees/:committee_id/memberships/current.xml
   # GET /users/:user_id/memberships/current
   # GET /users/:user_id/memberships/current.xml
+  # GET /authorities/:authority_id/memberships/current
+  # GET /authorities/:authority_id/memberships/current.xml
   def current
     @memberships = @request.memberships.current if @request
     @memberships = @position.memberships.current if @position
     @memberships = @committee.memberships.current if @committee
     @memberships = @user.memberships.current if @user
+    @memberships = @authority.memberships.current if @authority
     index
   end
 
@@ -29,11 +32,14 @@ class MembershipsController < ApplicationController
   # GET /committees/:committee_id/memberships/future.xml
   # GET /users/:user_id/memberships/future
   # GET /users/:user_id/memberships/future.xml
+  # GET /authorities/:authority_id/memberships/future
+  # GET /authorities/:authority_id/memberships/future.xml
   def future
     @memberships = @request.memberships.future if @request
     @memberships = @position.memberships.future if @position
     @memberships = @committee.memberships.future if @committee
     @memberships = @user.memberships.future if @user
+    @memberships = @authority.memberships.future if @authority
     index
   end
 
@@ -45,11 +51,14 @@ class MembershipsController < ApplicationController
   # GET /committees/:committee_id/memberships/past.xml
   # GET /users/:user_id/memberships/past
   # GET /users/:user_id/memberships/past.xml
+  # GET /authorities/:authority_id/memberships/past
+  # GET /authorities/:authority_id/memberships/past.xml
   def past
     @memberships = @request.memberships.past if @request
     @memberships = @position.memberships.past if @position
     @memberships = @committee.memberships.past if @committee
     @memberships = @user.memberships.past if @user
+    @memberships = @authority.memberships.past if @authority
     index
   end
 
@@ -61,11 +70,14 @@ class MembershipsController < ApplicationController
   # GET /committees/:committee_id/memberships.xml
   # GET /users/:user_id/memberships
   # GET /users/:user_id/memberships.xml
+  # GET /authorities/:authority_id/memberships
+  # GET /authorities/:authority_id/memberships.xml
   def index
     @memberships ||= @request.memberships if @request
     @memberships ||= @position.memberships if @position
     @memberships ||= @committee.memberships if @committee
     @memberships ||= @user.memberships if @user
+    @memberships ||= @authority.memberships if @authority
     @memberships ||= Membership.all
     @memberships = @memberships.paginate(:page => params[:page])
 
@@ -170,6 +182,7 @@ class MembershipsController < ApplicationController
     @position = Position.find params[:position_id] if params[:position_id]
     @committee = Committee.find params[:committee_id] if params[:committee_id]
     @user = User.find params[:user_id] if params[:user_id]
+    @authority = Authority.find params[:authority_id] if params[:authority_id]
   end
 end
 
