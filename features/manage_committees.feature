@@ -24,7 +24,7 @@ Feature: Manage committees
     And I should not see "Unrequestable Committee"
     And I should not see "Unavailable Committee"
     And I should not see "No Positions Committee"
-
+@wip
   Scenario Outline: Test permissions for committees controller actions
     Given a committee exists
     And a user: "admin" exists with net_id: "admin", password: "secret", admin: true
@@ -44,10 +44,14 @@ Feature: Manage committees
     Then I should <show>
     Given I delete on the page for the committee
     Then I should <destroy>
+    Given I am on the available committees page for user: "admin"
+    Then I should <available>
+    Given I am on the available committees page for user: "<user>"
+    Then I should not see "not authorized"
     Examples:
-      | user    | create                   | update                   | destroy                  | show                     |
-      | admin   | not see "not authorized" | not see "not authorized" | not see "not authorized" | not see "not authorized" |
-      | regular | see "not authorized"     | see "not authorized"     | see "not authorized"     | not see "not authorized" |
+      | user    | create                   | update                   | destroy                  | show                     | available                |
+      | admin   | not see "not authorized" | not see "not authorized" | not see "not authorized" | not see "not authorized" | not see "not authorized" |
+      | regular | see "not authorized"     | see "not authorized"     | see "not authorized"     | not see "not authorized" | see "not authorized"     |
 
   Scenario: Register new committee
     Given I log in as the administrator
