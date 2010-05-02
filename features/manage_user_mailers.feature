@@ -5,6 +5,7 @@ Feature: User mailer
 
   Scenario Outline: Send renewal notice to a user
     Given a user: "focus" exists with net_id: "focus", first_name: "John", last_name: "Doe", email: "john.doe@example.org", password: "secret"
+    And a user: "other" exists
     And a schedule exists
     And a <period>period exists with schedule: the schedule
     And a position: "focus" exists with name: "Focus Position", requestable: <p_req>, renewable: <renewable>, schedule: the schedule
@@ -24,7 +25,11 @@ Feature: User mailer
     And I should <s_upd> "Click here to update your existing request" in the email body
     And I should <s_cre> "Click here to create a new request" in the email body
     Examples:
-      | period | p_req | c_req | renewable | requestable       | requestor | request     | position | s_int   | s_nint | s_pos   | s_com   | s_upd | s_cre   |
-      |        | true  | true  | true      | position "focus"  | focus     | the request | focus    | not see | see    | see     | not see | see   | not see |
-      |        | false | true  | true      | committee "focus" | focus     | the request | focus    | not see | see    | not see | see     | see   | not see |
+      |period |p_req|c_req|renewable|requestable      |requestor|request    |position|s_int  |s_nint  |s_pos  |s_com  |s_upd  |s_cre  |
+      |       |true |true |true     |position "focus" |focus    |the request|focus   |not see|see     |see    |not see|see    |not see|
+      |       |false|true |true     |committee "focus"|focus    |the request|focus   |not see|see     |not see|see    |see    |not see|
+      |       |false|true |true     |committee "focus"|other    |nil        |focus   |not see|see     |not see|see    |not see|see    |
+      |       |false|true |false    |committee "focus"|focus    |the request|focus   |not see|not see |not see|not see|not see|not see|
+      |future_|false|true |true     |committee "focus"|focus    |the request|focus   |not see|not see |not see|not see|not see|not see|
+      |past_  |false|true |true     |committee "focus"|focus    |the request|focus   |not see|not see |not see|not see|not see|not see|
 

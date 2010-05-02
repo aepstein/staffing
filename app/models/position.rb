@@ -94,7 +94,7 @@ class Position < ActiveRecord::Base
 
   def requestables
     return [self] if requestable?
-    enrollments.committees.select { |committee| committee.requestable? }
+    enrollments.map { |enrollment| enrollment.committee }.select { |committee| committee.requestable? }
   end
 
   def statuses=(statuses)
