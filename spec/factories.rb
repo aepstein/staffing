@@ -97,7 +97,7 @@ Factory.define :request do |f|
     else
       periods = false
     end
-    (periods && periods.first) ? periods.first.ends_at : Date.today
+    (periods && periods.first) ? periods.first.ends_at : request.starts_at + 1.year
   end
 end
 
