@@ -138,8 +138,33 @@ describe Membership do
     Membership.unrenewable.should include @membership
   end
 
+  it 'should have a renewed scope that fetches only memberships that have a subsequent membership for the same user and position' do
+    subsequent = subsequent_membership(@membership)
+    subsequent.user_id.should eql @membership.user_id
+    subsequent.position_id.should eql @membership.position_id
+    subsequent.starts_at.should eql @membership.ends_at + 1.day
+    Membership.renewed.length.should eql 1
+    Membership.renewed.should include @membership
+  end
+
+  it 'should have a renewed scope that fetches only memberships that have a subsequent membership for the same user and position' do
+    subsequent = subsequent_membership(@membership)
+    Membership.unrenewed.length.should eql 1
+    Membership.unrenewed.should include subsequent
+  end
+
   def renewable_position
     Factory(:position, :renewable => true)
+  end
+
+  def subsequent_membership(membership)
+    subsequent = membership.clone
+    subsequent.period = Factory(:period, :schedule => subsequent.position.schedule, :starts_at => membership.ends_at + 1.day,
+      :ends_at => membership.ends_at + 1.day + 1.year)
+    subsequent.starts_at = subsequent.period.starts_at
+    subsequent.ends_at = subsequent.period.ends_at
+    subsequent.save.should be_true
+    subsequent
   end
 
   def setup_membership_with_vacancies
