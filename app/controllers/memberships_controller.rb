@@ -1,8 +1,8 @@
 class MembershipsController < ApplicationController
   before_filter :require_user, :initialize_contexts
-  filter_access_to :new, :create, :edit, :update, :destroy, :show, :index
-  filter_access_to :current, :past, :future do
-    permitted_to!( :show, @user ) || permitted_to!( :index )
+  filter_access_to :new, :create, :edit, :update, :destroy, :show
+  filter_access_to :index, :current, :past, :future do
+    @user ? permitted_to!( :show, @user ) : permitted_to!( :index )
   end
 
   # GET /requests/:request_id/memberships/current

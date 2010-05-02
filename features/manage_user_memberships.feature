@@ -18,6 +18,32 @@ Feature: Manage user_memberships
     And an enrollment exists with position: position "future", committee: committee "future", title: "Chair"
     And an enrollment exists with position: position "past", committee: committee "past", title: "Member"
 
+  Scenario Outline: Permissions for user-oriented <controller> indices
+    Given a user: "admin" exists with net_id: "admin", password: "secret", admin: true
+    And I log in as "<user>" with password "secret"
+    And I am on the <controller>s page for user: "<other>"
+    Then I should <other_see> "not authorized"
+    Given I am on the <controller>s page for user: "<user>"
+    Then I should <self> "not authorized"
+    Given I am on the current <controller>s page for user: "<other>"
+    Then I should <other_see> "not authorized"
+    Given I am on the current <controller>s page for user: "<user>"
+    Then I should <self> "not authorized"
+    Given I am on the future <controller>s page for user: "<other>"
+    Then I should <other_see> "not authorized"
+    Given I am on the future <controller>s page for user: "<user>"
+    Then I should <self> "not authorized"
+    Given I am on the past <controller>s page for user: "<other>"
+    Then I should <other_see> "not authorized"
+    Given I am on the past <controller>s page for user: "<user>"
+    Then I should <self> "not authorized"
+    Examples:
+      | controller | user  | other | other_see | self    |
+      | membership | admin | owner | not see   | not see |
+      | membership | owner | admin | see       | not see |
+      | enrollment | admin | owner | not see   | not see |
+      | enrollment | owner | admin | see       | not see |
+
   Scenario: List enrollments correctly for a user
     Given I log in as "owner" with password "secret"
     And I am on the enrollments page for user: "owner"

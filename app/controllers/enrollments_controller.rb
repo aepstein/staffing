@@ -1,8 +1,8 @@
 class EnrollmentsController < ApplicationController
   before_filter :initialize_context
-  filter_access_to :new, :create, :edit, :update, :destroy, :show, :index
-  filter_access_to :current, :past, :future do
-    permitted_to!( :show, @user ) || permitted_to!( :show, @committee )
+  filter_access_to :new, :create, :edit, :update, :destroy, :show
+  filter_access_to :index, :current, :past, :future do
+    @user ? permitted_to!( :show, @user ) : permitted_to!( :show, @committee )
   end
 
   # GET /users/:user_id/enrollments/current

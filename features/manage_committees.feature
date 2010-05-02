@@ -24,7 +24,7 @@ Feature: Manage committees
     And I should not see "Unrequestable Committee"
     And I should not see "Unavailable Committee"
     And I should not see "No Positions Committee"
-@wip
+
   Scenario Outline: Test permissions for committees controller actions
     Given a committee exists
     And a user: "admin" exists with net_id: "admin", password: "secret", admin: true
