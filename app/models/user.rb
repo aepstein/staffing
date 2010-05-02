@@ -35,6 +35,14 @@ class User < ActiveRecord::Base
 
   before_validation_on_create :import_ldap_attributes, :initialize_password
 
+  def requestable_committees
+    Committee.requestable.positions_with_status( status )
+  end
+
+  def requestable_positions
+    Position.requestable.with_status( status )
+  end
+
   def requestables(reload=false)
     @requestables = nil if reload
     return @requestables if @requestables

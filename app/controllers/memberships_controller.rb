@@ -1,5 +1,5 @@
 class MembershipsController < ApplicationController
-  before_filter :initialize_contexts
+  before_filter :require_user, :initialize_contexts
   filter_access_to :new, :create, :edit, :update, :destroy, :show, :index
   filter_access_to :current, :past, :future do
     permitted_to!( :show, @user ) || permitted_to!( :index )

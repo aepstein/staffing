@@ -2,6 +2,12 @@ Feature: Manage committees
   In order to identify committees and associate them with positions and members
   As an administrator
   I want to create, modify, destroy, list, and show committees
+  @wip
+  Scenario: Show available committees for current user
+    Given a committee exists with name: "Available Committee"
+    And a committee exists with name: "Unrequestable Committee"
+    And a committee exists with name: "Unavailable Committee"
+    And a committee exists with name: "No Positions Committee"
 
   Scenario Outline: Test permissions for committees controller actions
     Given a committee exists

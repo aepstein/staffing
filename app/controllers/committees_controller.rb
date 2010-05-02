@@ -1,10 +1,18 @@
 class CommitteesController < ApplicationController
-  filter_resource_access
+  before_filter :require_user
+  filter_resource_access :additional_collection => [ :available ]
+
+  # GET /committees/available
+  # GET /committees/available.xml
+  def available
+    @search = current_user.requestable_committees
+    index
+  end
 
   # GET /committees
   # GET /committees.xml
   def index
-    @search = Committee.search( params[:search] )
+    @search ||= Committee.search( params[:search] )
     @committees = @search.paginate( :page => params[:page] )
 
     respond_to do |format|
@@ -86,5 +94,6 @@ class CommitteesController < ApplicationController
       format.xml  { head :ok }
     end
   end
+
 end
 
