@@ -92,6 +92,11 @@ class Position < ActiveRecord::Base
     r.memberships.populate_unassigned
   }
 
+  def requestables
+    return self if requestable?
+    enrollments.committees.select { |committee| committee.requestable? }
+  end
+
   def statuses=(statuses)
     self.statuses_mask = (statuses & User::STATUSES).map { |status| 2**User::STATUSES.index(status) }.sum
   end

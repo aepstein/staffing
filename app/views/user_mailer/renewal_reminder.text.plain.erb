@@ -1,18 +1,18 @@
 Dear <%= @user.first_name %>,
 
-You are receiving this notice because you have EXPIRING (W/O following) committee enrollments that end at or before <%= @expiration %> and your action is required to renew your enrollment in those committees.  Please take a few moments to create or update membership requests for any of the committees or positions listed below that you wish to renew so they reflect your current preferences.  This information will be used by the appropriate authorities when they staff the committees.
+You are receiving this notice because you have <%= pluralize( @user.memberships.ends_at_lt(@expiration).renewable.size, 'committee enrollment' ) %> that end before <%= @expiration %> and your action is required to renew your enrollment in those committees.  Please take a few moments to create or update membership requests for any of the committees or positions listed below that you wish to renew so they reflect your current preferences.  This information will be used by the appropriate authorities when they staff the committees.
 
 If your preferences are not updated by <%= @deadline %>, you will not be considered for reappointment to the following EXPIRING (W/O following AND [W/O request OR W/ request end date < @expiration]) positions:
 
 <% @user.memberships.ends_at_lt(@expiration).request_ends_at_lt(@expiration).renewable.each do |membership| -%>
- * You are *not* interested in reappointment to <%= @membership.request.requestable %> after your current membership ends on <%= @membership.ends_at %>.[ Click here <<%= request_url membership.request %>> to change ]
+ * You are *not* interested in reappointment to <%= membership.request.requestable %> after your current membership ends on <%= membership.ends_at %>.[ Click here <<%= request_url membership.request %>> to change ]
 <% end -%>
 <% @user.memberships.ends_at_lt(@expiration).request_id_is_null.renewable.each do |membership| -%>
- * You are *not* interested in reappointment to <%= @membership.position.requestable ? @membership.position : "TODO" %> after your membership ends on <%= @membership.ends_at %>. [ TODO: NEW REQUEST - use position if requestable, otherwise use each requestable committee ]
+ * You are *not* interested in reappointment to <%= membership.position.requestables.join ', ' %> after your membership ends on <%= membership.ends_at %>. <% unless membership.position.requestables.empty? %>[ Click here <<%= new_polymorphic_url( [membership.requestables.first, 'request'] ) %>> ]<% end %>
 <% end -%>
-<% @user.memberships.ends_at_lt(@expiration).request_ends_at_gte(@expiration).renewable.each do |membership| %>
- * You are interested interested in reappointment to <%= membership.request.requestable %> from after your current membership ends on <%= @membership.ends_at %> until <%= membership.request.ends_at %>. [ Click here <<%= request_url membership.request %>> to change ]
-<% end %>
+<% @user.memberships.ends_at_lt(@expiration).request_ends_at_gte(@expiration).renewable.each do |membership| -%>
+ * You are interested interested in reappointment to <%= membership.request.requestable %> from after your current membership ends on <%= membership.ends_at %> until <%= membership.request.ends_at %>. [ Click here <<%= request_url membership.request %>> to change ]
+<% end -%>
 
  Thank you for your time and your consideration.
 
