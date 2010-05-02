@@ -4,9 +4,15 @@ You are receiving this notice because you have EXPIRING (W/O following) committe
 
 If your preferences are not updated by <%= @deadline %>, you will not be considered for reappointment to the following EXPIRING (W/O following AND [W/O request OR W/ request end date < @expiration]) positions:
 
-According to our records, you are interested to continue serving in the following EXPIRING (W/O following, W/ request end date > @expiration) positions:
-
- * POSITION
+<% @user.memberships.ends_at_lt(@expiration).request_ends_at_lt(@expiration).renewable.each do |membership| -%>
+ * You are *not* interested in reappointment to <%= @membership.request.requestable %> after your current membership ends on <%= @membership.ends_at %>.[ Click here <<%= request_url membership.request %>> to change ]
+<% end -%>
+<% @user.memberships.ends_at_lt(@expiration).request_id_is_null.renewable.each do |membership| -%>
+ * You are *not* interested in reappointment to <%= @membership.position.requestable ? @membership.position : "TODO" %> after your membership ends on <%= @membership.ends_at %>. [ TODO: NEW REQUEST - use position if requestable, otherwise use each requestable committee ]
+<% end -%>
+<% @user.memberships.ends_at_lt(@expiration).request_ends_at_gte(@expiration).renewable.each do |membership| %>
+ * You are interested interested in reappointment to <%= membership.request.requestable %> from after your current membership ends on <%= @membership.ends_at %> until <%= membership.request.ends_at %>. [ Click here <<%= request_url membership.request %>> to change ]
+<% end %>
 
  Thank you for your time and your consideration.
 
