@@ -5,14 +5,15 @@ You are receiving this notice because you have <%= pluralize( @user.memberships.
 This information will be used by the appropriate authorities when they staff the committees after <% @deadline.to_s :us_ordinal %>.
 
 <% @user.memberships.ends_at_lt(@expiration).renewable.each do |membership| -%>
-<% if membership.request && membership.request.ends_at < @expiration -%>
- * You are *not* interested in reappointment to <%= membership.request.requestable %> after your current membership ends on <%= membership.ends_at %>.[ Click here <<%= request_url membership.request %>> to change ]
-<% elsif membership.request -%>
- * You are interested interested in reappointment to <%= membership.request.requestable %> from after your current membership ends on <%= membership.ends_at %> until <%= membership.request.ends_at %>. [ Click here <<%= request_url membership.request %>> to change ]
-<% else -%>
-<% unless membership.position.requestables.empty? -%>
- * You are *not* interested in reappointment to <%= membership.position.requestables.join ', ' %> after your membership ends on <%= membership.ends_at %>. [ Click here <<%= new_polymorphic_url( [membership.requestables.first, 'request'] ) %>> ]
-<% end -%>
+ <% if membership.request && membership.request.ends_at < @expiration -%>
+ * You are *not* interested in reappointment to <%= membership.request.requestable %> after your current membership ends on <%= membership.ends_at %>.[ Click here to update your existing request <<%= request_url membership.request %>> to change ]
+ <% elsif membership.request -%>
+ * You are interested interested in reappointment to <%= membership.request.requestable %> from after your current membership ends on <%= membership.ends_at %> until <%= membership.request.ends_at %>. [ Click here to update your existing request <<%= request_url membership.request %>> to change ]
+ <% else -%>
+ <% unless membership.position.requestables.empty? -%>
+ * You are *not* interested in reappointment to <%= membership.position.requestables.join ', ' %> after your membership ends on <%= membership.ends_at %>. [ Click here to create a new request <<%= new_polymorphic_url( [membership.position.requestables.first, 'request'] ) %>> ]
+ <% end -%>
+ <% end -%>
 <% end -%>
 
 Please contact our office by email to <assembly@cornell.edu> if you have any questions or concerns.  Thank you for your time and your consideration.

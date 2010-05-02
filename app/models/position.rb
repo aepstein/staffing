@@ -93,7 +93,7 @@ class Position < ActiveRecord::Base
   }
 
   def requestables
-    return self if requestable?
+    return [self] if requestable?
     enrollments.committees.select { |committee| committee.requestable? }
   end
 

@@ -67,10 +67,38 @@ Factory.define :quiz do |f|
 end
 
 Factory.define :request do |f|
-  f.starts_at Date.today
-  f.ends_at { |r| r.starts_at + 1.year }
   f.association :user
-  f.requestable { |r| r.association :position }
+  f.requestable { |request| request.association :position }
+  f.starts_at do |request|
+    case request.requestable.class.to_s
+    when 'Position'
+      periods = request.requestable.schedule.periods
+    when 'Committee'
+      if position = request.requestable.positions.first
+        periods = position.schedule.periods
+      else
+        periods = false
+      end
+    else
+      periods = false
+    end
+    (periods && periods.last) ? periods.last.starts_at : Date.today
+  end
+  f.ends_at do |request|
+    case request.requestable.class.to_s
+    when 'Position'
+      periods = request.requestable.schedule.periods
+    when 'Committee'
+      if position = request.requestable.positions.first
+        periods = position.schedule.periods
+      else
+        periods = false
+      end
+    else
+      periods = false
+    end
+    (periods && periods.first) ? periods.first.ends_at : Date.today
+  end
 end
 
 Factory.define :expired_request, :parent => :request do |f|
