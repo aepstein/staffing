@@ -1,11 +1,14 @@
 class CommitteesController < ApplicationController
-  before_filter :require_user
-  filter_resource_access :additional_collection => [ :available ]
+  before_filter :require_user, :initialize_context
+  filter_access_to :new, :create, :edit, :update, :destroy, :show, :index
+  filter_access_to :available do
+    permitted_to!( :show, @user )
+  end
 
   # GET /committees/available
   # GET /committees/available.xml
   def available
-    @search = current_user.requestable_committees
+    @search = @user.requestable_committees.search( params[:search] )
     index
   end
 
@@ -16,7 +19,7 @@ class CommitteesController < ApplicationController
     @committees = @search.paginate( :page => params[:page] )
 
     respond_to do |format|
-      format.html # index.html.erb
+      format.html { render :action => 'index' }
       format.js # index.js.erb
       format.xml  { render :xml => @committees }
     end
@@ -92,6 +95,18 @@ class CommitteesController < ApplicationController
     respond_to do |format|
       format.html { redirect_to(committees_url) }
       format.xml  { head :ok }
+    end
+  end
+
+  private
+
+  def initialize_context
+    if params[:action] == 'available'
+      if params[:user_id]
+        @user = User.find params[:user_id]
+      else
+        @user = current_user
+      end
     end
   end
 

@@ -2,12 +2,28 @@ Feature: Manage committees
   In order to identify committees and associate them with positions and members
   As an administrator
   I want to create, modify, destroy, list, and show committees
-  @wip
+
   Scenario: Show available committees for current user
-    Given a committee exists with name: "Available Committee"
-    And a committee exists with name: "Unrequestable Committee"
-    And a committee exists with name: "Unavailable Committee"
-    And a committee exists with name: "No Positions Committee"
+    Given a committee: "available" exists with name: "Available Committee", requestable: true
+    And a committee: "unrequestable" exists with name: "Unrequestable Committee", requestable: false
+    And a committee: "unavailable" exists with name: "Unavailable Committee", requestable: true
+    And a committee: "no_positions" exists with name: "No Positions Committee", requestable: true
+    And a position exists with name: "Available Position"
+    And an enrollment exists with position: the position, committee: committee "available"
+    And a position exists with name: "Unrequestable Position"
+    And an enrollment exists with position: the position, committee: committee "unrequestable"
+    And a position exists with name: "Unavailable Position", statuses_mask: 2
+    And an enrollment exists with position: the position, committee: committee "unavailable"
+    And a user exists with net_id: "owner", password: "secret", first_name: "John", last_name: "Doe"
+    And I log in as "owner" with password "secret"
+    And I am on the available committees page
+    Then I should see "Available committees for John Doe"
+    And I should see the following committees:
+      |Name                |
+      |Available Committee |
+    And I should not see "Unrequestable Committee"
+    And I should not see "Unavailable Committee"
+    And I should not see "No Positions Committee"
 
   Scenario Outline: Test permissions for committees controller actions
     Given a committee exists

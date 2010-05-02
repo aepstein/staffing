@@ -32,14 +32,11 @@ module NavigationHelpers
     when /^the new #{capture_factory} page for #{capture_model}$/
       new_polymorphic_path( [model($2), $1] )
 
-    when /^the #{capture_plural_factory} page$/
-      polymorphic_path( [$1] )
+    when /^the(?: (\w+))? #{capture_plural_factory} page$/
+      $1 ? polymorphic_path( [$1, $2] ) : polymorphic_path( [$2] )
 
-    when /^the (past|current|future) #{capture_plural_factory} page for #{capture_model}$/
-      polymorphic_path( [$1, model($3), $2] )
-
-    when /^the #{capture_plural_factory} page for #{capture_model}$/
-      polymorphic_path( [model($2), $1] )
+    when /^the(?: (\w+))? #{capture_plural_factory} page for #{capture_model}$/
+      $1 ? polymorphic_path( [$1, model($3), $2] ) : polymorphic_path( [model($3), $2] )
 
     when /^the page for #{capture_model}$/
       polymorphic_path( [model($1)] )
