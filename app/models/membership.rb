@@ -7,6 +7,8 @@ class Membership < ActiveRecord::Base
   scope_procedure :current, lambda { starts_at_lte(Date.today).ends_at_gte(Date.today) }
   scope_procedure :future, lambda { starts_at_gt(Date.today) }
   scope_procedure :past, lambda { ends_at_lt(Date.today) }
+  scope_procedure :renewable, lambda { position_renewable }
+  scope_procedure :unrenewable, lambda { position_unrenewable }
 
   named_scope :enrollments_committee_id_equals, lambda { |committee_id|
     { :joins => "INNER JOIN enrollments",

@@ -126,6 +126,22 @@ describe Membership do
     new_designees.first.committee.should eql enrollment_no_designee.committee
   end
 
+  it 'should have a renewable scope that fetches only if the associated position is renewable' do
+    renewable = Factory(:membership, :position => renewable_position)
+    Membership.renewable.length.should eql 1
+    Membership.renewable.should include renewable
+  end
+
+  it 'should have an unrenewable scope that fetches only if the associated position is renewable' do
+    renewable = Factory(:membership, :position => renewable_position)
+    Membership.unrenewable.length.should eql 1
+    Membership.unrenewable.should include @membership
+  end
+
+  def renewable_position
+    Factory(:position, :renewable => true)
+  end
+
   def setup_membership_with_vacancies
     period = Factory(:period, :schedule => Factory(:schedule) )
     position = Factory(:position, :schedule => period.schedule, :slots => 2)
