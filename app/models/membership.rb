@@ -23,6 +23,7 @@ class Membership < ActiveRecord::Base
         "  #{date_add :ends_at, 1.day} = #{date_add 'renewable_memberships.starts_at', 0.days} )",
       :conditions => 'renewable_memberships.id IS NULL' }
   }
+  named_scope :unrequested, :conditions => { :request_id => nil }
 
   named_scope :enrollments_committee_id_equals, lambda { |committee_id|
     { :joins => "INNER JOIN enrollments",

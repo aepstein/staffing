@@ -153,6 +153,12 @@ describe Membership do
     Membership.unrenewed.should include subsequent
   end
 
+  it 'should have an unrequested scope' do
+    requested = Factory(:membership, :request => Factory(:request) )
+    Membership.unrequested.size.should eql 1
+    Membership.unrequested.should include @membership
+  end
+
   def renewable_position
     Factory(:position, :renewable => true)
   end
