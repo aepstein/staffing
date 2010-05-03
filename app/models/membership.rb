@@ -10,17 +10,19 @@ class Membership < ActiveRecord::Base
   scope_procedure :renewable, lambda { position_renewable }
   scope_procedure :unrenewable, lambda { position_unrenewable }
 
+  scope_procedure :expire_pending, lambda { |expiration| ends_at_lt(expiration).renewable.unrenewed.current }
+
   named_scope :renewed, lambda {
     { :joins => "INNER JOIN memberships AS renewable_memberships ON " +
-        "( memberships.user_id = renewable_memberships.user_id AND " +
-        "  memberships.position_id = renewable_memberships.position_id AND " +
-        "  #{date_add :ends_at, 1.day} = #{date_add 'renewable_memberships.starts_at', 0.days} )" }
+        " memberships.user_id = renewable_memberships.user_id AND " +
+        " memberships.position_id = renewable_memberships.position_id AND " +
+        " #{date_add :ends_at, 1.day} = #{date_add 'renewable_memberships.starts_at', 0.days} " }
   }
   named_scope :unrenewed, lambda {
     { :joins => "LEFT JOIN memberships AS renewable_memberships ON " +
-        "( memberships.user_id = renewable_memberships.user_id AND " +
-        "  memberships.position_id = renewable_memberships.position_id AND " +
-        "  #{date_add :ends_at, 1.day} = #{date_add 'renewable_memberships.starts_at', 0.days} )",
+        " memberships.user_id = renewable_memberships.user_id AND " +
+        " memberships.position_id = renewable_memberships.position_id AND " +
+        " #{date_add :ends_at, 1.day} = #{date_add 'renewable_memberships.starts_at', 0.days}",
       :conditions => 'renewable_memberships.id IS NULL' }
   }
   named_scope :unrequested, :conditions => { :request_id => nil }

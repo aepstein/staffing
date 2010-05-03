@@ -5,6 +5,11 @@ class MembershipsController < ApplicationController
     @user ? permitted_to!( :show, @user ) : permitted_to!( :index )
   end
 
+  def expire_pending
+    @expiration = params[:expiration] || ( Date.today + 1.year )
+    @memberships = @memberships.expire_pending( @expiration )
+  end
+
   # GET /requests/:request_id/memberships/current
   # GET /requests/:request_id/memberships/current.xml
   # GET /positions/:position_id/memberships/current
