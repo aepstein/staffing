@@ -28,6 +28,35 @@ Feature: Manage memberships
       | user      | see       | see      | not see | see       |
       | committee | see       | see      | see     | not see   |
 
+  Scenario Outline: Search for subset of memberships
+    Given an authority: "focus" exists with name: "Focus"
+    And an authority: "other" exists with name: "Other"
+    And a schedule exists
+    And period exists with schedule: the schedule
+    And a position: "focus" exists with authority: authority "focus", name: "Focus", schedule: the schedule, slots: 2
+    And a position: "other" exists with authority: authority "other", name: "Other", schedule: the schedule, slots: 2
+    And a committee: "focus" exists with name: "Focus"
+    And a committee: "other" exists with name: "Other"
+    And an enrollment: "focus" exists with committee: committee "focus", position: position "focus"
+    And an enrollment: "other" exists with committee: committee "other", position: position "other"
+    And a user: "focus" exists with last_name: "Focus"
+    And a user: "other" exists with last_name: "Other"
+    And a membership exists with user: user "focus", position: position "focus", period: the period
+    And a membership exists with user: user "<toggle_u>", position: position "<toggle_p>", period: the period
+    And I log in as the administrator
+    Given I am on the memberships page for <context>
+    When I fill in "<search>" with "Focus"
+    And I press "Search"
+    Then I should be on the memberships page for <context>
+    And I should see "Focus" within "table"
+    And I should not see "Other" within "table"
+    Examples:
+      | toggle_u | toggle_p | context            | search    |
+      | focus    | other    | user: "focus"      | Authority |
+      | focus    | other    | user: "focus"      | Position  |
+      | focus    | other    | user: "focus"      | Committee |
+      | other    | other    | committee: "focus" | User      |
+
   Scenario Outline: Test permissions for memberships controller actions
     Given a position exists
     And a membership exists with position: the position

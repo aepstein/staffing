@@ -1,6 +1,6 @@
 class Membership < ActiveRecord::Base
   default_scope :include => [:user, :period],
-    :order => "periods.starts_at DESC, memberships.starts_at DESC, " +
+    :order => "memberships.ends_at DESC, memberships.starts_at DESC, " +
     "users.last_name ASC, users.first_name ASC, users.middle_name ASC"
   scope_procedure :assigned, lambda { user_id_not_nil }
   scope_procedure :unassigned, lambda { user_id_nil }
@@ -24,6 +24,13 @@ class Membership < ActiveRecord::Base
       :conditions => 'renewable_memberships.id IS NULL' }
   }
   named_scope :unrequested, :conditions => { :request_id => nil }
+
+  named_scope :user_name_like, lambda { |text|
+    { :include => [:user],
+      :conditions => %w( first_name last_name middle_name net_id ).map { |c|
+        "users.#{c} LIKE " + connection.quote( "%#{text}%" )
+      }.join( ' OR ' ) }
+  }
 
   named_scope :enrollments_committee_id_equals, lambda { |committee_id|
     { :joins => "INNER JOIN enrollments",
