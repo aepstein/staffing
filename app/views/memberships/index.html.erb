@@ -33,9 +33,9 @@
     <%= form.label :starts_at_gt, 'Ends Before' %>
     <%= form.text_field :ends_at_lt %>
   </p>
-  <% form.buttons do %>
-    <%= form.commit_button "Search" %>
-  <% end %>
+  <p>
+    <%= submit_tag 'Search' %>
+  </p>
 <% end %>
 
 
