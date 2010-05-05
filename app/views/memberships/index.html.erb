@@ -1,5 +1,44 @@
 <h2><%=h params[:action].titleize %> memberships<%=h @committee ?  " for #{@committee}" : "" %><%=h @user ?  " for #{@user}" : "" %><%=h @position ?  " for #{@position}" : "" %><%=h @authority ?  " for #{@authority}" : "" %></h2>
 
+<% semantic_form_for @search do |form| %>
+  <% unless @user %>
+  <p>
+    <%= form.label :user_name_like,'User' %>
+    <%= form.text_field :user_name_like %>
+  </p>
+  <% end %>
+  <% unless @committee %>
+  <p>
+    <%= form.label :position_committees_name_like, 'Committee' %>
+    <%= form.text_field :position_committees_name_like %>
+  </p>
+  <% end %>
+  <% unless @authority %>
+  <p>
+    <%= form.label :position_authority_name_like, 'Authority' %>
+    <%= form.text_field :position_authority_name_like %>
+  </p>
+  <% end %>
+  <% unless @position %>
+  <p>
+    <%= form.label :position_name_like, 'Position' %>
+    <%= form.text_field :position_name_like %>
+  </p>
+  <% end %>
+  <p>
+    <%= form.label :starts_at_gt, 'Starts After' %>
+    <%= form.text_field :starts_at_gt %>
+  </p>
+  <p>
+    <%= form.label :starts_at_gt, 'Ends Before' %>
+    <%= form.text_field :ends_at_lt %>
+  </p>
+  <% form.buttons do %>
+    <%= form.commit_button "Search" %>
+  <% end %>
+<% end %>
+
+
 <%= will_paginate @memberships %>
 
 <%= render :partial => 'memberships', :object => @memberships,

@@ -7,6 +7,7 @@ class MembershipsController < ApplicationController
 
   def expire_pending
     @expiration = params[:expiration] || ( Date.today + 1.year )
+    @memberships ||= @user.memberships if @user
     @memberships = @memberships.expire_pending( @expiration )
   end
 
@@ -84,7 +85,8 @@ class MembershipsController < ApplicationController
     @memberships ||= @user.memberships if @user
     @memberships ||= @authority.memberships if @authority
     @memberships ||= Membership.all
-    @memberships = @memberships.paginate(:page => params[:page])
+    @search = @memberships.search( params[:search] )
+    @memberships = @search.paginate(:page => params[:page])
 
     respond_to do |format|
       format.html { render :action => 'index' }
