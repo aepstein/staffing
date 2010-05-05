@@ -10,6 +10,24 @@ Feature: Manage memberships
     And a period: "2008" exists with schedule: schedule "annual", starts_at: "2008-06-01", ends_at: "2009-05-31"
     And a position: "officer" exists with name: "Officer", schedule: schedule "annual", slots: 4
 
+  Scenario Outline: List search elements for a membership
+    Given an authority exists
+    And a position exists
+    And a user exists
+    And a committee exists
+    And I log in as the administrator
+    And I am on the memberships page for the <entity>
+    Then I should <authority> "Authority" within "form"
+    And I should <position> "Position" within "form"
+    And I should <user> "User" within "form"
+    And I should <committee> "Committee" within "form"
+    Examples:
+      | entity    | authority | position | user    | committee |
+      | authority | not see   | see      | see     | see       |
+      | position  | see       | not see  | see     | see       |
+      | user      | see       | see      | not see | see       |
+      | committee | see       | see      | see     | not see   |
+
   Scenario Outline: Test permissions for memberships controller actions
     Given a position exists
     And a membership exists with position: the position

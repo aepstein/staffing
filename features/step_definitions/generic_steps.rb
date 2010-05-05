@@ -79,3 +79,11 @@ Then /^(?:I|they) should not see "([^"]*?)" in the email body$/ do |text|
   current_email.body.should_not include(text)
 end
 
+Then /^(?:|I) should see a field labeled "(.+)"$/ do |text|
+  within('form').should contain(text)
+end
+
+Then /^(?:|I) should not see a field labeled "(.+)"$/ do |text|
+  within('form').should_not contain(text)
+end
+
