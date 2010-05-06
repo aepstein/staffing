@@ -1,7 +1,7 @@
 <h2>Listing requests <%= @title %></h2>
 
 <%= render :partial => "requests", :object => @requests,
-  :locals => { :requestable => @requestable, :user => @user } %>
+  :locals => { :requestable => @requestable, :user => (@requestable ? false : @user) } %>
 
 <hr />
 

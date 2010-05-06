@@ -17,7 +17,8 @@ Feature: Manage requests
     And question: "third" is amongst the questions of quiz: "generic"
 
   Scenario Outline: Test permissions for requests controller actions
-    Given a request exists with requestable: the position, user: user "applicant"
+    Given a position exists
+    And a request exists with requestable: the position, user: user "applicant"
     And a user: "admin" exists with net_id: "admin", password: "secret", admin: true
     And a user: "regular" exists with net_id: "regular", password: "secret", admin: false
     And I log in as "<user>" with password "secret"
@@ -40,14 +41,16 @@ Feature: Manage requests
       | admin     | see     | not see | not see | not see | not see |
       | applicant | see     | not see | not see | not see | not see |
       | regular   | not see | not see | see     | see     | see     |
-@wip
+
   Scenario Outline: Register new request or edit
     Given I log in as "applicant" with password "secret"
     And a position: "popular" exists with name: "Most Popular Person", schedule: schedule "annual", quiz: quiz "generic", renewable: true, requestable: <p_requestable>
-    And a position: "unpopular" exists with name: "Least Popular Person"
+    And a position: "unpopular" exists with name: "Least Popular Person", quiz: quiz "generic"
+    And a position: "misc" exists with name: "Zee Last Position", quiz: quiz "generic"
     And a membership exists with position: position "popular", user: user "applicant", period: period "2008"
     And a committee exists with name: "Central Committee", requestable: true
     And an enrollment exists with committee: the committee, position: position "popular"
+    And a request exists with user: user "applicant", requestable: <existing>
     And a request exists with user: user "applicant", requestable: position "unpopular"
     And I am on the new request page for <requestable>
     When I fill in "Desired Start Date" with "2008-06-01"
@@ -56,8 +59,8 @@ Feature: Manage requests
     And I fill in "Capital of Assyria" with "*Da*mascus"
     And I choose "Yes"
     And I select "Least Popular Person" from "Move to"
-    And I press "Create"
-    Then I should see "Request was successfully created."
+    And I press "<button>"
+    Then I should see "Request was successfully <sta>ated."
     And I should see "Requestable: <name>"
     And I should see "User: Bill Williams"
     And I should see "blue"
@@ -79,17 +82,15 @@ Feature: Manage requests
     And I should see "Assur"
     And I should see "Are you qualified? No"
     And I should see "Resume? Yes"
-    When I am on the requests page for user: "applicant"
-    Then I should see the following requests:
-      | Requestable          |
-      | <name>               |
-      | Least Popular Person |
     Examples:
-      | requestable         | name                | p_requestable |
-      | the committee       | Central Committee   | true          |
-      | position: "popular" | Most Popular Person | true          |
-      | the membership      | Most Popular Person | true          |
-      | the membership      | Central Committee   | false         |
+      | requestable         | name                | p_requestable | existing             | button | sta |
+      | the committee       | Central Committee   | true          | position "misc"      | Create | cre |
+      | position: "popular" | Most Popular Person | true          | position "misc"      | Create | cre |
+      | the membership      | Most Popular Person | true          | position "misc"      | Create | cre |
+      | the membership      | Central Committee   | false         | position "misc"      | Create | cre |
+      | the membership      | Most Popular Person | true          | position "popular"   | Update | upd |
+      | the membership      | Central Committee   | false         | the committee        | Update | upd |
+      | the committee       | Central Committee   | true          | the committee        | Update | upd |
 
   Scenario: Delete request
     Given a user: "applicant1" exists with last_name: "Doe 1", first_name: "John"
