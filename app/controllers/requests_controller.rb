@@ -1,5 +1,10 @@
 class RequestsController < ApplicationController
-  filter_resource_access
+  before_filter :require_user, :initialize_context
+  filter_access_to :new, :create
+  filter_access_to :edit, :update, :destroy, :show, :attribute_check => true
+  filter_access_to :index, :renewed, :unrenewed, :expired, :unexpired do
+    @user ? permitted_to!( :show, @user ) : permitted_to!( :index )
+  end
 
   # GET /position/:position_id/requests
   # GET /position/:position_id/requests.xml
@@ -45,14 +50,19 @@ class RequestsController < ApplicationController
     end
   end
 
-  # GET /position/:position_id/requests/new
-  # GET /position/:position_id/requests/new.xml
-  # GET /committee/:committee_id/requests/new
-  # GET /committee/:committee_id/requests/new.xml
+  # GET /positions/:position_id/requests/new
+  # GET /positions/:position_id/requests/new.xml
+  # GET /committees/:committee_id/requests/new
+  # GET /committees/:committee_id/requests/new.xml
+  # GET /memberships/:membership_id/requests/new
+  # GET /memberships/:membership_id/requests/new.xml
   def new
-    initialize_context
-    @request = @requestable.requests.build
-    raise AuthorizationError unless current_user
+    unless @request.nil? || @request.new_record?
+      return respond_to do |format|
+        format.html { redirect_to @request }
+      end
+    end
+    @request ||= @requestable.requests.build
     @request.user = current_user
     @request.answers.populate
 
@@ -64,17 +74,19 @@ class RequestsController < ApplicationController
 
   # GET /requests/1/edit
   def edit
-    @request = Request.find(params[:id])
+    respond_to do |format|
+      format.html { render :action => 'edit' }
+    end
   end
 
-  # POST /position/:position_id/requests
-  # POST /position/:position_id/requests.xml
-  # POST /committee/:committee_id/requests
-  # POST /committee/:committee_id/requests.xml
+  # POST /positions/:position_id/requests
+  # POST /positions/:position_id/requests.xml
+  # POST /committees/:committee_id/requests
+  # POST /committees/:committee_id/requests.xml
+  # POST /memberships/:membership_id/requests
+  # POST /memberships/:membership_id/requests.xml
   def create
-    initialize_context
-    @request = @requestable.requests.build(params[:request])
-    raise AuthorizationError unless current_user
+    @request ||= @requestable.requests.build(params[:request])
     @request.user = current_user
 
     respond_to do |format|
@@ -92,8 +104,6 @@ class RequestsController < ApplicationController
   # PUT /requests/1
   # PUT /requests/1.xml
   def update
-    @request = Request.find(params[:id])
-
     respond_to do |format|
       if @request.update_attributes(params[:request])
         flash[:notice] = 'Request was successfully updated.'
@@ -109,7 +119,6 @@ class RequestsController < ApplicationController
   # DELETE /requests/1
   # DELETE /requests/1.xml
   def destroy
-    @request = Request.find(params[:id])
     @request.destroy
 
     respond_to do |format|
@@ -121,7 +130,6 @@ class RequestsController < ApplicationController
   private
 
   def initialize_index
-    initialize_context
     if @requestable
       @requests = @requestable.requests.with_permissions_to :show
     else
@@ -140,9 +148,24 @@ class RequestsController < ApplicationController
   end
 
   def initialize_context
+    @request = Request.find( params[:id] ) if params[:id]
     @requestable = Position.find params[:position_id] if params[:position_id]
     @requestable = Committee.find params[:committee_id] if params[:committee_id]
     @user = User.find params[:user_id] if params[:user_id]
+    if params[:membership_id]
+      @membership = Membership.find params[:membership_id]
+      @request ||= @membership.request
+      @membership.position.requestables.each do |requestable|
+        @request ||= @membership.user.requests.first(
+          :requestable_type => requestable.class.to_s,
+          :requestable_id => requestable.id )
+      end
+      unless @request || @membership.position.requestables.empty?
+        @request = @membership.user.requests.build( params[:request] )
+        @request.requestable = @membership.position.requestables.first
+      end
+    end
   end
+
 end
 

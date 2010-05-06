@@ -34,6 +34,13 @@ describe Request do
     @request.save.should be_false
   end
 
+  it 'should not save a duplicate for certain user and requestable' do
+    duplicate = Factory.build(:request)
+    duplicate.user = @request.user
+    duplicate.requestable = @request.requestable
+    duplicate.save.should be_false
+  end
+
   it 'should not save if for a position and the user does not meet status requirements of the position' do
     @request.requestable.statuses = ['undergrad']
     @request.requestable.save

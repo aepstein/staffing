@@ -19,30 +19,29 @@ Feature: Manage requests
     And a position: "unpopular" exists with name: "Least Popular Person"
 
   Scenario Outline: Test permissions for requests controller actions
-    Given a request exists with requestable: the position, user: user "applicant", state: "<state>"
+    Given a request exists with requestable: the position, user: user "applicant"
     And a user: "admin" exists with net_id: "admin", password: "secret", admin: true
     And a user: "regular" exists with net_id: "regular", password: "secret", admin: false
     And I log in as "<user>" with password "secret"
     And I am on the new request page for the position
-    Then I should <create>
+    Then I should <create> "not authorized"
     Given I post on the requests page for the position
-    Then I should <create>
+    Then I should <create> "not authorized"
     And I am on the edit page for the request
-    Then I should <update>
+    Then I should <update> "not authorized"
     Given I put on the page for the request
-    Then I should <update>
+    Then I should <update> "not authorized"
     Given I am on the page for the request
-    Then I should <show>
+    Then I should <show> "not authorized"
     Given I am on the requests page for the position
-    Then I should <index>
+    Then I should <index> "Williams, Bill"
     Given I delete on the page for the request
-    Then I should <destroy>
+    Then I should <destroy> "not authorized"
     Examples:
-      | state     | user      | index                    | create                   | update                   | destroy                  | show                     |
-      | started   | admin     | see "Williams, Bill"     | not see "not authorized" | not see "not authorized" | not see "not authorized" | not see "not authorized" |
-      | started   | applicant | see "Williams, Bill"     | not see "not authorized" | not see "not authorized" | not see "not authorized" | not see "not authorized" |
-      | completed | applicant | see "Williams, Bill"     | not see "not authorized" | see "not authorized"     | see "not authorized"     | not see "not authorized" |
-      | started   | regular   | not see "Williams, Bill" | not see "not authorized" | see "not authorized"     | see "not authorized"     | see "not authorized"     |
+      | user      | index   | create  | update  | destroy | show    |
+      | admin     | see     | not see | not see | not see | not see |
+      | applicant | see     | not see | not see | not see | not see |
+      | regular   | not see | not see | see     | see     | see     |
 
   Scenario Outline: Register new request or edit
     Given I log in as "applicant" with password "secret"
@@ -60,7 +59,6 @@ Feature: Manage requests
     Then I should see "Request was successfully created."
     And I should see "Requestable: <name>"
     And I should see "User: Bill Williams"
-    And I should see "State: started"
     And I should see "blue"
     And I should see "Damascus"
     And I should see "Are you qualified? Yes"
@@ -76,7 +74,6 @@ Feature: Manage requests
     Then I should see "Request was successfully updated."
     And I should see "Requestable: <name>"
     And I should see "User: Bill Williams"
-    And I should see "State: started"
     And I should see "yellow"
     And I should see "Assur"
     And I should see "Are you qualified? No"

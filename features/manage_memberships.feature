@@ -117,7 +117,7 @@ Feature: Manage memberships
 
   Scenario: Register a new membership given a request
     Given a period: "2009" exists with schedule: schedule "annual", starts_at: "2009-06-01", ends_at: "2010-05-31"
-    And a request: "application" exists with user: user "popular", requestable: position "officer", state: "submitted", starts_at: "2009-06-01", ends_at: "2010-05-31"
+    And a request: "application" exists with user: user "popular", requestable: position "officer", starts_at: "2009-06-01", ends_at: "2010-05-31"
     And I log in as the administrator
     And I am on the new membership page for request: "application"
     And I press "Create"

@@ -5,10 +5,20 @@ class MembershipsController < ApplicationController
     @user ? permitted_to!( :show, @user ) : permitted_to!( :index )
   end
 
-  def expire_pending
-    @expiration = params[:expiration] || ( Date.today + 1.year )
-    @memberships ||= @user.memberships if @user
-    @memberships = @memberships.expire_pending( @expiration )
+  # GET /committees/:committee_id/memberships/renewed
+  # GET /committees/:committee_id/memberships/renewed.xml
+  # GET /users/:user_id/memberships/renewed
+  # GET /users/:user_id/memberships/renewed.xml
+  def renewed
+    @memberships = @memberships.renewed if @memberships
+  end
+
+  # GET /committees/:committee_id/memberships/unrenewed
+  # GET /committees/:committee_id/memberships/unrenewed.xml
+  # GET /users/:user_id/memberships/unrenewed
+  # GET /users/:user_id/memberships/unrenewed.xml
+  def unrenewed
+    @memberships = @memberships.renewable.unrenewed if @memberships
   end
 
   # GET /requests/:request_id/memberships/current

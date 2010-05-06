@@ -4,14 +4,6 @@ class Request < ActiveRecord::Base
   scope_procedure :unexpired, lambda { ends_at_gt Date.today }
   scope_procedure :expired, lambda { ends_at_lte Date.today }
 
-  include AASM
-  aasm_column :state
-  aasm_initial_state :started
-  aasm_state :started
-  aasm_state :submitted
-  aasm_state :reviewed
-  aasm_state :released
-
   acts_as_list :scope => :user_id
 
   has_many :answers do
@@ -46,6 +38,7 @@ class Request < ActiveRecord::Base
   validates_presence_of :user
   validates_date :starts_at
   validates_date :ends_at, :after => :starts_at
+  validates_uniqueness_of :user_id, :scope => [ :requestable_type, :requestable_id ]
   validate :user_status_must_match_position, :requestable_must_be_requestable
 
   before_validation_on_create :initialize_answers
