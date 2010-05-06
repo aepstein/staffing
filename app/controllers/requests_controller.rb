@@ -156,9 +156,9 @@ class RequestsController < ApplicationController
       @membership = Membership.find params[:membership_id]
       @request ||= @membership.request
       @membership.position.requestables.each do |requestable|
-        @request ||= @membership.user.requests.first(
-          :requestable_type => requestable.class.to_s,
-          :requestable_id => requestable.id )
+        @request ||= @membership.user.requests.first( :conditions =>
+          { :requestable_type => requestable.class.to_s,
+            :requestable_id => requestable.id } )
       end
       unless @request || @membership.position.requestables.empty?
         @request = @membership.user.requests.build( params[:request] )

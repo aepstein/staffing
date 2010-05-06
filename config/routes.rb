@@ -7,7 +7,9 @@ ActionController::Routing::Routes.draw do |map|
       :collection => { :current => :get, :future => :get, :past => :get, :unrenewed => :get, :renewed => :get }
   end
   map.resources :positions, :shallow => true do |position|
-    position.resources :memberships
+    position.resources :memberships do |membership|
+      membership.resources :requests, :only => [ :new, :create ]
+    end
     position.resources :requests, :only => [ :new, :create, :index ] do |request|
       request.resources :memberships, :only => [ :new, :create, :index ]
     end

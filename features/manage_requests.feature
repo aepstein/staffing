@@ -15,8 +15,6 @@ Feature: Manage requests
     And question: "first" is amongst the questions of quiz: "generic"
     And question: "second" is amongst the questions of quiz: "generic"
     And question: "third" is amongst the questions of quiz: "generic"
-    And a position: "popular" exists with name: "Most Popular Person", schedule: schedule "annual", quiz: quiz "generic"
-    And a position: "unpopular" exists with name: "Least Popular Person"
 
   Scenario Outline: Test permissions for requests controller actions
     Given a request exists with requestable: the position, user: user "applicant"
@@ -42,10 +40,13 @@ Feature: Manage requests
       | admin     | see     | not see | not see | not see | not see |
       | applicant | see     | not see | not see | not see | not see |
       | regular   | not see | not see | see     | see     | see     |
-
+@wip
   Scenario Outline: Register new request or edit
     Given I log in as "applicant" with password "secret"
-    And a committee exists with name: "Central Committee"
+    And a position: "popular" exists with name: "Most Popular Person", schedule: schedule "annual", quiz: quiz "generic", renewable: true, requestable: <p_requestable>
+    And a position: "unpopular" exists with name: "Least Popular Person"
+    And a membership exists with position: position "popular", user: user "applicant", period: period "2008"
+    And a committee exists with name: "Central Committee", requestable: true
     And an enrollment exists with committee: the committee, position: position "popular"
     And a request exists with user: user "applicant", requestable: position "unpopular"
     And I am on the new request page for <requestable>
@@ -84,15 +85,18 @@ Feature: Manage requests
       | <name>               |
       | Least Popular Person |
     Examples:
-      | requestable         | name                |
-      | the committee       | Central Committee   |
-      | position: "popular" | Most Popular Person |
+      | requestable         | name                | p_requestable |
+      | the committee       | Central Committee   | true          |
+      | position: "popular" | Most Popular Person | true          |
+      | the membership      | Most Popular Person | true          |
+      | the membership      | Central Committee   | false         |
 
   Scenario: Delete request
     Given a user: "applicant1" exists with last_name: "Doe 1", first_name: "John"
     And a user: "applicant2" exists with last_name: "Doe 2", first_name: "John"
     And a user: "applicant3" exists with last_name: "Doe 3", first_name: "John"
     And a user: "applicant4" exists with last_name: "Doe 4", first_name: "John"
+    And a position: "popular" exists with name: "Most Popular Person", schedule: schedule "annual", quiz: quiz "generic"
     And a request exists with requestable: position "popular", user: user "applicant4"
     And a request exists with requestable: position "popular", user: user "applicant3"
     And a request exists with requestable: position "popular", user: user "applicant2"
