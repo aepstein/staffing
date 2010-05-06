@@ -18,7 +18,7 @@
     <td><%=h membership.starts_at.to_s :rfc822 %></td>
     <td><%=h membership.ends_at.to_s :rfc822 %></td>
     <td><%= link_to 'Show', membership %></td>
-    <td><%= link_to 'Renew', ( membership.request ? edit_request_path(membership.request) : new_membership_request_path(membership) ) %></td>
+    <td><%= link_to_renewal membership %></td>
     <td><%= link_to 'Edit', edit_membership_path(membership) %></td>
     <td><%= link_to 'Destroy', membership, :confirm => 'Are you sure?', :method => :delete %></td>
   <% end %>
