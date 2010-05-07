@@ -7,7 +7,7 @@ development:
 test:
   defaults:
     authority:
-      contact_name: 'Authority Contact'
+      contact_name: 'The Authority'
       contact_email: 'info@example.org'
 
 production:

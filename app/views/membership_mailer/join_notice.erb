@@ -1,13 +1,13 @@
 Dear <%= @membership.user.first_name %>,
 
-This notice is to inform you that you have been assigned a membership in <%= @membership.description %>, for a term starting at <%= @membership.starts_at.to_s :rfc822 %> and ending at <%= @membership.ends_at.to_s :rfc822 %>.
+This notice is to inform you that you have been assigned a membership in <%= @membership.description %>, for a term starting on <%= @membership.starts_at.to_s :long_ordinal %> and ending on <%= @membership.ends_at.to_s :long_ordinal %>.
 
-<% if @membership.position.authority.join_notice -%>
-<%= @membership.position.authority.join_notice %>
+<% if @membership.position.authority.join_message -%>
+<%= @membership.position.authority.join_message %>
 
 <% end -%>
-<% if @membership.position.join_notice -%>
-<%= @membership.position.join_notice %>
+<% if @membership.position.join_message -%>
+<%= @membership.position.join_message %>
 
 <% end -%>
 <% if @membership.position.enrollments.length > 0 -%>
