@@ -1,0 +1,18 @@
+development:
+  defaults:
+    authority:
+      contact_name: 'Authority Contact'
+      contact_email: 'info@example.org'
+
+test:
+  defaults:
+    authority:
+      contact_name: 'Authority Contact'
+      contact_email: 'info@example.org'
+
+production:
+  defaults:
+    authority:
+      contact_name: 'Office of the Assemblies'
+      contact_email: 'assembly@cornell.edu'
+

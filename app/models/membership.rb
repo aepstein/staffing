@@ -166,6 +166,12 @@ class Membership < ActiveRecord::Base
 
   alias_method_chain :request=, :population
 
+  def description
+    return request.requestable.to_s if request
+    return position.requestables.first.to_s unless position.requestables.empty?
+    position.to_s
+  end
+
   def to_s; "#{position} (#{starts_at.to_s :rfc822} - #{ends_at.to_s :rfc822})"; end
 
 end
