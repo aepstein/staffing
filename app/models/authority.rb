@@ -11,13 +11,13 @@ class Authority < ActiveRecord::Base
 
   validates_presence_of :name
   validates_uniqueness_of :name
-  validates_presence_of :contact_name
-  validates_presence_of :contact_email
 
-  def after_initialize
-    return unless new_record?
-    self.contact_name = APP_CONFIG['defaults']['authority']['contact_name']
-    self.contact_email = APP_CONFIG['defaults']['authority']['contact_email']
+  def effective_contact_name
+    contact_name? ? contact_name : APP_CONFIG['defaults']['authority']['contact_name']
+  end
+
+  def effective_contact_email
+    contact_email? ? contact_email : APP_CONFIG['defaults']['authority']['contact_email']
   end
 
   def committee_name; committee.name if committee; end

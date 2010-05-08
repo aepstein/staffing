@@ -1,22 +1,26 @@
 Dear <%= @user.first_name %>,
 
-You are receiving this notice because you have <%= pluralize( @user.memberships.ends_at_lt(@expiration).renewable.size, 'committee enrollment' ) %> that end soon and your action is required to renew your enrollment in those committees.  Please take a few moments before <% @deadline.to_s :us_ordinal %> to create or update membership requests for any of the committees or positions listed below that you wish to renew so they reflect your preferences.
-
-This information will be used by the appropriate authorities when they staff the committees after <% @deadline.to_s :us_ordinal %>.
+You are receiving this notice because you have <%= pluralize( @user.memberships.ends_at_lt(@expiration).renewable.size, 'membership' ) %> ending soon and your action is required to renew your membership.  According to our records, your renewal preferences are as follows:
 
 <% @user.memberships.ends_at_lt( @expiration ).renewable.unrenewed.current.each do |membership| -%>
  <% if membership.request && membership.request.ends_at < @expiration -%>
- * You are *not* interested in reappointment to <%= membership.request.requestable %> after your current membership ends on <%= membership.ends_at %>.[ Click here to update your existing request <<%= request_url membership.request %>> to change ]
+ * You are *not* interested in reappointment to <%= membership.request.requestable %> after your current membership ends on <%= membership.ends_at %>.
  <% elsif membership.request -%>
- * You are interested interested in reappointment to <%= membership.request.requestable %> from after your current membership ends on <%= membership.ends_at %> until <%= membership.request.ends_at %>. [ Click here to update your existing request <<%= request_url membership.request %>> to change ]
+ * You are interested interested in reappointment to <%= membership.request.requestable %> from after your current membership ends on <%= membership.ends_at %> until <%= membership.request.ends_at %>.
  <% else -%>
  <% unless membership.position.requestables.empty? -%>
- * You are *not* interested in reappointment to <%= membership.position.requestables.join ', ' %> after your membership ends on <%= membership.ends_at %>. [ Click here to create a new request <<%= new_polymorphic_url( [membership.position.requestables.first, 'request'] ) %>> ]
+ * You are *not* interested in reappointment to <%= membership.position.requestables.join ', ' %> after your membership ends on <%= membership.ends_at %>.
  <% end -%>
  <% end -%>
 <% end -%>
 
-Please contact our office by email to <assembly@cornell.edu> if you have any questions or concerns.  Thank you for your time and your consideration.
+Please take a few moments before <% @deadline.to_s :long_ordinal %> to create or update membership requests for any of the committees or positions that you wish to renew so they reflect your preferences.  This information will be used by the appropriate authorities when they staff the committees after <% @deadline.to_s :long_ordinal %>.  You may make changes here:
 
-Office of the Assemblies
+<%= unrenewed_user_memberships_url @user %>
+
+Please contact <%= APP_CONFIG['defaults']['authority']['contact_name'] %> <<%= APP_CONFIG['defaults']['authority']['contact_email'] %>> if you have any questions or concerns.  Thank you for your time and your consideration.
+
+Best regards,
+
+<%= APP_CONFIG['defaults']['authority']['contact_name'] %>
 

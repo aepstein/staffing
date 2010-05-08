@@ -1,7 +1,7 @@
 class AddContactToAuthority < ActiveRecord::Migration
   def self.up
-    add_column :authorities, :contact_name, :string, :null => false, :default => APP_CONFIG['defaults']['authority']['contact_name']
-    add_column :authorities, :contact_email, :string, :null => false, :default => APP_CONFIG['defaults']['authority']['contact_email']
+    add_column :authorities, :contact_name, :string
+    add_column :authorities, :contact_email, :string
   end
 
   def self.down
