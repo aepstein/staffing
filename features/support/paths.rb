@@ -10,15 +10,6 @@ module NavigationHelpers
 
     when /the homepage/
       '/'
-    when /the new user_mailer page/
-      new_user_mailer_path
-
-    when /the new committee_membership page/
-      new_committee_membership_path
-
-    when /the new user_membership page/
-      new_user_membership_path
-
 
     when /the login page/
       login_path

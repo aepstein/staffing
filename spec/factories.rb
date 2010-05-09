@@ -112,7 +112,7 @@ end
 Factory.define :period do |f|
   f.association :schedule
   f.starts_at Date.today
-  f.ends_at Date.today + 1.year
+  f.ends_at { |p| p.starts_at + 1.year }
 end
 
 Factory.define :past_period, :parent => :period do |f|
@@ -132,5 +132,11 @@ Factory.define :user do |f|
   f.sequence(:email) { |n| "fake_net_id#{n}@example.com" }
   f.password 'secret'
   f.password_confirmation { |u| u.password }
+end
+
+Factory.define :user_renewal_notice do |f|
+  f.starts_at Date.today
+  f.ends_at { |n| n.starts_at + 1.year }
+  f.deadline { |n| n.starts_at + 1.week }
 end
 

@@ -1,0 +1,28 @@
+<p>
+  <b>Starts at:</b> <%=h @user_renewal_notice.starts_at.to_s :long_ordinal %>
+</p>
+
+<p>
+  <b>Ends at:</b> <%=h @user_renewal_notice.ends_at.to_s :long_ordinal %>
+</p>
+
+<p>
+  <b>Deadline:</b> <%=h @user_renewal_notice.deadline.to_s :long_ordinal %>
+</p>
+
+<p>
+  <b>Authority:</b> <%=h @user_renewal_notice.authority %>
+</p>
+
+<p>
+  <b>Message:</b>
+</p>
+
+<%=markdown @user_renewal_notice.message %>
+
+
+<p>
+<%= link_to 'Edit', edit_user_renewal_notice_path(@user_renewal_notice) %> |
+<%= link_to 'Back', user_renewal_notices_path %>
+</p>
+

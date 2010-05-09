@@ -2,7 +2,7 @@ authorization do
   role :admin do
     has_permission_on [ :authorities, :committees, :enrollments, :memberships,
       :periods, :positions, :qualifications, :quizzes, :questions, :requests,
-      :schedules, :users ], :to => :manage
+      :schedules, :users, :user_renewal_notices ], :to => :manage
     has_permission_on :users, :to => :resume
   end
   role :user do
