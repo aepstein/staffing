@@ -1,3 +1,44 @@
-UserMailer#renewal_reminder
+<p>
+Dear <%= @user.first_name %>,
+</p>
 
-Find me in app/views/user_mailer/renewal_reminder.erb
+<p>
+You are receiving this notice because you have <%= pluralize( @user.memberships.ends_at_lt(@expiration).renewable.size, 'membership' ) %> ending soon and your action is required to renew your membership.  According to our records, your renewal preferences are as follows:
+</p>
+
+<ul>
+<% @user.memberships.ends_at_lt( @expiration ).renewable.unrenewed.current.each do |membership| -%>
+ <% if membership.request && membership.request.ends_at < @expiration -%>
+<li>
+You are *not* interested in reappointment to <%= membership.request.requestable %> after your current membership ends on <%= membership.ends_at %>.
+</li>
+ <% elsif membership.request -%>
+<li>
+You are interested interested in reappointment to <%= membership.request.requestable %> from after your current membership ends on <%= membership.ends_at %> until <%= membership.request.ends_at %>.
+</li>
+ <% else -%>
+ <% unless membership.position.requestables.empty? -%>
+<li>
+You are *not* interested in reappointment to <%= membership.position.requestables.join ', ' %> after your membership ends on <%= membership.ends_at %>.
+</li>
+ <% end -%>
+ <% end -%>
+<% end -%>
+</ul>
+
+<p>
+Please take a few moments before <% @deadline.to_s :long_ordinal %> to create or update membership requests for any of the committees or positions that you wish to renew so they reflect your preferences.  This information will be used by the appropriate authorities when they staff the committees after <% @deadline.to_s :long_ordinal %>.  You may <%= link_to 'make changes here', unrenewed_user_memberships_url( @user ) %>.
+</p>
+
+<p>
+Please contact <%=h APP_CONFIG['defaults']['authority']['contact_name'] %> &lt;<%=h APP_CONFIG['defaults']['authority']['contact_email'] %>&gt; if you have any questions or concerns.  Thank you for your time and your consideration.
+</p>
+
+<p>
+Best regards,
+</p>
+
+<p>
+<%=h APP_CONFIG['defaults']['authority']['contact_name'] %>
+</p>
+

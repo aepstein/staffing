@@ -11,7 +11,7 @@ This notice is to inform you that you have been assigned a membership in <%= @me
 
 <% end -%>
 <% if @membership.position.enrollments.length > 0 -%>
-Concurrent with your appointment to this position, you hold the following committee enrollment:
+Concurrent with your appointment to this position, you hold the following committee enrollments:
 <% @membership.position.enrollments.each do |enrollment| -%>
 <%= enrollment.title %> of <%= enrollment.committee %> with <%= pluralize enrollment.votes, 'vote' %>
 <% if enrollment.committee.join_message -%>
