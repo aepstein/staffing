@@ -5,8 +5,7 @@ class CreateSendings < ActiveRecord::Migration
       t.references :message, :polymorphic => true
       t.datetime :created_at
     end
-    add_index :sendings, :user_id
-    add_index :sendings, [ :message_id, :message_type ]
+    add_index :sendings, [ :user_id, :message_id, :message_type ], :unique => true
   end
 
   def self.down

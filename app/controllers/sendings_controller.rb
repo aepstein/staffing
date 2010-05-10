@@ -1,8 +1,13 @@
 class SendingsController < ApplicationController
-  # GET /sendings
-  # GET /sendings.xml
+  before_filter :require_user, :initialize_context
+  filter_resource_access
+
+  # GET /users/:user_id/sendings
+  # GET /users/:user_id/sendings.xml
+  # GET /user_renewal_notices/:user_renewal_notice_id/sendings
+  # GET /user_renewal_notices/:user_renewal_notice_id/sendings.xml
   def index
-    @sendings = Sending.all
+    @sendings ||= @context.sendings if @context
 
     respond_to do |format|
       format.html # index.html.erb
@@ -21,56 +26,6 @@ class SendingsController < ApplicationController
     end
   end
 
-  # GET /sendings/new
-  # GET /sendings/new.xml
-  def new
-    @sending = Sending.new
-
-    respond_to do |format|
-      format.html # new.html.erb
-      format.xml  { render :xml => @sending }
-    end
-  end
-
-  # GET /sendings/1/edit
-  def edit
-    @sending = Sending.find(params[:id])
-  end
-
-  # POST /sendings
-  # POST /sendings.xml
-  def create
-    @sending = Sending.new(params[:sending])
-
-    respond_to do |format|
-      if @sending.save
-        flash[:notice] = 'Sending was successfully created.'
-        format.html { redirect_to(@sending) }
-        format.xml  { render :xml => @sending, :status => :created, :location => @sending }
-      else
-        format.html { render :action => "new" }
-        format.xml  { render :xml => @sending.errors, :status => :unprocessable_entity }
-      end
-    end
-  end
-
-  # PUT /sendings/1
-  # PUT /sendings/1.xml
-  def update
-    @sending = Sending.find(params[:id])
-
-    respond_to do |format|
-      if @sending.update_attributes(params[:sending])
-        flash[:notice] = 'Sending was successfully updated.'
-        format.html { redirect_to(@sending) }
-        format.xml  { head :ok }
-      else
-        format.html { render :action => "edit" }
-        format.xml  { render :xml => @sending.errors, :status => :unprocessable_entity }
-      end
-    end
-  end
-
   # DELETE /sendings/1
   # DELETE /sendings/1.xml
   def destroy
@@ -78,8 +33,16 @@ class SendingsController < ApplicationController
     @sending.destroy
 
     respond_to do |format|
-      format.html { redirect_to(sendings_url) }
+      format.html { redirect_to polymorphic_url( [ @sending.message, :sendings ] ) }
       format.xml  { head :ok }
     end
   end
+
+  private
+
+  def initialize_context
+    @context ||= UserRenewalNotice.find params[:user_renewal_notice_id] if params[:user_renewal_notice_id]
+    @context ||= User.find params[:user_id] if params[:user_id]
+  end
 end
+

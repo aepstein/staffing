@@ -1,13 +1,17 @@
 <p>
-  <b>User:</b>
-  <%=h @sending.user %>
+  <b>User:</b> <%=h @sending.user %>
 </p>
 
 <p>
-  <b>Message:</b>
-  <%=h @sending.message %>
+  <b>Message:</b> <%=h @sending.message %>
 </p>
 
+<p>
+  <b>Created at:</b> <%= @sending.created_at %>
+</p>
 
+<p>
 <%= link_to 'Edit', edit_sending_path(@sending) %> |
 <%= link_to 'Back', sendings_path %>
+</p>
+

@@ -140,3 +140,8 @@ Factory.define :user_renewal_notice do |f|
   f.deadline { |n| n.starts_at + 1.week }
 end
 
+Factory.define :sending do |f|
+  f.association :user
+  f.message { |sending| sending.association :user_renewal_notice }
+end
+

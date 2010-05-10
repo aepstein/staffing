@@ -9,6 +9,7 @@ class Membership < ActiveRecord::Base
   scope_procedure :past, lambda { ends_at_lt(Date.today) }
   scope_procedure :renewable, lambda { position_renewable }
   scope_procedure :unrenewable, lambda { position_unrenewable }
+  scope_procedure :pending_renewal_within, lambda { |starts, ends| renewable.unrenewed.starts_at_gte(starts).ends_at_lte(ends) }
 
   named_scope :renewed, lambda {
     { :joins => "INNER JOIN memberships AS renewable_memberships ON " +

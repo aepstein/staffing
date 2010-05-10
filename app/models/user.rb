@@ -13,6 +13,11 @@ class User < ActiveRecord::Base
   has_many :periods, :through => :memberships
   has_many :positions, :through => :memberships
 
+  named_scope :no_notice_since, lambda { |notice, time|
+    { :conditions => ['users.id NOT IN ( SELECT user_id FROM sendings WHERE message_type = ? AND created_at > ? )',
+      notice, time.utc ] }
+  }
+
   has_attached_file :resume,
     :path => ':rails_root/db/uploads/:rails_env/users/:attachment/:id_partition/:style/:basename.:extension',
     :url => '/users/:id/resume.pdf'

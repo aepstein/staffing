@@ -1,8 +1,9 @@
 ActionController::Routing::Routes.draw do |map|
-  map.resources :sendings
-
-  map.resources :user_renewal_notices
+  map.resources :user_renewal_notices, :shallow => true do |notice|
+    notice.resources :sendings, :only => [ :index, :show, :destroy ]
+  end
   map.resources :users, :shallow => true, :member => { :resume => :get } do |user|
+    user.resources :sendings, :only => [ :index ]
     user.resources :requests, :collection => { :expired => :get, :unexpired => :get }
     user.resources :committees, :only => [], :collection => { :available => :get }
     user.resources :enrollments, :only => [:index], :collection => { :current => :get, :future => :get, :past => :get }
