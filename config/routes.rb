@@ -1,4 +1,6 @@
 ActionController::Routing::Routes.draw do |map|
+  map.resources :sendings
+
   map.resources :user_renewal_notices
   map.resources :users, :shallow => true, :member => { :resume => :get } do |user|
     user.resources :requests, :collection => { :expired => :get, :unexpired => :get }
