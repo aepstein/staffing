@@ -15,7 +15,7 @@ Feature: User mailer
     And an enrollment exists with position: position "<position>", committee: committee "focus"
     And a request: "focus" exists with requestable: <requestable>, user: user "<requestor>"
     And a membership: "focus" exists with user: user "focus", position: position "focus", period: the period, request: <request>
-    And a user_renewal_notice exists with starts_at: "<starts>", ends_at: "<ends>"
+    And a user_renewal_notice exists with starts_at: "<starts>", ends_at: "<ends>", message: "Please *renew*."
     And a sending exists with message: the user_renewal_notice, user: user "focus"
     And a sending email is sent for the sending
     And "john.doe@example.org" opens the email
@@ -26,6 +26,7 @@ Feature: User mailer
     And I should <s_pos> "Focus Position" in the email body
     And I should <s_com> "Focus Committee" in the email body
     And I should see "Please contact The Authority <info@example.org> if you have any questions or concerns.  Thank you for your time and your consideration." in the email body
+    And I should see "Please *renew*." in the email body
     Examples:
       |starts    |ends      |p_req|c_req|renewable|requestable      |requestor|request    |position|s_int  |s_nint |s_pos  |s_com  |
       |2008-01-01|2008-12-31|true |true |true     |position "focus" |focus    |the request|focus   |not see|see    |see    |not see|
