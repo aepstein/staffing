@@ -1,0 +1,26 @@
+Dear <%= @sending.user.first_name %>,
+
+You are receiving this notice because you have <%= pluralize( @sending.user.memberships.pending_renewal_within(@sending.message.starts_at, @sending.message.ends_at).length, 'membership' ) %> ending soon and your action is required to renew your membership.  According to our records, your renewal preferences are as follows:
+
+<% @sending.user.memberships.pending_renewal_within(@sending.message.starts_at, @sending.message.ends_at).each do |membership| -%>
+ <% if membership.request && membership.request.ends_at <= membership.ends_at -%>
+ * You are *not* interested in reappointment to <%= membership.request.requestable %> after your current membership ends on <%= membership.ends_at %>.
+ <% elsif membership.request -%>
+ * You are interested interested in reappointment to <%= membership.request.requestable %> from after your current membership ends on <%= membership.ends_at %> until <%= membership.request.ends_at %>.
+ <% else -%>
+ <% unless membership.position.requestables.empty? -%>
+ * You are *not* interested in reappointment to <%= membership.position.requestables.join ', ' %> after your membership ends on <%= membership.ends_at %>.
+ <% end -%>
+ <% end -%>
+<% end -%>
+
+Please take a few moments before <% @sending.message.deadline.to_s :long_ordinal %> to create or update membership requests for any of the committees or positions that you wish to renew so they reflect your preferences.  This information will be used by the appropriate authorities when they staff the committees.  You may make changes here:
+
+<%= unrenewed_user_memberships_url @sending.user %>
+
+Please contact <%= APP_CONFIG['defaults']['authority']['contact_name'] %> <<%= APP_CONFIG['defaults']['authority']['contact_email'] %>> if you have any questions or concerns.  Thank you for your time and your consideration.
+
+Best regards,
+
+<%= APP_CONFIG['defaults']['authority']['contact_name'] %>
+

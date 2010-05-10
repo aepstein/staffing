@@ -4,7 +4,7 @@ class UserRenewalNotice < ActiveRecord::Base
   belongs_to :authority
 
   has_many :sendings, :as => :message, :dependent => :delete_all do
-    def populate
+    def populate!
       return if proxy_owner.new_record? || proxy_owner.sendings_populated?
       UserRenewalNotice.transaction do
         proxy_owner.lock!
@@ -24,6 +24,8 @@ class UserRenewalNotice < ActiveRecord::Base
     self.ends_at ||= Membership.current.maximum(:ends_at)
     self.deadline ||= Date.today + 2.weeks
   end
+
+  def subject; 'Your Action is Required to Renew Your Committee Memberships'; end
 
   def users
     User.no_notice_since( self.class.to_s, created_at - 1.week ).reject { |user|

@@ -71,7 +71,7 @@ describe UserRenewalNotice do
     allowed = Factory(:user)
     disallowed = Factory(:user)
     @notice.stub!(:users).and_return([allowed])
-    @notice.sendings.populate
+    @notice.sendings.populate!
     @notice.sendings.length.should eql 1
     @notice.sendings.first.user.should eql allowed
   end
