@@ -74,6 +74,22 @@ describe UserRenewalNotice do
     @notice.sendings.populate!
     @notice.sendings.length.should eql 1
     @notice.sendings.first.user.should eql allowed
+    @notice.sendings_populated.should be_true
+  end
+
+  it 'should have a populated scope that returns only populated notices' do
+    populated = Factory(:user_renewal_notice, :sendings_populated => true)
+    false_populated = Factory(:user_renewal_notice, :sendings_populated => false)
+    UserRenewalNotice.populated.length.should eql 1
+    UserRenewalNotice.populated.should include populated
+  end
+
+  it 'should have an unpopulated scope that returns only populated notices' do
+    populated = Factory(:user_renewal_notice, :sendings_populated => true)
+    false_populated = Factory(:user_renewal_notice, :sendings_populated => false)
+    UserRenewalNotice.unpopulated.length.should eql 2
+    UserRenewalNotice.unpopulated.should include false_populated
+    UserRenewalNotice.unpopulated.should include @notice
   end
 
   def eligible_user

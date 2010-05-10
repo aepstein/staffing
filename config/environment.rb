@@ -53,6 +53,7 @@ Rails::Initializer.run do |config|
   config.gem 'acts_as_list', :source => 'http://gemcutter.org'
   config.gem 'paperclip', :source => 'http://gemcutter.org'
   config.gem 'blind_date', :source => 'http://gemcutter.org'
+  config.gem 'daemons', :source => 'http://gemcutter.org'
 
   config.action_mailer.default_url_options = { :host => "assembly.cornell.edu", :protocol => 'https' }
 end

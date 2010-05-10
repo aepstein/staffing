@@ -4,5 +4,12 @@ class Sending < ActiveRecord::Base
 
   validates_presence_of :user
   validates_presence_of :message
+
+  def deliver!
+    SendingMailer.deliver_sending self
+    self.completed_at = Time.now
+    save
+  end
+
 end
 
