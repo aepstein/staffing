@@ -2,7 +2,6 @@ class Authority < ActiveRecord::Base
   default_scope :order => 'authorities.name ASC'
 
   belongs_to :committee
-  has_and_belongs_to_many :users
   has_many :positions
   has_many :enrollments, :through => :positions
   has_many :memberships, :through => :positions
