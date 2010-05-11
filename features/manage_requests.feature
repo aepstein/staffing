@@ -15,7 +15,7 @@ Feature: Manage requests
     And question: "first" is amongst the questions of quiz: "generic"
     And question: "second" is amongst the questions of quiz: "generic"
     And question: "third" is amongst the questions of quiz: "generic"
-@wip
+
   Scenario Outline: Test permissions for requests controller actions
     Given a committee: "authority" exists
     And an authority exists with committee: committee "authority"
@@ -27,6 +27,7 @@ Feature: Manage requests
     And a committee: "requestable" exists
     And an enrollment exists with position: position "requestable", committee: committee "requestable"
     And a request: "focus" exists with requestable: position "requestable", user: user "applicant"
+    And a request: "committee" exists with requestable: committee "requestable", user: user "applicant"
     And a user: "admin" exists with net_id: "admin", password: "secret", admin: true
     And a user: "regular" exists with net_id: "regular", password: "secret", admin: false
     And I log in as "<user>" with password "secret"
@@ -41,6 +42,8 @@ Feature: Manage requests
     Given I am on the page for request: "focus"
     Then I should <show> "not authorized"
     Given I am on the requests page for position: "requestable"
+    Then I should <index> "Williams, Bill"
+    Given I am on the requests page for committee: "requestable"
     Then I should <index> "Williams, Bill"
     Given I delete on the page for request: "focus"
     Then I should <destroy> "not authorized"
