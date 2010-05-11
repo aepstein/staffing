@@ -58,29 +58,38 @@ Feature: Manage memberships
       | other    | other    | committee: "focus" | User      |
 
   Scenario Outline: Test permissions for memberships controller actions
-    Given a position exists
-    And a membership exists with position: the position
+    Given a committee: "authority" exists
+    And a position: "authority" exists
+    And an enrollment exists with committee: committee "authority", position: position "authority"
+    And an authority: "authority" exists with committee: committee "authority"
+    And a user: "authority" exists with net_id: "authority", password: "secret", admin: false
+    And a membership exists with user: user "authority", position: position "authority"
+    And a position: "focus" exists with name: "Focus Position", authority: authority "authority"
+    And a user: "owner" exists with net_id: "owner", password: "secret", admin: false, last_name: "Owner"
+    And a membership: "focus" exists with position: position "focus", user: user "owner"
     And a user: "admin" exists with net_id: "admin", password: "secret", admin: true
     And a user: "regular" exists with net_id: "regular", password: "secret", admin: false
     And I log in as "<user>" with password "secret"
-    And I am on the new membership page for the position
-    Then I should <create>
-    Given I post on the memberships page for the position
-    Then I should <create>
-    And I am on the edit page for the membership
-    Then I should <update>
-    Given I put on the page for the membership
-    Then I should <update>
-    Given I am on the page for the membership
-    Then I should <show>
-    Given I am on the memberships page for the position
-    Then I should <show>
-    Given I delete on the page for the membership
-    Then I should <destroy>
+    And I am on the new membership page for position: "focus"
+    Then I should <create> "not authorized"
+    Given I post on the memberships page for position: "focus"
+    Then I should <create> "not authorized"
+    And I am on the edit page for membership: "focus"
+    Then I should <update> "not authorized"
+    Given I put on the page for membership: "focus"
+    Then I should <update> "not authorized"
+    Given I am on the page for membership: "focus"
+    Then I should <show> "not authorized"
+    Given I am on the memberships page for position: "focus"
+    Then I should <index> "Owner"
+    Given I delete on the page for membership: "focus"
+    Then I should <destroy> "not authorized"
     Examples:
-      | user    | create                   | update                   | destroy                  | show                     |
-      | admin   | not see "not authorized" | not see "not authorized" | not see "not authorized" | not see "not authorized" |
-      | regular | see "not authorized"     | see "not authorized"     | see "not authorized"     | not see "not authorized" |
+      | user      | create  | update  | destroy | index | show    |
+      | admin     | not see | not see | not see | see   | not see |
+      | authority | not see | not see | not see | see   | not see |
+      | owner     | see     | see     | see     | see   | not see |
+      | regular   | see     | see     | see     | see   | not see |
 
   Scenario: Register new membership given a position or edit
     Given a period: "2009" exists with schedule: schedule "annual", starts_at: "2009-06-01", ends_at: "2010-05-31"

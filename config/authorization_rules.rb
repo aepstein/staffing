@@ -20,7 +20,7 @@ authorization do
       if_attribute :requestable_type => is { 'Position' }, :requestable_id => is_in { user.authorized_position_ids }
       if_attribute :requestable_type => is { 'Committee' }, :requestable_id => is_in { user.authorized_committee_ids }
     end
-    has_permission_on :memberships, :to => [ :show ] do
+    has_permission_on :memberships, :to => [ :manage ] do
       if_attribute :position_id => is_in { user.authorized_position_ids }
     end
     has_permission_on :users, :to => [ :profile ]

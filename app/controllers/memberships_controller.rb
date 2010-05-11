@@ -1,6 +1,7 @@
 class MembershipsController < ApplicationController
-  before_filter :require_user, :initialize_contexts
-  filter_access_to :new, :create, :edit, :update, :destroy, :show
+  before_filter :require_user, :initialize_context
+  before_filter :new_membership_from_params, :only => [ :new, :create ]
+  filter_access_to :new, :create, :edit, :update, :destroy, :show, :attribute_check => true
   filter_access_to :index, :current, :past, :future do
     @user ? permitted_to!( :show, @user ) : permitted_to!( :index )
   end
@@ -100,12 +101,6 @@ class MembershipsController < ApplicationController
   # GET /positions/:position_id/memberships/new
   # GET /positions/:position_id/memberships/new.xml
   def new
-    if @request
-      @membership = Membership.new(:request => @request)
-    end
-    if @position
-      @membership = @position.memberships.build
-    end
     @membership.designees.populate
 
     respond_to do |format|
@@ -123,13 +118,7 @@ class MembershipsController < ApplicationController
   # POST /positions/:position_id/memberships
   # POST /positions/:position_id/memberships.xml
   def create
-    if @request
-      @membership = Membership.new(:request => @request)
-      @membership.attributes = params[:membership]
-    end
-    if @position
-      @membership = @position.memberships.build( params[:membership] )
-    end
+    @membership.attributes = params[:membership]
 
     respond_to do |format|
       if @membership.save
@@ -176,7 +165,7 @@ class MembershipsController < ApplicationController
 
   private
 
-  def initialize_contexts
+  def initialize_context
     if params[:user_id]
       @user = User.find params[:user_id]
       @memberships = @user.memberships
@@ -197,6 +186,12 @@ class MembershipsController < ApplicationController
       @authority = Authority.find params[:authority_id]
       @memberships = @authority.memberships
     end
+    @membership = Membership.find( params[:id] ) if params[:id]
+  end
+
+  def new_membership_from_params
+    @membership = Membership.new(:request => @request) if @request
+    @membership = @position.memberships.build if @position
   end
 end
 
