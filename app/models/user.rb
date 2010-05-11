@@ -6,7 +6,6 @@ class User < ActiveRecord::Base
   attr_protected :admin, :net_id, :status
 
   has_and_belongs_to_many :qualifications
-  has_and_belongs_to_many :authorities
   has_many :memberships
   has_many :requests
   has_many :answers, :through => :requests
@@ -39,6 +38,28 @@ class User < ActiveRecord::Base
   validates_inclusion_of :status, :in => STATUSES, :allow_blank => true
 
   before_validation_on_create :import_ldap_attributes, :initialize_password
+
+  def authority_ids
+    connection.select_values(
+      "SELECT DISTINCT authorities.id FROM " +
+      "authorities INNER JOIN committees ON authorities.committee_id = committees.id " +
+      "INNER JOIN enrollments ON committees.id = enrollments.committee_id " +
+      "INNER JOIN memberships ON enrollments.position_id = memberships.position_id " +
+      "WHERE memberships.user_id = #{id} AND " +
+      "memberships.starts_at <= #{connection.quote Date.today} AND " +
+      "memberships.ends_at >= #{connection.quote Date.today}"
+    ).map { |v| v.to_i }
+  end
+
+  def authorized_position_ids
+    return [] if authority_ids.empty?
+    Position.authority_id_equals_any( authority_ids ).all( :select => 'positions.id' ).map { |p| p.id }
+  end
+
+  def authorized_committee_ids
+    return [] if authority_ids.empty?
+    Committee.positions_authority_id_equals_any( authority_ids ).all( :select => 'committees.id' ).map { |c| c.id }
+  end
 
   def requestable_committees
     Committee.requestable.positions_with_status( status )

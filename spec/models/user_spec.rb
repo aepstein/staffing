@@ -82,6 +82,55 @@ describe User do
     @user.past_enrollments.should include( e3 )
   end
 
+  it 'should have an authority_ids method that identifies the authorities in which the user is enrolled' do
+    memberships = {
+      :current => Factory(:membership, :user => @user),
+      :past => Factory(:past_membership, :user => @user),
+      :future => Factory(:future_membership, :user => @user),
+      :other => Factory(:membership)
+    }
+    committees = { }
+    memberships.each { |key, membership| committees[key] = Factory(:enrollment, :position => membership.position).committee }
+    authorities = { }
+    authorities[:no_committee] = Factory(:authority)
+    committees.each { |key, committee| authorities[key] = Factory(:authority, :committee => committee) }
+    @user.authority_ids.length.should eql 1
+    @user.authority_ids.should include authorities[:current].id
+    Factory(:user).authority_ids.should be_empty
+  end
+
+  it 'should return authorized_position_ids based on authority_ids' do
+    setup_authority_id_scenario
+    @user.stub!(:authority_ids).and_return([@authorized.authority_id])
+    @user.authorized_position_ids.length.should eql 1
+    @user.authorized_position_ids.should include @authorized.id
+  end
+
+  it 'should return empty authorized_position_ids if authority_ids is empty' do
+    setup_authority_id_scenario
+    Factory(:user).authorized_position_ids.should be_empty
+  end
+
+  it 'should return authorized_committee_ids based on authority_ids' do
+    setup_authority_id_scenario
+    @user.stub!(:authority_ids).and_return([@authorized.authority_id])
+    @user.authorized_committee_ids.length.should eql 1
+    @user.authorized_committee_ids.should include @a_committee.id
+  end
+
+  it 'should return empty authorized_committee_ids if authority_ids is empty' do
+    setup_authority_id_scenario
+    Factory(:user).authorized_committee_ids.should be_empty
+  end
+
+  def setup_authority_id_scenario
+    @authorized = Factory(:position)
+    @unauthorized = Factory(:position)
+    @b_committee = Factory(:committee)
+    @u_committee = Factory(:enrollment, :position => @unauthorized).committee
+    @a_committee = Factory(:enrollment, :position => @authorized).committee
+  end
+
   def generate_uploaded_file(size, type)
     file = Tempfile.new('resume.pdf')
     @temporary_files << file

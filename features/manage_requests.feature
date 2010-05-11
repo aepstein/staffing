@@ -15,31 +15,40 @@ Feature: Manage requests
     And question: "first" is amongst the questions of quiz: "generic"
     And question: "second" is amongst the questions of quiz: "generic"
     And question: "third" is amongst the questions of quiz: "generic"
-
+@wip
   Scenario Outline: Test permissions for requests controller actions
-    Given a position exists
-    And a request exists with requestable: the position, user: user "applicant"
+    Given a committee: "authority" exists
+    And an authority exists with committee: committee "authority"
+    And a position: "authority" exists with authority: the authority
+    And an enrollment exists with position: position "authority", committee: committee "authority"
+    And a user: "authority" exists with net_id: "authority", password: "secret", admin: false
+    And a membership exists with user: user "authority", position: position "authority"
+    And a position: "requestable" exists with authority: the authority
+    And a committee: "requestable" exists
+    And an enrollment exists with position: position "requestable", committee: committee "requestable"
+    And a request: "focus" exists with requestable: position "requestable", user: user "applicant"
     And a user: "admin" exists with net_id: "admin", password: "secret", admin: true
     And a user: "regular" exists with net_id: "regular", password: "secret", admin: false
     And I log in as "<user>" with password "secret"
-    And I am on the new request page for the position
+    And I am on the new request page for position: "requestable"
     Then I should <create> "not authorized"
-    Given I post on the requests page for the position
+    Given I post on the requests page for position: "requestable"
     Then I should <create> "not authorized"
-    And I am on the edit page for the request
+    And I am on the edit page for request: "focus"
     Then I should <update> "not authorized"
-    Given I put on the page for the request
+    Given I put on the page for request: "focus"
     Then I should <update> "not authorized"
-    Given I am on the page for the request
+    Given I am on the page for request: "focus"
     Then I should <show> "not authorized"
-    Given I am on the requests page for the position
+    Given I am on the requests page for position: "requestable"
     Then I should <index> "Williams, Bill"
-    Given I delete on the page for the request
+    Given I delete on the page for request: "focus"
     Then I should <destroy> "not authorized"
     Examples:
       | user      | index   | create  | update  | destroy | show    |
       | admin     | see     | not see | not see | not see | not see |
       | applicant | see     | not see | not see | not see | not see |
+      | authority | see     | not see | see     | see     | not see |
       | regular   | not see | not see | see     | see     | see     |
 
   Scenario Outline: Register new request or edit

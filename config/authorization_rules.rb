@@ -15,6 +15,14 @@ authorization do
     has_permission_on :requests, :to => :manage do
       if_attribute :user_id => is { user.id }
     end
+    has_permission_on :requests do
+      to :show
+      if_attribute :requestable_type => is { 'Position' }, :requestable_id => is_in { user.authorized_position_ids }
+      if_attribute :requestable_type => is { 'Committee' }, :requestable_id => is_in { user.authorized_committee_ids }
+    end
+    has_permission_on :memberships, :to => [ :show ] do
+      if_attribute :position_id => is_in { user.authorized_position_ids }
+    end
     has_permission_on :users, :to => [ :profile ]
     has_permission_on :users, :to => [ :edit, :update, :show, :index ] do
       if_attribute :id => is { user.id }
