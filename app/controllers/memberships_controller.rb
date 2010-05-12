@@ -12,6 +12,7 @@ class MembershipsController < ApplicationController
   # GET /users/:user_id/memberships/renewed.xml
   def renewed
     @memberships = @memberships.renewed if @memberships
+    index
   end
 
   # GET /committees/:committee_id/memberships/unrenewed
@@ -20,6 +21,7 @@ class MembershipsController < ApplicationController
   # GET /users/:user_id/memberships/unrenewed.xml
   def unrenewed
     @memberships = @memberships.renewable.unrenewed if @memberships
+    index
   end
 
   # GET /requests/:request_id/memberships/current

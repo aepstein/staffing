@@ -39,6 +39,7 @@ Rails::Initializer.run do |config|
   # config.i18n.load_path += Dir[Rails.root.join('my', 'locales', '*.{rb,yml}')]
   # config.i18n.default_locale = :de
   config.gem 'validates_timeliness'
+  config.gem 'gettext'
   config.gem 'searchlogic', :source => 'http://gemcutter.org'
   config.gem 'authlogic', :source => 'http://gemcutter.org'
   config.gem 'formtastic', :source => 'http://gemcutter.org'
@@ -57,7 +58,4 @@ Rails::Initializer.run do |config|
 
   config.action_mailer.default_url_options = { :host => "assembly.cornell.edu", :protocol => 'https' }
 end
-
-CalendarDateSelect.format = :hyphen_ampm
-Formtastic::SemanticFormHelper.builder = CustomFormBuilder
 

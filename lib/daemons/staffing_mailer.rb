@@ -1,7 +1,7 @@
 #!/usr/bin/env ruby
 
 # You might want to change this
-ENV["RAILS_ENV"] ||= "production"
+ENV["RAILS_ENV"] ||= "development"
 
 require File.dirname(__FILE__) + "/../../config/environment"
 
@@ -12,11 +12,14 @@ end
 
 while($running) do
 
-  UserRenewalNotice.unpopulated.each do |notice|
+  if notice = UserRenewalNotice.unpopulated.first(true)
     ActiveRecord::Base.logger.info "Populating sendings for #{notice}.\n"
     notice.sendings.populate!
+  elsif sending = Sending.incomplete.first(true)
+    sending.deliver!
+  else
+    sleep 10
   end
 
-  sleep 10
 end
 

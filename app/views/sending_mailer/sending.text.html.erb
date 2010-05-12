@@ -1,3 +1,9 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html>
+<head>
+<meta content="text/html; charset=UTF-8" http-equiv="Content-Type" />
+</head>
+<body>
 <p>
 Dear <%= @sending.user.first_name %>,
 </p>
@@ -10,16 +16,16 @@ You are receiving this notice because you have <%= pluralize( @sending.user.memb
 <% @sending.user.memberships.pending_renewal_within(@sending.message.starts_at, @sending.message.ends_at).each do |membership| -%>
  <% if membership.request && membership.request.ends_at < membership.ends_at -%>
 <li>
-You are *not* interested in reappointment to <%= membership.request.requestable %> after your current membership ends on <%= membership.ends_at %>.
+You are <em>not</em> interested in reappointment to <%= membership.request.requestable %> after your current membership ends on <%= membership.ends_at.to_s :long_ordinal %>.
 </li>
  <% elsif membership.request -%>
 <li>
-You are interested interested in reappointment to <%= membership.request.requestable %> from after your current membership ends on <%= membership.ends_at %> until <%= membership.request.ends_at %>.
+You are interested interested in reappointment to <%= membership.request.requestable %> from after your current membership ends on <%= membership.ends_at.to_s :long_ordinal %> until <%= membership.request.ends_at.to_s :long_ordinal %>.
 </li>
  <% else -%>
  <% unless membership.position.requestables.empty? -%>
 <li>
-You are *not* interested in reappointment to <%= membership.position.requestables.join ', ' %> after your membership ends on <%= membership.ends_at %>.
+You are <em>not</em> interested in reappointment to <%= membership.position.requestables.join ', ' %> after your membership ends on <%= membership.ends_at.to_s :long_ordinal %>.
 </li>
  <% end -%>
  <% end -%>
@@ -43,4 +49,6 @@ Best regards,
 <p>
 <%=h APP_CONFIG['defaults']['authority']['contact_name'] %>
 </p>
+</body>
+</html>
 

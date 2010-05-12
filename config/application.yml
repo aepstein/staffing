@@ -1,8 +1,8 @@
 development:
   defaults:
     authority:
-      contact_name: 'Authority Contact'
-      contact_email: 'info@example.org'
+      contact_name: 'Office of the Assemblies'
+      contact_email: 'assembly@cornell.edu'
 
 test:
   defaults:
