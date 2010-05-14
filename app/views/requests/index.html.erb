@@ -1,4 +1,4 @@
-<h2>Listing requests <%= @title %></h2>
+<h2><%= params[:action].titleize %> requests <%= @title %></h2>
 
 <%= will_paginate @requests %>
 

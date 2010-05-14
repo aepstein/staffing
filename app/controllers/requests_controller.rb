@@ -18,7 +18,7 @@ class RequestsController < ApplicationController
     @requests = @requests.paginate( :page => params[:page] )
 
     respond_to do |format|
-      format.html # index.html.erb
+      format.html { render :action => 'index' } # index.html.erb
       format.xml  { render :xml => @requests }
     end
   end
@@ -28,7 +28,6 @@ class RequestsController < ApplicationController
   def expired
     initialize_index
     @requests = @requests.expired
-    @title = "expired #{@title}"
     return index
   end
 
@@ -37,7 +36,6 @@ class RequestsController < ApplicationController
   def unexpired
     initialize_index
     @requests = @requests.unexpired
-    @title = "unexpired #{@title}"
     return index
   end
 
