@@ -36,5 +36,16 @@ describe Authority do
     @authority.effective_contact_name.should eql APP_CONFIG['defaults']['authority']['contact_name']
   end
 
+  it 'should retrieve associated requests correctly' do
+    requests = [ ]
+    requests << Factory(:request, :requestable => Factory(:position, :requestable => true, :authority => @authority) )
+    requests << Factory(:request, :requestable => Factory(:enrollment, :position => Factory(:position, :requestable => false, :authority => @authority) ).committee )
+    Factory(:request, :requestable => Factory(:position, :requestable => true) )
+    Factory(:request, :requestable => Factory(:enrollment, :position => Factory(:position, :requestable => false) ).committee )
+    @authority.requests.length.should eql 2
+    requests.each { |request| @authority.requests.should include request }
+    Factory(:authority).requests.should be_empty
+  end
+
 end
 

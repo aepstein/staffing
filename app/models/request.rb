@@ -4,6 +4,15 @@ class Request < ActiveRecord::Base
   scope_procedure :unexpired, lambda { ends_at_gt Date.today }
   scope_procedure :expired, lambda { ends_at_lte Date.today }
 
+  named_scope :authority_id_equals, lambda { |authority_id|
+    { :joins => "LEFT OUTER JOIN enrollments ON " +
+        "requests.requestable_type = 'Committee' AND requests.requestable_id = enrollments.committee_id " +
+        "LEFT OUTER JOIN positions ON " +
+        "(requests.requestable_type = 'Position' AND requests.requestable_id = positions.id) OR " +
+        "enrollments.position_id = positions.id",
+      :conditions => [ "positions.authority_id = ?", authority_id ] }
+  }
+
   acts_as_list :scope => :user_id
 
   has_many :answers do
