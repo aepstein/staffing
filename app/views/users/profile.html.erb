@@ -18,7 +18,7 @@ You have <%= link_to pluralize( current_user.requests.unexpired.length, 'current
 </p>
 
 <p>
-You may browse <%= link_to pluralize( current_user.requestable_committees.size, 'committee' ), requestable_user_committees_path( current_user ) %> and <%= link_to pluralize( current_user.requestable_positions.size, 'position' ), requestable_user_positions_path( current_user ) %> positions for which you are eligible to request membership.
+You may browse <%= link_to pluralize( current_user.requestable_committees.count("committees.id", :distinct => true), 'committee' ), requestable_user_committees_path( current_user ) %> and <%= link_to pluralize( current_user.requestable_positions.size, 'position' ), requestable_user_positions_path( current_user ) %> positions for which you are eligible to request membership.
 </p>
 
 <% if current_user.requests.unexpired.length > 0 %>
