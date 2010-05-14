@@ -62,9 +62,7 @@ class User < ActiveRecord::Base
   end
 
   def requestable_committees
-    Committee.with_scope(:group => 'committees.id') do
-      Committee.requestable.positions_with_status( status )
-    end
+    Committee.requestable.positions_with_status( status ).group_by_id
   end
 
   def requestable_positions

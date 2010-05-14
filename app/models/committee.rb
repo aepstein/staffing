@@ -3,6 +3,7 @@ class Committee < ActiveRecord::Base
 
   named_scope :requestable, { :conditions => { :requestable => true } }
   named_scope :unrequestable, { :conditions => { :requestable => false } }
+  named_scope :group_by_id, { :group => "committees.id" }
 
   has_many :authorities
   has_many :requests, :as => :requestable
