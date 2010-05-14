@@ -1,17 +1,25 @@
 <h2>Welcome, <%= current_user.name %></h2>
 
+<h3>Your Memberships</h3>
+
+<p>
+You have <%= link_to pluralize( current_user.memberships.current.length, 'current membership' ), current_user_memberships_path(current_user) %>, <%= link_to pluralize( current_user.memberships.past.size, 'past membership' ), past_user_memberships_path(current_user) %>, and <%= link_to pluralize( current_user.memberships.future.size, 'future membership' ), future_user_memberships_path(current_user) %>.
+</p>
+
 <% if current_user.memberships.current.length > 0 %>
-<h3>Current Memberships</h3>
+<h4>Current Memberships</h4>
 <%= render :partial => 'memberships/memberships', :object => current_user.memberships.current, :locals => { :user => current_user } %>
 <% end %>
 
+<h3>Your Requests for Membership</h3>
+
+<p>
+You have <%= link_to pluralize( current_user.requests.unexpired.length, 'current request' ), unexpired_user_requests_path( current_user ) %> and <%= link_to pluralize( current_user.requests.expired.size, 'expired request' ), expired_user_requests_path( current_user ) %>.
+</p>
+
 <% if current_user.requests.unexpired.length > 0 %>
-<h3>Current Requests</h3>
+<h4>Current Requests</h4>
 <%= render :partial => 'requests/requests', :object => current_user.requests.unexpired,
   :locals => { :user => current_user } %>
-<% end %>
-
-<% if current_user.requests.expired.size > 0 %>
-You have <%= link_to pluralize(current_user.requests.expired.size, 'expired request'), expired_user_requests_path( current_user ) %>.
 <% end %>
 

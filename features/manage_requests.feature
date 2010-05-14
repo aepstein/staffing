@@ -15,7 +15,7 @@ Feature: Manage requests
     And question: "first" is amongst the questions of quiz: "generic"
     And question: "second" is amongst the questions of quiz: "generic"
     And question: "third" is amongst the questions of quiz: "generic"
-@wip
+
   Scenario Outline: Test permissions for requests controller actions
     Given a committee: "authority" exists
     And an authority exists with committee: committee "authority"

@@ -39,7 +39,7 @@ Feature: Manage users
     And I should see the following entries in "requests":
       | Requestable        |
       | Unexpired Position |
-    And I should see "You have 1 expired request."
+    And I should see "1 expired request"
 
   Scenario: Register new user and edit
     Given I log in as the administrator
