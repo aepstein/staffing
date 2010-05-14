@@ -1,13 +1,13 @@
 class CommitteesController < ApplicationController
   before_filter :require_user, :initialize_context
   filter_access_to :new, :create, :edit, :update, :destroy, :show, :index
-  filter_access_to :available do
+  filter_access_to :requestable do
     permitted_to!( :show, @user )
   end
 
-  # GET /committees/available
-  # GET /committees/available.xml
-  def available
+  # GET /users/:user_id/committees/requestable
+  # GET /users/:user_id/committees/requestable.xml
+  def requestable
     @search = @user.requestable_committees.search( params[:search] )
     index
   end
@@ -101,13 +101,7 @@ class CommitteesController < ApplicationController
   private
 
   def initialize_context
-    if params[:action] == 'available'
-      if params[:user_id]
-        @user = User.find params[:user_id]
-      else
-        @user = current_user
-      end
-    end
+    @user = User.find params[:user_id] if params[:user_id]
   end
 
 end

@@ -2,6 +2,13 @@ class PositionsController < ApplicationController
   before_filter :require_user, :initialize_context
   filter_resource_access
 
+  # GET /users/:user_id/positions/requestable
+  # GET /users/:user_id/positions/requestable.xml
+  def requestable
+    @search ||= @user.requestable_positions.search( params[:search] ) if @user
+    index
+  end
+
   # GET /positions
   # GET /positions.xml
   # GET /committees/:committee_id/positions
@@ -12,7 +19,7 @@ class PositionsController < ApplicationController
     @positions = @search.paginate( :page => params[:page] )
 
     respond_to do |format|
-      format.html # index.html.erb
+      format.html { render :action => 'index' } # index.html.erb
       format.js # index.js.erb
       format.xml  { render :xml => @positions }
     end
@@ -95,6 +102,7 @@ class PositionsController < ApplicationController
 
   def initialize_context
     @committee = Committee.find(params[:committee_id]) if params[:committee_id]
+    @user = User.find(params[:user_id]) if params[:user_id]
   end
 end
 

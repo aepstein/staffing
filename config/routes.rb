@@ -5,8 +5,9 @@ ActionController::Routing::Routes.draw do |map|
   map.resources :users, :shallow => true, :member => { :resume => :get } do |user|
     user.resources :sendings, :only => [ :index ]
     user.resources :requests, :collection => { :expired => :get, :unexpired => :get }
-    user.resources :committees, :only => [], :collection => { :available => :get }
+    user.resources :committees, :only => [], :collection => { :requestable => :get }
     user.resources :enrollments, :only => [:index], :collection => { :current => :get, :future => :get, :past => :get }
+    user.resources :positions, :only => [], :collection => { :requestable => :get }
     user.resources :memberships, :only => [:index],
       :collection => { :current => :get, :future => :get, :past => :get, :unrenewed => :get, :renewed => :get }
   end

@@ -14,10 +14,10 @@ Feature: Manage committees
     And an enrollment exists with position: the position, committee: committee "unrequestable"
     And a position exists with name: "Unavailable Position", statuses_mask: 2
     And an enrollment exists with position: the position, committee: committee "unavailable"
-    And a user exists with net_id: "owner", password: "secret", first_name: "John", last_name: "Doe"
+    And a user: "owner" exists with net_id: "owner", password: "secret", first_name: "John", last_name: "Doe"
     And I log in as "owner" with password "secret"
-    And I am on the available committees page
-    Then I should see "Available committees for John Doe"
+    And I am on the requestable committees page for user: "owner"
+    Then I should see "Requestable committees for John Doe"
     And I should see the following committees:
       |Name                |
       |Available Committee |
@@ -44,9 +44,9 @@ Feature: Manage committees
     Then I should <show>
     Given I delete on the page for the committee
     Then I should <destroy>
-    Given I am on the available committees page for user: "admin"
+    Given I am on the requestable committees page for user: "admin"
     Then I should <available>
-    Given I am on the available committees page for user: "<user>"
+    Given I am on the requestable committees page for user: "<user>"
     Then I should not see "not authorized"
     Examples:
       | user    | create                   | update                   | destroy                  | show                     | available                |
