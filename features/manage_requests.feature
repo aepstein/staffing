@@ -45,6 +45,8 @@ Feature: Manage requests
     Then I should <index> "Williams, Bill"
     Given I am on the requests page for committee: "requestable"
     Then I should <index> "Williams, Bill"
+    Given I am on the requests page for the authority
+    Then I should <index> "Williams, Bill"
     Given I delete on the page for request: "focus"
     Then I should <destroy> "not authorized"
     Examples:

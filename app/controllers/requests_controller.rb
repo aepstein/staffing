@@ -156,6 +156,7 @@ class RequestsController < ApplicationController
       @requestable ||= @request.requestable if @request
       @requestable ||= @membership.position.requestables.first unless @membership.position.requestables.empty?
     end
+    return unless @requestable
     @request ||= @requestable.requests.first( :conditions => { :user_id => @user } )
   end
 
