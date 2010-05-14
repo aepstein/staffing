@@ -1,6 +1,9 @@
 class PositionsController < ApplicationController
   before_filter :require_user, :initialize_context
-  filter_resource_access
+  filter_access_to :new, :create, :edit, :update, :destroy, :show, :index
+  filter_access_to :requestable do
+    permitted_to!( :show, @user )
+  end
 
   # GET /users/:user_id/positions/requestable
   # GET /users/:user_id/positions/requestable.xml
