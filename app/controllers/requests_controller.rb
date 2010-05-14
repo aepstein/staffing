@@ -1,6 +1,6 @@
 class RequestsController < ApplicationController
   before_filter :require_user, :initialize_context
-  before_filter :initialize_requestable, :only => [ :index, :expired, :unexpired ]
+  before_filter :initialize_requestable, :only => [ :index, :expired, :unexpired, :new, :create ]
   before_filter :new_request_from_params, :only => [ :new, :create ]
   filter_access_to :new, :create, :edit, :update, :destroy, :show, :attribute_check => true
   filter_access_to :index, :renewed, :unrenewed, :expired, :unexpired do
@@ -161,7 +161,6 @@ class RequestsController < ApplicationController
   end
 
   def new_request_from_params
-    initialize_requestable
     if @membership && @request && @membership.request.nil?
       @membership.request = @request
       @membership.save

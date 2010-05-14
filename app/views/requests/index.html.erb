@@ -14,4 +14,7 @@
 <%= link_to 'New request', new_polymorphic_path( [@requestable, :request] ) %>
 </p>
 <% end %>
+<% if @authority %>
+<p><%= link_to @authority.to_s, @authority %></p>
+<% end %>
 
