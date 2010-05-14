@@ -15,6 +15,7 @@ class RequestsController < ApplicationController
   # GET /user/:user_id/requests.xml
   def index
     initialize_index unless @requests
+    @requests = @requests.paginate( :page => params[:page] )
 
     respond_to do |format|
       format.html # index.html.erb
@@ -121,14 +122,24 @@ class RequestsController < ApplicationController
   private
 
   def initialize_index
-    @requests ||= @requestable.requests.with_permissions_to( :show ) if @requestable
-    @requests ||= @user.requests.with_permissions_to( :show )
-    @title = "for #{@requestable ? @requestable : @user}"
+    if @requestable
+      @requests = @requestable.requests.with_permissions_to( :show )
+      @title = "for #{@requestable}"
+    elsif @authority
+      @requests = @authority.requests.with_permissions_to( :show )
+      @title = "for #{@authority}"
+    else
+      @requests = @user.requests.with_permissions_to( :show )
+      @title = "for #{@user}"
+    end
   end
 
   def initialize_context
     @request = Request.find( params[:id] ) if params[:id]
-    @user = params[:user_id] ? User.find( params[:user_id] ) : current_user
+    @authority = Authority.find( params[:authority_id] ) if params[:authority_id]
+    unless @request || @authority
+      @user = params[:user_id] ? User.find( params[:user_id] ) : current_user
+    end
   end
 
   def initialize_requestable

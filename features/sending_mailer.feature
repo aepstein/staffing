@@ -20,7 +20,7 @@ Feature: User mailer
     And a sending email is sent for the sending
     And "john.doe@example.org" opens the email
     Then I should see "Your Action is Required to Renew Your Committee Memberships" in the email subject
-    And I should see the email delivered from "The Authority <info@example.org>"
+    And I should see the email delivered from "info@example.org"
     And I should <s_int> "You are interested in reappointment" in the email body
     And I should <s_nint> "You are *not* interested in reappointment" in the email body
     And I should <s_pos> "Focus Position" in the email body

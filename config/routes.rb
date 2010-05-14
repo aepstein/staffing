@@ -27,6 +27,7 @@ ActionController::Routing::Routes.draw do |map|
   end
   map.resources :authorities, :shallow => true do |authority|
     authority.resources :memberships, :only => [ :index ], :collection => { :current => :get, :future => :get, :past => :get }
+    authority.resources :requests, :only => [ :index ], :collection => { :expired => :get, :unexpired => :get }
   end
   map.resources :qualifications
   map.resources :questions, :shallow => true do |question|
