@@ -165,7 +165,7 @@ class RequestsController < ApplicationController
     end
     redirect_to edit_request_url( @request ) if @request
     @request = @requestable.requests.build( params[:request] )
-    @request.user = @user
+    @request.user ||= @user
   end
 
 end

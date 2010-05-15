@@ -1,5 +1,8 @@
   <%= form.error_messages %>
   <% form.inputs do %>
+    <% if form.object.new_record? -%>
+    <%= form.input :user_id, :as => :hidden %>
+    <% end -%>
     <%= form.input :starts_at, :as => :ft_calendar_date_select, :label => 'Desired Start Date',
       :hint => 'When is the earliest date you are interested in serving?' %>
     <%= form.input :ends_at, :as => :ft_calendar_date_select, :label => 'Desired End Date',
