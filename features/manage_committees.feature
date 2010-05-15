@@ -3,24 +3,29 @@ Feature: Manage committees
   As an administrator
   I want to create, modify, destroy, list, and show committees
 
-  Scenario: Show available committees for current user
+  Scenario: Show requestable committees for current user
     Given a committee: "available" exists with name: "Available Committee", requestable: true
+    And a committee: "beta" exists with name: "Beta Committee", requestable: true
     And a committee: "unrequestable" exists with name: "Unrequestable Committee", requestable: false
     And a committee: "unavailable" exists with name: "Unavailable Committee", requestable: true
     And a committee: "no_positions" exists with name: "No Positions Committee", requestable: true
     And a position exists with name: "Available Position"
     And an enrollment exists with position: the position, committee: committee "available"
+    And an enrollment exists with committee: committee "available"
+    And an enrollment exists with committee: committee "beta"
     And a position exists with name: "Unrequestable Position"
     And an enrollment exists with position: the position, committee: committee "unrequestable"
     And a position exists with name: "Unavailable Position", statuses_mask: 2
     And an enrollment exists with position: the position, committee: committee "unavailable"
     And a user: "owner" exists with net_id: "owner", password: "secret", first_name: "John", last_name: "Doe"
     And I log in as "owner" with password "secret"
-    And I am on the requestable committees page for user: "owner"
+    Then I should see "You may browse 2 committees and 4 positions for which you are eligible to request membership."
+    Given I am on the requestable committees page for user: "owner"
     Then I should see "Requestable committees for John Doe"
     And I should see the following committees:
       |Name                |
       |Available Committee |
+      |Beta Committee      |
     And I should not see "Unrequestable Committee"
     And I should not see "Unavailable Committee"
     And I should not see "No Positions Committee"

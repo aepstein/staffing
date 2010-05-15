@@ -10,17 +10,8 @@
 
 <%= will_paginate @committees %>
 
-<table>
-  <thead>
-  <tr>
-    <th>Name</th>
-    <th>Requestable?</th>
-  </tr>
-  </thead>
-  <tbody>
-  <%= render :partial => 'committee', :collection => @committees %>
-  </tbody>
-</table>
+<%= render :partial => "committees", :object => @committees,
+:locals => { :user => ( @user ? @user : false ) } %>
 
 <%= will_paginate @committees %>
 

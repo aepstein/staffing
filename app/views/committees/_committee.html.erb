@@ -1,6 +1,10 @@
   <% table_row_tag do %>
     <td><%=h committee.name %></td>
+    <% if user -%>
+    <td><%= link_to 'Request', new_committee_request_path(request, :user_id => user.id) %></td>
+    <% else -%>
     <td><%= committee.requestable? ? 'Yes' : 'No' %></td>
+    <% end -%>
     <td><%= link_to 'Show', committee %></td>
     <td><%= link_to 'Edit', edit_committee_path(committee) %></td>
     <td><%= link_to 'Destroy', committee, :confirm => 'Are you sure?', :method => :delete %></td>

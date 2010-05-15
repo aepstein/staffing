@@ -1,0 +1,14 @@
+<% user ||= false %>
+<table>
+  <thead>
+  <tr>
+    <th>Name</th>
+    <th>Requestable?</th>
+  </tr>
+  </thead>
+  <tbody>
+  <%= render :partial => 'committee', :collection => committees,
+    :locals => { :user => user } %>
+  </tbody>
+</table>
+
