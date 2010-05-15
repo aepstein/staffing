@@ -3,8 +3,8 @@
     <td><%=h period.ends_at.to_s :rfc822 %></td>
     <% unless read_only %>
     <td><%= link_to 'Show', period %></td>
-    <td><%= link_to 'Edit', edit_period_path(period) %></td>
-    <td><%= link_to 'Destroy', period, :confirm => 'Are you sure?', :method => :delete %></td>
+    <td><%= link_to( 'Edit', edit_period_path(period) ) if permitted_to? :edit, period %></td>
+    <td><%= link_to( 'Destroy', period, :confirm => 'Are you sure?', :method => :delete ) if permitted_to? :destroy, period %></td>
     <% end %>
   <% end %>
 

@@ -5,6 +5,8 @@
 <hr />
 
 <p>
+<% if permitted_to? :create, :periods %>
 <%= link_to 'New period', new_schedule_period_path(@schedule) %>
+<% end %>
 </p>
 

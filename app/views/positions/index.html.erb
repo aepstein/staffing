@@ -34,7 +34,9 @@
 <hr />
 
 <p>
+<% if permitted_to? :create, :positions %>
 <%= link_to 'New position', new_position_path %>
+<% end %>
 <% if @committee %>
  | <%= link_to @committee.to_s, @committee %>
 <% end %>

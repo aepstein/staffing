@@ -5,6 +5,8 @@
 <hr />
 
 <p>
+<% if permitted_to? :create, :quizzes %>
 <%= link_to 'New quiz', new_quiz_path %>
+<% end %>
 </p>
 

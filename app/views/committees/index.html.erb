@@ -18,6 +18,8 @@
 <hr />
 
 <p>
+<% if permitted_to? :create, :committees -%>
 <%= link_to 'New committee', new_committee_path %>
+<% end -%>
 </p>
 

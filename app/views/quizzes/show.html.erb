@@ -4,7 +4,9 @@
 
 
 <p>
+<% if permitted_to? :edit, @quiz -%>
 <%= link_to 'Edit', edit_quiz_path(@quiz) %> |
+<% end -%>
 <%= link_to 'Back', quizzes_path %>
 </p>
 

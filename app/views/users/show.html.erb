@@ -51,7 +51,9 @@
 </p>
 
 <p>
+<% if permitted_to? :edit, @user -%>
 <%= link_to 'Edit', edit_user_path(@user) %> |
+<% end -%>
 <%= nested_index @user, 'memberships', %w( past current future renewed unrenewed ) %> |
 <%= nested_index @user, 'requests', %w( expired unexpired ) %> |
 <%= nested_index @user, 'enrollments' %> |

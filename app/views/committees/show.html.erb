@@ -15,7 +15,9 @@
 <%=markdown @committee.leave_message %>
 
 <p>
+<% if permitted_to? :edit, @committee -%>
 <%= link_to 'Edit', edit_committee_path(@committee) %> |
+<% end -%>
 <%= nested_index @committee, 'memberships', %w( past current future ) %> |
 <%= nested_index @committee, 'enrollments' %> |
 <%= link_to 'List Positions', committee_positions_path(@committee) %> |

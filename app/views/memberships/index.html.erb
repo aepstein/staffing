@@ -49,7 +49,7 @@
 <hr />
 
 <p>
-<% if @position %>
+<% if @position && permitted_to?( :create, :memberships ) %>
 <%= link_to 'New membership', new_position_membership_path(@position) %>
 <% end %>
 </p>

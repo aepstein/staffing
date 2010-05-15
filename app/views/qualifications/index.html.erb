@@ -17,6 +17,8 @@
 <hr />
 
 <p>
+<% if permitted_to? :create, :qualifications %>
 <%= link_to 'New qualification', new_qualification_path %>
+<% end %>
 </p>
 

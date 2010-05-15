@@ -5,6 +5,8 @@
 <br />
 
 <p>
+<% if permitted_to? :create, :user_renewal_notices -%>
 <%= link_to 'New user renewal notice', new_user_renewal_notice_path %>
+<% end -%>
 </p>
 

@@ -7,7 +7,7 @@
     <td><%= position.renewable? ? 'Yes' : 'No' %></td>
     <td><%=h position.slots %></td>
     <td><%= link_to 'Show', position %></td>
-    <td><%= link_to 'Edit', edit_position_path(position) %></td>
-    <td><%= link_to 'Destroy', position, :confirm => 'Are you sure?', :method => :delete %></td>
+    <td><%= link_to( 'Edit', edit_position_path(position) ) if permitted_to? :edit, position %></td>
+    <td><%= link_to( 'Destroy', position, :confirm => 'Are you sure?', :method => :delete ) if permitted_to? :destroy, position %></td>
   <% end %>
 

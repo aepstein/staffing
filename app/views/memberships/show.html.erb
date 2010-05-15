@@ -25,7 +25,9 @@
 <% end %>
 
 <p>
+<% if permitted_to? :edit, @membership -%>
 <%= link_to 'Edit', edit_membership_path(@membership) %> |
+<% end -%>
 <%= link_to 'Back', position_memberships_path(@membership.position) %>
 </p>
 

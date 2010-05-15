@@ -3,7 +3,7 @@
     <td><%=h question.content %></td>
     <td><%=h question.global %></td>
     <td><%= link_to 'Show', question %></td>
-    <td><%= link_to 'Edit', edit_question_path(question) %></td>
-    <td><%= link_to 'Destroy', question, :confirm => 'Are you sure?', :method => :delete %></td>
+    <td><%= link_to( 'Edit', edit_question_path(question) ) if permitted_to? :edit, question %></td>
+    <td><%= link_to( 'Destroy', question, :confirm => 'Are you sure?', :method => :delete ) if permitted_to? :destroy, question %></td>
   <% end %>
 

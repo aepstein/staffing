@@ -9,7 +9,7 @@
     <td><%=h user.date_of_birth.to_formatted_s(:db) if user.date_of_birth %></td>
     <td><%=h user.status %></td>
     <td><%= link_to 'Show', user %></td>
-    <td><%= link_to 'Edit', edit_user_path(user) %></td>
-    <td><%= link_to 'Destroy', user, :confirm => 'Are you sure?', :method => :delete %></td>
+    <td><%= link_to( 'Edit', edit_user_path(user) ) if permitted_to? :edit, user %></td>
+    <td><%= link_to( 'Destroy', user, :confirm => 'Are you sure?', :method => :delete ) if permitted_to? :destroy, user %></td>
   <% end %>
 

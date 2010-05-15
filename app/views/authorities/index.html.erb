@@ -14,6 +14,8 @@
 <hr />
 
 <p>
+<% if permitted_to? :create, :authorities -%>
 <%= link_to 'New authority', new_authority_path %>
+<% end -%>
 </p>
 

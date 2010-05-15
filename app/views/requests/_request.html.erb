@@ -8,7 +8,7 @@
     <% end %>
     <td><%= request.position %></td>
     <td><%= link_to 'Show', request %></td>
-    <td><%= link_to 'Edit', edit_request_path(request) %></td>
-    <td><%= link_to 'Destroy', request, :confirm => 'Are you sure?', :method => :delete %></td>
+    <td><%= link_to( 'Edit', edit_request_path(request) ) if permitted_to? :edit, request %></td>
+    <td><%= link_to( 'Destroy', request, :confirm => 'Are you sure?', :method => :delete ) if permitted_to? :destroy, request %></td>
   <% end %>
 

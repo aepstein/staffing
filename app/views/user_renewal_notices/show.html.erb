@@ -22,7 +22,9 @@
 
 
 <p>
+<% if permitted_to? :edit, @user_renewal_notice -%>
 <%= link_to 'Edit', edit_user_renewal_notice_path(@user_renewal_notice) %> |
+<% end -%>
 <%= link_to 'Back', user_renewal_notices_path %>
 </p>
 

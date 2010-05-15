@@ -18,6 +18,8 @@
 <hr />
 
 <p>
+<% if permitted_to? :create, :questions %>
 <%= link_to 'New question', new_question_path %>
+<% end %>
 </p>
 

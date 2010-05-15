@@ -6,7 +6,7 @@
 <hr />
 
 <p>
-<% if @committee %>
+<% if @committee && permitted_to?( :create, :enrollments ) %>
 <%= link_to 'New enrollment', new_committee_enrollment_path( @committee ) %>
 <% end %>
 <% if @user %>

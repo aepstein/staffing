@@ -8,7 +8,7 @@
     <td><%=h enrollment.title %></td>
     <td><%=h enrollment.votes %></td>
     <td><%= link_to 'Show', enrollment %></td>
-    <td><%= link_to 'Edit', edit_enrollment_path(enrollment) %></td>
-    <td><%= link_to 'Destroy', enrollment, :confirm => 'Are you sure?', :method => :delete %></td>
+    <td><%= link_to( 'Edit', edit_enrollment_path(enrollment) ) if permitted_to? :edit, enrollment %></td>
+    <td><%= link_to( 'Destroy', enrollment, :confirm => 'Are you sure?', :method => :delete ) if permitted_to? :destroy, enrollment %></td>
   <% end %>
 
