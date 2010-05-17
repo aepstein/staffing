@@ -19,7 +19,7 @@ class User < ActiveRecord::Base
 
   has_attached_file :resume,
     :path => ':rails_root/db/uploads/:rails_env/users/:attachment/:id_partition/:style/:basename.:extension',
-    :url => '/users/:id/resume.pdf'
+    :url => ':relative_url_root/users/:id/resume.pdf'
 
   acts_as_authentic do |c|
     c.login_field :net_id
