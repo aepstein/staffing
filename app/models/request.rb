@@ -40,7 +40,7 @@ class Request < ActiveRecord::Base
   belongs_to :requestable, :polymorphic => true
   belongs_to :user
 
-  has_many :memberships do
+  has_many :memberships, :dependent => :nullify do
     def assignable
       proxy_owner.requestable.memberships.position_with_status(proxy_owner.user.status).unassigned.current
     end
