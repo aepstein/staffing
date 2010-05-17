@@ -165,6 +165,11 @@ class Membership < ActiveRecord::Base
     self.request_without_population = new_request
   end
 
+  def request_renewal_until
+    return unless request && request.ends_at > ends_at
+    request.ends_at
+  end
+
   alias_method_chain :request=, :population
 
   def description

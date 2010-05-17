@@ -17,6 +17,7 @@
     <td><%=h membership.period %></td>
     <td><%=h membership.starts_at.to_s :rfc822 %></td>
     <td><%=h membership.ends_at.to_s :rfc822 %></td>
+    <td><%= membership.request_renewal_until ? membership.request_renewal_until.to_s( :rfc822 ) : "" %></td>
     <td><%= link_to 'Show', membership %></td>
     <td><%= link_to_renewal membership %></td>
     <td><%= link_to( 'Edit', edit_membership_path(membership) ) if permitted_to? :edit, membership %></td>

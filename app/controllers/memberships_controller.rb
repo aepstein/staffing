@@ -81,7 +81,7 @@ class MembershipsController < ApplicationController
   # GET /authorities/:authority_id/memberships.xml
   def index
     @search = @memberships ? @memberships.search( params[:search] ) : Membership.with_user.search( params[:search] )
-    @memberships = @search.paginate( :page => params[:page] )
+    @memberships = @search.paginate( :page => params[:page], :include => [ :request ] )
 
     respond_to do |format|
       format.html { render :action => 'index' }
