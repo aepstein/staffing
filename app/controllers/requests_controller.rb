@@ -166,6 +166,7 @@ class RequestsController < ApplicationController
     end
     redirect_to edit_request_url( @request ) unless @request.nil? || @request.new_record?
     @request = @requestable.requests.build( params[:request] )
+    @request.user ||= @membership.user if @membership
     @request.user ||= @user
   end
 
