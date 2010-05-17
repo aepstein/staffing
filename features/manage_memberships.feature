@@ -5,7 +5,7 @@ Feature: Manage memberships
 
   Background:
     Given a user: "popular" exists with first_name: "Mister", last_name: "Popularity", net_id: "zzz9999"
-    And a user: "unpopular" exists with first_name: "Mister", last_name: "Cellophane", net_id: "zzz9998"
+    And a user: "unpopular" exists with first_name: "Mister", last_name: "Cellophane", net_id: "cell@example.org"
     And a schedule: "annual" exists with name: "Annual"
     And a period: "2008" exists with schedule: schedule "annual", starts_at: "2008-06-01", ends_at: "2009-05-31"
     And a position: "officer" exists with name: "Officer", schedule: schedule "annual", slots: 4
@@ -101,7 +101,7 @@ Feature: Manage memberships
     And I select " 1 Jun 2008 - 31 May 2009" from "Period"
     And I fill in "Starts at" with "2008-06-01"
     And I fill in "Ends at" with "2009-05-31"
-    And I fill in "Designee for Important Committee" with "Mister Cellophane (zzz9998)"
+    And I fill in "Designee for Important Committee" with "Mister Cellophane (cell@example.org)"
     And I press "Create"
     Then I should see "Membership was successfully created."
     And I should see "User: Mister Popularity"
@@ -111,7 +111,7 @@ Feature: Manage memberships
     And I should see "Ends at: 31 May 2009"
     And I should see "Designee for Important Committee: Mister Cellophane"
     When I follow "Edit"
-    When I fill in "User" with "Mister Cellophane (zzz9998)"
+    When I fill in "User" with "Mister Cellophane (cell@example.org)"
     And I select " 1 Jun 2009 - 31 May 2010" from "Period"
     And I fill in "Starts at" with "2009-06-01"
     And I fill in "Ends at" with "2010-01-15"
