@@ -160,11 +160,11 @@ class RequestsController < ApplicationController
   end
 
   def new_request_from_params
-    if @membership && @request && @membership.request.nil?
+    unless @membership.nil? || @request.nil? || @request.new_record? || @membership.request
       @membership.request = @request
       @membership.save
     end
-    redirect_to edit_request_url( @request ) if @request
+    redirect_to edit_request_url( @request ) unless @request.nil? || @request.new_record?
     @request = @requestable.requests.build( params[:request] )
     @request.user ||= @user
   end
