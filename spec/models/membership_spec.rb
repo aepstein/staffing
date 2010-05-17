@@ -159,6 +159,15 @@ describe Membership do
     Membership.unrequested.should include @membership
   end
 
+  it 'should claim a request for the user and position if the position is requestable' do
+    p_r = Factory(:request, :requestable => Factory(:position, :requestable => true) )
+    c_r = Factory(:request, :requestable => Factory(:committee, :requestable => true) )
+    Factory(:enrollment, :position => p_r.requestable, :committee => c_r.requestable )
+    c_r_p = Factory(:enrollment, :position => Factory(:position, :requestable => false), :committee => c_r.requestable ).position
+    Factory(:membership, :position => p_r.requestable, :user => p_r.user).request.should eql p_r
+    Factory(:membership, :position => c_r_p, :user => c_r.user ).request.should eql c_r
+  end
+
   def renewable_position
     Factory(:position, :renewable => true)
   end

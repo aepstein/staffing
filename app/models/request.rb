@@ -54,6 +54,7 @@ class Request < ActiveRecord::Base
   validate :user_status_must_match_position, :requestable_must_be_requestable
 
   before_validation_on_create :initialize_answers
+  after_save :claim_memberships!
 
   def positions
     return Position.id_blank unless requestable
@@ -129,6 +130,13 @@ class Request < ActiveRecord::Base
   def initialize_answers; answers.each { |a| a.request = self }; end
 
   def to_s; requestable.to_s; end
+
+  def claim_memberships!
+    return if position_ids.empty?
+    user.memberships.unrequested.position_id_equals_any(position_ids).each do |membership|
+      memberships << membership
+    end
+  end
 
 end
 

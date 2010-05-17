@@ -82,7 +82,6 @@ class RequestsController < ApplicationController
     respond_to do |format|
       if @request.save
         flash[:notice] = 'Request was successfully created.'
-        @request.memberships << @membership if @membership && @membership.user_id == @request.user_id
         format.html { redirect_to(@request) }
         format.xml  { render :xml => @request, :status => :created, :location => @request }
       else
@@ -146,6 +145,7 @@ class RequestsController < ApplicationController
     @requestable = Committee.find params[:committee_id] if params[:committee_id]
     if params[:membership_id]
       @membership = Membership.find params[:membership_id]
+      @user = @membership.user
       @request ||= @membership.request
       @membership.position.requestables.each do |requestable|
         @request ||= @membership.user.requests.first( :conditions =>
@@ -160,14 +160,9 @@ class RequestsController < ApplicationController
   end
 
   def new_request_from_params
-    unless @membership.nil? || @request.nil? || @request.new_record? || @membership.request
-      @membership.request = @request
-      @membership.save
-    end
-    redirect_to edit_request_url( @request ) unless @request.nil? || @request.new_record?
+    return redirect_to edit_request_url( @request ) unless @request.nil? || @request.new_record?
     @request = @requestable.requests.build( params[:request] )
-    @request.user ||= @membership.user if @membership
-    @request.user ||= @user
+    @request.user ||= ( @membership ? @membership.user : @user )
   end
 
 end

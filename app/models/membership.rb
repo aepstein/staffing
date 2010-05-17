@@ -4,11 +4,14 @@ class Membership < ActiveRecord::Base
     "users.last_name ASC, users.first_name ASC, users.middle_name ASC"
   scope_procedure :assigned, lambda { user_id_not_nil }
   scope_procedure :unassigned, lambda { user_id_nil }
+  scope_procedure :requested, lambda { request_id_not_null }
+  scope_procedure :unrequested, lambda { request_id_null }
   scope_procedure :current, lambda { starts_at_lte(Date.today).ends_at_gte(Date.today) }
   scope_procedure :future, lambda { starts_at_gt(Date.today) }
   scope_procedure :past, lambda { ends_at_lt(Date.today) }
   scope_procedure :renewable, lambda { position_renewable }
   scope_procedure :unrenewable, lambda { position_unrenewable }
+  scope_procedure :overlap, lambda { |starts, ends| starts_at_lte(ends).ends_at_gte(starts) }
   scope_procedure :pending_renewal_within, lambda { |starts, ends| renewable.unrenewed.starts_at_gte(starts).ends_at_lte(ends) }
 
   named_scope :renewed, lambda {
@@ -24,7 +27,6 @@ class Membership < ActiveRecord::Base
         " #{date_add :ends_at, 1.day} = #{date_add 'renewable_memberships.starts_at', 0.days}",
       :conditions => 'renewable_memberships.id IS NULL' }
   }
-  named_scope :unrequested, :conditions => { :request_id => nil }
 
   named_scope :user_name_like, lambda { |text|
     { :include => [:user],
@@ -72,11 +74,9 @@ class Membership < ActiveRecord::Base
   validates_date :ends_at
   validate :concurrent_memberships_must_not_exceed_slots, :must_be_within_period, :user_must_be_qualified
 
-  scope_procedure :overlap, lambda { |starts, ends| starts_at_lte(ends).ends_at_gte(starts) }
-
   before_validation { |r| r.designees.each { |d| d.membership = r } }
   before_save :record_previous_changes
-  after_save :repopulate_unassigned
+  after_save :repopulate_unassigned, :claim_request!
   after_destroy { |r| r.position.memberships.populate_unassigned_for_period r.period if r.user }
 
   def user_name
@@ -179,6 +179,20 @@ class Membership < ActiveRecord::Base
   end
 
   def to_s; "#{position} (#{starts_at.to_s :rfc822} - #{ends_at.to_s :rfc822})"; end
+
+  protected
+
+  def claim_request!
+    return if self.request || user.nil?
+    request = nil
+    if position.requestable?
+      request = user.requests.requestable_type_equals('Position').requestable_id_equals(position.id).first
+    end
+    unless request || position.committee_ids.empty?
+      request = user.requests.requestable_type_equals('Committee').requestable_id_equals_any(position.committee_ids).first
+    end
+    request.memberships << self unless request.nil?
+  end
 
 end
 

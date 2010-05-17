@@ -132,6 +132,15 @@ describe Request do
     Request.unexpired.should include @request
   end
 
+  it 'should claim unrequested memberships that the request could apply to' do
+    m = Factory(:membership)
+    r = Factory.build(:request, :user => m.user)
+    r.stub!(:position_ids).and_return([m.position_id])
+    r.save.should be_true
+    r.memberships.size.should eql 1
+    r.memberships.should include m
+  end
+
   def generate_answered_request(user, quiz, answer)
     request = Factory.build(:request, :user => user, :requestable => Factory(:position, :quiz => quiz) )
     quiz.questions.each do |question|
