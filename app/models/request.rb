@@ -26,7 +26,8 @@ class Request < ActiveRecord::Base
       # Fill in most recent prior answer for each global question populated
       proxy_owner.user.answers.global.question_id_equals_any( population.map { |a| a.question_id }
       ).descend_by_updated_at.all( :group => 'question_id' ).each do |answer|
-        population.select { |a| a.question_id == answer.question_id }.first.content = answer.content
+        fillable_answer = population.select { |a| a.question_id == answer.question_id }.first
+        fillable_answer.content = answer.content unless fillable_answer.nil?
       end
       # Return the populated answers
       population
