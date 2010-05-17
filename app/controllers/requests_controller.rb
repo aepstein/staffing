@@ -82,7 +82,7 @@ class RequestsController < ApplicationController
     respond_to do |format|
       if @request.save
         flash[:notice] = 'Request was successfully created.'
-        @request.memberships << @membership if @membership
+        @request.memberships << @membership if @membership && @membership.user_id == @request.user_id
         format.html { redirect_to(@request) }
         format.xml  { render :xml => @request, :status => :created, :location => @request }
       else
