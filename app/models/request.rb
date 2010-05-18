@@ -8,9 +8,9 @@ class Request < ActiveRecord::Base
 
   named_scope :authority_id_equals, lambda { |authority_id|
     { :include => [ :user ],
-      :joins => "LEFT OUTER JOIN enrollments ON " +
+      :joins => "LEFT JOIN enrollments ON " +
         "requests.requestable_type = 'Committee' AND requests.requestable_id = enrollments.committee_id " +
-        "LEFT OUTER JOIN positions ON " +
+        "LEFT JOIN positions ON " +
         "(requests.requestable_type = 'Position' AND requests.requestable_id = positions.id) OR " +
         "enrollments.position_id = positions.id",
       :conditions => [ "positions.authority_id = ? AND " +
