@@ -57,7 +57,7 @@
 <%= nested_index @user, 'memberships', %w( past current future renewed unrenewed ) %> |
 <%= nested_index @user, 'requests', %w( expired unexpired ) %> |
 <%= nested_index @user, 'enrollments' %> |
-<%= nested_index @user, 'committees', %w( requestable ) %> |
+<%= link_to 'Requestable committees', requestable_user_committees_path(@user) %> |
 <%= link_to 'Back', users_path %>
 </p>
 
