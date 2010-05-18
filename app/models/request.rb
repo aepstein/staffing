@@ -14,7 +14,8 @@ class Request < ActiveRecord::Base
         "(requests.requestable_type = 'Position' AND requests.requestable_id = positions.id) OR " +
         "enrollments.position_id = positions.id",
       :conditions => [ "positions.authority_id = ? AND " +
-        "( positions.statuses_mask = 0 OR ((positions.statuses_mask & users.statuses_mask) > 0) )", authority_id ] }
+        "( positions.statuses_mask = 0 OR ((positions.statuses_mask & users.statuses_mask) > 0) )", authority_id ],
+      :group => 'requests.id' }
   }
 
   acts_as_list :scope => :user_id
