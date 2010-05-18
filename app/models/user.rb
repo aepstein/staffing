@@ -3,7 +3,7 @@ class User < ActiveRecord::Base
 
   default_scope :order => 'users.last_name ASC, users.first_name ASC, users.middle_name ASC'
 
-  attr_protected :admin, :net_id, :status
+  attr_protected :admin, :net_id, :status, :statuses, :statuses_mask
 
   has_and_belongs_to_many :qualifications
   has_many :memberships
@@ -35,7 +35,6 @@ class User < ActiveRecord::Base
   validates_presence_of :last_name
   validates_presence_of :email
   validates_date :date_of_birth, :allow_nil => true, :allow_blank => true
-  validates_inclusion_of :status, :in => STATUSES, :allow_blank => true
 
   before_validation_on_create :import_ldap_attributes, :initialize_password
 
@@ -115,6 +114,22 @@ class User < ActiveRecord::Base
   end
 
   def to_s; name; end
+
+  def status=(status)
+    self.statuses=([status])
+  end
+
+  def status
+    statuses.first
+  end
+
+  def statuses=(statuses)
+    self.statuses_mask = (statuses & User::STATUSES).map { |status| 2**User::STATUSES.index(status) }.sum
+  end
+
+  def statuses
+    User::STATUSES.reject { |status| ((statuses_mask || 0) & 2**User::STATUSES.index(status)).zero? }
+  end
 
   protected
 

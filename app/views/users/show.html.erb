@@ -43,7 +43,7 @@
 </p>
 
 <p>
-  <b>Status:</b> <%=h @user.status.blank? ? 'unknown' : @user.status %>
+  <b>Statuses:</b> <%= @user.statuses.empty? ? 'unknown' : @user.statuses.join( ', ' ) %>
 </p>
 
 <p>

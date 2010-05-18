@@ -13,7 +13,7 @@
     <% if permitted_to? :manage, form.object %>
       <%= form.input :net_id %>
       <%= form.input :admin, :as => :radio, :label => 'Administrator?' %>
-      <%= form.input :status, :as => :select, :collection => User::STATUSES %>
+      <%= form.input :statuses, :as => :check_boxes, :collection => User::STATUSES %>
     <% end %>
   <% end %>
   <%= form.buttons %>

@@ -40,9 +40,13 @@ describe Authority do
     requests = [ ]
     requests << Factory(:request, :requestable => Factory(:position, :requestable => true, :authority => @authority) )
     requests << Factory(:request, :requestable => Factory(:enrollment, :position => Factory(:position, :requestable => false, :authority => @authority) ).committee )
+    undergrad_committee = Factory(:enrollment, :position => Factory(:position, :requestable => false, :authority => @authority, :statuses => ['undergrad'] ) ).committee
+    requests << Factory(:request, :requestable => undergrad_committee, :user => Factory(:user, :statuses => ['undergrad']) )
     Factory(:request, :requestable => Factory(:position, :requestable => true) )
     Factory(:request, :requestable => Factory(:enrollment, :position => Factory(:position, :requestable => false) ).committee )
-    @authority.requests.length.should eql 2
+    Factory(:enrollment, :position => Factory(:position, :requestable => false, :statuses => ['grad']), :committee => undergrad_committee )
+    Factory(:request, :requestable => undergrad_committee, :user => Factory(:user, :statuses => ['grad']) )
+    @authority.requests.length.should eql 3
     requests.each { |request| @authority.requests.should include request }
     Factory(:authority).requests.should be_empty
   end

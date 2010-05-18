@@ -94,7 +94,7 @@ class UsersController < ApplicationController
     if current_user.admin? && params[:user]
       @user.admin = params[:user][:admin] if params[:user][:admin]
       @user.net_id = params[:user][:net_id] if params[:user][:net_id]
-      @user.status = params[:user][:status] if params[:user][:status]
+      @user.status = params[:user][:statuses] if params[:user][:statuses]
     end
 
     respond_to do |format|
