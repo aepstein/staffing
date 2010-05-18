@@ -1,4 +1,8 @@
-<h2>Welcome, <%= current_user.name %></h2>
+<h2>Welcome, <%= current_user.first_name %></h2>
+
+<p>
+<%= link_to 'Click here', edit_user_path( current_user ) %> to update your personal and contact information.  If you are not <%=h current_user.name %>, please close the web browser completely and log in using your own credentials.
+</p>
 
 <h3>Your Memberships</h3>
 
