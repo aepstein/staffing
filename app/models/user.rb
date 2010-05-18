@@ -156,7 +156,7 @@ class User < ActiveRecord::Base
       self.middle_name = ldap_entry.middle_name.titleize if middle_name.blank? && ldap_entry.middle_name
       self.last_name = ldap_entry.last_name.titleize if last_name.blank? && ldap_entry.last_name
       self.email = "#{net_id}@cornell.edu" if email.blank? && net_id
-      self.status = ldap_entry.status if ldap_entry.status
+      self.status = ldap_entry.status if statuses.empty? && ldap_entry.status
       # TODO addresses and phone numbers
     else
       self.first_name ||= 'UNKNOWN'
