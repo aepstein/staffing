@@ -1,7 +1,7 @@
 class MembershipsController < ApplicationController
   before_filter :require_user, :initialize_context
   before_filter :new_membership_from_params, :only => [ :new, :create ]
-  filter_access_to :new, :create, :edit, :update, :destroy, :show, :attribute_check => true
+  filter_access_to :new, :create, :edit, :update, :destroy, :show, :confirm, :attribute_check => true
   filter_access_to :index, :current, :past, :future do
     @user ? permitted_to!( :show, @user ) : permitted_to!( :index )
   end
@@ -113,7 +113,6 @@ class MembershipsController < ApplicationController
 
   # GET /memberships/1/edit
   def edit
-    @membership = Membership.find(params[:id])
     @membership.designees.populate
   end
 
@@ -138,8 +137,6 @@ class MembershipsController < ApplicationController
   # PUT /memberships/1
   # PUT /memberships/1.xml
   def update
-    @membership = Membership.find(params[:id])
-
     respond_to do |format|
       if @membership.update_attributes(params[:membership])
         flash[:notice] = 'Membership was successfully updated.'
@@ -153,10 +150,23 @@ class MembershipsController < ApplicationController
     end
   end
 
+  def confirm
+    respond_to do |format|
+      if @membership.confirm
+        flash[:notice] = 'Membership settings confirmed.'
+        format.html { redirect_to( unrenewed_user_memberships( @membership.user ) ) }
+        format.xml  { head :ok }
+      else
+        @membership.designees.populate
+        format.html { render :action => "edit" }
+        format.xml  { render :xml => @membership.errors, :status => :unprocessable_entity }
+      end
+    end
+  end
+
   # DELETE /memberships/1
   # DELETE /memberships/1.xml
   def destroy
-    @membership = Membership.find(params[:id])
     @membership.destroy
 
     respond_to do |format|

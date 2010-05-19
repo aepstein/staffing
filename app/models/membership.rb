@@ -27,14 +27,16 @@ class Membership < ActiveRecord::Base
         " #{date_add :ends_at, 1.day} = #{date_add 'renewable_memberships.starts_at', 0.days}",
       :conditions => 'renewable_memberships.id IS NULL' }
   }
-
+  named_scope :confirmed, :include => :request,
+      :conditions => 'requests.updated_at <= memberships.confirmed_at'
+  named_scope :unconfirmed, :include => :request,
+      :conditions => 'requests.id IS NULL OR requests.updated_at > memberships.confirmed_at'
   named_scope :user_name_like, lambda { |text|
     { :include => [:user],
       :conditions => %w( first_name last_name middle_name net_id ).map { |c|
         "users.#{c} LIKE " + connection.quote( "%#{text}%" )
       }.join( ' OR ' ) }
   }
-
   named_scope :enrollments_committee_id_equals, lambda { |committee_id|
     { :joins => "INNER JOIN enrollments",
        :conditions => ['enrollments.position_id = memberships.position_id AND enrollments.committee_id = ?', committee_id] }
@@ -78,6 +80,16 @@ class Membership < ActiveRecord::Base
   before_save :record_previous_changes
   after_save :repopulate_unassigned, :claim_request!
   after_destroy { |r| r.position.memberships.populate_unassigned_for_period r.period if r.user }
+
+  def confirmed?
+    return false unless request && request.updated_at
+    request.updated_at >= confirmed_at
+  end
+
+  def confirm!
+    self.confirmed_at = DateTime.now
+    save!
+  end
 
   def user_name
     "#{user.name} (#{user.net_id})" if user
