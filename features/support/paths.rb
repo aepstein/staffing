@@ -32,8 +32,8 @@ module NavigationHelpers
     when /^the(?: (\w+))? #{capture_plural_factory} page for #{capture_model}$/
       $1 ? polymorphic_path( [$1, model($3), $2] ) : polymorphic_path( [model($3), $2] )
 
-    when /^the page for #{capture_model}$/
-      polymorphic_path( [model($1)] )
+    when /^the(?: (\w+))? page for #{capture_model}$/
+      polymorphic_path( [$1, model($2)] )
 
 
 

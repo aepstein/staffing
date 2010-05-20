@@ -4,6 +4,7 @@ authorization do
       :periods, :positions, :qualifications, :quizzes, :questions, :requests,
       :schedules, :users, :user_renewal_notices, :sendings ], :to => :manage
     has_permission_on :users, :to => :resume
+    has_permission_on :memberships, :to => :confirm
   end
   role :user do
     has_permission_on [ :authorities, :committees, :enrollments, :memberships,

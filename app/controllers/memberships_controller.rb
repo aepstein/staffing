@@ -154,7 +154,7 @@ class MembershipsController < ApplicationController
     respond_to do |format|
       if @membership.confirm
         flash[:notice] = 'Membership settings confirmed.'
-        format.html { redirect_to( unrenewed_user_memberships( @membership.user ) ) }
+        format.html { redirect_to unrenewed_user_memberships_url @membership.user }
         format.xml  { head :ok }
       else
         @membership.designees.populate

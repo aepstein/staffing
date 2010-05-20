@@ -2,6 +2,7 @@ ActionController::Routing::Routes.draw do |map|
   map.resources :user_renewal_notices, :shallow => true do |notice|
     notice.resources :sendings, :only => [ :index, :show, :destroy ]
   end
+  map.resources :memberships, :only => [], :member => { :confirm => :put }
   map.resources :users, :shallow => true, :member => { :resume => :get } do |user|
     user.resources :sendings, :only => [ :index ]
     user.resources :requests, :collection => { :expired => :get, :unexpired => :get }

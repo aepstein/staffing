@@ -78,6 +78,8 @@ Feature: Manage memberships
     Then I should <update> "not authorized"
     Given I put on the page for membership: "focus"
     Then I should <update> "not authorized"
+    Given I put on the confirm page for membership: "focus"
+    Then I should <confirm> "not authorized"
     Given I am on the page for membership: "focus"
     Then I should <show> "not authorized"
     Given I am on the memberships page for position: "focus"
@@ -85,11 +87,11 @@ Feature: Manage memberships
     Given I delete on the page for membership: "focus"
     Then I should <destroy> "not authorized"
     Examples:
-      | user      | create  | update  | destroy | index | show    |
-      | admin     | not see | not see | not see | see   | not see |
-      | authority | not see | not see | not see | see   | not see |
-      | owner     | see     | see     | see     | see   | not see |
-      | regular   | see     | see     | see     | see   | not see |
+      | user      | create  | update  | destroy | index | show    | confirm |
+      | admin     | not see | not see | not see | see   | not see | not see |
+      | authority | not see | not see | not see | see   | not see | see     |
+      | owner     | see     | see     | see     | see   | not see | not see |
+      | regular   | see     | see     | see     | see   | not see | see     |
 
   Scenario: Register new membership given a position or edit
     Given a period: "2009" exists with schedule: schedule "annual", starts_at: "2009-06-01", ends_at: "2010-05-31"

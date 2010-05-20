@@ -28,9 +28,9 @@ class Membership < ActiveRecord::Base
       :conditions => 'renewable_memberships.id IS NULL' }
   }
   named_scope :confirmed, :include => :request,
-      :conditions => 'requests.updated_at <= memberships.confirmed_at'
+      :conditions => 'memberships.confirmed_at IS NOT NULL AND (requests.updated_at IS NULL OR requests.updated_at <= memberships.confirmed_at)'
   named_scope :unconfirmed, :include => :request,
-      :conditions => 'requests.id IS NULL OR requests.updated_at > memberships.confirmed_at'
+      :conditions => 'memberships.confirmed_at IS NULL OR (requests.updated_at IS NOT NULL AND requests.updated_at > memberships.confirmed_at)'
   named_scope :user_name_like, lambda { |text|
     { :include => [:user],
       :conditions => %w( first_name last_name middle_name net_id ).map { |c|
@@ -82,13 +82,16 @@ class Membership < ActiveRecord::Base
   after_destroy { |r| r.position.memberships.populate_unassigned_for_period r.period if r.user }
 
   def confirmed?
-    return false unless request && request.updated_at
-    request.updated_at >= confirmed_at
+    return false unless confirmed_at?
+    return request.updated_at < confirmed_at if request
+    true
   end
 
-  def confirm!
+  def unconfirmed?; !confirmed?; end
+
+  def confirm
     self.confirmed_at = DateTime.now
-    save!
+    save
   end
 
   def user_name
@@ -181,8 +184,8 @@ class Membership < ActiveRecord::Base
     self.request_without_population = new_request
   end
 
-  def request_renewal_until
-    return unless request && request.ends_at > ends_at
+  def renew_until
+    return unless request && request.ends_at > ends_at && request.starts_at < ends_at
     request.ends_at
   end
 
