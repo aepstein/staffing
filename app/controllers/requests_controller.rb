@@ -162,6 +162,7 @@ class RequestsController < ApplicationController
   def new_request_from_params
     return redirect_to edit_request_url( @request ) unless @request.nil? || @request.new_record?
     @request = @requestable.requests.build( params[:request] )
+    @request.starts_at ||= @membership.starts_at if @membership
     @request.user ||= ( @membership ? @membership.user : @user )
   end
 
