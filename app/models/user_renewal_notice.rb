@@ -33,7 +33,7 @@ class UserRenewalNotice < ActiveRecord::Base
 
   def users
     User.no_notice_since( self.class.to_s, created_at - 1.week ).reject { |user|
-      user.memberships.pending_renewal_within(starts_at, ends_at).empty?
+      user.memberships.pending_renewal_within(starts_at, ends_at).unconfirmed.empty?
     }
   end
 end
