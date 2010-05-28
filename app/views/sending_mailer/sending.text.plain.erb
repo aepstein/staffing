@@ -5,10 +5,10 @@ Dear <%= @sending.user.first_name %>,
 You are receiving this notice because you have <%= pluralize( @sending.user.memberships.pending_renewal_within(@sending.message.starts_at, @sending.message.ends_at).length, 'membership' ) %> ending soon and your action is required to renew your membership.  According to our records, your renewal preferences are as follows:
 
 <% @sending.user.memberships.pending_renewal_within(@sending.message.starts_at, @sending.message.ends_at).each do |membership| -%>
- <% if membership.request && membership.request.ends_at <= membership.ends_at -%>
- * You are *not* interested in reappointment to <%= membership.request.requestable %> after your current membership ends on <%= membership.ends_at.to_s :long_ordinal %>.
- <% elsif membership.request -%>
+ <% if membership.renew_until -%>
  * You are interested interested in reappointment to <%= membership.request.requestable %> from after your current membership ends on <%= membership.ends_at.to_s :long_ordinal %> until <%= membership.request.ends_at.to_s :long_ordinal %>.
+ <% elsif membership.request -%>
+ * You are *not* interested in reappointment to <%= membership.request.requestable %> after your current membership ends on <%= membership.ends_at.to_s :long_ordinal %>.
  <% else -%>
  <% unless membership.position.requestables.empty? -%>
  * You are *not* interested in reappointment to <%= membership.position.requestables.join ', ' %> after your membership ends on <%= membership.ends_at.to_s :long_ordinal %>.

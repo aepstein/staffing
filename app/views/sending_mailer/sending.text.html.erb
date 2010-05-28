@@ -16,13 +16,13 @@ You are receiving this notice because you have <%= pluralize( @sending.user.memb
 
 <ul>
 <% @sending.user.memberships.pending_renewal_within(@sending.message.starts_at, @sending.message.ends_at).each do |membership| -%>
- <% if membership.request && membership.request.ends_at < membership.ends_at -%>
+ <% if membership.renew_until -%>
 <li>
-You are <em>not</em> interested in reappointment to <%= membership.request.requestable %> after your current membership ends on <%= membership.ends_at.to_s :long_ordinal %>.
+You are interested interested in reappointment to <%= membership.request.requestable %> from after your current membership ends on <%= membership.ends_at.to_s :long_ordinal %> until <%= membership.request.ends_at.to_s :long_ordinal %>.
 </li>
  <% elsif membership.request -%>
 <li>
-You are interested interested in reappointment to <%= membership.request.requestable %> from after your current membership ends on <%= membership.ends_at.to_s :long_ordinal %> until <%= membership.request.ends_at.to_s :long_ordinal %>.
+You are <em>not</em> interested in reappointment to <%= membership.request.requestable %> after your current membership ends on <%= membership.ends_at.to_s :long_ordinal %>.
 </li>
  <% else -%>
  <% unless membership.position.requestables.empty? -%>
