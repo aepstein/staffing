@@ -35,7 +35,7 @@ You are <em>not</em> interested in reappointment to <%= membership.position.requ
 </ul>
 
 <p>
-Please take a few moments before <%= @sending.message.deadline.to_s :long_ordinal %> to create or update membership requests for any of the committees or positions that you wish to renew so they reflect your preferences.  This information will be used by the appropriate authorities when they staff the committees.  You may <%= link_to 'make changes here', unrenewed_user_memberships_url( @sending.user ) %>.
+Please take a few moments before <%= @sending.message.deadline.to_s :long_ordinal %> to create or update membership requests for any of the committees or positions that you wish to renew so they reflect your preferences.  This information will be used by the appropriate authorities when they staff the committees.  You may <%= link_to 'change or confirm your preferences here', unrenewed_user_memberships_url( @sending.user ) %>.
 </p>
 
 <p>
