@@ -1,7 +1,7 @@
   <%= form.error_messages %>
   <% form.inputs do %>
   <%= form.input :name %>
-  <%= form.input :format, :as => :select, :collection => Question::ALLOWED_FORMATS,
+  <%= form.input :disposition, :as => :select, :collection => Question::DISPOSITIONS,
     :hint => 'How should the question be presented to the user?' %>
   <%= form.input :content %>
   <%= form.input :global, :as => :radio %>

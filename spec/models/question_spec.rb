@@ -24,5 +24,16 @@ describe Question do
     @question.content = nil
     @question.save.should be_false
   end
+
+  it 'should not save without a disposition' do
+    @question.disposition = nil
+    @question.save.should be_false
+  end
+
+  it 'should not save with an invalid disposition' do
+    @question.disposition = 'invalid'
+    Question::DISPOSITIONS.should_not include @question.disposition
+    @question.save.should be_false
+  end
 end
 

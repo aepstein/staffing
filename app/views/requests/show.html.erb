@@ -19,7 +19,7 @@
 </p>
 
 <% @request.answers(:include => [:question]).each do |answer| %>
-  <% if answer.question.format == 'boolean' %>
+  <% if answer.question.disposition == 'boolean' %>
   <%=markdown( answer.question.content + " #{answer.content == 'true' ? 'Yes' : 'No'}" ) %>
   <% else %>
   <%=markdown answer.question.content %>

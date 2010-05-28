@@ -1,6 +1,6 @@
 module RequestsHelper
   def render_question(form)
-    as = case form.object.question.attributes['format']
+    as = case form.object.question.disposition
     when 'string'
       :string
     when 'text'

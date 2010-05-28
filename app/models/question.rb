@@ -1,5 +1,5 @@
 class Question < ActiveRecord::Base
-  ALLOWED_FORMATS = {
+  DISPOSITIONS = {
     'String' => 'string',
     'Text Box' => 'text',
     'Yes/No' => 'boolean'
@@ -14,7 +14,7 @@ class Question < ActiveRecord::Base
   validates_presence_of :name
   validates_uniqueness_of :name
   validates_presence_of :content
-  validates_inclusion_of :format, :in => ALLOWED_FORMATS.values
+  validates_inclusion_of :disposition, :in => DISPOSITIONS.values
 
   def to_s; name; end
 end
