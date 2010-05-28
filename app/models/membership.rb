@@ -185,7 +185,7 @@ class Membership < ActiveRecord::Base
   end
 
   def renew_until
-    return unless request && request.ends_at > ends_at && request.starts_at < ends_at
+    return unless request && request.ends_at > ends_at
     request.ends_at
   end
 
