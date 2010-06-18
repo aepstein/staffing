@@ -1,3 +1,5 @@
+require 'factory_girl'
+
 Factory.define :answer do |f|
   f.association :request
   f.question { |a| a.association( :question, :quizzes => [ a.request.requestable.quiz ] ) }

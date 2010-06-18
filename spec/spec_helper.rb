@@ -12,6 +12,8 @@ Spork.prefork do
   # Uncomment the next line to use webrat's matchers
   #require 'webrat/integrations/rspec-rails'
 
+  require File.dirname(__FILE__) + '/factories.rb'
+
   # Requires supporting files with custom matchers and macros, etc,
   # in ./support/ and its subdirectories.
   Dir[File.expand_path(File.join(File.dirname(__FILE__),'support','**','*.rb'))].each {|f| require f}
