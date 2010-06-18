@@ -52,12 +52,12 @@ class User < ActiveRecord::Base
 
   def authorized_position_ids
     return [] if authority_ids.empty?
-    Position.authority_id_equals_any( authority_ids ).all( :select => 'positions.id' ).map { |p| p.id }
+    Position.authority_id_equals_any( authority_ids ).all( :select => 'positions.id' ).map(&:id)
   end
 
   def authorized_committee_ids
     return [] if authority_ids.empty?
-    Committee.positions_authority_id_equals_any( authority_ids ).all( :select => 'committees.id' ).map { |c| c.id }
+    Committee.positions_authority_id_equals_any( authority_ids ).all( :select => 'committees.id' ).map(&:id)
   end
 
   def requestable_committees

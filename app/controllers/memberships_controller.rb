@@ -2,6 +2,9 @@ class MembershipsController < ApplicationController
   before_filter :require_user, :initialize_context
   before_filter :new_membership_from_params, :only => [ :new, :create ]
   filter_access_to :new, :create, :edit, :update, :destroy, :show, :confirm, :attribute_check => true
+  filter_access_to :assign do
+    permitted_to! :edit, @membership
+  end
   filter_access_to :index, :current, :past, :future do
     @user ? permitted_to!( :show, @user ) : permitted_to!( :index )
   end
@@ -69,6 +72,12 @@ class MembershipsController < ApplicationController
     index
   end
 
+  # GET /requests/:request_id/memberships/assignable
+  def assignable
+    @memberships = @request.memberships.assignable
+    index
+  end
+
   # GET /requests/:request_id/memberships
   # GET /requests/:request_id/memberships.xml
   # GET /positions/:position_id/memberships
@@ -113,7 +122,11 @@ class MembershipsController < ApplicationController
 
   # GET /memberships/1/edit
   def edit
+    @membership.request = @request if @request
     @membership.designees.populate
+    respond_to do |format|
+      format.html { render :action => 'edit' }
+    end
   end
 
   # POST /positions/:position_id/memberships

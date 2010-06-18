@@ -22,7 +22,11 @@
     <td><%= link_to( 'Confirm', confirm_membership_path( membership ), :method => :put ) if permitted_to?( :confirm, membership ) && membership.unconfirmed?%></td>
     <td><%= link_to 'Show', membership %></td>
     <td><%= link_to_renewal membership %></td>
+    <% if request && membership.user.blank? %>
+    <td><%= link_to( 'Assign', edit_membership_path(membership, :request_id => request.id) ) if permitted_to? :edit, membership %></td>
+    <% else %>
     <td><%= link_to( 'Edit', edit_membership_path(membership) ) if permitted_to? :edit, membership %></td>
+    <% end %>
     <td><%= link_to( 'Destroy', membership, :confirm => 'Are you sure?', :method => :delete ) if permitted_to? :destroy, membership %></td>
   <% end %>
 

@@ -1,0 +1,7 @@
+<% form_tag assign_membership_path( @membership ), :method => :get %>
+  <p>
+    <%= label_tag 'user_name', 'User' %>
+    <%= text_field_with_auto_complete 'user_name', '', :url => membership_users_url( @membership ) %>
+  </p>
+<% end %>
+

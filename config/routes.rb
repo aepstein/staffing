@@ -18,7 +18,7 @@ ActionController::Routing::Routes.draw do |map|
       membership.resources :requests, :only => [ :new, :create ]
     end
     position.resources :requests, :only => [ :new, :create, :index ], :collection => { :expired => :get, :unexpired => :get } do |request|
-      request.resources :memberships, :only => [ :new, :create, :index ]
+      request.resources :memberships, :only => [ :new, :create, :index ], :collection => { :assignable => :get }
     end
   end
   map.resources :committees, :shallow => true, :collection => { :available => :get } do |committee|
@@ -47,9 +47,6 @@ ActionController::Routing::Routes.draw do |map|
   map.login 'login', :controller => 'user_sessions', :action => 'new'
   map.logout 'logout', :controller => 'user_sessions', :action => 'destroy'
   map.profile 'profile', :controller => 'users', :action => 'profile'
-
-  map.connect ':controller/:action/:id'
-  map.connect ':controller/:action/:id.:format'
 
   map.root :controller => 'users', :action => 'profile'
 end

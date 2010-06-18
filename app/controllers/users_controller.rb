@@ -1,6 +1,9 @@
 class UsersController < ApplicationController
-  before_filter :require_user
-  filter_resource_access :collection => [ :index, :profile ]
+  before_filter :require_user, :initialize_context
+  before_filter :initialize_index, :only => [ :index ]
+  before_filter :new_user_from_params, :only => [ :new, :create ]
+  before_filter :set_admin_properties, :only => [ :create, :update ]
+  filter_access_to :new, :create, :edit, :update, :destroy, :show, :attribute_check => true
 
   # GET /users
   # GET /users.xml
@@ -18,8 +21,6 @@ class UsersController < ApplicationController
   # GET /users/1
   # GET /users/1.xml
   def show
-    @user = User.find(params[:id])
-
     respond_to do |format|
       format.html # show.html.erb
       format.xml  { render :xml => @user }
@@ -28,8 +29,6 @@ class UsersController < ApplicationController
 
   # GET /users/1/resume.pdf
   def resume
-    @user = User.find(params[:id])
-
     respond_to do |format|
       format.pdf do
         if @user.resume.file?
@@ -52,8 +51,6 @@ class UsersController < ApplicationController
   # GET /users/new
   # GET /users/new.xml
   def new
-    @user = User.new
-
     respond_to do |format|
       format.html # new.html.erb
       format.xml  { render :xml => @user }
@@ -68,13 +65,6 @@ class UsersController < ApplicationController
   # POST /users
   # POST /users.xml
   def create
-    @user = User.new(params[:user])
-    if current_user.admin? && params[:user]
-      @user.admin = params[:user][:admin] if params[:user][:admin]
-      @user.net_id = params[:user][:net_id] if params[:user][:net_id]
-      @user.statuses = params[:user][:statuses] if params[:user][:statuses]
-    end
-
     respond_to do |format|
       if @user.save
         flash[:notice] = 'User was successfully created.'
@@ -90,13 +80,6 @@ class UsersController < ApplicationController
   # PUT /users/1
   # PUT /users/1.xml
   def update
-    @user = User.find(params[:id])
-    if current_user.admin? && params[:user]
-      @user.admin = params[:user][:admin] if params[:user][:admin]
-      @user.net_id = params[:user][:net_id] if params[:user][:net_id]
-      @user.statuses = [params[:user][:statuses]].flatten if params[:user][:statuses]
-    end
-
     respond_to do |format|
       if @user.update_attributes(params[:user])
         flash[:notice] = 'User was successfully updated.'
@@ -112,12 +95,35 @@ class UsersController < ApplicationController
   # DELETE /users/1
   # DELETE /users/1.xml
   def destroy
-    @user = User.find(params[:id])
     @user.destroy
 
     respond_to do |format|
       format.html { redirect_to(users_url) }
       format.xml  { head :ok }
+    end
+  end
+
+  private
+
+  def initialize_context
+    @user = User.find params[:id] if params[:id]
+    @membership = Membership.find params[:membership_id] if params[:membership_id]
+  end
+
+  def initialize_index
+    @users = User
+    @users = @membership.users if @membership
+  end
+
+  def new_user_from_params
+    @user = User.new( params[:user] )
+  end
+
+  def set_admin_properties
+    if current_user.admin? && params[:user]
+      @user.admin = params[:user][:admin] unless params[:user][:admin].blank?
+      @user.net_id = params[:user][:net_id] unless params[:user][:net_id].blank?
+      @user.statuses = [params[:user][:statuses]].flatten unless params[:user][:statuses].blank?
     end
   end
 end
