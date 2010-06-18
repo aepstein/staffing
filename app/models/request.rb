@@ -46,7 +46,7 @@ class Request < ActiveRecord::Base
 
   has_many :memberships, :dependent => :nullify do
     def assignable
-      proxy_owner.requestable.memberships.overlaps( proxy_owner.starts_at, proxy_owner.ends_at
+      proxy_owner.requestable.memberships.overlap( proxy_owner.starts_at, proxy_owner.ends_at
       ).position_with_status( proxy_owner.user.status ).unassigned
     end
   end
