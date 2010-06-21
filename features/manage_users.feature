@@ -28,6 +28,16 @@ Feature: Manage users
       | owner   | see "Owner, The"     | see "not authorized"     | not see "not authorized" | see "not authorized"     | not see "not authorized" |
       | regular | not see "Owner, The" | see "not authorized"     | see "not authorized"     | see "not authorized"     | see "not authorized"     |
 
+  Scenario: List authorities on the user profile page
+    Given a user: "owner" exists with net_id: "owner", password: "secret"
+    And a committee exists
+    And position exists
+    And an enrollment exists with position: the position, committee: the committee
+    And a membership exists with user: user "owner", position: the position
+    And an authority exists with name: "Important Authority", committee: the committee
+    And I log in as "owner" with password "secret"
+    Then I should see "Important Authority"
+
   Scenario: List unexpired requests on user profile page
     Given a user: "owner" exists with net_id: "owner", password: "secret", admin: false, first_name: "The", last_name: "Owner"
     And a position: "expired" exists with name: "Expired Position"
