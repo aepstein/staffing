@@ -93,7 +93,7 @@ class Position < ActiveRecord::Base
   }
 
   def current_emails
-    memberships.current.all(:include => [ :user ]).map { |membership| membership.user.email }
+    memberships.assigned.current.all(:include => [ :user ]).map { |membership| membership.user.email }
   end
 
   def requestables
