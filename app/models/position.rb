@@ -92,6 +92,10 @@ class Position < ActiveRecord::Base
     r.memberships.populate_unassigned
   }
 
+  def current_emails
+    memberships.current.all(:include => [ :user ]).map { |membership| membership.user.email }
+  end
+
   def requestables
     return [self] if requestable?
     enrollments.map { |enrollment| enrollment.committee }.select { |committee| committee.requestable? }
@@ -103,6 +107,15 @@ class Position < ActiveRecord::Base
 
   def statuses
     User::STATUSES.reject { |status| ((statuses_mask || 0) & 2**User::STATUSES.index(status)).zero? }
+  end
+
+  def name(style=nil)
+    case style
+    when :file
+      self.name.strip.downcase.gsub(/[^a-z]/,'-').squeeze('-')
+    else
+      read_attribute(:name)
+    end
   end
 
   def to_s; name; end

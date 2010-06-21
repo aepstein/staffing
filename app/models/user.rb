@@ -39,15 +39,15 @@ class User < ActiveRecord::Base
   before_validation_on_create :import_ldap_attributes, :initialize_password
 
   def authority_ids
-    connection.select_values(
-      "SELECT DISTINCT authorities.id FROM " +
-      "authorities INNER JOIN committees ON authorities.committee_id = committees.id " +
+    authorities.map(&:id)
+  end
+
+  def authorities
+    Authority.all( :joins => "INNER JOIN committees ON authorities.committee_id = committees.id " +
       "INNER JOIN enrollments ON committees.id = enrollments.committee_id " +
-      "INNER JOIN memberships ON enrollments.position_id = memberships.position_id " +
-      "WHERE memberships.user_id = #{id} AND " +
-      "memberships.starts_at <= #{connection.quote Date.today} AND " +
-      "memberships.ends_at >= #{connection.quote Date.today}"
-    ).map { |v| v.to_i }
+      "INNER JOIN memberships ON enrollments.position_id = memberships.position_id",
+      :conditions => [ "memberships.user_id = :id AND memberships.starts_at <= :today AND " +
+      "memberships.ends_at >= :today", { :id => id, :today => Time.zone.today } ] )
   end
 
   def authorized_position_ids

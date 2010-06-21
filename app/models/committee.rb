@@ -29,7 +29,7 @@ class Committee < ActiveRecord::Base
 
   def name(style=nil)
     case style
-    when :email
+  when :file
       self.name.strip.downcase.gsub(/[^a-z]/,'-').squeeze('-')
     else
       read_attribute(:name)

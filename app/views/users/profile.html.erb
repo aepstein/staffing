@@ -4,6 +4,24 @@
 <%= link_to 'Click here', edit_user_path( current_user ) %> to update your personal and contact information.  If you are not <%=h current_user.name %>, please close the web browser completely and log in using your own credentials.
 </p>
 
+<% if current_user.authorities.length > 0 -%>
+<h3>Your Authorities</h3>
+
+<p>
+You may review requests and update memberships for the following authorities:
+</p>
+
+<ul>
+<% current_user.authorities.each do |authority| %>
+<li>
+<%= link_to h( authority ), authority %>
+(<%= link_to 'unexpired requests', unexpired_authority_requests_path( authority ) %>)
+(<%= link_to 'current memberships', current_authority_memberships_path( authority ) %>)
+</li>
+<% end %>
+</ul>
+
+<% end -%>
 <h3>Your Memberships</h3>
 
 <p>
