@@ -21,6 +21,7 @@ class Position < ActiveRecord::Base
     end
     # Create vacant memberships
     def populate_unassigned_for_period(period)
+      return unless proxy_owner.schedule.periods.include? period
       previous_vacancies = nil
       memberships = vacancies_for_period(period).inject([]) do |memo, point|
         if previous_vacancies.nil?

@@ -79,7 +79,11 @@ class Membership < ActiveRecord::Base
   before_validation { |r| r.designees.each { |d| d.membership = r } }
   before_save :record_previous_changes
   after_save :repopulate_unassigned, :claim_request!
-  after_destroy { |r| r.position.memberships.populate_unassigned_for_period r.period if r.user }
+  after_destroy do |membership|
+    if membership.user
+      membership.position.memberships.populate_unassigned_for_period membership.period
+    end
+  end
 
   def confirmed?
     return false unless confirmed_at?
