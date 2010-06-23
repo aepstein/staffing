@@ -55,7 +55,7 @@ describe Position do
 
   it 'should have a membership.vacancies_for_period' do
     @position.slots = 2
-    @position.save.should be_true
+    @position.save!
     period = Factory(:period, :schedule => @position.schedule)
     @position.memberships.create(:period => period, :starts_at => period.starts_at + 2.days,
       :ends_at => period.ends_at - 2.days, :user => Factory(:user) ).id.should_not be_nil
@@ -83,7 +83,7 @@ describe Position do
   it 'should create unassigned shifts when the period\'s slots are increased' do
     period = position_with_period
     @position.slots += 1
-    @position.save
+    @position.save!
     @position.memberships.unassigned.count.should eql @position.memberships.count
     @position.memberships.count.should eql @position.slots
     @position.memberships.each do |membership|
@@ -96,7 +96,7 @@ describe Position do
     period = position_with_period(2)
     @position.memberships.count.should eql 2
     @position.slots -= 1
-    @position.save
+    @position.save!
     @position.memberships.unassigned.count.should eql @position.memberships.count
     @position.memberships.count.should eql @position.slots
     @position.memberships.each do |membership|
@@ -112,7 +112,7 @@ describe Position do
     first.user = Factory(:user)
     first.save.should eql true
     @position.slots -= 1
-    @position.save
+    @position.save!
     @position.memberships.size.should eql 1
     @position.memberships.should include first
   end

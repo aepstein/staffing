@@ -80,6 +80,12 @@ class Position < ActiveRecord::Base
   end
   has_many :committees, :through => :enrollments
 
+  attr_accessor :slots_previously_was, :slots_previously_changed,
+    :schedule_id_previously_changed, :schedule_id_previously_was
+
+  alias :slots_previously_changed? :slots_previously_changed
+  alias :schedule_id_previously_changed? :schedule_id_previously_changed
+
   validates_presence_of :name
   validates_uniqueness_of :name
   validates_presence_of :authority
@@ -87,11 +93,15 @@ class Position < ActiveRecord::Base
   validates_presence_of :schedule
   validates_numericality_of :slots, :only_integer => true, :greater_than => 0
 
+  before_save do |position|
+    position.slots_previously_was = position.slots_was
+    position.slots_previously_changed = position.slots_changed?
+    position.schedule_id_previously_was = position.schedule_id_was
+    position.schedule_id_previously_changed = position.schedule_id_changed?
+    true
+  end
   after_create { |r| r.memberships.populate_unassigned }
-  after_update { |r|
-    r.memberships.unassigned.delete_all if r.slots_changed? && r.slots_was > r.slots
-    r.memberships.populate_unassigned
-  }
+  after_update :repopulate_unassigned
 
   def current_emails
     memberships.assigned.current.all(:include => [ :user ]).map { |membership| membership.user.email }
@@ -120,5 +130,22 @@ class Position < ActiveRecord::Base
   end
 
   def to_s; name; end
+
+  private
+
+  def repopulate_unassigned
+    if slots_previously_changed? && slots_previously_was > slots
+      memberships.unassigned.delete_all
+    end
+    if schedule_id_previously_changed?
+      memberships.unassigned.period_id_does_not_equal_any( schedule.period_ids ).delete_all
+    end
+    if schedule_id_previously_changed? || slots_previously_changed?
+      schedule.periods.each do |period|
+        memberships(true).populate_unassigned_for_period period
+      end
+    end
+  end
+
 end
 

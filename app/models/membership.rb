@@ -43,7 +43,8 @@ class Membership < ActiveRecord::Base
   }
 
   attr_accessor :starts_at_previously_changed, :ends_at_previously_changed,
-    :period_id_previously_changed, :period_id_previously_was
+    :period_id_previously_changed, :period_id_previously_was,
+    :ends_at_previously_was, :starts_at_previously_was
   alias :starts_at_previously_changed? :starts_at_previously_changed
   alias :ends_at_previously_changed? :ends_at_previously_changed
   alias :period_id_previously_changed? :period_id_previously_changed
@@ -79,11 +80,7 @@ class Membership < ActiveRecord::Base
   before_validation { |r| r.designees.each { |d| d.membership = r } }
   before_save :record_previous_changes
   after_save :repopulate_unassigned, :claim_request!
-  after_destroy do |membership|
-    if membership.user
-      membership.position.memberships.populate_unassigned_for_period membership.period
-    end
-  end
+  after_destroy :repopulate_unassigned
 
   def confirmed?
     return false unless confirmed_at?
@@ -109,25 +106,6 @@ class Membership < ActiveRecord::Base
       self.user = User.find_or_create_by_net_id name.to_net_ids.first
     end
     self.user = nil if user && user.id.nil?
-  end
-
-  def record_previous_changes
-    self.starts_at_previously_changed = starts_at_changed?
-    self.ends_at_previously_changed = ends_at_changed?
-    self.period_id_previously_changed = period_id_changed?
-    self.period_id_previously_was = period_id_was
-  end
-
-  def repopulate_unassigned
-    return unless user
-    if period_id_previously_changed? && period_id_previously_was && position.schedule.period_ids.include?( period_id_previously_was )
-      position.memberships.unassigned.period_id_eq(period_id_previously_was).delete_all
-      position.memberships(true).populate_unassigned_for_period Period.find(period_id_previously_was)
-    end
-    if starts_at_previously_changed? || ends_at_previously_changed?
-      position.memberships.unassigned.period_id_eq(period_id).delete_all
-      position.memberships(true).populate_unassigned_for_period period
-    end
   end
 
   # Returns the context in which this membership should be framed (useful for polymorphic_path)
@@ -217,6 +195,32 @@ class Membership < ActiveRecord::Base
       request = user.requests.requestable_type_equals('Committee').requestable_id_equals_any(position.committee_ids).first
     end
     request.memberships << self unless request.nil?
+  end
+
+  def record_previous_changes
+    self.starts_at_previously_changed = starts_at_changed?
+    self.ends_at_previously_changed = ends_at_changed?
+    self.period_id_previously_changed = period_id_changed?
+    self.period_id_previously_was = period_id_was
+    self.ends_at_previously_was = ends_at_was
+    self.starts_at_previously_was = starts_at_was
+  end
+
+  def repopulate_unassigned
+    # Only necessary if this is an assigned shift and a timing-related parameter changed
+    return unless user && ( period_id_previously_changed? || starts_at_previously_changed? || ends_at_previously_changed? )
+    # Eliminate unassigned shifts in the new period for this shift
+    periods = position.schedule.periods.overlaps( starts_at, ends_at ).to_a
+    periods.each do |p|
+      position.memberships.unassigned.period_id_equals( p.id ).delete_all
+    end
+    # Fill unassigned shifts for current and previous unfilled period
+    unless starts_at_previously_was.blank? || ends_at_previously_was.blank?
+      periods += position.schedule.periods.overlaps( starts_at_previously_was, ends_at_previously_was ).to_a
+    end
+    periods.uniq.each do |p|
+      position.memberships(true).populate_unassigned_for_period p
+    end
   end
 
 end
