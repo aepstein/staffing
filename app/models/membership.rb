@@ -116,7 +116,7 @@ class Membership < ActiveRecord::Base
 
   def repopulate_unassigned
     return unless user
-    if period_id_previously_changed? && period_id_previously_was
+    if period_id_previously_changed? && period_id_previously_was && position.schedule.period_ids.include?( period_id_previously_was )
       position.memberships.unassigned.period_id_eq(period_id_previously_was).delete_all
       position.memberships(true).populate_unassigned_for_period Period.find(period_id_previously_was)
     end
