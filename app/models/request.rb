@@ -81,7 +81,7 @@ class Request < ActiveRecord::Base
 
   def questions
     return Question.id_blank unless quizzes.length > 0
-    Question.quizzes_id_equals_any( quizzes.map { |q| q.id }.uniq )
+    Question.quizzes_id_equals_any( quizzes.map { |q| q.id }.uniq ).uniq
   end
 
   def authorities

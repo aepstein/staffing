@@ -208,7 +208,7 @@ class Membership < ActiveRecord::Base
 
   def repopulate_unassigned
     # Only necessary if this is an assigned shift and a timing-related parameter changed
-    return unless user && ( period_id_previously_changed? || starts_at_previously_changed? || ends_at_previously_changed? )
+    return unless user && ( period_id_previously_changed? || starts_at_previously_changed? || ends_at_previously_changed? || destroyed? )
     # Eliminate unassigned shifts in the new period for this shift
     periods = position.schedule.periods.overlaps( starts_at, ends_at ).to_a
     periods.each do |p|

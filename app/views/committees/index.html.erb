@@ -10,7 +10,7 @@
 
 <%= will_paginate @committees %>
 
-<%= render :partial => "committees", :object => @committees,
+<%= render :partial => "committees/committees", :object => @committees,
 :locals => { :user => ( @user ? @user : false ) } %>
 
 <%= will_paginate @committees %>

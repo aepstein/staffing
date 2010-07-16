@@ -150,9 +150,9 @@ Feature: Manage memberships
     And I log in as the administrator
     When I delete the 3rd membership for position: "officer"
     Then I should see the following memberships:
-      |User       |Period                  |Starts at |Ends at    |
-      |unassigned |1 Jun 2008 - 31 May 2009|1 Jun 2008|31 May 2009|
-      |John Doe 1 |1 Jun 2008 - 31 May 2009|1 Jun 2008|31 May 2009|
-      |John Doe 2 |1 Jun 2008 - 31 May 2009|1 Jun 2008|31 May 2009|
-      |John Doe 4 |1 Jun 2008 - 31 May 2009|1 Jun 2008|31 May 2009|
+      | User       | Period                   | Starts at  | Ends at     |
+      | unassigned | 1 Jun 2008 - 31 May 2009 | 1 Jun 2008 | 31 May 2009 |
+      | John Doe 1 | 1 Jun 2008 - 31 May 2009 | 1 Jun 2008 | 31 May 2009 |
+      | John Doe 2 | 1 Jun 2008 - 31 May 2009 | 1 Jun 2008 | 31 May 2009 |
+      | John Doe 4 | 1 Jun 2008 - 31 May 2009 | 1 Jun 2008 | 31 May 2009 |
 

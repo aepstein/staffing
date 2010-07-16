@@ -123,7 +123,7 @@ class UsersController < ApplicationController
     if current_user.admin? && params[:user]
       @user.admin = params[:user][:admin] unless params[:user][:admin].blank?
       @user.net_id = params[:user][:net_id] unless params[:user][:net_id].blank?
-      @user.statuses = [params[:user][:statuses]].flatten unless params[:user][:statuses].blank?
+      @user.status = params[:user][:status] unless params[:user][:status].blank?
     end
   end
 end

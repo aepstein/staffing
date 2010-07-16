@@ -32,7 +32,7 @@
 </p>
 
 <p>
-<% if permitted_to? :edit, @request -%>
+<% if permitted_to?( :edit, @request ) -%>
 <%= link_to 'Edit', edit_request_path(@request) %> |
 <% end -%>
 <%= link_to 'List Memberships', request_memberships_path(@request) %> |

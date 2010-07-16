@@ -23,9 +23,9 @@ Feature: Manage committees
     Given I am on the requestable committees page for user: "owner"
     Then I should see "Requestable committees for John Doe"
     And I should see the following committees:
-      |Name                |
-      |Available Committee |
-      |Beta Committee      |
+      | Name                |
+      | Available Committee |
+      | Beta Committee      |
     And I should not see "Unrequestable Committee"
     And I should not see "Unavailable Committee"
     And I should not see "No Positions Committee"

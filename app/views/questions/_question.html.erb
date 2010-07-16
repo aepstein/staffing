@@ -1,7 +1,7 @@
   <% table_row_tag do %>
     <td><%=h question.name %></td>
     <td><%=h question.content %></td>
-    <td><%= Question::DISPOSITIONS.index( question.disposition ) %></td>
+    <td><%= Question::DISPOSITIONS.key( question.disposition ) %></td>
     <td><%= question.global? ? 'Yes' : 'No' %></td>
     <td><%= link_to 'Show', question %></td>
     <td><%= link_to( 'Edit', edit_question_path(question) ) if permitted_to? :edit, question %></td>
