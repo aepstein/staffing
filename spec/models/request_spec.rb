@@ -68,13 +68,15 @@ describe Request do
     unallowed_quiz = Factory(:quiz, :questions => [ unallowed ])
     other_quiz = Factory(:quiz, :questions => [ allowed, unallowed, other ])
 
-    allowed_position = Factory(:position, :statuses => ['undergrad'], :quiz => allowed_quiz)
-    unallowed_position = Factory(:position, :statuses => ['grad'], :quiz => unallowed_quiz)
+    allowed_position = Factory(:position, :statuses => ['undergrad'], :requestable_by_committee => true, :quiz => allowed_quiz)
+    unallowed_position_status = Factory(:position, :statuses => ['grad'], :requestable_by_committee => true, :quiz => unallowed_quiz)
+    unallowed_position_requestability = Factory(:position, :statuses => ['undergrad'], :quiz => unallowed_quiz)
     other_position = Factory(:position, :statuses => ['undergrad'], :quiz => other_quiz)
 
     committee = Factory(:committee, :requestable => true)
     Factory(:enrollment, :committee => committee, :position => allowed_position)
-    Factory(:enrollment, :committee => committee, :position => unallowed_position)
+    Factory(:enrollment, :committee => committee, :position => unallowed_position_status)
+    Factory(:enrollment, :committee => committee, :position => unallowed_position_requestability)
     committee.reload
 
     request = Factory.build(:request, :requestable => committee, :user => user)

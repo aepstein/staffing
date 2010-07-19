@@ -111,6 +111,8 @@ Feature: Manage memberships
     And I should see "Position: Officer"
     And I should see "Starts at: 1 Jun 2008"
     And I should see "Ends at: 31 May 2009"
+    And I should not see "Join notice sent at"
+    And I should not see "Leave notice sent at"
     And I should see "Designee for Important Committee: Mister Cellophane"
     When I follow "Edit"
     When I fill in "User" with "Mister Cellophane (cell@example.org)"
@@ -125,6 +127,13 @@ Feature: Manage memberships
     And I should see "Starts at: 1 Jun 2009"
     And I should see "Ends at: 15 Jan 2010"
     And I should not see "Designee for Important Committee"
+
+  Scenario:  Show join and leave notice sending information
+    Given a membership exists with join_notice_sent_at: "2010-01-01 06:00:00", leave_notice_sent_at: "2010-01-01 07:00:00"
+    And I log in as the administrator
+    And I am on the page for the membership
+    Then I should see "Join notice sent at: January 1st, 2010 06:00"
+    And I should see "Leave notice sent at: January 1st, 2010 07:00"
 
   Scenario: Register a new membership given a request
     Given a period: "2009" exists with schedule: schedule "annual", starts_at: "2009-06-01", ends_at: "2010-05-31"

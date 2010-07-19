@@ -66,9 +66,9 @@ Feature: Manage requests
 
   Scenario Outline: Register new request or edit
     Given I log in as "applicant" with password "secret"
-    And a position: "popular" exists with name: "Most Popular Person", schedule: schedule "annual", quiz: quiz "generic", renewable: true, requestable: <p_requestable>
-    And a position: "unpopular" exists with name: "Least Popular Person", quiz: quiz "generic"
-    And a position: "misc" exists with name: "Zee Last Position", quiz: quiz "generic"
+    And a position: "popular" exists with name: "Most Popular Person", schedule: schedule "annual", quiz: quiz "generic", renewable: true, requestable: <p_requestable>, requestable_by_committee: true
+    And a position: "unpopular" exists with name: "Least Popular Person", quiz: quiz "generic", requestable_by_committee: true
+    And a position: "misc" exists with name: "Zee Last Position", quiz: quiz "generic", requestable_by_committee: true
     And a membership exists with position: position "popular", user: user "applicant", period: period "2008"
     And a committee exists with name: "Central Committee", requestable: true
     And an enrollment exists with committee: the committee, position: position "popular"

@@ -67,7 +67,7 @@ class Request < ActiveRecord::Base
     when 'Position'
       Position.id_equals( requestable.id )
     else
-      requestable.positions.with_status( user.status )
+      requestable.positions.with_status( user.status ).requestable_by_committee_equals( true )
     end
   end
 
