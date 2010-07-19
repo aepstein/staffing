@@ -3,15 +3,15 @@ Feature: User mailer
   As a reminder and notice driven organization
   I want to send email notices to users regarding their appointment to committees
 
-  Scenario Outline: Send renewal notice to a user
+  Scenario Outline: Send join notice to a user
     Given a user: "focus" exists with first_name: "David", last_name: "Skorton", email: "david.skorton@example.org"
     And a schedule exists
     And a period exists with schedule: the schedule, starts_at: "2008-06-01", ends_at: "2009-05-31"
-    And an authority exists with name: "Board of Trustees", join_message: "Welcome on behalf of the Board."
-    And a position: "focus" exists with name: "The Position", requestable: <p_req>, schedule: the schedule, authority: the authority, join_message: "Welcome to the position."
-    And a committee: "First" exists with name: "The First Committee", requestable: <c_req>, join_message: "Welcome to First Committee."
-    And a committee: "Second" exists with name: "The Second Committee", requestable: false, join_message: "Welcome to Second Committee."
-    And a committee: "Third" exists with name: "The Third Committee", requestable: false, join_message: "Welcome to Third Committee."
+    And an authority exists with name: "Board of Trustees", join_message: "Welcome on behalf of the Board.", leave_message: "Farewell on behalf of the Board."
+    And a position: "focus" exists with name: "The Position", requestable: <p_req>, schedule: the schedule, authority: the authority, join_message: "Welcome to the position.", leave_message: "Farewell to the position."
+    And a committee: "First" exists with name: "The First Committee", requestable: <c_req>, join_message: "Welcome to First Committee.", leave_message: "Farewell to First Committee."
+    And a committee: "Second" exists with name: "The Second Committee", requestable: false, join_message: "Welcome to Second Committee.", leave_message: "Farewell to Second Committee."
+    And a committee: "Third" exists with name: "The Third Committee", requestable: false, join_message: "Welcome to Third Committee.", leave_message: "Farewell to Third Committee."
     And an enrollment exists with position: position "focus", committee: committee "First", votes: 1, title: "Leader"
     And an enrollment exists with position: position "focus", committee: committee "<committee>", votes: 2, title: "Member"
     And a membership exists with user: user "focus", position: position "focus", period: the period
@@ -28,6 +28,20 @@ Feature: User mailer
     And I should not see "Welcome to <not_committee> Committee." in the email body
     And I should see "Leader of The First Committee with 1 vote" in the email body
     And I should see "Member of The <committee> Committee with 2 votes" in the email body
+    And I should not see "Member of The <not_committee> Committee with 2 votes" in the email body
+    Given a leave notice email is sent for the membership
+    And "david.skorton@example.org" opens the email with subject "Expiration"
+    Then I should see "Expiration of your appointment to <description>" in the email subject
+    And I should see the email delivered from "The Authority <info@example.org>"
+    And I should see "Dear David," in the email body
+    And I should see "This notice is to inform you that your membership in <description>, which began on June 1st, 2008, has expired as of May 31st, 2009." in the email body
+    And I should see "Farewell on behalf of the Board." in the email body
+    And I should see "Farewell to the position." in the email body
+    And I should see "Farewell to First Committee." in the email body
+    And I should see "Farewell to <committee> Committee." in the email body
+    And I should not see "Farewell to <not_committee> Committee." in the email body
+    And I should see "Leader of The First Committee" in the email body
+    And I should see "Member of The <committee> Committee" in the email body
     And I should not see "Member of The <not_committee> Committee with 2 votes" in the email body
     Examples:
       | p_req | c_req | description         | committee | not_committee |

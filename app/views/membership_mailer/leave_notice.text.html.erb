@@ -1,0 +1,45 @@
+<p>
+Dear <%=h @membership.user.first_name %>,
+</p>
+
+<p>
+This notice is to inform you that your membership in <%=h @membership.description %>, which began on <%=h @membership.starts_at.to_formatted_s :long_ordinal %> has expired as of <%=h @membership.ends_at.to_s :long_ordinal %>.
+</p>
+
+<% if @membership.position.authority.join_message -%>
+<%=markdown @membership.position.authority.join_message %>
+
+<% end -%>
+<% if @membership.position.join_message -%>
+<%=markdown @membership.position.join_message %>
+
+<% end -%>
+<% if @membership.position.enrollments.length > 0 -%>
+<p>
+Concurrent with your membership, your enrollment in the following committees has also expired:
+</p>
+
+<ul>
+<% @membership.position.enrollments.each do |enrollment| -%>
+<li>
+<%= enrollment.title %> of <%= enrollment.committee %> with <%= pluralize enrollment.votes, 'vote' %>
+<% if enrollment.committee.join_message -%>
+<%=markdown enrollment.committee.join_message %>
+<% end -%>
+</li>
+<% end -%>
+</ul>
+<% end -%>
+
+<p>
+Mailing lists and public directories have been updated to reflect your change in status.
+</p>
+
+<p>
+Best regards,
+</p>
+
+<p>
+<%=h @membership.position.authority.effective_contact_name %>
+</p>
+

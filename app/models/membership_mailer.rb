@@ -5,18 +5,18 @@ class MembershipMailer < ActionMailer::Base
     subject    "Your appointment to #{membership.description}"
     recipients "#{membership.user.name} <#{membership.user.email}>"
     from       "#{membership.position.authority.effective_contact_name} <#{membership.position.authority.effective_contact_email}>"
-    sent_on    Time.now
+    sent_on    Time.zone.now
 
     body       :membership => membership
   end
 
-  def leave_notice(sent_at = Time.now)
-    subject    'MembershipMailer#leave_notice'
-    recipients ''
-    from       ''
-    sent_on    sent_at
+  def leave_notice(membership)
+    subject    "Expiration of your appointment to #{membership.description}"
+    recipients "#{membership.user.name} <#{membership.user.email}>"
+    from       "#{membership.position.authority.effective_contact_name} <#{membership.position.authority.effective_contact_email}>"
+    sent_on    Time.zone.now
 
-    body       :greeting => 'Hi,'
+    body       :membership => membership
   end
 
 end
