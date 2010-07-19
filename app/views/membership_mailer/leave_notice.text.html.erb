@@ -3,7 +3,7 @@ Dear <%=h @membership.user.first_name %>,
 </p>
 
 <p>
-This notice is to inform you that your membership in <%=h @membership.description %>, which began on <%=h @membership.starts_at.to_formatted_s :long_ordinal %> has expired as of <%=h @membership.ends_at.to_s :long_ordinal %>.
+This notice is to inform you that your membership in <%=h @membership.description %>, which began on <%=h @membership.starts_at.to_formatted_s :long_ordinal %>, has expired as of <%=h @membership.ends_at.to_s :long_ordinal %>.
 </p>
 
 <% if @membership.position.authority.join_message -%>
