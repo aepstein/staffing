@@ -228,7 +228,7 @@ class MembershipsController < ApplicationController
 
   def csv_index
     csv_string = ""
-    CSV.generate csv_string do |csv|
+    CSV::Writer.generate csv_string do |csv|
       csv << ['user','netid','email','mobile','position','committee','title','vote','period','starts at','ends at','renew until?']
       @memberships.each do |membership|
         next unless permitted_to?( :show, membership )
