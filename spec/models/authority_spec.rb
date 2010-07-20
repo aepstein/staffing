@@ -39,8 +39,8 @@ describe Authority do
   it 'should retrieve associated requests correctly' do
     requests = [ ]
     requests << Factory(:request, :requestable => Factory(:position, :requestable => true, :authority => @authority) )
-    requests << Factory(:request, :requestable => Factory(:enrollment, :position => Factory(:position, :requestable => false, :authority => @authority) ).committee )
-    undergrad_committee = Factory(:enrollment, :position => Factory(:position, :requestable => false, :authority => @authority, :statuses => ['undergrad'] ) ).committee
+    requests << Factory(:request, :requestable => Factory(:enrollment, :position => Factory(:position, :requestable => false, :requestable_by_committee => true, :authority => @authority) ).committee )
+    undergrad_committee = Factory(:enrollment, :position => Factory(:position, :requestable => false, :requestable_by_committee => true, :authority => @authority, :statuses => ['undergrad'] ) ).committee
     requests << Factory(:request, :requestable => undergrad_committee, :user => Factory(:user, :statuses => ['undergrad']) )
     Factory(:request, :requestable => Factory(:position, :requestable => true) )
     Factory(:request, :requestable => Factory(:enrollment, :position => Factory(:position, :requestable => false) ).committee )
