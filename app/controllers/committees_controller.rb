@@ -8,14 +8,15 @@ class CommitteesController < ApplicationController
   # GET /users/:user_id/committees/requestable
   # GET /users/:user_id/committees/requestable.xml
   def requestable
-    @search = @user.requestable_committees.search( params[:search] )
+    @committees = @user.requestable_committees.search( params[:search] )
     index
   end
 
   # GET /committees
   # GET /committees.xml
   def index
-    @search ||= Committee.search( params[:search] )
+    @committees ||= Committee
+    @search = @committees.searchlogic( params[:search] )
     @committees = @search.paginate( :page => params[:page] )
 
     respond_to do |format|

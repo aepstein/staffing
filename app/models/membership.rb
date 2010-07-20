@@ -13,10 +13,11 @@ class Membership < ActiveRecord::Base
   scope_procedure :unrenewable, lambda { position_unrenewable }
   scope_procedure :overlap, lambda { |starts, ends| starts_at_lte(ends).ends_at_gte(starts) }
   scope_procedure :pending_renewal_within, lambda { |starts, ends| renewable.unrenewed.starts_at_gte(starts).ends_at_lte(ends) }
-  scope_procedure :notifiable, lambda { position_notifiable.user_id_not_null }
   scope_procedure :join_notice_pending, lambda { notifiable.current.join_notice_sent_at_null }
   scope_procedure :leave_notice_pending, lambda { notifiable.past.leave_notice_sent_at_null }
 
+  named_scope :notifiable, :include => [ :position ],
+    :conditions => ["memberships.user_id IS NOT NULL AND positions.notifiable = ?", true]
   named_scope :renewed, lambda {
     { :joins => "INNER JOIN memberships AS renewable_memberships ON " +
         " memberships.user_id = renewable_memberships.user_id AND " +

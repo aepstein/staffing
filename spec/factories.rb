@@ -31,7 +31,13 @@ end
 Factory.define :membership do |f|
   f.association :user
   f.association :position
-  f.period { |m| m.association(:period, :schedule => m.position.schedule) }
+  f.period do |m|
+    if m.position.schedule.periods.length > 0
+      m.position.schedule.periods.first
+    else
+      m.association(:period, :schedule => m.position.schedule)
+    end
+  end
   f.starts_at { |m| m.period.starts_at }
   f.ends_at { |m| m.period.ends_at }
 end

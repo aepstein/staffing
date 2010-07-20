@@ -202,6 +202,42 @@ describe Membership do
     end
   end
 
+  it 'should have a notifiable scope that returns only memberships with users and notifiable position' do
+    notifiable_scenario
+    Membership.notifiable.length.should eql 1
+    Membership.notifiable.should include @focus_membership
+    Membership.count.should eql 4
+  end
+
+  it 'should have a join_notice_pending scope that returns only memberships that are awaiting join notice' do
+    notifiable_scenario
+    Membership.join_notice_pending.length.should eql 1
+    Membership.join_notice_pending.should include @focus_membership
+    @focus_membership.join_notice_sent_at = Time.zone.now
+    @focus_membership.save!
+    Membership.join_notice_pending.length.should eql 0
+  end
+
+  it 'should have a leave_notice_pending scope that returns only memberships that are awaiting leave notice' do
+    notifiable_scenario Date.today - 1.year, Date.today - 1.day
+    Membership.leave_notice_pending.length.should eql 1
+    Membership.leave_notice_pending.should include @focus_membership
+    @focus_membership.leave_notice_sent_at = Time.zone.now
+    @focus_membership.save!
+    Membership.leave_notice_pending.length.should eql 0
+  end
+
+  def notifiable_scenario(starts_at = nil, ends_at = nil)
+    starts_at ||= Date.today - 1.year
+    ends_at ||= starts_at + 2.years
+    Membership.delete_all
+    schedule = Factory(:period, :starts_at => starts_at, :ends_at => ends_at).schedule
+    focus_position = Factory(:position, :notifiable => true, :slots => 2, :schedule => schedule)
+    other_position = Factory(:position, :slots => 2, :schedule => schedule)
+    @focus_membership = Factory(:membership, :position => focus_position, :user => Factory(:user) )
+    Factory(:membership, :position => other_position, :user => Factory(:user) )
+  end
+
   def renewable_position
     Factory(:position, :renewable => true)
   end

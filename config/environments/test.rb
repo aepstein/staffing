@@ -34,4 +34,5 @@ config.gem 'webrat', :lib => false
 config.gem 'factory_girl', :source => 'http://gemcutter.org', :lib => false
 config.gem 'pickle', :lib => false, :source => 'http://gemcutter.org'
 config.gem 'email_spec', :source => 'http://gemcutter.org'
+config.gem 'launchy'
 

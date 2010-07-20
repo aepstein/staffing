@@ -4,8 +4,8 @@ Feature: Manage committees
   I want to create, modify, destroy, list, and show committees
 
   Scenario: Show requestable committees for current user
-    Given a committee: "available" exists with name: "Available Committee", requestable: true
-    And a committee: "beta" exists with name: "Beta Committee", requestable: true
+    Given a committee: "beta" exists with name: "Beta Committee", requestable: true
+    And a committee: "available" exists with name: "Available Committee", requestable: true
     And a committee: "unrequestable" exists with name: "Unrequestable Committee", requestable: false
     And a committee: "unavailable" exists with name: "Unavailable Committee", requestable: true
     And a committee: "no_positions" exists with name: "No Positions Committee", requestable: true

@@ -4,6 +4,10 @@ class Committee < ActiveRecord::Base
   named_scope :requestable, { :conditions => { :requestable => true } }
   named_scope :unrequestable, { :conditions => { :requestable => false } }
   named_scope :group_by_id, { :group => "committees.id" }
+  named_scope :positions_with_status, lambda { |status|
+    { :joins => [ :positions ],
+      :conditions => "(positions.statuses_mask & #{status.nil? ? 0 : 2**User::STATUSES.index(status.to_s)}) > 0 OR positions.statuses_mask = 0" }
+  }
 
   has_many :authorities
   has_many :requests, :as => :requestable
