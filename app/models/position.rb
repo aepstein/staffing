@@ -8,7 +8,7 @@ class Position < ActiveRecord::Base
   named_scope :unrequestable, { :conditions => { :requestable => false } }
   named_scope :renewable, { :conditions => { :renewable => true } }
   named_scope :unrenewable, { :conditions => { :renewable => false } }
-  named_scope :requestable_by_committee_equals, { |v|
+  named_scope :requestable_by_committee_equals, lambda { |v|
     { :conditions => { :requestable_by_committee => v } }
   }
 
