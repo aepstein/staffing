@@ -233,10 +233,10 @@ class MembershipsController < ApplicationController
       @memberships.each do |membership|
         next unless permitted_to?( :show, membership )
         membership.enrollments.each do |enrollment|
-          csv << ( [ membership.user.name,
-                     membership.user.net_id,
-                     membership.user.email,
-                     membership.user.mobile_phone,
+          csv << ( [ membership.user_id? ? membership.user.name : '',
+                     membership.user_id? ? membership.user.net_id : '',
+                     membership.user_id? ? membership.user.email : '',
+                     membership.user_id? ? membership.user.mobile_phone : '',
                      membership.position.name,
                      enrollment.committee.name,
                      enrollment.title,
