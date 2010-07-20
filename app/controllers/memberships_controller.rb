@@ -90,10 +90,15 @@ class MembershipsController < ApplicationController
   # GET /authorities/:authority_id/memberships.xml
   def index
     @search = @memberships ? @memberships.search( params[:search] ) : Membership.with_user.search( params[:search] )
-    @memberships = @search.paginate( :page => params[:page], :include => [ :request ] )
+    if request.format == Mime::HTML
+      @memberships = @search.paginate( :page => params[:page], :include => [ :request ] )
+    else
+      @memberships = @search.all( :include => [ :request ] )
+    end
 
     respond_to do |format|
       format.html { render :action => 'index' }
+      format.csv { csv_index }
       format.xml  { render :xml => @memberships }
     end
   end
@@ -220,5 +225,31 @@ class MembershipsController < ApplicationController
     @membership = Membership.new(:request => @request) if @request
     @membership = @position.memberships.build if @position
   end
+
+  def csv_index
+    csv_string = CSV.generate do |csv|
+      csv << ['user','netid','email','mobile','position','committee','title','vote','period','starts at','ends at','renew until?']
+      @memberships.each do |membership|
+        next unless permitted_to?( :show, membership )
+        membership.enrollments.each do |enrollment|
+          csv << ( [ membership.user.name,
+                     membership.user.net_id,
+                     membership.user.email,
+                     membership.user.mobile_phone,
+                     membership.position.name,
+                     enrollment.committee.name,
+                     enrollment.title,
+                     enrollment.votes,
+                     membership.period,
+                     membership.starts_at,
+                     membership.ends_at,
+                     membership.renew_until ? membership.renew_until.to_formatted_s(:rfc822) : ""
+          ] )
+        end
+      end
+    end
+    send_data csv_string, :disposition => "attachment; filename=memberships.csv"
+  end
+
 end
 
