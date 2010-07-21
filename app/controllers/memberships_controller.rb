@@ -233,6 +233,7 @@ class MembershipsController < ApplicationController
       @memberships.each do |membership|
         next unless permitted_to?( :show, membership )
         membership.enrollments.each do |enrollment|
+          next if @committee && (enrollment.committee_id != @committee.id)
           csv << ( [ membership.user_id? ? membership.user.name : '',
                      membership.user_id? ? membership.user.net_id : '',
                      membership.user_id? ? membership.user.email : '',
