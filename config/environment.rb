@@ -46,7 +46,7 @@ Rails::Initializer.run do |config|
   config.gem 'calendar_date_select'
   config.gem 'bluecloth', :source => 'http://gemcutter.org'
   config.gem 'cornell_netid', :source => 'http://gemcutter.org'
-  config.gem 'cornell_ldap', :source => 'http://gemcutter.org'
+  config.gem 'cornell_ldap', :source => 'http://gemcutter.org', :version => '>= 1.3.1'
   config.gem 'aasm', :source => 'http://gemcutter.org'
   config.gem 'declarative_authorization', :source => 'http://gemcutter.org'
   config.gem 'will_paginate', :source => 'http://gemcutter.org'

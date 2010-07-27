@@ -1,5 +1,5 @@
 class User < ActiveRecord::Base
-  STATUSES = %w( staff faculty undergrad grad alumni temporary unknown )
+  STATUSES = %w( staff faculty undergrad grad alumni temporary )
 
   default_scope :order => 'users.last_name ASC, users.first_name ASC, users.middle_name ASC'
 
