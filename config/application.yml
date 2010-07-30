@@ -1,16 +1,19 @@
 development:
+  session_secret: f09175c170734f89eb54ce2ce4a0fa4994c96f347e2ed842587dadcdcbcdd7a46de5624dd74685f8cc731e257d6cc772482a3560b878e713c6a91baf2e4e4bae
   defaults:
     authority:
       contact_name: 'Office of the Assemblies'
       contact_email: 'assembly@cornell.edu'
 
 test:
+  session_secret: f09175c170734f89eb54ce2ce4a0fa4994c96f347e2ed842587dadcdcbcdd7a46de5624dd74685f8cc731e257d6cc772482a3560b878e713c6a91baf2e4e4bae
   defaults:
     authority:
       contact_name: 'The Authority'
       contact_email: 'info@example.org'
 
 production:
+  session_secret: f09175c170734f89eb54ce2ce4a0fa4994c96f347e2ed842587dadcdcbcdd7a46de5624dd74685f8cc731e257d6cc772482a3560b878e713c6a91baf2e4e4bae
   defaults:
     authority:
       contact_name: 'Office of the Assemblies'

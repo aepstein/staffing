@@ -218,7 +218,7 @@ class MembershipsController < ApplicationController
       @authority = Authority.find params[:authority_id]
       @memberships = @authority.memberships
     end
-    @membership = Membership.find( params[:id] ) if params[:id]
+    @membership = Membership.find( params[:id], :include => :designees ) if params[:id]
   end
 
   def new_membership_from_params
