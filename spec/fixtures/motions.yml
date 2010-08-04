@@ -1,0 +1,15 @@
+# Read about fixtures at http://ar.rubyonrails.org/classes/Fixtures.html
+
+one:
+  period: 
+  title: MyString
+  description: MyText
+  user: 
+  committee: 
+
+two:
+  period: 
+  title: MyString
+  description: MyText
+  user: 
+  committee: 

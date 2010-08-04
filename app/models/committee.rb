@@ -9,6 +9,8 @@ class Committee < ActiveRecord::Base
       :conditions => "(positions.statuses_mask & #{status.nil? ? 0 : 2**User::STATUSES.index(status.to_s)}) > 0 OR positions.statuses_mask = 0" }
   }
 
+  belongs_to :schedule
+  has_many :periods, :through => :schedule
   has_many :authorities
   has_many :requests, :as => :requestable
   has_many :enrollments

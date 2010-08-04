@@ -12,6 +12,7 @@ end
 
 Factory.define :committee do |f|
   f.sequence(:name) { |n| "Committee #{n}" }
+  f.association :schedule
   f.requestable true
 end
 
@@ -22,8 +23,8 @@ Factory.define :designee do |f|
 end
 
 Factory.define :enrollment do |f|
-  f.association :position
   f.association :committee
+  f.position { |e| e.association :position, :schedule => e.committee.schedule }
   f.title "member"
   f.votes 1
 end
@@ -50,6 +51,13 @@ end
 Factory.define :past_membership, :parent => :membership do |f|
   f.association :position
   f.period { |m| m.association(:past_period, :schedule => m.position.schedule) }
+end
+
+Factory.define :motion do |f|
+  f.committee { |m| m.association( :enrollment ).committee }
+  f.user { |m| m.association( :membership, :position => m.committee.positions.first ).user }
+  f.period { |m| ( m.committee.periods & m.user.memberships.enrollments_committee_id_equals(m.committee_id).map(&:period) ).first }
+  f.sequence( :name ) { |n| "motion #{n}" }
 end
 
 Factory.define :position do |f|
