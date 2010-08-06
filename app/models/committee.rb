@@ -10,7 +10,11 @@ class Committee < ActiveRecord::Base
   }
 
   belongs_to :schedule
-  has_many :periods, :through => :schedule
+  has_many :periods, :through => :schedule do
+    def active
+      current.first
+    end
+  end
   has_many :authorities
   has_many :requests, :as => :requestable
   has_many :enrollments

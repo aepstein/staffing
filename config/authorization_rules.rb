@@ -10,6 +10,21 @@ authorization do
     has_permission_on [ :authorities, :committees, :enrollments, :memberships,
       :periods, :positions, :qualifications, :schedules ],
       :to => [:show, :index]
+    has_permission_on :committees, :to => :vote do
+      if_attribute :enrollments => { :position_id => is_in { user.memberships.current.map(&:position_id) }, :votes => gt { 0 } }
+    end
+    has_permission_on :motions, :to => :show do
+      if_attribute :status => is_not { 'started' }
+      if_attribute :user_id => is { user.id }
+    end
+    has_permission_on :motions, :to => :create, :join_by => :and do
+      if_permitted_to :vote, :committee
+      if_attribute :status => is { 'started' }
+    end
+    has_permission_on :motions, :to => [:update, :destroy], :join_by => :and do
+      if_permitted_to :vote, :committee
+      if_attribute :status => is { 'started' }, :user_id => is { user.id }
+    end
     has_permission_on :users, :to => :resume do
       if_attribute :id => is { user.id }
     end
@@ -42,7 +57,13 @@ end
 
 privileges do
   privilege :manage do
-    includes :create, :new, :update, :edit, :destroy, :show, :index
+    includes :create, :update, :destroy, :show, :index
+  end
+  privilege :create do
+    includes :new
+  end
+  privilege :update do
+    includes :edit
   end
 end
 

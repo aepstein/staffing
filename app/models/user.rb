@@ -10,7 +10,13 @@ class User < ActiveRecord::Base
   has_many :requests
   has_many :answers, :through => :requests
   has_many :periods, :through => :memberships
-  has_many :positions, :through => :memberships
+  has_many :positions, :through => :memberships do
+    def current
+      scoped( :conditions => [
+        'memberships.starts_at =< :d AND memberships.ends_at >= :d',
+        { :d => Date.today } ] )
+    end
+  end
 
   named_scope :no_notice_since, lambda { |notice, time|
     { :conditions => ['users.id NOT IN ( SELECT user_id FROM sendings WHERE message_type = ? AND created_at > ? )',

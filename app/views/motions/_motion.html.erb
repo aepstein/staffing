@@ -1,0 +1,21 @@
+<% committee ||= false %>
+<% period ||= false %>
+<% user ||= false %>
+  <% table_row_tag do %>
+    <% unless committee %>
+    <td><%=h motion.committee %></td>
+    <% end %>
+    <% unless period %>
+    <td><%=h motion.period %></td>
+    <% end %>
+    <% unless user %>
+    <td><%=h motion.user %></td>
+    <% end %>
+    <td><%= motion.position %></td>
+    <td><%=h motion.name %></td>
+    <td><%= motion.status %></td>
+    <td><%= link_to 'Show', motion %></td>
+    <td><%= link_to( 'Edit', edit_motion_path(motion) ) if permitted_to? :edit, motion %></td>
+    <td><%= link_to( 'Destroy', motion, :confirm => 'Are you sure?', :method => :delete ) if permitted_to? :destroy, motion %></td>
+  <% end %>
+

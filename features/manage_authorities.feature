@@ -5,25 +5,25 @@ Feature: Manage authorities
 
   Scenario Outline: Test permissions for authorities controller actions
     Given an authority: "basic" exists
-    And a user: "admin" exists with net_id: "admin", password: "secret", admin: true
-    And a user: "regular" exists with net_id: "regular", password: "secret", admin: false
-    And I log in as "<user>" with password "secret"
+    And a user: "admin" exists with admin: true
+    And a user: "regular" exists
+    And I log in as user: "<user>"
     And I am on the new authority page
-    Then I should <create>
+    Then I should <create> authorized
     Given I post on the authorities page
-    Then I should <create>
+    Then I should <create> authorized
     And I am on the edit page for authority: "basic"
-    Then I should <update>
+    Then I should <update> authorized
     Given I put on the page for authority: "basic"
-    Then I should <update>
+    Then I should <update> authorized
     Given I am on the page for authority: "basic"
-    Then I should <show>
+    Then I should <show> authorized
     Given I delete on the page for authority: "basic"
-    Then I should <destroy>
+    Then I should <destroy> authorized
     Examples:
-      | user    | create                   | update                   | destroy                  | show                     |
-      | admin   | not see "not authorized" | not see "not authorized" | not see "not authorized" | not see "not authorized" |
-      | regular | see "not authorized"     | see "not authorized"     | see "not authorized"     | not see "not authorized" |
+      | user    | create  | update  | destroy | show |
+      | admin   | see     | see     | see     | see  |
+      | regular | not see | not see | not see | see  |
 
   Scenario: Register new authority and edit
     Given a committee exists with name: "First committee"

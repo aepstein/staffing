@@ -3,7 +3,8 @@ class Motion < ActiveRecord::Base
 
   default_scope :order => 'motions.position ASC'
 
-  attr_accessible :name, :description
+  attr_protected :committee_id
+  attr_readonly :period_id, :user_id
 
   acts_as_list :scope => [:period_id, :committee_id]
 
@@ -21,15 +22,15 @@ class Motion < ActiveRecord::Base
   validate :user_must_be_voting_in_committee
 
   aasm_column :status
-  aasm_initial_state :draft
-  aasm_state :draft
+  aasm_initial_state :started
+  aasm_state :started
   aasm_state :proposed
   aasm_state :adopted
   aasm_state :implemented
   aasm_state :rejected
 
   aasm_event :propose do
-    transitions :to => :proposed, :from => :draft
+    transitions :to => :proposed, :from => :started
   end
 
   aasm_event :adopt do

@@ -1,31 +1,26 @@
+Given(/^#{capture_model} (?:has|have) #{capture_fields}$/) do |name, fields|
+  subject = model(name)
+  parse_fields(fields).each { |field, value| subject.send( "#{field}=", value ) }
+  subject.save!
+end
+
 Given /^(?:|I )(put|post|delete) on (.+)$/ do |method, page_name|
   visit path_to(page_name), method.to_sym
 end
 
-When /^I delete the (\d+)(?:st|nd|rd|th) #{capture_factory}$/ do |position, subject|
-  visit polymorphic_path( [ subject.pluralize ] )
-  within("table > tbody > tr:nth-child(#{position.to_i})") do
-    click_link "Destroy"
-  end
+Then /^I should see authorized$/ do
+  Then %{I should not see "You are not allowed to perform the requested action."}
 end
 
-When /^I delete the (\d+)(?:st|nd|rd|th) #{capture_factory} for #{capture_model}$/ do |position, subject, context|
-  visit polymorphic_path( [ model(context), subject.pluralize ] )
-  within("table > tbody > tr:nth-child(#{position.to_i})") do
-    click_link "Destroy"
-  end
+Then /^I should not see authorized$/ do
+  Then %{I should see "You are not allowed to perform the requested action."}
 end
 
-# Adds support for validates_attachment_content_type. Without the mime-type getting
-# passed to attach_file() you will get a "Photo file is not one of the allowed file types."
-# error message
-When /^(?:|I )attach a file of type "([^\"]*)" and (\d+) (bytes?|kilobytes?|megabytes?) to "([^\"]*)"$/ do |type, size, unit, field|
-  file = Tempfile.new('resume.pdf')
-  $temporary_files << file
-  size.to_i.send( unit.to_sym ).times { file << 'a' }
-  ActionController::TestUploadedFile.new(file.path,type)
-
-  attach_file(field, file.path, type)
+When /^I follow "(.+)" for the (\d+)(?:st|nd|rd|th) #{capture_factory}(?: for #{capture_model})?$/ do |link, position, subject, context|
+  visit polymorphic_path( [ ( context.blank? ? nil : model(context) ), subject.pluralize ] )
+  within("table > tbody > tr:nth-child(#{position.to_i})") do
+    click_link "#{link}"
+  end
 end
 
 Then /^I should see the following #{capture_plural_factory}:$/ do |context, table|
@@ -66,24 +61,17 @@ Given(/^#{capture_model} is alone (?:in|one of|amongst) the (\w+) of #{capture_m
   model(owner).send(association) << model(target)
 end
 
-Then /^I should see the following entries in "(.+)":$/ do |table_id, table|
-  table.diff!(tableish("##{table_id} > thead,tbody > tr", 'td,th'))
+# assert model is in another model's has_many assoc
+Then(/^#{capture_model} should be (?:in|one of|amongst) the (\w+) of #{capture_model}$/) do |target, association, owner|
+  model(owner).send(association).should include(model(target))
 end
 
-Given /^an? ([a-z\s]+) email is sent for #{capture_model}$/ do |notice, context|
-  notice[" "]= "_" if notice[" "]
-  "#{model(context).class.to_s}Mailer".constantize.send( "deliver_#{notice}", model(context) )
+# assert model is NOT in another model's has_many assoc
+Then(/^#{capture_model} should not be (?:in|one of|amongst) the (\w+) of #{capture_model}$/) do |target, association, owner|
+  model(owner).send(association).should_not include(model(target))
 end
 
-Then /^(?:I|they) should not see "([^"]*?)" in the email body$/ do |text|
-  current_email.body.should_not include(text)
-end
-
-Then /^(?:|I) should see a field labeled "(.+)"$/ do |text|
-  within('form').should contain(text)
-end
-
-Then /^(?:|I) should not see a field labeled "(.+)"$/ do |text|
-  within('form').should_not contain(text)
+Then /^I should see the following entries in "(.+)":$/ do |table_id, expected_approvals_table|
+  expected_approvals_table.diff!(table_at("##{table_id}").to_a)
 end
 

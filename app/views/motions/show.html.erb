@@ -1,0 +1,33 @@
+<p>
+  <b>Committee:</b> <%=h @motion.committee %>
+</p>
+
+<p>
+  <b>Period:</b> <%=h @motion.period %>
+</p>
+
+<p>
+  <b>Position:</b> <%=h @motion.position %>
+</p>
+
+<p>
+  <b>Name:</b> <%=h @motion.name %>
+</p>
+
+<p>
+  <b>Description:</b>
+</p>
+
+<%=markdown @motion.description %>
+
+<p>
+  <b>User (original sponsor):</b> <%=h @motion.user %>
+</p>
+
+<p>
+<% if permitted_to? :edit, @motion -%>
+<%= link_to 'Edit', edit_motion_path(@motion) %> |
+<% end -%>
+<%= link_to 'Back', committee_motions_path(@motion.committee) %>
+</p>
+

@@ -4,7 +4,7 @@ class ApplicationController < ActionController::Base
   before_filter :check_authorization
 
   def permission_denied
-    flash[:error] = "You are not authorized to access the page you requested."
+    flash[:error] = "You are not allowed to perform the requested action."
     redirect_to profile_url
   end
 
