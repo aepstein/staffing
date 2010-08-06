@@ -11,9 +11,10 @@ class Motion < ActiveRecord::Base
   belongs_to :user
   belongs_to :committee
 
+  delegate :periods, :period_ids, :to => :committee
+
   validates_presence_of :name
   validates_uniqueness_of :name, :scope => [ :period_id, :committee_id ]
-  validates_uniqueness_of :position, :scope => [ :period_id, :committee_id ]
   validates_presence_of :period
   validates_presence_of :user
   validates_presence_of :committee
