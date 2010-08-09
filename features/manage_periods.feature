@@ -5,34 +5,38 @@ Feature: Manage periods
 
   Background:
     Given a schedule: "annual" exists with name: "Annual"
+    And a user: "admin" exists with admin: true
 
   Scenario Outline: Test permissions for periods controller actions
     Given a schedule exists
     And a period exists with schedule: the schedule
-    And a user: "admin" exists with net_id: "admin", password: "secret", admin: true
-    And a user: "regular" exists with net_id: "regular", password: "secret", admin: false
-    And I log in as "<user>" with password "secret"
-    And I am on the new period page for the schedule
-    Then I should <create>
-    Given I post on the periods page for the schedule
-    Then I should <create>
-    And I am on the edit page for the period
-    Then I should <update>
-    Given I put on the page for the period
-    Then I should <update>
-    Given I am on the page for the period
-    Then I should <show>
+    And a user: "regular" exists
+    And I log in as user: "<user>"
+    And I am on the page for the period
+    Then I should <show> authorized
+    And I should <update> "Edit"
     Given I am on the periods page for the schedule
-    Then I should <show>
+    Then I should <show> authorized
+    And I should <update> "Edit"
+    And I should <destroy> "Destroy"
+    And I should <create> "New period"
+    Given I am on the new period page for the schedule
+    Then I should <create> authorized
+    Given I post on the periods page for the schedule
+    Then I should <create> authorized
+    And I am on the edit page for the period
+    Then I should <update> authorized
+    Given I put on the page for the period
+    Then I should <update> authorized
     Given I delete on the page for the period
-    Then I should <destroy>
+    Then I should <destroy> authorized
     Examples:
-      | user    | create                   | update                   | destroy                  | show                     |
-      | admin   | not see "not authorized" | not see "not authorized" | not see "not authorized" | not see "not authorized" |
-      | regular | see "not authorized"     | see "not authorized"     | see "not authorized"     | not see "not authorized" |
+      | user    | create  | update  | destroy | show |
+      | admin   | see     | see     | see     | see  |
+      | regular | not see | not see | not see | see  |
 
   Scenario: Register new period and edit
-    Given I log in as the administrator
+    Given I log in as user: "admin"
     And I am on the new period page for schedule: "annual"
     When I fill in "Starts at" with "2008-06-01"
     And I fill in "Ends at" with "2009-05-31"
@@ -55,8 +59,8 @@ Feature: Manage periods
     And a period exists with schedule: schedule "annual", starts_at: "2006-06-01", ends_at: "2007-05-31"
     And a period exists with schedule: schedule "annual", starts_at: "2007-06-01", ends_at: "2008-05-31"
     And a period exists with schedule: schedule "annual", starts_at: "2008-06-01", ends_at: "2009-05-31"
-    And I log in as the administrator
-    When I delete the 3rd period for schedule: "annual"
+    And I log in as user: "admin"
+    When I follow "Destroy" for the 3rd period for schedule: "annual"
     Then I should see the following periods:
       |Starts at  |Ends at    |
       |1 Jun 2008 |31 May 2009|
