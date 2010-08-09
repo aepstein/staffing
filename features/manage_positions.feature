@@ -10,33 +10,37 @@ Feature: Manage positions
     And a quiz: "gpsa" exists with name: "Graduate and Professional Student Assembly Generic Questionnaire"
     And a schedule: "annual" exists with name: "Annual Academic"
     And a schedule: "biannual" exists with name: "Annual Academic - Even Two Year"
+    And a user: "admin" exists with admin: true
 
   Scenario Outline: Test permissions for positions controller actions
-    Given a position exists
-    And a user: "admin" exists with net_id: "admin", password: "secret", admin: true
-    And a user: "regular" exists with net_id: "regular", password: "secret", admin: false
-    And I log in as "<user>" with password "secret"
-    And I am on the new position page
-    Then I should <create>
-    Given I post on the positions page
-    Then I should <create>
-    And I am on the edit page for the position
-    Then I should <update>
-    Given I put on the page for the position
-    Then I should <update>
-    Given I am on the page for the position
-    Then I should <show>
+    Given a position exists with name: "Focus"
+    And a user: "regular" exists
+    And I log in as user: "<user>"
+    And I am on the page for the position
+    Then I should <show> authorized
+    And I should <update> "Edit"
     Given I am on the positions page
-    Then I should <show>
+    Then I should <show> "Focus"
+    And I should <update> "Edit"
+    And I should <destroy> "Destroy"
+    And I should <create> "New position"
+    Given I am on the new position page
+    Then I should <create> authorized
+    Given I post on the positions page
+    Then I should <create> authorized
+    And I am on the edit page for the position
+    Then I should <update> authorized
+    Given I put on the page for the position
+    Then I should <update> authorized
     Given I delete on the page for the position
-    Then I should <destroy>
+    Then I should <destroy> authorized
     Examples:
-      | user    | create                   | update                   | destroy                  | show                     |
-      | admin   | not see "not authorized" | not see "not authorized" | not see "not authorized" | not see "not authorized" |
-      | regular | see "not authorized"     | see "not authorized"     | see "not authorized"     | not see "not authorized" |
+      | user    | create  | update  | destroy | show |
+      | admin   | see     | see     | see     | see  |
+      | regular | not see | not see | not see | see  |
 
   Scenario: Register new position and edit
-    Given I log in as the administrator
+    Given I log in as user: "admin"
     And I am on the new position page
     When I select "Student Assembly" from "Authority"
     And I select "Student Assembly Generic Questionnaire" from "Quiz"
@@ -97,14 +101,14 @@ Feature: Manage positions
     And a position exists with name: "position 3"
     And a position exists with name: "position 2"
     And a position exists with name: "position 1"
-    And I log in as the administrator
+    And I log in as user: "admin"
     And I am on the positions page
     And fill in "Name" with "2"
     And I press "Search"
     Then I should see the following positions:
       |Name       |
       |position 2 |
-    When I delete the 3rd position
+    When I follow "Destroy" for the 3rd position
     Then I should see the following positions:
       |Name      |
       |position 1|
