@@ -138,7 +138,7 @@ Feature: Manage memberships
   Scenario: Register a new membership given a request
     Given a period: "2009" exists with schedule: schedule "annual", starts_at: "2009-06-01", ends_at: "2010-05-31"
     And a request: "application" exists with user: user "popular", requestable: position "officer", starts_at: "2009-06-01", ends_at: "2010-05-31"
-    And I log in as the administrator
+    And I log in as user: "admin"
     And I am on the new membership page for request: "application"
     And I press "Create"
     Then I should see "Membership was successfully created."
@@ -156,7 +156,7 @@ Feature: Manage memberships
     And a membership exists with position: position "officer", user: user "user3", period: period "2008", starts_at: "2008-06-01", ends_at: "2009-05-31"
     And a membership exists with position: position "officer", user: user "user2", period: period "2008", starts_at: "2008-06-01", ends_at: "2009-05-31"
     And a membership exists with position: position "officer", user: user "user1", period: period "2008", starts_at: "2008-06-01", ends_at: "2009-05-31"
-    And I log in as the administrator
+    And I log in as user: "admin"
     When I follow "Destroy" for the 3rd membership for position: "officer"
     Then I should see the following memberships:
       | User       | Period                   | Starts at  | Ends at     |
