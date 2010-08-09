@@ -3,9 +3,11 @@ Feature: Manage authorities
   As an administrator
   I want to create, edit, list, delete, and show authorities
 
+  Background:
+    Given a user: "admin" exists with admin: true
+
   Scenario Outline: Test permissions for authorities controller actions
-    Given an authority: "basic" exists
-    And a user: "admin" exists with admin: true
+    Given an authority: "basic" exists with name: "Focus"
     And a user: "regular" exists
     And I log in as user: "<user>"
     And I am on the new authority page
@@ -16,8 +18,14 @@ Feature: Manage authorities
     Then I should <update> authorized
     Given I put on the page for authority: "basic"
     Then I should <update> authorized
+    Given I am on the authorities page
+    Then I should <show> "Focus"
+    And I should <update> "Edit"
+    And I should <destroy> "Destroy"
+    And I should <create> "New authority"
     Given I am on the page for authority: "basic"
     Then I should <show> authorized
+    And I should <update> "Edit"
     Given I delete on the page for authority: "basic"
     Then I should <destroy> authorized
     Examples:
@@ -28,7 +36,7 @@ Feature: Manage authorities
   Scenario: Register new authority and edit
     Given a committee exists with name: "First committee"
     And a committee exists with name: "Second committee"
-    And I log in as the administrator
+    And I log in as user: "admin"
     And I am on the new authority page
     When I fill in "Name" with "Supreme Authority"
     And I fill in "Committee" with "First committee"
@@ -57,8 +65,8 @@ Feature: Manage authorities
     And an authority exists with name: "authority 3"
     And an authority exists with name: "authority 2"
     And an authority exists with name: "authority 1"
-    And I log in as the administrator
-    When I delete the 3rd authority
+    And I log in as user: "admin"
+    When I follow "Destroy" for the 3rd authority
     Then I should see the following authorities:
       |Name       |
       |authority 1|

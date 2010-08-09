@@ -22,6 +22,7 @@ class Committee < ActiveRecord::Base
 
   validates_presence_of :name
   validates_uniqueness_of :name
+  validates_presence_of :schedule
 
   def memberships
     Membership.enrollments_committee_id_equals( id )

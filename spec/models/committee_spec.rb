@@ -20,6 +20,11 @@ describe Committee do
     duplicate.save.should eql false
   end
 
+  it 'should not save without a schedule' do
+    @committee.schedule = nil
+    @committee.save.should be_false
+  end
+
   it 'should have current_emails that returns emails of current members and designees' do
     designee = Factory(:designee)
     emails = designee.committee.current_emails
@@ -27,5 +32,6 @@ describe Committee do
     emails.should include designee.user.name :email
     emails.should include designee.membership.user.name :email
   end
+
 end
 
