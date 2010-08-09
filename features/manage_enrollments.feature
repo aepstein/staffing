@@ -7,34 +7,38 @@ Feature: Manage enrollments
     Given a position: "member" exists with name: "Member of Committee"
     And a position: "ex-officio" exists with name: "Ex-Officio Member of Committee"
     And a committee: "committee" exists with name: "Favorite Committee"
+    And a user: "admin" exists with admin: true
 
   Scenario Outline: Test permissions for enrollments controller actions
     Given a committee exists
-    And an enrollment exists with committee: the committee
-    And a user: "admin" exists with net_id: "admin", password: "secret", admin: true
-    And a user: "regular" exists with net_id: "regular", password: "secret", admin: false
-    And I log in as "<user>" with password "secret"
-    And I am on the new enrollment page for the committee
-    Then I should <create>
-    Given I post on the enrollments page for the committee
-    Then I should <create>
-    And I am on the edit page for the enrollment
-    Then I should <update>
-    Given I put on the page for the enrollment
-    Then I should <update>
-    Given I am on the page for the enrollment
-    Then I should <show>
+    And an enrollment exists with committee: the committee, title: "Focus"
+    And a user: "regular" exists
+    And I log in as user: "<user>"
+    And I am on the page for the enrollment
+    Then I should <show> authorized
+    And I should <update> "Edit"
     Given I am on the enrollments page for the committee
-    Then I should <show>
+    Then I should <show> "Focus"
+    And I should <update> "Edit"
+    And I should <destroy> "Destroy"
+    And I should <create> "New enrollment"
+    Given I am on the new enrollment page for the committee
+    Then I should <create> authorized
+    Given I post on the enrollments page for the committee
+    Then I should <create> authorized
+    And I am on the edit page for the enrollment
+    Then I should <update> authorized
+    Given I put on the page for the enrollment
+    Then I should <update> authorized
     Given I delete on the page for the enrollment
-    Then I should <destroy>
+    Then I should <destroy> authorized
     Examples:
-      | user    | create                   | update                   | destroy                  | show                     |
-      | admin   | not see "not authorized" | not see "not authorized" | not see "not authorized" | not see "not authorized" |
-      | regular | see "not authorized"     | see "not authorized"     | see "not authorized"     | not see "not authorized" |
+      | user    | create  | update  | destroy | show |
+      | admin   | see     | see     | see     | see  |
+      | regular | not see | not see | not see | see  |
 
   Scenario: Register new enrollment
-    Given I log in as the administrator
+    Given I log in as user: "admin"
     And I am on the new enrollment page for committee: "committee"
     When I fill in "Position" with "Member of Committee"
     And I fill in "Title" with "Voting Member"
@@ -65,8 +69,8 @@ Feature: Manage enrollments
     And an enrollment: "enrollment3" exists with title: "class 2", committee: committee "committee", position: position "position1"
     And an enrollment: "enrollment2" exists with title: "class 1", committee: committee "committee", position: position "position4"
     And an enrollment: "enrollment1" exists with title: "class 1", committee: committee "committee", position: position "position3"
-    And I log in as the administrator
-    When I delete the 3rd enrollment for committee: "committee"
+    And I log in as user: "admin"
+    When I follow "Destroy" for the 3rd enrollment for committee: "committee"
     Then I should see the following enrollments:
       |Position  |Title       |Votes  |
       |position 3|class 1     |1      |
