@@ -3,32 +3,38 @@ Feature: Manage qualifications
   As an administrator
   I want to create, modify, delete, list, and show qualifications
 
+  Background:
+    Given a user: "admin" exists with admin: true
+
   Scenario Outline: Test permissions for qualifications controller actions
-    Given a qualification exists
-    And a user: "admin" exists with net_id: "admin", password: "secret", admin: true
+    Given a qualification exists with name: "Focus"
     And a user: "regular" exists with net_id: "regular", password: "secret", admin: false
-    And I log in as "<user>" with password "secret"
-    And I am on the new qualification page
-    Then I should <create>
-    Given I post on the qualifications page
-    Then I should <create>
-    And I am on the edit page for the qualification
-    Then I should <update>
-    Given I put on the page for the qualification
-    Then I should <update>
+    And I log in as user: "<user>"
     Given I am on the page for the qualification
-    Then I should <show>
+    Then I should <show> authorized
+    And I should <update> "Edit"
     Given I am on the qualifications page
-    Then I should <show>
+    Then I should <show> "Focus"
+    And I should <update> "Edit"
+    And I should <destroy> "Destroy"
+    And I should <create> "New qualification"
+    Given I am on the new qualification page
+    Then I should <create> authorized
+    Given I post on the qualifications page
+    Then I should <create> authorized
+    And I am on the edit page for the qualification
+    Then I should <update> authorized
+    Given I put on the page for the qualification
+    Then I should <update> authorized
     Given I delete on the page for the qualification
-    Then I should <destroy>
+    Then I should <destroy> authorized
     Examples:
-      | user    | create                   | update                   | destroy                  | show                     |
-      | admin   | not see "not authorized" | not see "not authorized" | not see "not authorized" | not see "not authorized" |
-      | regular | see "not authorized"     | see "not authorized"     | see "not authorized"     | not see "not authorized" |
+      | user    | create  | update  | destroy | show |
+      | admin   | see     | see     | see     | see  |
+      | regular | not see | not see | not see | see  |
 
   Scenario: Register new qualification
-    Given I log in as the administrator
+    Given I log in as user: "admin"
     And I am on the new qualification page
     When I fill in "Name" with "Valuable skill"
     And I fill in "Description" with "This skill is useful for several things."
@@ -49,8 +55,8 @@ Feature: Manage qualifications
     And a qualification exists with name: "qualification 3"
     And a qualification exists with name: "qualification 2"
     And a qualification exists with name: "qualification 1"
-    And I log in as the administrator
-    When I delete the 3rd qualification
+    And I log in as user: "admin"
+    When I follow "Destroy" for the 3rd qualification
     Then I should see the following qualifications:
       |Name           |
       |qualification 1|
