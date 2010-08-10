@@ -3,34 +3,40 @@ Feature: Manage questions
   As an administrator
   I want to create, modify, destroy, list and show questions
 
+  Background:
+    Given a user: "admin" exists with admin: true
+
   Scenario Outline: Test permissions for questions controller actions
-    Given a question exists
-    And a user: "admin" exists with net_id: "admin", password: "secret", admin: true
-    And a user: "regular" exists with net_id: "regular", password: "secret", admin: false
-    And I log in as "<user>" with password "secret"
-    And I am on the new question page
-    Then I should <create>
-    Given I post on the questions page
-    Then I should <create>
-    And I am on the edit page for the question
-    Then I should <update>
-    Given I put on the page for the question
-    Then I should <update>
-    Given I am on the page for the question
-    Then I should <show>
+    Given a question exists with name: "Focus"
+    And a user: "regular" exists
+    And I log in as user: "<user>"
+    And I am on the page for the question
+    Then I should <show> authorized
+    And I should <update> "Edit"
     Given I am on the questions page
-    Then I should <show>
+    Then I should <show> "Focus"
+    And I should <update> "Edit"
+    And I should <destroy> "Destroy"
+    And I should <create> "New question"
+    Given I am on the new question page
+    Then I should <create> authorized
+    Given I post on the questions page
+    Then I should <create> authorized
+    And I am on the edit page for the question
+    Then I should <update> authorized
+    Given I put on the page for the question
+    Then I should <update> authorized
     Given I delete on the page for the question
-    Then I should <destroy>
+    Then I should <destroy> authorized
     Examples:
-      | user    | create                   | update                   | destroy                  | show                     |
-      | admin   | not see "not authorized" | not see "not authorized" | not see "not authorized" | not see "not authorized" |
-      | regular | see "not authorized"     | see "not authorized"     | see "not authorized"     | see "not authorized"     |
+      | user    | create  | update  | destroy | show    |
+      | admin   | see     | see     | see     | see     |
+      | regular | not see | not see | not see | not see |
 
   Scenario: Register new question
     Given a quiz exists with name: "Colors"
     And a quiz exists with name: "Desserts"
-    And I log in as the administrator
+    And I log in as user: "admin"
     And I am on the new question page
     When I fill in "Name" with "Favorite color"
     And I fill in "Content" with "What is your favorite color?"
@@ -66,7 +72,7 @@ Feature: Manage questions
     And a question exists with name: "Color question"
     And the question is amongst the questions of the quiz
     And question exists with name: "Another question"
-    And I log in as the administrator
+    And I log in as user: "admin"
     When I am on the questions page
     Then I should see the following questions:
       | Name             |
@@ -82,8 +88,8 @@ Feature: Manage questions
     And a question exists with name: "question 3"
     And a question exists with name: "question 2"
     And a question exists with name: "question 1"
-    And I log in as the administrator
-    When I delete the 3rd question
+    And I log in as user: "admin"
+    When I follow "Destroy" for the 3rd question
     Then I should see the following questions:
       |Name      |
       |question 1|
