@@ -6,33 +6,37 @@ Feature: Manage user_renewal_notices
   Background:
     Given an authority: "sa" exists with name: "Student Assembly"
     And an authority: "ea" exists with name: "Employee Assembly"
+    And a user: "admin" exists with admin: true
 
   Scenario Outline: Test permissions for user_renewal_notices controller actions
     Given a user_renewal_notice exists
-    And a user: "admin" exists with net_id: "admin", password: "secret", admin: true
-    And a user: "regular" exists with net_id: "regular", password: "secret", admin: false
-    And I log in as "<user>" with password "secret"
-    And I am on the new user_renewal_notice page
-    Then I should <create>
-    Given I post on the user_renewal_notices page
-    Then I should <create>
-    And I am on the edit page for the user_renewal_notice
-    Then I should <update>
-    Given I put on the page for the user_renewal_notice
-    Then I should <update>
-    Given I am on the page for the user_renewal_notice
-    Then I should <show>
+    And a user: "regular" exists
+    And I log in as user: "<user>"
+    And I am on the page for the user_renewal_notice
+    Then I should <show> authorized
+    And I should <update> "Edit"
     Given I am on the user_renewal_notices page
-    Then I should <show>
+    Then I should <show> authorized
+    And I should <update> "Edit"
+    And I should <destroy> "Destroy"
+    And I should <create> "New user renewal notice"
+    Given I am on the new user_renewal_notice page
+    Then I should <create> authorized
+    Given I post on the user_renewal_notices page
+    Then I should <create> authorized
+    And I am on the edit page for the user_renewal_notice
+    Then I should <update> authorized
+    Given I put on the page for the user_renewal_notice
+    Then I should <update> authorized
     Given I delete on the page for the user_renewal_notice
-    Then I should <destroy>
+    Then I should <destroy> authorized
     Examples:
-      | user    | create                   | update                   | destroy                  | show                     |
-      | admin   | not see "not authorized" | not see "not authorized" | not see "not authorized" | not see "not authorized" |
-      | regular | see "not authorized"     | see "not authorized"     | see "not authorized"     | see "not authorized"     |
+      | user    | create  | update  | destroy | show    |
+      | admin   | see     | see     | see     | see     |
+      | regular | not see | not see | not see | not see |
 
   Scenario: Register new user_renewal_notice and update
-    Given I log in as the administrator
+    Given I log in as user: "admin"
     And I am on the new user_renewal_notice page
     When I fill in "Starts at" with "2008-01-01"
     And I fill in "Ends at" with "2008-12-31"
@@ -63,8 +67,8 @@ Feature: Manage user_renewal_notices
     And a user_renewal_notice exists with starts_at: "2008-01-01", authority: authority "sa"
     And a user_renewal_notice exists with starts_at: "2009-01-01", authority: authority "sa"
     And a user_renewal_notice exists with starts_at: "2010-01-01"
-    And I log in as the administrator
-    When I delete the 3rd user_renewal_notice
+    And I log in as user: "admin"
+    When I follow "Destroy" for the 3rd user_renewal_notice
     Then I should see the following user_renewal_notices:
       |Starts at |Ends at   |Deadline  |Authority       |
       |1 Jan 2010|1 Jan 2011|8 Jan 2010|                |
