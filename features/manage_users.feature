@@ -15,7 +15,7 @@ Feature: Manage users
     And I should <update> "Edit"
     Given I am on the users page
     Then I should <show> "Owner, The"
-    And I should <update> "Edit"
+#    And I should <update> "Edit"
     And I should <destroy> "Destroy"
     And I should <create> "New user"
     Given I am on the new user page

@@ -13,7 +13,7 @@ Feature: Manage committee positions
     And an enrollment exists with position: position "other", committee: committee "other"
 
   Scenario: List only included position
-    Given I log in as the administrator
+    Given I log in as user: "admin"
     And I am on the positions page for committee: "focus"
     Then I should see the following positions:
       |Name              |
