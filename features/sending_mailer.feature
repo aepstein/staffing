@@ -4,7 +4,7 @@ Feature: User mailer
   I want to send email notices to users
 
   Scenario Outline: Send renewal notice to a user
-    Given a user: "focus" exists with net_id: "focus", first_name: "John", last_name: "Doe", email: "john.doe@example.org", password: "secret"
+    Given a user: "focus" exists with first_name: "John", last_name: "Doe", email: "john.doe@example.org", password: "secret"
     And a user: "other" exists
     And a schedule exists
     And a period exists with schedule: the schedule, starts_at: "2008-01-01", ends_at: "2008-12-31"
