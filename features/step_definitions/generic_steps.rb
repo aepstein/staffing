@@ -16,6 +16,18 @@ Then /^I should not see authorized$/ do
   Then %{I should see "You are not allowed to perform the requested action."}
 end
 
+# Adds support for validates_attachment_content_type. Without the mime-type get
+# passed to attach_file() you will get a "Photo file is not one of the allowed
+# error message
+When /^(?:|I )attach a file of type "([^\"]*)" and (\d+) (bytes?|kilobytes?|megabytes?) to "([^\"]*)"$/ do |type, size, unit, field|
+  file = Tempfile.new('resume.pdf')
+  $temporary_files << file
+  size.to_i.send( unit.to_sym ).times { file << 'a' }
+  ActionController::TestUploadedFile.new(file.path,type)
+
+  attach_file(field, file.path, type)
+end
+
 When /^I follow "(.+)" for the (\d+)(?:st|nd|rd|th) #{capture_factory}(?: for #{capture_model})?$/ do |link, position, subject, context|
   visit polymorphic_path( [ ( context.blank? ? nil : model(context) ), subject.pluralize ] )
   within("table > tbody > tr:nth-child(#{position.to_i})") do

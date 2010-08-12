@@ -4,7 +4,7 @@ Feature: Manage requests
   I want to create, modify, list, show, and destroy requests
 
   Background:
-    Given a user: "applicant" exists with net_id: "applicant", password: "secret", first_name: "Bill", last_name: "Williams"
+    Given a user: "applicant" exists with first_name: "Bill", last_name: "Williams"
     And a schedule: "annual" exists with name: "Annual"
     And a period: "2008" exists with schedule: schedule "annual", starts_at: "2008-06-01", ends_at: "2009-05-31"
     And a period: "2009" exists with schedule: schedule "annual", starts_at: "2009-06-01", ends_at: "2010-05-31"
@@ -15,57 +15,57 @@ Feature: Manage requests
     And question: "first" is amongst the questions of quiz: "generic"
     And question: "second" is amongst the questions of quiz: "generic"
     And question: "third" is amongst the questions of quiz: "generic"
+    And a user: "admin" exists with admin: true
 
   Scenario Outline: Test permissions for requests controller actions
     Given a committee: "authority" exists
     And an authority exists with committee: committee "authority"
     And a position: "authority" exists with authority: the authority
     And an enrollment exists with position: position "authority", committee: committee "authority"
-    And a user: "authority" exists with net_id: "authority", password: "secret", admin: false
+    And a user: "authority" exists
     And a membership exists with user: user "authority", position: position "authority"
     And a position: "requestable" exists with authority: the authority
     And a committee: "requestable" exists
     And an enrollment exists with position: position "requestable", committee: committee "requestable"
     And a request: "focus" exists with requestable: position "requestable", user: user "applicant"
     And an expired_request: "committee" exists with requestable: committee "requestable", user: user "applicant"
-    And a user: "admin" exists with net_id: "admin", password: "secret", admin: true
-    And a user: "regular" exists with net_id: "regular", password: "secret", admin: false
-    And I log in as "<user>" with password "secret"
+    And a user: "regular" exists with admin: false
+    And I log in as user: "<user>"
     And I am on the new request page for position: "requestable"
-    Then I should <create> "not authorized"
+    Then I should <create> authorized
     Given I post on the requests page for position: "requestable"
-    Then I should <create> "not authorized"
+    Then I should <create> authorized
     And I am on the edit page for request: "focus"
-    Then I should <update> "not authorized"
+    Then I should <update> authorized
     Given I put on the page for request: "focus"
-    Then I should <update> "not authorized"
+    Then I should <update> authorized
     Given I am on the page for request: "focus"
-    Then I should <show> "not authorized"
+    Then I should <show> authorized
     Given I am on the requests page for position: "requestable"
-    Then I should <index> "Williams, Bill"
+    Then I should <show> "Williams, Bill"
     Given I am on the requests page for committee: "requestable"
-    Then I should <index> "Williams, Bill"
+    Then I should <show> "Williams, Bill"
     Given I am on the requests page for the authority
-    Then I should <index> "Williams, Bill"
+    Then I should <show> "Williams, Bill"
     Given I am on the expired requests page for position: "requestable"
     Then I should not see "Williams, Bill"
     Given I am on the unexpired requests page for position: "requestable"
-    Then I should <index> "Williams, Bill"
+    Then I should <show> "Williams, Bill"
     Given I am on the expired requests page for committee: "requestable"
-    Then I should <index> "Williams, Bill"
+    Then I should <show> "Williams, Bill"
     Given I am on the unexpired requests page for committee: "requestable"
     Then I should not see "Williams, Bill"
     Given I delete on the page for request: "focus"
-    Then I should <destroy> "not authorized"
+    Then I should <destroy> authorized
     Examples:
-      | user      | index   | create  | update  | destroy | show    |
-      | admin     | see     | not see | not see | not see | not see |
-      | applicant | see     | not see | not see | not see | not see |
-      | authority | see     | not see | see     | see     | not see |
-      | regular   | not see | not see | see     | see     | see     |
+      | user      | show    | create  | update  | destroy |
+      | admin     | see     | see     | see     | see     |
+      | applicant | see     | see     | see     | see     |
+      | authority | see     | see     | not see | not see |
+      | regular   | not see | see     | not see | not see |
 
   Scenario Outline: Register new request or edit
-    Given I log in as "applicant" with password "secret"
+    Given I log in as user: "applicant"
     And a position: "popular" exists with name: "Most Popular Person", schedule: schedule "annual", quiz: quiz "generic", renewable: true, requestable: <p_requestable>, requestable_by_committee: true
     And a position: "unpopular" exists with name: "Least Popular Person", quiz: quiz "generic", requestable_by_committee: true
     And a position: "misc" exists with name: "Zee Last Position", quiz: quiz "generic", requestable_by_committee: true
@@ -124,8 +124,8 @@ Feature: Manage requests
     And a request exists with requestable: position "popular", user: user "applicant3"
     And a request exists with requestable: position "popular", user: user "applicant2"
     And a request exists with requestable: position "popular", user: user "applicant1"
-    And I log in as the administrator
-    When I delete the 3rd request for position: "popular"
+    And I log in as user: "admin"
+    When I follow "Destroy" for the 3rd request for position: "popular"
     Then I should see the following requests:
       |User        |
       |Doe 1, John |
