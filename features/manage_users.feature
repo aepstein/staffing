@@ -3,48 +3,54 @@ Feature: Manage users
   As an administrator
   I want to create, modify, list, show, and destroy users
 
+  Background:
+    Given a user: "admin" exists with admin: true
+
   Scenario Outline: Test permissions for schedules controller actions
     Given a user: "owner" exists with net_id: "owner", password: "secret", admin: false, first_name: "The", last_name: "Owner"
-    And a user: "admin" exists with net_id: "admin", password: "secret", admin: true
     And a user: "regular" exists with net_id: "regular", password: "secret", admin: false
-    And I log in as "<user>" with password "secret"
-    And I am on the new user page
-    Then I should <create>
-    Given I post on the users page
-    Then I should <create>
-    And I am on the edit page for the user: "owner"
-    Then I should <update>
-    Given I put on the page for the user: "owner"
-    Then I should <update>
-    Given I am on the page for the user: "owner"
-    Then I should <show>
+    And I log in as user: "<user>"
+    And I am on the page for the user: "owner"
+    Then I should <show> authorized
+    And I should <update> "Edit"
     Given I am on the users page
-    Then I should <index>
+    Then I should <show> "Owner, The"
+    And I should <update> "Edit"
+    And I should <destroy> "Destroy"
+    And I should <create> "New user"
+    Given I am on the new user page
+    Then I should <create> authorized
+    Given I post on the users page
+    Then I should <create> authorized
+    Given I am on the edit page for the user: "owner"
+    Then I should <update> authorized
+    Given I put on the page for the user: "owner"
+    Then I should <update> authorized
     Given I delete on the page for the user: "owner"
-    Then I should <destroy>
+    Then I should <destroy> authorized
     Examples:
-      | user    | index                | create                   | update                   | destroy                  | show                     |
-      | admin   | see "Owner, The"     | not see "not authorized" | not see "not authorized" | not see "not authorized" | not see "not authorized" |
-      | owner   | see "Owner, The"     | see "not authorized"     | not see "not authorized" | see "not authorized"     | not see "not authorized" |
-      | regular | not see "Owner, The" | see "not authorized"     | see "not authorized"     | see "not authorized"     | see "not authorized"     |
+      | user    | create  | update  | destroy | show    |
+      | admin   | see     | see     | see     | see     |
+      | owner   | not see | see     | not see | see     |
+      | regular | not see | not see | not see | not see |
 
   Scenario: List authorities on the user profile page
-    Given a user: "owner" exists with net_id: "owner", password: "secret"
+    Given a user: "owner" exists
     And a committee exists
     And position exists
     And an enrollment exists with position: the position, committee: the committee
     And a membership exists with user: user "owner", position: the position
     And an authority exists with name: "Important Authority", committee: the committee
-    And I log in as "owner" with password "secret"
+    And I log in as user: "owner"
     Then I should see "Important Authority"
 
   Scenario: List unexpired requests on user profile page
-    Given a user: "owner" exists with net_id: "owner", password: "secret", admin: false, first_name: "The", last_name: "Owner"
+    Given a user: "owner" exists
     And a position: "expired" exists with name: "Expired Position"
     And a position: "unexpired" exists with name: "Unexpired Position"
     And a request exists with requestable: position "unexpired", user: the user
     And an expired request exists with requestable: position "expired", user: the user
-    And I log in as "owner" with password "secret"
+    And I log in as user: "owner"
     Then I should see "Current Requests"
     And I should see the following entries in "requests":
       | Requestable        |
@@ -52,7 +58,7 @@ Feature: Manage users
     And I should see "1 expired request"
 
   Scenario: Register new user and edit
-    Given I log in as the administrator
+    Given I log in as user: "admin"
     And I am on the new user page
     When I fill in "First name" with "John"
     And I fill in "Middle name" with "Nobody"
@@ -115,14 +121,14 @@ Feature: Manage users
     And a user exists with first_name: "John", last_name: "Doe 3"
     And a user exists with first_name: "John", last_name: "Doe 2"
     And a user exists with first_name: "John", last_name: "Doe 1"
-    And I log in as the administrator
+    And I log in as user: "admin"
     And I am on the users page
     When I fill in "Name" with "Doe 2"
     And I press "Search"
     Then I should see the following users:
       |Name        |
       |Doe 2, John |
-    When I delete the 4th user
+    When I follow "Destroy" for the 4th user
     Then I should see the following users:
       |Name        |
       |Doe, John   |
