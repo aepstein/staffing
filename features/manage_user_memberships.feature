@@ -4,7 +4,7 @@ Feature: Manage user_memberships
   I want to list user memberships
 
   Background:
-    Given a user: "owner" exists with net_id: "owner", password: "secret", first_name: "John", last_name: "Doe"
+    Given a user: "owner" exists with first_name: "John", last_name: "Doe"
     And a position: "current" exists with name: "Current Position"
     And a position: "future" exists with name: "Future Position"
     And a position: "past" exists with name: "Past Position"
@@ -17,35 +17,35 @@ Feature: Manage user_memberships
     And an enrollment exists with position: position "current", committee: committee "current", title: "Vice-Chair"
     And an enrollment exists with position: position "future", committee: committee "future", title: "Chair"
     And an enrollment exists with position: position "past", committee: committee "past", title: "Member"
+    And a user: "admin" exists with admin: true
 
   Scenario Outline: Permissions for user-oriented <controller> indices
-    Given a user: "admin" exists with net_id: "admin", password: "secret", admin: true
-    And I log in as "<user>" with password "secret"
+    Given I log in as user: "<user>"
     And I am on the <controller>s page for user: "<other>"
-    Then I should <other_see> "not authorized"
+    Then I should <other_see> authorized
     Given I am on the <controller>s page for user: "<user>"
-    Then I should <self> "not authorized"
+    Then I should <self> authorized
     Given I am on the current <controller>s page for user: "<other>"
-    Then I should <other_see> "not authorized"
+    Then I should <other_see> authorized
     Given I am on the current <controller>s page for user: "<user>"
-    Then I should <self> "not authorized"
+    Then I should <self> authorized
     Given I am on the future <controller>s page for user: "<other>"
-    Then I should <other_see> "not authorized"
+    Then I should <other_see> authorized
     Given I am on the future <controller>s page for user: "<user>"
-    Then I should <self> "not authorized"
+    Then I should <self> authorized
     Given I am on the past <controller>s page for user: "<other>"
-    Then I should <other_see> "not authorized"
+    Then I should <other_see> authorized
     Given I am on the past <controller>s page for user: "<user>"
-    Then I should <self> "not authorized"
+    Then I should <self> authorized
     Examples:
       | controller | user  | other | other_see | self    |
-      | membership | admin | owner | not see   | not see |
-      | membership | owner | admin | see       | not see |
-      | enrollment | admin | owner | not see   | not see |
-      | enrollment | owner | admin | see       | not see |
+      | membership | admin | owner | see       | see     |
+      | membership | owner | admin | not see   | see     |
+      | enrollment | admin | owner | see       | see     |
+      | enrollment | owner | admin | not see   | see     |
 
   Scenario: List enrollments correctly for a user
-    Given I log in as "owner" with password "secret"
+    Given I log in as user: "owner"
     And I am on the enrollments page for user: "owner"
     Then I should see "Index enrollments for John Doe"
     And I should see the following enrollments:
@@ -70,7 +70,7 @@ Feature: Manage user_memberships
       |Past Committee    |Member     |1     |
 
   Scenario: List memberships correctly for a user
-    Given I log in as "owner" with password "secret"
+    Given I log in as user: "owner"
     And I am on the memberships page for user: "owner"
     Then I should see "Index memberships for John Doe"
     And I should see the following memberships:
