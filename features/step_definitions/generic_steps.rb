@@ -87,3 +87,20 @@ Then /^I should see the following entries in "(.+)":$/ do |table_id, table|
   table.diff!(tableish("##{table_id} > thead,tbody > tr", 'td,th'))
 end
 
+Given /^an? ([a-z\s]+) email is sent for #{capture_model}$/ do |notice, context|
+  notice[" "]= "_" if notice[" "]
+  "#{model(context).class.to_s}Mailer".constantize.send( "deliver_#{notice}", model(context) )
+end
+
+Then /^(?:I|they) should not see "([^"]*?)" in the email body$/ do |text|
+  current_email.body.should_not include(text)
+end
+
+Then /^(?:|I) should see a field labeled "(.+)"$/ do |text|
+  within('form').should contain(text)
+end
+
+Then /^(?:|I) should not see a field labeled "(.+)"$/ do |text|
+  within('form').should_not contain(text)
+end
+

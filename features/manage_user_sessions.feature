@@ -3,12 +3,15 @@ Feature: Manage user_sessions
   As a secure service
   I want to log in and log out users
 
+  Background:
+    Given a user: "owner" exists
+
   Scenario: Register new user_session (log in)
-    Given I log in as the administrator
+    Given I log in as user: "owner"
     Then I should see "You logged in successfully."
 
   Scenario: Delete user_session (log out)
-    Given I log in as the administrator
+    Given I log in as user: "owner"
     When I log out
     Then I should see "You logged out successfully."
 
