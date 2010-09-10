@@ -38,6 +38,7 @@ Rails::Initializer.run do |config|
   config.gem 'blind_date', :source => 'http://gemcutter.org'
   config.gem 'daemons', :source => 'http://gemcutter.org'
   config.gem 'sqlite3-ruby', :lib => 'sqlite3', :version => '!= 1.3.0'
+  config.gem 'bluecloth'
 
   config.action_mailer.default_url_options = { :host => "assembly.cornell.edu", :protocol => 'https' }
 end
