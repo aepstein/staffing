@@ -10,8 +10,9 @@ class ApplicationController < ActionController::Base
 
   # If user has been authenticated with single sign on credentials, logs in immediately
   def sso_net_id
-    return false unless request.env['REMOTE_USER'] && request.env['REMOTE_USER'].valid_net_id?
-    request.env['REMOTE_USER']
+    net_id = request.env['REMOTE_USER'] || request.env['HTTP_REMOTE_USER']
+    return false unless net_id && net_id.valid_net_id?
+    net_id
   end
 
   private
