@@ -1,8 +1,8 @@
 # deploy.rb
 set :application, "staffing"
-role :app, "assembly.cornell.edu"
-role :web, "assembly.cornell.edu"
-role :db,  "assembly.cornell.edu", :primary => true
+role :app, "xen1.assembly.cornell.edu", "kvm02.assembly.cornell.edu"
+role :web, "xen1.assembly.cornell.edu", "kvm02.assembly.cornell.edu"
+role :db,  "kvm02.assembly.cornell.edu", :primary => true
 
 set :user, "www-data"
 set :deploy_to, "/var/www/assembly/#{application}"
