@@ -11,6 +11,7 @@ Feature: Manage committee positions
     And a committee: "other" exists with name: "Other Committee"
     And an enrollment exists with position: position "in", committee: committee "focus"
     And an enrollment exists with position: position "other", committee: committee "other"
+    And a user: "admin" exists with admin: true
 
   Scenario: List only included position
     Given I log in as user: "admin"
