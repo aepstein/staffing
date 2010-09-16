@@ -47,6 +47,7 @@ Feature: Manage requests
     Then I should <show> "Williams, Bill"
     Given I am on the requests page for the authority
     Then I should <show> "Williams, Bill"
+    And I should <reject> "Reject"
     Given I am on the expired requests page for position: "requestable"
     Then I should not see "Williams, Bill"
     Given I am on the unexpired requests page for position: "requestable"
@@ -55,14 +56,20 @@ Feature: Manage requests
     Then I should <show> "Williams, Bill"
     Given I am on the unexpired requests page for committee: "requestable"
     Then I should not see "Williams, Bill"
+    Given I am on the reject page for request: "focus"
+    Then I should <reject> authorized
+    Given I put on the do_reject page for request: "focus"
+    Then I should <reject> authorized
+    Given I put on the unreject page for request: "focus"
+    Then I should <reject> authorized
     Given I delete on the page for request: "focus"
     Then I should <destroy> authorized
     Examples:
-      | user      | show    | create  | update  | destroy |
-      | admin     | see     | see     | see     | see     |
-      | applicant | see     | see     | see     | see     |
-      | authority | see     | see     | not see | not see |
-      | regular   | not see | see     | not see | not see |
+      | user      | show    | create  | update  | destroy | reject  |
+      | admin     | see     | see     | see     | see     | see     |
+      | applicant | see     | see     | see     | see     | not see |
+      | authority | see     | see     | not see | not see | see     |
+      | regular   | not see | see     | not see | not see | not see |
 
   Scenario Outline: Register new request or edit
     Given I log in as user: "applicant"
@@ -89,6 +96,9 @@ Feature: Manage requests
     And I should see "Damascus"
     And I should see "Are you qualified? Yes"
     And I should see "Resume? No"
+    And I should not see "Rejected at"
+    And I should not see "Rejection comment"
+    And I should not see "Rejection notice sent at"
     When I follow "Edit"
     And I fill in "Desired Start Date" with "2009-06-01"
     And I fill in "Desired End Date" with "2010-05-31"
@@ -113,6 +123,20 @@ Feature: Manage requests
       | the membership      | Most Popular Person | true          | position "popular"   | Update | upd |
       | the membership      | Central Committee   | false         | the committee        | Update | upd |
       | the committee       | Central Committee   | true          | the committee        | Update | upd |
+
+  Scenario: Reject a request and unreject
+    Given a request exists
+    And I log in as user: "admin"
+    And I am on the reject page for the request
+    And I fill in "Rejection comment" with "You are *not* qualified for the position."
+    And I press "Update"
+    Then I should see "Request was successfully rejected."
+    And I should see "Rejected at"
+    And I should see "You are not qualified for the position."
+    And I should see "Rejection notice sent at: None sent."
+    Given I put on the unreject page for the request
+    Then I should see "Request was successfully unrejected."
+    And I should not see "Rejected at"
 
   Scenario: Delete request
     Given a user: "applicant1" exists with last_name: "Doe 1", first_name: "John"

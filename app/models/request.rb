@@ -5,6 +5,7 @@ class Request < ActiveRecord::Base
   scope_procedure :expired, lambda { ends_at_lte Date.today }
   scope_procedure :overlap, lambda { |starts, ends| starts_at_lte(ends).ends_at_gte(starts) }
 
+  attr_protected :rejected_at, :rejection_notice_at, :rejection_comment
   attr_readonly :user_id
 
   named_scope :authority_id_equals, lambda { |authority_id|
@@ -60,6 +61,7 @@ class Request < ActiveRecord::Base
   validates_date :ends_at, :after => :starts_at
   validates_uniqueness_of :user_id, :scope => [ :requestable_type, :requestable_id ]
   validate :user_status_must_match_position, :requestable_must_be_requestable
+  validates_presence_of :rejection_comment, :if => :rejected?
 
   before_validation_on_create :initialize_answers
   after_save :claim_memberships!
@@ -119,6 +121,23 @@ class Request < ActiveRecord::Base
       end
       memo
     end
+  end
+
+  def reject(params)
+    unless params.blank?
+      self.rejection_comment = params[:rejection_comment]
+    end
+    self.rejected_at = Time.zone.now
+    save
+  end
+
+  def unreject
+    self.rejected_at = nil
+    save
+  end
+
+  def rejected?
+    rejected_at?
   end
 
   after_save :insert_at_new_position

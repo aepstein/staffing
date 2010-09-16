@@ -143,6 +143,24 @@ describe Request do
     r.memberships.should include m
   end
 
+  it 'should not save if rejected without a comment' do
+    @request.reject(Hash.new).should be_false
+    @request.reject({ :rejection_comment => 'a comment' }).should be_true
+  end
+
+  it 'should have a rejected? method that returns rejected_at? result' do
+    @request.rejected_at.should be_nil
+    @request.rejected?.should be_false
+    @request.rejected_at = Time.zone.now
+    @request.rejected?.should be_true
+  end
+
+  it 'should have an unreject method that removes rejection status' do
+    @request.reject({ :rejection_comment => 'a comment' }).should be_true
+    @request.unreject.should be_true
+    @request.rejected?.should be_false
+  end
+
   def generate_answered_request(user, quiz, answer)
     request = Factory.build(:request, :user => user, :requestable => Factory(:position, :quiz => quiz) )
     quiz.questions.each do |question|

@@ -5,6 +5,7 @@ authorization do
       :schedules, :users, :user_renewal_notices, :sendings ], :to => :manage
     has_permission_on :users, :to => :resume
     has_permission_on :memberships, :to => :confirm
+    has_permission_on :requests, :to => [ :reject, :unreject ]
   end
   role :user do
     has_permission_on [ :authorities, :committees, :enrollments, :memberships,
@@ -31,8 +32,7 @@ authorization do
     has_permission_on :requests, :to => :manage do
       if_attribute :user_id => is { user.id }
     end
-    has_permission_on :requests do
-      to :show
+    has_permission_on :requests, :to => [ :show, :reject ] do
       if_attribute :requestable_type => is { 'Position' }, :requestable_id => is_in { user.authorized_position_ids }
       if_attribute :requestable_type => is { 'Committee' }, :requestable_id => is_in { user.authorized_committee_ids }
     end
@@ -58,6 +58,9 @@ end
 privileges do
   privilege :manage do
     includes :create, :update, :destroy, :show, :index
+  end
+  privilege :reject do
+    includes :unreject, :do_reject
   end
   privilege :create do
     includes :new

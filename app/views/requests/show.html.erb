@@ -2,6 +2,22 @@
   <b>Requestable:</b> <%=h @request.requestable %>
 </p>
 
+<% if @request.rejected? %>
+<p>
+  <b>Rejected at:</b> <%=h @request.rejected_at.to_formatted_s :us_ordinal %>
+</p>
+
+<p>
+  <b>Rejection notice sent at:</b> <%=h @request.rejection_notice_at? ? @request.rejection_notice_at.to_formatted_s( :us_ordinal ) : "None sent."%>
+</p>
+
+<p>
+  <b>Rejection comment:</b>
+</p>
+
+<%=markdown @request.rejection_comment %>
+<% end %>
+
 <p>
   <b>User:</b> <%=h @request.user %>
 </p>

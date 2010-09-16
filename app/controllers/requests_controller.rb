@@ -2,7 +2,8 @@ class RequestsController < ApplicationController
   before_filter :require_user, :initialize_context
   before_filter :initialize_requestable, :only => [ :index, :expired, :unexpired, :new, :create ]
   before_filter :new_request_from_params, :only => [ :new, :create ]
-  filter_access_to :new, :create, :edit, :update, :destroy, :show, :attribute_check => true
+  filter_access_to :new, :create, :edit, :update, :destroy, :show, :reject,
+    :do_reject, :unreject, :attribute_check => true
   filter_access_to :index, :renewed, :unrenewed, :expired, :unexpired do
     @user ? permitted_to!( :show, @user ) : permitted_to!( :index )
   end
@@ -97,6 +98,40 @@ class RequestsController < ApplicationController
     respond_to do |format|
       if @request.update_attributes(params[:request])
         flash[:notice] = 'Request was successfully updated.'
+        format.html { redirect_to @request }
+        format.xml  { head :ok }
+      else
+        format.html { render :action => "edit" }
+        format.xml  { render :xml => @request.errors, :status => :unprocessable_entity }
+      end
+    end
+  end
+
+  # GET /requests/1/reject
+  # GET /requests/1/reject.xml
+  def reject; end
+
+  # PUT /requests/1/do_reject
+  # PUT /requests/1/do_reject.xml
+  def do_reject
+    respond_to do |format|
+      if @request.reject(params[:request])
+        flash[:notice] = 'Request was successfully rejected.'
+        format.html { redirect_to @request }
+        format.xml  { head :ok }
+      else
+        format.html { render :action => "reject" }
+        format.xml  { render :xml => @request.errors, :status => :unprocessable_entity }
+      end
+    end
+  end
+
+  # PUT /requests/1/unreject
+  # PUT /requests/1/unreject.xml
+  def unreject
+    respond_to do |format|
+      if @request.unreject
+        flash[:notice] = 'Request was successfully unrejected.'
         format.html { redirect_to @request }
         format.xml  { head :ok }
       else
