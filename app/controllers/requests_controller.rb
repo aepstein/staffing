@@ -1,10 +1,11 @@
 class RequestsController < ApplicationController
   before_filter :require_user, :initialize_context
-  before_filter :initialize_requestable, :only => [ :index, :expired, :unexpired, :new, :create ]
+  before_filter :initialize_requestable, :only => [ :index, :expired, :unexpired, :active, :rejected, :new, :create ]
+  before_filter :initialize_index, :only => [ :index, :expired, :unexpired, :active, :rejected ]
   before_filter :new_request_from_params, :only => [ :new, :create ]
   filter_access_to :new, :create, :edit, :update, :destroy, :show, :reject,
     :do_reject, :unreject, :attribute_check => true
-  filter_access_to :index, :renewed, :unrenewed, :expired, :unexpired do
+  filter_access_to :index, :renewed, :unrenewed, :expired, :unexpired, :active, :rejected do
     @user ? permitted_to!( :show, @user ) : permitted_to!( :index )
   end
 
@@ -15,7 +16,6 @@ class RequestsController < ApplicationController
   # GET /user/:user_id/requests
   # GET /user/:user_id/requests.xml
   def index
-    initialize_index unless @requests
     @requests = @requests.paginate( :page => params[:page] )
 
     respond_to do |format|
@@ -24,10 +24,23 @@ class RequestsController < ApplicationController
     end
   end
 
+  # GET /user/:user_id/requests/active
+  # GET /user/:user_id/requests/active.xml
+  def active
+    @requests = @requests.active
+    return index
+  end
+
+  # GET /user/:user_id/requests/rejected
+  # GET /user/:user_id/requests/rejected.xml
+  def rejected
+    @requests = @requests.rejected
+    return index
+  end
+
   # GET /user/:user_id/requests/expired
   # GET /user/:user_id/requests/expired.xml
   def expired
-    initialize_index
     @requests = @requests.expired
     return index
   end
@@ -35,7 +48,6 @@ class RequestsController < ApplicationController
   # GET /user/:user_id/requests/unexpired
   # GET /user/:user_id/requests/unexpired.xml
   def unexpired
-    initialize_index
     @requests = @requests.unexpired
     return index
   end
@@ -155,6 +167,7 @@ class RequestsController < ApplicationController
   private
 
   def initialize_index
+    return if @requests
     if @requestable
       @requests = @requestable.requests.with_permissions_to( :show )
       @title = "for #{@requestable}"

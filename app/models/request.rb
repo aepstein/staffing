@@ -4,6 +4,9 @@ class Request < ActiveRecord::Base
   scope_procedure :unexpired, lambda { ends_at_gt Date.today }
   scope_procedure :expired, lambda { ends_at_lte Date.today }
   scope_procedure :overlap, lambda { |starts, ends| starts_at_lte(ends).ends_at_gte(starts) }
+  scope_procedure :rejected, lambda { rejected_at_not_null }
+  scope_procedure :unrejected, lambda { rejected_at_null }
+  scope_procedure :active, lambda { unexpired.unrejected }
 
   attr_protected :rejected_at, :rejection_notice_at, :rejection_comment
   attr_readonly :user_id
