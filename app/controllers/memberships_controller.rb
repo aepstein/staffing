@@ -90,11 +90,7 @@ class MembershipsController < ApplicationController
   # GET /authorities/:authority_id/memberships.xml
   def index
     @search = @memberships ? @memberships.search( params[:search] ) : Membership.with_user.search( params[:search] )
-    if request.format == Mime::HTML
-      @memberships = @search.paginate( :page => params[:page], :include => [ :request ] )
-    else
-      @memberships = @search.all( :include => [ :request ] )
-    end
+    @memberships = @search.paginate( :page => params[:page], :include => [ :request ] )
 
     respond_to do |format|
       format.html { render :action => 'index' }
@@ -230,7 +226,7 @@ class MembershipsController < ApplicationController
     csv_string = ""
     CSV::Writer.generate csv_string do |csv|
       csv << ['user','netid','email','mobile','position','committee','title','vote','period','starts at','ends at','renew until?']
-      @memberships.each do |membership|
+      @search.all(:include => [ :request ]).each do |membership|
         next unless permitted_to?( :show, membership )
         membership.enrollments.each do |enrollment|
           next if @committee && (enrollment.committee_id != @committee.id)
