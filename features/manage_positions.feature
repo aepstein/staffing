@@ -54,6 +54,7 @@ Feature: Manage positions
     And I fill in "Name" with "Popular Committee Member"
     And I fill in "Join message" with "Welcome to *committee*."
     And I fill in "Leave message" with "You were *dropped* from the committee."
+    And I fill in "Reject message" with "There were *no* slots."
     And I press "Create"
     Then I should see "Position was successfully created."
     And I should see "Authority: Student Assembly"
@@ -68,6 +69,7 @@ Feature: Manage positions
     And I should see "Name: Popular Committee Member"
     And I should see "Welcome to committee."
     And I should see "You were dropped from the committee."
+    And I should see "There were no slots."
     When I follow "Edit"
     And I select "Graduate and Professional Student Assembly" from "Authority"
     And I select "Graduate and Professional Student Assembly Generic Questionnaire" from "Quiz"
@@ -81,6 +83,7 @@ Feature: Manage positions
     And I uncheck "Undergrad"
     And I fill in "Join message" with "Welcome message"
     And I fill in "Leave message" with "Farewell message"
+    And I fill in "Reject message" with "There were *not enough* slots."
     And I press "Update"
     Then I should see "Position was successfully updated."
     And I should see "Authority: Graduate and Professional Student Assembly"
@@ -95,6 +98,7 @@ Feature: Manage positions
     And I should see "Name: Super-Popular Committee Member"
     And I should see "Welcome message"
     And I should see "Farewell message"
+    And I should see "There were not enough slots."
 
   Scenario: Search and delete positions
     Given a position exists with name: "position 4"
