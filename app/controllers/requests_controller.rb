@@ -120,7 +120,10 @@ class RequestsController < ApplicationController
   end
 
   # GET /requests/1/reject
-  def reject; end
+  def reject
+    @request.rejected_by_authority ||= ( current_user.allowed_authorities & @request.authorities ).first
+    return
+  end
 
   # PUT /requests/1/do_reject
   # PUT /requests/1/do_reject.xml
