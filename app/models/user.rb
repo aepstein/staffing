@@ -56,6 +56,12 @@ class User < ActiveRecord::Base
       "memberships.ends_at >= :today", { :id => id, :today => Time.zone.today } ] )
   end
 
+  # Where necessary, provide for admin to get listing of all authorities
+  def allowed_authorities
+    return Authority.all if role_symbols.include? :admin
+    authorities
+  end
+
   def authorized_position_ids
     return [] if authority_ids.empty?
     Position.authority_id_equals_any( authority_ids ).all( :select => 'positions.id' ).map(&:id)

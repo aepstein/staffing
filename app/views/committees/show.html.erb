@@ -18,6 +18,10 @@
 
 <%=markdown @committee.leave_message %>
 
+<p><b>Reject message:</b></p>
+
+<%=markdown @committee.reject_message %>
+
 <p>
 <% if permitted_to? :edit, @committee -%>
 <%= link_to 'Edit', edit_committee_path(@committee) %> |

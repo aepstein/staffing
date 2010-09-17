@@ -143,11 +143,6 @@ describe Request do
     r.memberships.should include m
   end
 
-  it 'should not save if rejected without a comment' do
-    @request.reject(Hash.new).should be_false
-    @request.reject({ :rejection_comment => 'a comment' }).should be_true
-  end
-
   it 'should have a rejected? method that returns rejected_at? result' do
     @request.rejected_at.should be_nil
     @request.rejected?.should be_false
@@ -155,10 +150,48 @@ describe Request do
     @request.rejected?.should be_true
   end
 
+  it 'should save with valid parameters from administrator' do
+    setup_rejection
+    @request.reject(@valid_parameters).should be_true
+  end
+
+  it 'should save with valid parameters from authorized user for the authority' do
+    setup_rejection
+    @request.rejected_by_user = @authorized
+    @request.reject(@valid_parameters).should be_true
+  end
+
+  it 'should not save with valid parameters from unauthorized user for the authority' do
+    setup_rejection
+    @request.rejected_by_user = @unauthorized
+    @request.reject(@valid_parameters).should be_false
+  end
+
+  it 'should not save if rejected without a comment' do
+    setup_rejection
+    @valid_parameters.delete(:rejection_comment)
+    @request.reject(@valid_parameters).should be_false
+  end
+
   it 'should have an unreject method that removes rejection status' do
-    @request.reject({ :rejection_comment => 'a comment' }).should be_true
+    setup_rejection
+    @request.reject(@valid_parameters).should be_true
     @request.unreject.should be_true
     @request.rejected?.should be_false
+  end
+
+  def setup_rejection
+    @admin = Factory(:user, :admin => true)
+    @authorized = Factory(:user)
+    enrollment = Factory(:enrollment)
+    @authority = Authority.find @request.authorities.first.id
+    @authority.committee = enrollment.committee
+    @authority.save.should be_true
+    membership = Factory(:membership, :position => enrollment.position, :user => @authorized )
+    @unauthorized = Factory(:user)
+    @request.rejected_by_user = @admin
+    @valid_parameters = { :rejected_by_authority_id => @authority.id,
+      :rejection_comment => 'a comment' }
   end
 
   def generate_answered_request(user, quiz, answer)

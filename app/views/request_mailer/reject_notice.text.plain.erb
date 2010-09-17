@@ -1,0 +1,20 @@
+Dear <%= @request.user.first_name %>,
+
+This notice is to inform you that your request for appointment to <%= @request.requestable %> has been declined for the following reason(s):
+
+<%= @request.rejection_comment %>
+
+<% unless @request.requestable.reject_message.blank? -%>
+<%= @request.requestable.reject_message %>
+
+<% end -%>
+<% unless @request.rejected_by_authority.reject_message.blank? -%>
+<%= @request.rejected_by_authority.reject_message %>
+
+<% end -%>
+Please note that while the decision to decline appointment is generally final, your request remains on file and you are free to update it if you continue to have interest in the position.  Declined requests may be re-examined at a later date as needed.
+
+Best regards,
+
+<%= @request.rejected_by_authority.effective_contact_name %>
+

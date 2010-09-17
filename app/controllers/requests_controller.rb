@@ -120,12 +120,12 @@ class RequestsController < ApplicationController
   end
 
   # GET /requests/1/reject
-  # GET /requests/1/reject.xml
   def reject; end
 
   # PUT /requests/1/do_reject
   # PUT /requests/1/do_reject.xml
   def do_reject
+    @request.rejected_by_user = current_user
     respond_to do |format|
       if @request.reject(params[:request])
         flash[:notice] = 'Request was successfully rejected.'

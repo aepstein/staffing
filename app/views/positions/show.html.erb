@@ -47,6 +47,10 @@
 
 <%=markdown @position.leave_message %>
 
+<p><b>Reject message:</b></p>
+
+<%=markdown @position.reject_message %>
+
 <p>
 <% if permitted_to? :edit, @position -%>
 <%= link_to 'Edit', edit_position_path(@position) %> |

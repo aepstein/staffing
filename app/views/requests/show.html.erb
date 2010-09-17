@@ -8,6 +8,14 @@
 </p>
 
 <p>
+  <b>Rejected by authority:</b> <%=h @request.rejected_by_authority %>
+</p>
+
+<p>
+  <b>Rejected by user:</b> <%=h @request.rejected_by_user %>
+</p>
+
+<p>
   <b>Rejection notice sent at:</b> <%=h @request.rejection_notice_at? ? @request.rejection_notice_at.to_formatted_s( :us_ordinal ) : "None sent."%>
 </p>
 

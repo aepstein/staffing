@@ -15,7 +15,7 @@ Feature: Manage requests
     And question: "first" is amongst the questions of quiz: "generic"
     And question: "second" is amongst the questions of quiz: "generic"
     And question: "third" is amongst the questions of quiz: "generic"
-    And a user: "admin" exists with admin: true
+    And a user: "admin" exists with admin: true, first_name: "Mister", last_name: "Administrator"
 
   Scenario Outline: Test permissions for requests controller actions
     Given a committee: "authority" exists
@@ -131,15 +131,20 @@ Feature: Manage requests
       | the membership      | Most Popular Person | true          | position "popular"   | Update | upd |
       | the membership      | Central Committee   | false         | the committee        | Update | upd |
       | the committee       | Central Committee   | true          | the committee        | Update | upd |
-
+@wip
   Scenario: Reject a request and unreject
-    Given a request exists
+    Given an authority exists with name: "Primary"
+    And a position exists with authority: the authority
+    And a request exists with requestable: the position
     And I log in as user: "admin"
     And I am on the reject page for the request
+    And I select "Primary" from "Authority"
     And I fill in "Rejection comment" with "You are *not* qualified for the position."
     And I press "Update"
     Then I should see "Request was successfully rejected."
     And I should see "Rejected at"
+    And I should see "Rejected by authority: Primary"
+    And I should see "Rejected by user: Mister Administrator"
     And I should see "You are not qualified for the position."
     And I should see "Rejection notice sent at: None sent."
     Given I put on the unreject page for the request

@@ -50,6 +50,8 @@ class Request < ActiveRecord::Base
   end
   belongs_to :requestable, :polymorphic => true
   belongs_to :user
+  belongs_to :rejected_by_authority, :class_name => 'Authority'
+  belongs_to :rejected_by_user, :class_name => 'User'
 
   has_many :memberships, :dependent => :nullify do
     def assignable
@@ -65,9 +67,19 @@ class Request < ActiveRecord::Base
   validates_uniqueness_of :user_id, :scope => [ :requestable_type, :requestable_id ]
   validate :user_status_must_match_position, :requestable_must_be_requestable
   validates_presence_of :rejection_comment, :if => :rejected?
+  validates_presence_of :rejected_by_authority, :if => :rejected?
+  validates_presence_of :rejected_by_user, :if => :rejected?
+  validate :rejected_by_authority_must_be_allowed_to_rejected_by_user, :if => :rejected?
 
   before_validation_on_create :initialize_answers
   after_save :claim_memberships!
+
+  def rejected_by_authority_must_be_allowed_to_rejected_by_user
+    unless rejected_by_authority.blank? || rejected_by_user.blank? || rejected_by_user.allowed_authorities.include?( rejected_by_authority )
+      errors.add :rejected_by_authority,
+        "is not among the authorities under which #{rejected_by_user} may reject requests"
+    end
+  end
 
   def positions
     return Position.id_blank unless requestable
@@ -94,7 +106,7 @@ class Request < ActiveRecord::Base
 
   def authorities
     return Authority.id_blank unless positions.length > 0
-    Authority.position_id_equals_any( position_ids )
+    Authority.positions_id_equals_any( position_ids )
   end
 
   def authority_ids
@@ -128,6 +140,7 @@ class Request < ActiveRecord::Base
 
   def reject(params)
     unless params.blank?
+      self.rejected_by_authority_id = params[:rejected_by_authority_id]
       self.rejection_comment = params[:rejection_comment]
     end
     self.rejected_at = Time.zone.now
