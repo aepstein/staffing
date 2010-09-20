@@ -131,7 +131,7 @@ Feature: Manage requests
       | the membership      | Most Popular Person | true          | position "popular"   | Update | upd |
       | the membership      | Central Committee   | false         | the committee        | Update | upd |
       | the committee       | Central Committee   | true          | the committee        | Update | upd |
-@wip
+
   Scenario: Reject a request and unreject
     Given an authority exists with name: "Primary"
     And a position exists with authority: the authority
