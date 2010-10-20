@@ -65,5 +65,11 @@ describe Period do
     @period.memberships.count.should eql 1
     @period.memberships.unassigned.count.should eql 1
   end
+
+  it 'should have a to_range method' do
+    @period.starts_at = '2010-01-01'
+    @period.ends_at = '2011-01-01'
+    @period.to_range.should eql( @period.starts_at..@period.ends_at )
+  end
 end
 

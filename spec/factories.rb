@@ -117,6 +117,18 @@ Factory.define :request do |f|
   end
 end
 
+Factory.define :meeting do |f|
+  f.association :committee
+  f.period do |meeting|
+    if meeting.committee.schedule.periods.empty?
+      meeting.association(:period, :schedule => meeting.committee.schedule)
+    end
+    meeting.committee.schedule.periods.reload
+    meeting.committee.schedule.periods.first
+  end
+  f.when_scheduled { |m| m.period.starts_at }
+end
+
 Factory.define :expired_request, :parent => :request do |f|
   f.starts_at Date.today - 2.years
 end

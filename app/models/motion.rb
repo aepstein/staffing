@@ -25,6 +25,9 @@ class Motion < ActiveRecord::Base
   aasm_initial_state :started
   aasm_state :started
   aasm_state :proposed
+  aasm_state :merged
+  aasm_state :divided
+  aasm_state :referred
   aasm_state :adopted
   aasm_state :implemented
   aasm_state :rejected
@@ -35,6 +38,18 @@ class Motion < ActiveRecord::Base
 
   aasm_event :adopt do
     transitions :to => :adopted, :from => :proposed
+  end
+
+  aasm_event :merge do
+    transitions :to => :merged, :from => :proposed
+  end
+
+  aasm_event :divide do
+    transitions :to => :divided, :from => :proposed
+  end
+
+  aasm_event :refer do
+    transitions :to => :referred, :from => :proposed
   end
 
   aasm_event :implement do
