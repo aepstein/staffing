@@ -5,7 +5,7 @@ class AddReferringMotionIdToMotion < ActiveRecord::Migration
   end
 
   def self.down
-    drop_index :motions, :referring_motion_id
+    remove_index :motions, :referring_motion_id
     remove_column :motions, :referring_motion_id
   end
 end
