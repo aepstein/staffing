@@ -16,22 +16,25 @@ class Motion < ActiveRecord::Base
   has_many :motion_mergers, :dependent => :destroy
   has_many :merged_motions, :through => :motion_mergers, :source => :merged_motion
   has_many :referred_motions, :class_name => 'Motion', :foreign_key => :referring_motion_id, :dependent => :destroy do
-    def build_referred( new_committee )
+    def build_referee( new_committee )
       new_motion = build( proxy_owner.attributes )
       new_motion.committee = new_committee
+      new_motion
     end
 
     def build_divided( instances=false )
       instances ||= (empty? ? 2 : 1 )
       new_motions = []
-      instances.times do
-        new_motions << build( proxy_owner.attributes )
+      instances.times do |i|
+        new_motion = build( proxy_owner.attributes.merge( { :name => "#{proxy_owner.name} (#{proxy_owner.id}-#{i})" } ) )
+        new_motion.committee = proxy_owner.committee
+        new_motions << new_motion
       end
       new_motions
     end
 
     def create_divided( instances=false )
-      build_divided( instances ).each { |m|  }
+      build_divided( instances ).map { |motion| motion.save!; motion }
     end
   end
 
@@ -45,12 +48,14 @@ class Motion < ActiveRecord::Base
   validate :user_must_be_voting_in_committee
 
   before_create do |motion|
-    motion.referring_motion.lock! if referee?
-    motion.referring_motion.refer!
+    if motion.referee?
+      motion.referring_motion.lock!
+      motion.referring_motion.refer!
+    end
   end
 
   after_create do |motion|
-    motion.referring_motion.save! if referee?
+    motion.referring_motion.save! if motion.referee?
   end
 
   aasm_column :status
@@ -120,9 +125,11 @@ class Motion < ActiveRecord::Base
 
   def do_divide; referred_motions.build_divided.each { |m| m.save }; end
 
+  # User must have a vote in the committee associated with this motion unless
+  # it has been referred or divided
   def user_must_be_voting_in_committee
     return unless user && committee && period
-    if memberships.scoped(:conditions => 'enrollments.votes > 0').empty?
+    if referring_motion.blank? && memberships.scoped(:conditions => 'enrollments.votes > 0').empty?
       errors.add :user, 'must be voting member of committee in specified period'
     end
   end

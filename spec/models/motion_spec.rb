@@ -41,5 +41,45 @@ describe Motion do
     @motion.committee = nil
     @motion.save.should be_false
   end
+
+  it 'should have a referred? method that indicates if it is referred' do
+    @motion.referred?.should be_false
+    referee = referee_motion
+    referee.referred?.should be_false
+    referee.referring_motion.referred?.should be_true
+    divisee = divided_motions.first
+    divisee.referred?.should be_false
+    divisee.referring_motion.referred?.should be_false
+  end
+
+  it 'should have a divided? method that indicates if it is divided' do
+    @motion.divided?.should be_false
+    divisee = divided_motions.first
+    divisee.divided?.should be_false
+    divisee.referring_motion.divided?.should be_true
+    referee = referee_motion
+    referee.divided?.should be_false
+    referee.referring_motion.divided?.should be_false
+  end
+
+  it 'should have a referee? method that indicates if it originates from a referred motion' do
+    @motion.referee?.should be_false
+    divisee = divided_motions.first
+    divisee.referee?.should be_false
+    divisee.referring_motion.referee?.should be_false
+    referee = referee_motion
+    referee.referee?.should be_true
+    referee.referring_motion.referee?.should be_false
+  end
+
+  def divided_motions
+    Factory(:motion, :status => 'proposed').referred_motions.create_divided
+  end
+
+  def referee_motion
+    motion = Factory(:motion, :status => 'proposed').referred_motions.build_referee( Factory(:committee) )
+    motion.save!
+    motion
+  end
 end
 
