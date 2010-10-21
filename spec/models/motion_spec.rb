@@ -42,6 +42,21 @@ describe Motion do
     @motion.save.should be_false
   end
 
+  it 'should change status to referred when referred motion is created' do
+    @motion.propose!
+    referee = @motion.referred_motions.build_referee( Factory(:committee) )
+    referee.save!
+    @motion.reload
+    @motion.status.should eql 'referred'
+  end
+
+  it 'should create divided motions when divide! is called' do
+    @motion.propose!
+    @motion.divide!
+    @motion.status.should eql 'divided'
+    @motion.referred_motions.length.should eql 2
+  end
+
   it 'should have a referred? method that indicates if it is referred' do
     @motion.referred?.should be_false
     referee = referee_motion
@@ -55,6 +70,7 @@ describe Motion do
   it 'should have a divided? method that indicates if it is divided' do
     @motion.divided?.should be_false
     divisee = divided_motions.first
+    divisee.reload
     divisee.divided?.should be_false
     divisee.referring_motion.divided?.should be_true
     referee = referee_motion
@@ -72,12 +88,28 @@ describe Motion do
     referee.referring_motion.referee?.should be_false
   end
 
+  it 'should have a divisee? method that indicates if it originates from a divided motion' do
+    @motion.divisee?.should be_false
+    divisee = divided_motions.first
+    divisee.divisee?.should be_true
+    divisee.referring_motion.divisee?.should be_false
+    referee = referee_motion
+    referee.divisee?.should be_false
+    referee.referring_motion.divisee?.should be_false
+  end
+
   def divided_motions
-    Factory(:motion, :status => 'proposed').referred_motions.create_divided
+    divided = Factory(:motion)
+    divided.propose!
+    divided.divide!
+    divided.referred_motions.length.should eql 2
+    divided.referred_motions
   end
 
   def referee_motion
-    motion = Factory(:motion, :status => 'proposed').referred_motions.build_referee( Factory(:committee) )
+    referred = Factory(:motion)
+    referred.propose!
+    motion = referred.referred_motions.build_referee( Factory(:committee) )
     motion.save!
     motion
   end

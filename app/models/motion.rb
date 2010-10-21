@@ -62,6 +62,9 @@ class Motion < ActiveRecord::Base
   aasm_initial_state :started
   aasm_state :started
   aasm_state :proposed
+  aasm_state :referred
+  aasm_state :merged
+  aasm_state :divided, :before_enter => :do_divide
   aasm_state :closed
   aasm_state :adopted
   aasm_state :implemented
@@ -75,15 +78,15 @@ class Motion < ActiveRecord::Base
   end
 
   aasm_event :merge do
-    transitions :to => :closed, :from => :proposed
+    transitions :to => :merged, :from => :proposed
   end
 
   aasm_event :divide do
-    transitions :to => :closed, :from => :proposed, :before_enter => :do_divide
+    transitions :to => :divided, :from => :proposed
   end
 
   aasm_event :refer do
-    transitions :to => :closed, :from => [ :proposed, :adopted ]
+    transitions :to => :referred, :from => [ :proposed, :adopted ]
   end
 
   aasm_event :implement do
@@ -98,21 +101,15 @@ class Motion < ActiveRecord::Base
     transitions :to => :started, :from => :closed
   end
 
-  # Motion has been referred to another committee
-  def referred?
-    return true if ( referred_motions.length == 1 ) && ( referred_motions.first.committee != committee )
-    false
-  end
-
   # Motion has been referred from another committee
   def referee?
     return true if referring_motion && ( referring_motion.committee != committee )
     false
   end
 
-  # Motion has been divided
-  def divided?
-    return true unless ( referred_motions.length == 0 ) || ( referred_motions.first.committee != committee )
+  # Motion originates from a divided motion
+  def divisee?
+    return true if referring_motion && ( referring_motion.committee == committee )
     false
   end
 
@@ -123,7 +120,7 @@ class Motion < ActiveRecord::Base
 
   protected
 
-  def do_divide; referred_motions.build_divided.each { |m| m.save }; end
+  def do_divide; referred_motions.create_divided; end
 
   # User must have a vote in the committee associated with this motion unless
   # it has been referred or divided
