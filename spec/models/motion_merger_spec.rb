@@ -2,13 +2,11 @@ require 'spec_helper'
 
 describe MotionMerger do
   before(:each) do
-    @valid_attributes = {
-      :merged_motion_id => 1,
-      :motion_id => 1
-    }
+    @merger = Factory(:motion_merger)
   end
 
   it "should create a new instance given valid attributes" do
-    MotionMerger.create!(@valid_attributes)
+    @merger.id.should_not be_nil
   end
 end
+

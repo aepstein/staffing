@@ -55,9 +55,20 @@ end
 
 Factory.define :motion do |f|
   f.committee { |m| m.association( :enrollment ).committee }
-  f.user { |m| m.association( :membership, :position => m.committee.positions.first ).user }
+  f.user do |motion|
+    if motion.committee.memberships.first
+      motion.committee.memberships.first.user
+    else
+      motion.association( :membership, :position => motion.committee.positions.first ).user
+    end
+  end
   f.period { |m| ( m.committee.periods & m.user.memberships.enrollments_committee_id_equals(m.committee_id).map(&:period) ).first }
   f.sequence( :name ) { |n| "motion #{n}" }
+end
+
+Factory.define :motion_merger do |f|
+  f.merged_motion { |m| m.association :motion, :status => 'proposed' }
+  f.motion { |m| m.association :motion, :committee => m.merged_motion.committee, :period => m.merged_motion.period }
 end
 
 Factory.define :position do |f|
