@@ -188,6 +188,15 @@ describe Request do
     @request.rejection_notice_at.should_not be_nil
   end
 
+  it 'should have a reject_notice_pending scope' do
+    Request.reject_notice_pending.length.should eql 0
+    setup_rejection
+    @request.reject(@valid_parameters).should be_true
+    Request.reject_notice_pending.length.should eql 1
+    @request.send_reject_notice!
+    Request.reject_notice_pending.length.should eql 0
+  end
+
   def setup_rejection
     @admin = Factory(:user, :admin => true)
     @authorized = Factory(:user)
