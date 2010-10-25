@@ -227,6 +227,18 @@ describe Membership do
     Membership.leave_notice_pending.length.should eql 0
   end
 
+  it 'should have a send_notice! method that works for join' do
+    @membership.send_notice! :join
+    @membership.reload
+    @membership.join_notice_sent_at.should_not be_nil
+  end
+
+  it 'should have a send_notice! method that works for leave' do
+    @membership.send_notice! :leave
+    @membership.reload
+    @membership.leave_notice_sent_at.should_not be_nil
+  end
+
   def notifiable_scenario(starts_at = nil, ends_at = nil)
     starts_at ||= Date.today - 1.year
     ends_at ||= starts_at + 2.years

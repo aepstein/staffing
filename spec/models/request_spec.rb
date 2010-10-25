@@ -180,6 +180,14 @@ describe Request do
     @request.rejected?.should be_false
   end
 
+  it 'should have a send_reject_notice! method which sends a rejection notice and saves' do
+    setup_rejection
+    @request.reject(@valid_parameters).should be_true
+    @request.send_reject_notice!
+    @request.reload
+    @request.rejection_notice_at.should_not be_nil
+  end
+
   def setup_rejection
     @admin = Factory(:user, :admin => true)
     @authorized = Factory(:user)

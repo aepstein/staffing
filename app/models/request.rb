@@ -7,6 +7,7 @@ class Request < ActiveRecord::Base
   scope_procedure :rejected, lambda { rejected_at_not_null }
   scope_procedure :unrejected, lambda { rejected_at_null }
   scope_procedure :active, lambda { unexpired.unrejected }
+  scope_procedure :reject_notice_pending, lambda { rejected.rejection_notice_at_null }
 
   attr_protected :rejected_at, :rejection_notice_at, :rejection_comment
   attr_readonly :user_id
@@ -73,6 +74,12 @@ class Request < ActiveRecord::Base
 
   before_validation_on_create :initialize_answers
   after_save :claim_memberships!
+
+  def send_reject_notice!
+    RequestMailer.deliver_reject_notice self
+    self.rejection_notice_at = Time.zone.now
+    save!
+  end
 
   def rejected_by_authority_must_be_allowed_to_rejected_by_user
     unless rejected_by_authority.blank? || rejected_by_user.blank? || rejected_by_user.allowed_authorities.include?( rejected_by_authority )

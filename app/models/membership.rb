@@ -86,6 +86,13 @@ class Membership < ActiveRecord::Base
   after_save :repopulate_unassigned, :claim_request!
   after_destroy :repopulate_unassigned
 
+  # The notice_type should be (join|leave)
+  def send_notice!(notice_type)
+    MembershipMailer.send "deliver_#{notice_type}_notice", self
+    self.send "#{notice_type}_notice_sent_at=", Time.zone.now
+    save!
+  end
+
   def confirmed?
     return false unless confirmed_at?
     return request.updated_at < confirmed_at if request
