@@ -1,9 +1,9 @@
 class UserRenewalNotice < ActiveRecord::Base
   default_scope :order => 'user_renewal_notices.starts_at DESC'
 
-  named_scope :unpopulated, { :conditions => [ 'user_renewal_notices.sendings_populated IS NULL OR ' +
+  scope :unpopulated, { :conditions => [ 'user_renewal_notices.sendings_populated IS NULL OR ' +
     'user_renewal_notices.sendings_populated = ?', false ] }
-  scope_procedure :populated, lambda { sendings_populated_equals(true) }
+  scope :populated, lambda { sendings_populated_equals(true) }
 
   belongs_to :authority
 

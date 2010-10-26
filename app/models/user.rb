@@ -18,10 +18,11 @@ class User < ActiveRecord::Base
     end
   end
 
-  named_scope :no_notice_since, lambda { |notice, time|
+  scope :no_notice_since, lambda { |notice, time|
     { :conditions => ['users.id NOT IN ( SELECT user_id FROM sendings WHERE message_type = ? AND created_at > ? )',
       notice, time.utc ] }
   }
+  scope :name_like, lambda { |name| first_name_or_last_name_or_middle_name_or_net_id_like( name ) }
 
   has_attached_file :resume,
     :path => ':rails_root/db/uploads/:rails_env/users/:attachment/:id_partition/:style/:basename.:extension',
@@ -30,8 +31,6 @@ class User < ActiveRecord::Base
   acts_as_authentic do |c|
     c.login_field :net_id
   end
-
-  scope_procedure :name_like, lambda { |name| first_name_or_last_name_or_middle_name_or_net_id_like( name ) }
 
   validates_attachment_size :resume, :less_than => 1.megabyte, :if => lambda { |u| u.resume.file? }
   validates_attachment_content_type :resume, :content_type => [ 'application/pdf' ], :if => lambda { |u| u.resume.file? }

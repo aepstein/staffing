@@ -1,13 +1,13 @@
 class Request < ActiveRecord::Base
   default_scope :include => [ :user ],
     :order => 'users.last_name ASC, users.first_name ASC, users.middle_name ASC, position ASC'
-  scope_procedure :unexpired, lambda { ends_at_gt Date.today }
-  scope_procedure :expired, lambda { ends_at_lte Date.today }
-  scope_procedure :overlap, lambda { |starts, ends| starts_at_lte(ends).ends_at_gte(starts) }
-  scope_procedure :rejected, lambda { rejected_at_not_null }
-  scope_procedure :unrejected, lambda { rejected_at_null }
-  scope_procedure :active, lambda { unexpired.unrejected }
-  scope_procedure :reject_notice_pending, lambda { rejected.rejection_notice_at_null }
+  scope :unexpired, lambda { ends_at_gt Date.today }
+  scope :expired, lambda { ends_at_lte Date.today }
+  scope :overlap, lambda { |starts, ends| starts_at_lte(ends).ends_at_gte(starts) }
+  scope :rejected, lambda { rejected_at_not_null }
+  scope :unrejected, lambda { rejected_at_null }
+  scope :active, lambda { unexpired.unrejected }
+  scope :reject_notice_pending, lambda { rejected.rejection_notice_at_null }
 
   attr_protected :rejected_at, :rejection_notice_at, :rejection_comment
   attr_readonly :user_id

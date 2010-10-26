@@ -1,14 +1,14 @@
 class Position < ActiveRecord::Base
   default_scope :order => 'positions.name ASC'
 
-  named_scope :with_status, lambda { |status|
+  scope :with_status, lambda { |status|
     { :conditions => "(positions.statuses_mask & #{status.nil? ? 0 : 2**User::STATUSES.index(status.to_s)}) > 0 OR positions.statuses_mask = 0" }
   }
-  named_scope :requestable, { :conditions => { :requestable => true } }
-  named_scope :unrequestable, { :conditions => { :requestable => false } }
-  named_scope :renewable, { :conditions => { :renewable => true } }
-  named_scope :unrenewable, { :conditions => { :renewable => false } }
-  named_scope :requestable_by_committee_equals, lambda { |v|
+  scope :requestable, { :conditions => { :requestable => true } }
+  scope :unrequestable, { :conditions => { :requestable => false } }
+  scope :renewable, { :conditions => { :renewable => true } }
+  scope :unrenewable, { :conditions => { :renewable => false } }
+  scope :requestable_by_committee_equals, lambda { |v|
     { :conditions => { :requestable_by_committee => v } }
   }
 

@@ -1,9 +1,9 @@
 class Period < ActiveRecord::Base
   default_scope :order => 'periods.starts_at DESC'
 
-  scope_procedure :current, lambda { overlaps(Date.today,Date.today) }
-  scope_procedure :overlaps, lambda { |starts, ends| ends_at_gte(starts).starts_at_lte(ends) }
-  scope_procedure :conflict_with, lambda { |period| overlaps(period.starts_at,period.ends_at).schedule_id_eq(period.schedule_id) }
+  scope :current, lambda { overlaps(Date.today,Date.today) }
+  scope :overlaps, lambda { |starts, ends| ends_at_gte(starts).starts_at_lte(ends) }
+  scope :conflict_with, lambda { |period| overlaps(period.starts_at,period.ends_at).schedule_id_eq(period.schedule_id) }
 
   attr_accessor :starts_at_previously_changed, :ends_at_previously_changed
   alias :starts_at_previously_changed? :starts_at_previously_changed

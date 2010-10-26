@@ -14,7 +14,6 @@ class Meeting < ActiveRecord::Base
 
   validates_presence_of :committee
   validates_presence_of :period
-  validates_date :when_scheduled, :between => :period_range
   validate :period_must_be_in_committee_schedule
 
   def period_must_be_in_committee_schedule
@@ -22,6 +21,13 @@ class Meeting < ActiveRecord::Base
     errors.add :period, "is not in schedule for #{committee}" unless committee.schedule.periods.include? period
   end
 
+  def when_scheduled_must_be_in_period
+    return unless when_scheduled && period
+    errors.add :when_scheduled, "is not within #{period}" unless period.starts_at <= when_scheduled && period.ends_at >= when_scheduled
+  end
+
   def period_range; return unless period; period.to_range; end
+  def period_starts_at; return unless period; period.starts_at; end
+  def period_ends_at; return unless period; period.ends_at; end
 end
 

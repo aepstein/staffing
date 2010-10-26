@@ -2,19 +2,19 @@ class Membership < ActiveRecord::Base
   default_scope :include => [:user, :period],
     :order => "memberships.ends_at DESC, memberships.starts_at DESC, " +
     "users.last_name ASC, users.first_name ASC, users.middle_name ASC"
-  scope_procedure :assigned, lambda { user_id_not_nil }
-  scope_procedure :unassigned, lambda { user_id_nil }
-  scope_procedure :requested, lambda { request_id_not_null }
-  scope_procedure :unrequested, lambda { request_id_null }
-  scope_procedure :current, lambda { starts_at_lte(Date.today).ends_at_gte(Date.today) }
-  scope_procedure :future, lambda { starts_at_gt(Date.today) }
-  scope_procedure :past, lambda { ends_at_lt(Date.today) }
-  scope_procedure :renewable, lambda { position_renewable }
-  scope_procedure :unrenewable, lambda { position_unrenewable }
-  scope_procedure :overlap, lambda { |starts, ends| starts_at_lte(ends).ends_at_gte(starts) }
-  scope_procedure :pending_renewal_within, lambda { |starts, ends| renewable.unrenewed.starts_at_gte(starts).ends_at_lte(ends) }
-  scope_procedure :join_notice_pending, lambda { notifiable.current.join_notice_sent_at_null }
-  scope_procedure :leave_notice_pending, lambda { notifiable.past.leave_notice_sent_at_null }
+  scope :assigned, lambda { user_id_not_nil }
+  scope :unassigned, lambda { user_id_nil }
+  scope :requested, lambda { request_id_not_null }
+  scope :unrequested, lambda { request_id_null }
+  scope :current, lambda { starts_at_lte(Date.today).ends_at_gte(Date.today) }
+  scope :future, lambda { starts_at_gt(Date.today) }
+  scope :past, lambda { ends_at_lt(Date.today) }
+  scope :renewable, lambda { position_renewable }
+  scope :unrenewable, lambda { position_unrenewable }
+  scope :overlap, lambda { |starts, ends| starts_at_lte(ends).ends_at_gte(starts) }
+  scope :pending_renewal_within, lambda { |starts, ends| renewable.unrenewed.starts_at_gte(starts).ends_at_lte(ends) }
+  scope :join_notice_pending, lambda { notifiable.current.join_notice_sent_at_null }
+  scope :leave_notice_pending, lambda { notifiable.past.leave_notice_sent_at_null }
 
   named_scope :notifiable, :include => [ :position ],
     :conditions => ["memberships.user_id IS NOT NULL AND positions.notifiable = ?", true]
