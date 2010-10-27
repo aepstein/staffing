@@ -7,8 +7,8 @@ class Answer < ActiveRecord::Base
   validates_presence_of :content
   validate :question_must_be_allowed
 
-  scope :global, lambda { question_global_eq true }
-  scope :local, lambda { question_global_ne true }
+  scope :global, lambda { joins(:question).where :questions => { :global.eq => true } }
+  scope :local, lambda { joins(:question).where :questions => { :global.ne => true } }
 
   def question_must_be_allowed
     return nil unless request

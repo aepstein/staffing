@@ -1,12 +1,11 @@
 class Committee < ActiveRecord::Base
   default_scope :order => 'committees.name ASC'
 
-  named_scope :requestable, { :conditions => { :requestable => true } }
-  named_scope :unrequestable, { :conditions => { :requestable => false } }
-  named_scope :group_by_id, { :group => "committees.id" }
-  named_scope :positions_with_status, lambda { |status|
-    { :joins => [ :positions ],
-      :conditions => "(positions.statuses_mask & #{status.nil? ? 0 : 2**User::STATUSES.index(status.to_s)}) > 0 OR positions.statuses_mask = 0" }
+  scope :requestable, where( :requestable.eq => true )
+  scope :unrequestable, where( :requestable.eq => false )
+  scope :group_by_id, group( :id )
+  scope :positions_with_status, lambda { |status|
+    joins( :positions ).where("(positions.statuses_mask & #{status.nil? ? 0 : 2**User::STATUSES.index(status.to_s)}) > 0 OR positions.statuses_mask = 0")
   }
 
   belongs_to :schedule
@@ -29,13 +28,13 @@ class Committee < ActiveRecord::Base
   end
 
   def current_emails
-    memberships.current.all(:include => {:designees => :user, :user => [] }).inject([]) do |memo,membership|
+    memberships.current.all(:include => {:designees => :user, :user => [] }).inject([]) { |memo, membership|
       memo << membership.user.name( :email ) if membership.user_id
       membership.designees.each do |designee|
         memo << designee.user.name( :email )
       end
       memo
-    end
+    }
   end
 
   def name(style=nil)

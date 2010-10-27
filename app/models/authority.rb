@@ -3,6 +3,7 @@ class Authority < ActiveRecord::Base
 
   belongs_to :committee
   has_many :positions
+  has_many :requests
   has_many :enrollments, :through => :positions
   has_many :memberships, :through => :positions
   has_many :quizzes, :through => :positions
@@ -10,10 +11,6 @@ class Authority < ActiveRecord::Base
 
   validates_presence_of :name
   validates_uniqueness_of :name
-
-  def requests
-    Request.authority_id_equals( id )
-  end
 
   def effective_contact_name
     contact_name? ? contact_name : APP_CONFIG['defaults']['authority']['contact_name']
