@@ -1,58 +1,4 @@
 class Membership < ActiveRecord::Base
-  default_scope :include => [:user, :period],
-    :order => "memberships.ends_at DESC, memberships.starts_at DESC, " +
-    "users.last_name ASC, users.first_name ASC, users.middle_name ASC"
-  scope :assigned, lambda { user_id_not_nil }
-  scope :unassigned, lambda { user_id_nil }
-  scope :requested, lambda { request_id_not_null }
-  scope :unrequested, lambda { request_id_null }
-  scope :current, lambda { starts_at_lte(Date.today).ends_at_gte(Date.today) }
-  scope :future, lambda { starts_at_gt(Date.today) }
-  scope :past, lambda { ends_at_lt(Date.today) }
-  scope :renewable, lambda { position_renewable }
-  scope :unrenewable, lambda { position_unrenewable }
-  scope :overlap, lambda { |starts, ends| starts_at_lte(ends).ends_at_gte(starts) }
-  scope :pending_renewal_within, lambda { |starts, ends| renewable.unrenewed.starts_at_gte(starts).ends_at_lte(ends) }
-  scope :join_notice_pending, lambda { notifiable.current.join_notice_sent_at_null }
-  scope :leave_notice_pending, lambda { notifiable.past.leave_notice_sent_at_null }
-
-  named_scope :notifiable, :include => [ :position ],
-    :conditions => ["memberships.user_id IS NOT NULL AND positions.notifiable = ?", true]
-  named_scope :renewed, lambda {
-    { :joins => "INNER JOIN memberships AS renewable_memberships ON " +
-        " memberships.user_id = renewable_memberships.user_id AND " +
-        " memberships.position_id = renewable_memberships.position_id AND " +
-        " #{date_add :ends_at, 1.day} = #{date_add 'renewable_memberships.starts_at', 0.days} " }
-  }
-  named_scope :unrenewed, lambda {
-    { :joins => "LEFT JOIN memberships AS renewable_memberships ON " +
-        " memberships.user_id = renewable_memberships.user_id AND " +
-        " memberships.position_id = renewable_memberships.position_id AND " +
-        " #{date_add :ends_at, 1.day} = #{date_add 'renewable_memberships.starts_at', 0.days}",
-      :conditions => 'renewable_memberships.id IS NULL' }
-  }
-  named_scope :confirmed, :include => :request,
-      :conditions => 'memberships.confirmed_at IS NOT NULL AND (requests.updated_at IS NULL OR requests.updated_at <= memberships.confirmed_at)'
-  named_scope :unconfirmed, :include => :request,
-      :conditions => 'memberships.confirmed_at IS NULL OR (requests.updated_at IS NOT NULL AND requests.updated_at > memberships.confirmed_at)'
-  named_scope :user_name_like, lambda { |text|
-    { :include => [:user],
-      :conditions => %w( first_name last_name middle_name net_id ).map { |c|
-        "users.#{c} LIKE " + connection.quote( "%#{text}%" )
-      }.join( ' OR ' ) }
-  }
-  named_scope :enrollments_committee_id_equals, lambda { |committee_id|
-    { :joins => "INNER JOIN enrollments",
-       :conditions => ['enrollments.position_id = memberships.position_id AND enrollments.committee_id = ?', committee_id] }
-  }
-
-  attr_accessor :starts_at_previously_changed, :ends_at_previously_changed,
-    :period_id_previously_changed, :period_id_previously_was,
-    :ends_at_previously_was, :starts_at_previously_was
-  alias :starts_at_previously_changed? :starts_at_previously_changed
-  alias :ends_at_previously_changed? :ends_at_previously_changed
-  alias :period_id_previously_changed? :period_id_previously_changed
-
   belongs_to :user
   belongs_to :period
   belongs_to :position
@@ -70,6 +16,66 @@ class Membership < ActiveRecord::Base
       self.map { |designee| designee.committee_id }.uniq
     end
   end
+
+  default_scope includes(:user,:period).order(
+    "memberships.ends_at DESC, memberships.starts_at DESC, " +
+    "users.last_name ASC, users.first_name ASC, users.middle_name ASC"
+  )
+  scope :assigned, where( :user_id => nil )
+  scope :unassigned, where( :user_id.ne => nil )
+  scope :requested, where( :request_id.ne => nil )
+  scope :unrequested, where( :request_id => nil )
+  scope :current, where( :starts_at.lte => Time.zone.today, :ends_at.gte => Time.zone.today )
+  scope :future, where( :starts_at.gt => Time.zone.today )
+  scope :past, where( :ends_at.lt => Time.zone.today )
+  scope :renewable, lambda { joins(:position) & Position.renewable }
+  scope :unrenewable, lambda { joins(:position) & Position.unrenewable }
+  scope :overlap, lambda { |starts, ends| where( :starts_at.lte => ends, :ends_at.gte => starts) }
+  scope :pending_renewal_within, lambda { |starts, ends|
+    renewable.unrenewed.where( :starts_at.gte => starts, :ends_at.lte => ends)
+  }
+  scope :join_notice_pending, lambda { notifiable.current.where(:join_notice_sent_at => nil) }
+  scope :leave_notice_pending, lambda { notifiable.past.where(:leave_notice_sent_at => nil) }
+
+  scope :notifiable, includes(:position).where( :user_id.ne => nil ) & Position.notifiable
+  scope :renewed, joins("INNER JOIN memberships AS renewable_memberships ON " +
+        " memberships.user_id = renewable_memberships.user_id AND " +
+        " memberships.position_id = renewable_memberships.position_id AND " +
+        " #{date_add :ends_at, 1.day} = #{date_add 'renewable_memberships.starts_at', 0.days}")
+  scope :unrenewed, joins("LEFT JOIN memberships AS renewable_memberships ON " +
+        " memberships.user_id = renewable_memberships.user_id AND " +
+        " memberships.position_id = renewable_memberships.position_id AND " +
+        " #{date_add :ends_at, 1.day} = #{date_add 'renewable_memberships.starts_at', 0.days}").
+        where( 'renewable_memberships.id IS NULL' )
+  scope :confirmed, includes(:request).where(
+    'memberships.confirmed_at IS NOT NULL AND ' +
+    '( requests.updated_at IS NULL OR ' +
+    ' requests.updated_at <= memberships.confirmed_at )'
+  )
+  scope :unconfirmed, includes(:request).where(
+    'memberships.confirmed_at IS NULL OR ' +
+    '(requests.updated_at IS NOT NULL AND requests.updated_at > memberships.confirmed_at)'
+  )
+  scope :user_name_like, lambda { |text|
+    includes(:user).where(
+      %w( first_name last_name middle_name net_id ).map { |c|
+        "users.#{c} LIKE " + connection.quote( "%#{text}%" )
+      }.join( ' OR ' )
+    )
+  }
+  scope :enrollments_committee_id_equals, lambda { |committee_id|
+    joins('INNER JOIN enrollments ON enrollments.position_id = memberships.position_id').where(
+      'enrollments.position_id = memberships.position_id ' +
+      'AND enrollments.committee_id = ?', committee_id
+    )
+  }
+
+  attr_accessor :starts_at_previously_changed, :ends_at_previously_changed,
+    :period_id_previously_changed, :period_id_previously_was,
+    :ends_at_previously_was, :starts_at_previously_was
+  alias :starts_at_previously_changed? :starts_at_previously_changed
+  alias :ends_at_previously_changed? :ends_at_previously_changed
+  alias :period_id_previously_changed? :period_id_previously_changed
 
   delegate :enrollments, :to => :position
 

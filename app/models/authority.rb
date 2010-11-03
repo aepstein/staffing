@@ -1,5 +1,5 @@
 class Authority < ActiveRecord::Base
-  default_scope :order => 'authorities.name ASC'
+  default_scope order( 'authorities.name ASC' )
 
   belongs_to :committee
   has_many :positions

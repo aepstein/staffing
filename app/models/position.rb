@@ -4,6 +4,7 @@ class Position < ActiveRecord::Base
   scope :with_status, lambda { |status|
     { :conditions => "(positions.statuses_mask & #{status.nil? ? 0 : 2**User::STATUSES.index(status.to_s)}) > 0 OR positions.statuses_mask = 0" }
   }
+  scope :notifiable, where( :notifiable => true )
   scope :requestable, { :conditions => { :requestable => true } }
   scope :unrequestable, { :conditions => { :requestable => false } }
   scope :renewable, { :conditions => { :renewable => true } }

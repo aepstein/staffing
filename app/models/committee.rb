@@ -24,7 +24,7 @@ class Committee < ActiveRecord::Base
   validates_presence_of :schedule
 
   def memberships
-    Membership.enrollments_committee_id_equals( id )
+    Membership.joins( :enrollments ).where( :enrollments => { :committee_id.eq => id } )
   end
 
   def current_emails
