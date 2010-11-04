@@ -21,13 +21,13 @@ class Membership < ActiveRecord::Base
     "memberships.ends_at DESC, memberships.starts_at DESC, " +
     "users.last_name ASC, users.first_name ASC, users.middle_name ASC"
   )
-  scope :assigned, where( :user_id => nil )
-  scope :unassigned, where( :user_id.ne => nil )
+  scope :assigned, where( :user_id.ne => nil )
+  scope :unassigned, where( :user_id => nil )
   scope :requested, where( :request_id.ne => nil )
   scope :unrequested, where( :request_id => nil )
-  scope :current, where( :starts_at.lte => Time.zone.today, :ends_at.gte => Time.zone.today )
-  scope :future, where( :starts_at.gt => Time.zone.today )
-  scope :past, where( :ends_at.lt => Time.zone.today )
+  scope :current, lambda { where( :starts_at.lte => Time.zone.today, :ends_at.gte => Time.zone.today ) }
+  scope :future, lambda { where( :starts_at.gt => Time.zone.today ) }
+  scope :past, lambda { where( :ends_at.lt => Time.zone.today ) }
   scope :renewable, lambda { joins(:position) & Position.renewable }
   scope :unrenewable, lambda { joins(:position) & Position.unrenewable }
   scope :overlap, lambda { |starts, ends| where( :starts_at.lte => ends, :ends_at.gte => starts) }
@@ -36,7 +36,6 @@ class Membership < ActiveRecord::Base
   }
   scope :join_notice_pending, lambda { notifiable.current.where(:join_notice_sent_at => nil) }
   scope :leave_notice_pending, lambda { notifiable.past.where(:leave_notice_sent_at => nil) }
-
   scope :notifiable, includes(:position).where( :user_id.ne => nil ) & Position.notifiable
   scope :renewed, joins("INNER JOIN memberships AS renewable_memberships ON " +
         " memberships.user_id = renewable_memberships.user_id AND " +
@@ -150,7 +149,7 @@ class Membership < ActiveRecord::Base
   def concurrent_memberships_must_not_exceed_slots
     return unless starts_at && ends_at && position
     if position.slots < concurrent_membership_counts.values.sort.last
-      errors.add :base, "lacks free slots for the specified time period"
+      errors.add :position, "lacks free slots for the specified time period"
     end
   end
 
@@ -209,7 +208,7 @@ class Membership < ActiveRecord::Base
       position.memberships.unassigned.where( :period_id => p.id ).delete_all
     end
     # Fill unassigned shifts for current and previous unfilled period
-    unless starts_at_previously_was.blank? || ends_at_previously_was.blank?
+    unless starts_at_previously_changed? || ends_at_previously_changed?
       periods += position.schedule.periods.overlaps( starts_at_previously_was, ends_at_previously_was ).to_a
     end
     periods.uniq.each do |p|

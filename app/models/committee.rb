@@ -24,11 +24,14 @@ class Committee < ActiveRecord::Base
   validates_presence_of :schedule
 
   def memberships
-    Membership.joins( :enrollments ).where( :enrollments => { :committee_id.eq => id } )
+    return Membership.where( :id => nil ) if new_record?
+    Membership.joins(
+      'INNER JOIN enrollments ON memberships.position_id = enrollments.position_id'
+    ).where( [ 'enrollments.committee_id = ?', id ] )
   end
 
   def current_emails
-    memberships.current.all(:include => {:designees => :user, :user => [] }).inject([]) { |memo, membership|
+    memberships.current.includes(:designees, :user).all.inject([]) { |memo, membership|
       memo << membership.user.name( :email ) if membership.user_id
       membership.designees.each do |designee|
         memo << designee.user.name( :email )
