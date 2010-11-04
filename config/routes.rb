@@ -1,55 +1,111 @@
- Rails.application.routes.draw do |map|
-  map.resources :user_renewal_notices, :shallow => true do |notice|
-    notice.resources :sendings, :only => [ :index, :show, :destroy ]
+ Rails.application.routes.draw do
+  resources :user_renewal_notices, :shallow => true do
+    resources :sendings, :only => [ :index, :show, :destroy ]
   end
-  map.resources :memberships, :only => [], :member => { :confirm => :put }
-  map.resources :users, :shallow => true, :member => { :resume => :get } do |user|
-    user.resources :sendings, :only => [ :index ]
-    user.resources :requests, :collection => { :expired => :get, :unexpired => :get, :rejected => :get, :active => :get },
-      :member => { :reject => :get, :do_reject => :put, :unreject => :put }
-    user.resources :committees, :only => [], :collection => { :requestable => :get }
-    user.resources :enrollments, :only => [:index], :collection => { :current => :get, :future => :get, :past => :get }
-    user.resources :positions, :only => [], :collection => { :requestable => :get }
-    user.resources :memberships, :only => [:index],
-      :collection => { :current => :get, :future => :get, :past => :get, :unrenewed => :get, :renewed => :get }
-  end
-  map.resources :positions, :shallow => true do |position|
-    position.resources :memberships, :collection => { :current => :get,
-      :future => :get, :past => :get, :unrenewed => :get, :renewed => :get } do |membership|
-      membership.resources :requests, :only => [ :new, :create ]
-    end
-    position.resources :requests, :only => [ :new, :create, :index ], :collection => { :expired => :get, :unexpired => :get, :active => :get, :rejected => :get } do |request|
-      request.resources :memberships, :only => [ :new, :create, :index ], :collection => { :assignable => :get }
+  resources :memberships, :only => [] do
+    member do
+      put :confirm
     end
   end
-  map.resources :committees, :shallow => true, :collection => { :available => :get } do |committee|
-    committee.resources :motions
-    committee.resources :requests, :only => [ :new, :create, :index ], :collection => { :expired => :get, :unexpired => :get, :active => :get, :rejected => :get }
-    committee.resources :enrollments
-    committee.resources :positions, :only => [ :index ]
-    committee.resources :memberships, :only => [ :index ],
-      :collection => { :current => :get, :future => :get, :past => :get, :unrenewed => :get, :renewed => :get }
+  resources :users, :shallow => true do
+    member do
+      get :resume
+    end
+    resources :sendings, :only => [ :index ]
+    resources :requests do
+      collection do
+        get :expired, :unexpired, :rejected, :active
+      end
+      member do
+        get :reject
+        put :do_reject, :unreject
+      end
+    end
+    resources :committees, :only => [] do
+      collection do
+        get :requestable
+      end
+    end
+    resources :enrollments, :only => [:index] do
+      collection do
+        get :current, :future, :past
+      end
+    end
+    resources :positions, :only => [] do
+      collection do
+        get :requestable
+      end
+    end
+    resources :memberships, :only => [:index] do
+      collection do
+        get :current, :future, :past, :unrenewed, :renewed
+      end
+    end
   end
-  map.resources :authorities, :shallow => true do |authority|
-    authority.resources :memberships, :only => [ :index ], :collection => { :current => :get, :future => :get, :past => :get }
-    authority.resources :requests, :only => [ :index ], :collection => { :expired => :get, :unexpired => :get, :active => :get, :rejected => :get }
+  resources :positions, :shallow => true do
+    resources :memberships do
+      collection do
+        get :current, :future, :past, :unrenewed, :renewed
+      end
+      resources :requests, :only => [ :new, :create ]
+    end
+    resources :requests, :only => [ :new, :create, :index ] do
+      collection do
+        get :expired, :unexpired, :active, :rejected
+      end
+      resources :memberships, :only => [ :new, :create, :index ] do
+        collection do
+          get :assignable
+        end
+      end
+    end
   end
-  map.resources :qualifications
-  map.resources :questions, :shallow => true do |question|
-    question.resources :answers
+  resources :committees, :shallow => true do
+    collection do
+      get :available
+    end
+    resources :motions
+    resources :requests, :only => [ :new, :create, :index ] do
+      collection do
+        get :expired, :unexpired, :active, :rejected
+      end
+    end
+    resources :enrollments
+    resources :positions, :only => [ :index ]
+    resources :memberships, :only => [ :index ] do
+      collection do
+        get :current, :future, :past, :unrenewed, :renewed
+      end
+    end
   end
-  map.resources :schedules, :shallow => true do |schedule|
-    schedule.resources :periods
+  resources :authorities, :shallow => true do
+    resources :memberships, :only => [ :index ] do
+      collection do
+        get :current, :future, :past
+      end
+    end
+    resources :requests, :only => [ :index ] do
+      collection do
+        get :expired, :unexpired, :active, :rejected
+      end
+    end
   end
-  map.resources :quizzes, :shallow => true do |quiz|
-    quiz.resources :questions, :only => [ :index ]
+  resources :qualifications
+  resources :questions, :shallow => true do
+    resources :answers
   end
-  map.resource :user_session, :only => [:create]
+  resources :schedules, :shallow => true do
+    resources :periods
+  end
+  resources :quizzes, :shallow => true do
+    resources :questions, :only => [ :index ]
+  end
+  resource :user_session, :only => [:create]
 
-  map.login 'login', :controller => 'user_sessions', :action => 'new'
-  map.logout 'logout', :controller => 'user_sessions', :action => 'destroy'
-  map.profile 'profile', :controller => 'users', :action => 'profile'
+  match 'login', :to => 'user_sessions#new', :as => 'login'
+  match 'logout', :to => 'user_sessions#destroy', :as => 'logout'
+  match 'profile', :to => 'users#profile', :as => 'profile'
 
-  map.root :controller => 'users', :action => 'profile'
+  root :to => 'users#profile'
 end
 

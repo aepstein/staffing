@@ -91,10 +91,10 @@ class Request < ActiveRecord::Base
   end
 
   def positions
-    return Position.id_blank unless requestable
+    return Position.where(:id => nil) unless requestable
     case requestable.class.to_s
     when 'Position'
-      Position.id_equals( requestable.id )
+      Position.where( :id => requestable.id )
     else
       requestable.positions.with_status( user.status ).where( :requestable_by_committee => true )
     end

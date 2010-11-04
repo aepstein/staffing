@@ -64,13 +64,6 @@ class Membership < ActiveRecord::Base
     )
   }
 
-  attr_accessor :starts_at_previously_changed, :ends_at_previously_changed,
-    :period_id_previously_changed, :period_id_previously_was,
-    :ends_at_previously_was, :starts_at_previously_was
-  alias :starts_at_previously_changed? :starts_at_previously_changed
-  alias :ends_at_previously_changed? :ends_at_previously_changed
-  alias :period_id_previously_changed? :period_id_previously_changed
-
   delegate :enrollments, :to => :position
 
   accepts_nested_attributes_for :designees, :reject_if => proc { |a| a['user_name'].blank? }, :allow_destroy => true
@@ -144,7 +137,7 @@ class Membership < ActiveRecord::Base
   end
 
   def concurrent_membership_counts
-    scope = Membership.where( :position_id => position_id )
+    scope = Membership.scoped.where( :position_id => position_id )
     scope = scope.where( :id.ne => id ) unless new_record? # exclude this record
     scope = scope.assigned if user # unassigned will be regenerated anyways
     position.memberships.edges_for(self).inject({}) do |memo, date|
