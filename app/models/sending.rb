@@ -5,8 +5,8 @@ class Sending < ActiveRecord::Base
   validates_presence_of :user
   validates_presence_of :message
 
-  scope :incomplete, lambda { completed_at_null }
-  scope :complete, lambda { completed_at_not_null }
+  scope :incomplete, where( :completed_at => nil )
+  scope :complete, where( :completed_at.ne => nil )
 
   def deliver!
     SendingMailer.deliver_sending self

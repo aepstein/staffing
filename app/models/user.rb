@@ -1,7 +1,7 @@
 class User < ActiveRecord::Base
   STATUSES = %w( staff faculty undergrad grad alumni temporary )
 
-  default_scope :order => 'users.last_name ASC, users.first_name ASC, users.middle_name ASC'
+  default_scope order( 'users.last_name ASC, users.first_name ASC, users.middle_name ASC' )
 
   attr_protected :admin, :net_id, :status, :statuses, :statuses_mask
 
@@ -12,17 +12,24 @@ class User < ActiveRecord::Base
   has_many :periods, :through => :memberships
   has_many :positions, :through => :memberships do
     def current
-      scoped( :conditions => [
+      scoped.where( [
         'memberships.starts_at =< :d AND memberships.ends_at >= :d',
-        { :d => Date.today } ] )
+        { :d => Date.today }
+      ] )
     end
   end
 
   scope :no_notice_since, lambda { |notice, time|
-    { :conditions => ['users.id NOT IN ( SELECT user_id FROM sendings WHERE message_type = ? AND created_at > ? )',
-      notice, time.utc ] }
+    where( ['users.id NOT IN ( SELECT user_id FROM sendings WHERE message_type = ? AND created_at > ? )',
+      notice, time.utc ] )
   }
-  scope :name_like, lambda { |name| first_name_or_last_name_or_middle_name_or_net_id_like( name ) }
+  scope :name_like, lambda { |name|
+    where(
+      %w( first_name last_name middle_name net_id ).map { |c|
+        "users.#{c} LIKE " + connection.quote( "%#{text}%" )
+      }.join( ' OR ' )
+    )
+  }
 
   has_attached_file :resume,
     :path => ':rails_root/db/uploads/:rails_env/users/:attachment/:id_partition/:style/:basename.:extension',
@@ -41,17 +48,17 @@ class User < ActiveRecord::Base
   validates_presence_of :email
   validates_date :date_of_birth, :allow_nil => true, :allow_blank => true
 
-  before_validation_on_create :import_ldap_attributes, :initialize_password
+  before_validation :import_ldap_attributes, :initialize_password, :on => :create
 
   def authority_ids
     authorities.map(&:id)
   end
 
   def authorities
-    Authority.all( :joins => "INNER JOIN committees ON authorities.committee_id = committees.id " +
+    Authority.joins( "INNER JOIN committees ON authorities.committee_id = committees.id " +
       "INNER JOIN enrollments ON committees.id = enrollments.committee_id " +
-      "INNER JOIN memberships ON enrollments.position_id = memberships.position_id",
-      :conditions => [ "memberships.user_id = :id AND memberships.starts_at <= :today AND " +
+      "INNER JOIN memberships ON enrollments.position_id = memberships.position_id" ).
+      where( [ "memberships.user_id = :id AND memberships.starts_at <= :today AND " +
       "memberships.ends_at >= :today", { :id => id, :today => Time.zone.today } ] )
   end
 
@@ -63,16 +70,17 @@ class User < ActiveRecord::Base
 
   def authorized_position_ids
     return [] if authority_ids.empty?
-    Position.authority_id_equals_any( authority_ids ).all( :select => 'positions.id' ).map(&:id)
+    Position.where( :authority_id.in => authority_ids ).select('positions.id').map(&:id)
   end
 
   def authorized_committee_ids
     return [] if authority_ids.empty?
-    Committee.positions_authority_id_equals_any( authority_ids ).all( :select => 'committees.id' ).map(&:id)
+    ( Committee.joins(:positions) & Position.where( :authority_id.in => authority_ids ).
+      select( 'committees.id' ) ).map(&:id)
   end
 
   def requestable_committees
-    Committee.requestable.positions_with_status( status ).group_by_id
+    Committee.requestable.joins(:positions) & Position.requestable_by_committee.with_status( status ).group(:id)
   end
 
   def requestable_positions

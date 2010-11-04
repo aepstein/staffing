@@ -1,10 +1,4 @@
 class UserRenewalNotice < ActiveRecord::Base
-  default_scope :order => 'user_renewal_notices.starts_at DESC'
-
-  scope :unpopulated, { :conditions => [ 'user_renewal_notices.sendings_populated IS NULL OR ' +
-    'user_renewal_notices.sendings_populated = ?', false ] }
-  scope :populated, lambda { sendings_populated_equals(true) }
-
   belongs_to :authority
 
   has_many :sendings, :as => :message, :dependent => :delete_all do
@@ -19,14 +13,20 @@ class UserRenewalNotice < ActiveRecord::Base
     end
   end
 
+  default_scope order( 'user_renewal_notices.starts_at DESC' )
+
+  scope :unpopulated, where( [ 'user_renewal_notices.sendings_populated IS NULL OR ' +
+    'user_renewal_notices.sendings_populated = ?', false ] )
+  scope :populated, where( :sendings_populated => true )
+
   validates_date :starts_at
   validates_date :ends_at, :after => :starts_at
   validates_date :deadline, :after => :starts_at
 
-  def after_initialize
-    self.starts_at ||= Membership.current.minimum(:starts_at)
-    self.ends_at ||= Membership.current.maximum(:ends_at)
-    self.deadline ||= Date.today + 2.weeks
+  after_initialize do |notice|
+    notice.starts_at ||= Membership.current.minimum(:starts_at)
+    notice.ends_at ||= Membership.current.maximum(:ends_at)
+    notice.deadline ||= Date.today + 2.weeks
   end
 
   def subject; 'Your Action is Required to Renew Your Committee Memberships'; end

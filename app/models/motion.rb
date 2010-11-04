@@ -115,7 +115,7 @@ class Motion < ActiveRecord::Base
 
   def memberships
     return nil unless committee
-    committee.memberships.period_id_equals( period_id ).user_id_equals( user_id ).scoped( :conditions => 'enrollments.votes > 0' )
+    committee.memberships.where( 'enrollments.votes > 0', :period_id => period_id, :user_id => user_id )
   end
 
   protected
@@ -126,7 +126,7 @@ class Motion < ActiveRecord::Base
   # it has been referred or divided
   def user_must_be_voting_in_committee
     return unless user && committee && period
-    if referring_motion.blank? && memberships.scoped(:conditions => 'enrollments.votes > 0').empty?
+    if referring_motion.blank? && memberships.empty?
       errors.add :user, 'must be voting member of committee in specified period'
     end
   end

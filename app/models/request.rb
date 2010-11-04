@@ -1,34 +1,4 @@
 class Request < ActiveRecord::Base
-  default_scope :include => [ :user ],
-    :order => 'users.last_name ASC, users.first_name ASC, users.middle_name ASC, position ASC'
-  scope :unexpired, lambda { ends_at_gt Date.today }
-  scope :expired, lambda { ends_at_lte Date.today }
-  scope :overlap, lambda { |starts, ends| starts_at_lte(ends).ends_at_gte(starts) }
-  scope :rejected, lambda { rejected_at_not_null }
-  scope :unrejected, lambda { rejected_at_null }
-  scope :active, lambda { unexpired.unrejected }
-  scope :reject_notice_pending, lambda { rejected.rejection_notice_at_null }
-
-  attr_protected :rejected_at, :rejection_notice_at, :rejection_comment
-  attr_readonly :user_id
-
-  named_scope :authority_id_equals, lambda { |authority_id|
-    { :include => [ :user ],
-      :joins => "LEFT JOIN enrollments ON " +
-        "requests.requestable_type = 'Committee' AND " +
-        "requests.requestable_id = enrollments.committee_id " +
-        "LEFT JOIN positions ON " +
-        "(requests.requestable_type = 'Position' AND " +
-        "requests.requestable_id = positions.id) OR " +
-        "(enrollments.position_id = positions.id AND " +
-        "positions.requestable_by_committee = #{connection.quote true})",
-      :conditions => [ "positions.authority_id = ? AND " +
-        "( positions.statuses_mask = 0 OR ((positions.statuses_mask & users.statuses_mask) > 0) )", authority_id ],
-      :group => 'requests.id' }
-  }
-
-  acts_as_list :scope => :user_id
-
   has_many :answers do
     def populate
       # Generate blank answers for any allowed question not in answer set
@@ -61,6 +31,38 @@ class Request < ActiveRecord::Base
     end
   end
 
+  default_scope includes( :user ).
+    order('users.last_name ASC, users.first_name ASC, users.middle_name ASC, position ASC')
+  scope :unexpired, lambda { where( :ends_at.gt => Time.zone.today ) }
+  scope :expired, lambda { where( :ends_at.lte => Time.zone.today ) }
+  scope :overlap, lambda { |starts, ends|
+    where( :starts_at.lte => ends, :ends_at.gte => starts )
+  }
+  scope :rejected, where( :rejected_at.ne => nil )
+  scope :unrejected, where( :rejected_at => nil )
+  scope :active, lambda { unexpired.unrejected }
+  scope :reject_notice_pending, lambda { rejected.where( :rejection_notice_at => nil ) }
+  scope :authority_id_equals, lambda { |authority_id|
+      joins( "LEFT JOIN enrollments ON " +
+        "requests.requestable_type = 'Committee' AND " +
+        "requests.requestable_id = enrollments.committee_id " +
+        "LEFT JOIN positions ON " +
+        "(requests.requestable_type = 'Position' AND " +
+        "requests.requestable_id = positions.id) OR " +
+        "(enrollments.position_id = positions.id AND " +
+        "positions.requestable_by_committee = #{connection.quote true})" ).
+      where( [ "positions.authority_id = ? AND " +
+        "( positions.statuses_mask = 0 OR " +
+        "((positions.statuses_mask & users.statuses_mask) > 0) )", authority_id ] ).
+      group( 'requests.id' )
+  }
+
+
+  attr_protected :rejected_at, :rejection_notice_at, :rejection_comment
+  attr_readonly :user_id
+
+  acts_as_list :scope => :user_id
+
   validates_presence_of :requestable
   validates_presence_of :user
   validates_date :starts_at
@@ -72,7 +74,7 @@ class Request < ActiveRecord::Base
   validates_presence_of :rejected_by_user, :if => :rejected?
   validate :rejected_by_authority_must_be_allowed_to_rejected_by_user, :if => :rejected?
 
-  before_validation_on_create :initialize_answers
+  before_validation :initialize_answers, :on => :create
   after_save :claim_memberships!
 
   def send_reject_notice!
@@ -94,7 +96,7 @@ class Request < ActiveRecord::Base
     when 'Position'
       Position.id_equals( requestable.id )
     else
-      requestable.positions.with_status( user.status ).requestable_by_committee_equals( true )
+      requestable.positions.with_status( user.status ).where( :requestable_by_committee => true )
     end
   end
 
@@ -107,18 +109,16 @@ class Request < ActiveRecord::Base
   end
 
   def questions
-    return Question.id_blank unless quizzes.length > 0
-    Question.quizzes_id_equals_any( quizzes.map { |q| q.id }.uniq ).uniq
+    return Question.where(:id => nil) unless quizzes.length > 0
+    ( Question.joins(:quizzes) & Quiz.where( :id.in => quizzes.map(&:id) ) ).uniq
   end
 
   def authorities
-    return Authority.id_blank unless positions.length > 0
-    Authority.positions_id_equals_any( position_ids )
+    return Authority.where(:id => nil) unless positions.length > 0
+    ( Authority.joins(:positions) & Position.where( :positions_id.in => position_ids ) ).uniq
   end
 
-  def authority_ids
-    authorities.map { |authority| authority.id }
-  end
+  def authority_ids; authorities.map(&:id); end
 
   def requestable_must_be_requestable
     return unless requestable
@@ -183,7 +183,7 @@ class Request < ActiveRecord::Base
 
   def claim_memberships!
     return if position_ids.empty?
-    user.memberships.unrequested.position_id_equals_any(position_ids).each do |membership|
+    user.memberships.unrequested.where( :position_id.in => position_ids).each do |membership|
       memberships << membership
     end
   end

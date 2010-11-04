@@ -1,5 +1,5 @@
 class Schedule < ActiveRecord::Base
-  default_scope :order => 'schedules.name ASC'
+  default_scope order('schedules.name ASC')
 
   has_many :positions
   has_many :periods

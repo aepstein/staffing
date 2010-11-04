@@ -1,18 +1,6 @@
 class Position < ActiveRecord::Base
   default_scope :order => 'positions.name ASC'
 
-  scope :with_status, lambda { |status|
-    { :conditions => "(positions.statuses_mask & #{status.nil? ? 0 : 2**User::STATUSES.index(status.to_s)}) > 0 OR positions.statuses_mask = 0" }
-  }
-  scope :notifiable, where( :notifiable => true )
-  scope :requestable, { :conditions => { :requestable => true } }
-  scope :unrequestable, { :conditions => { :requestable => false } }
-  scope :renewable, { :conditions => { :renewable => true } }
-  scope :unrenewable, { :conditions => { :renewable => false } }
-  scope :requestable_by_committee_equals, lambda { |v|
-    { :conditions => { :requestable_by_committee => v } }
-  }
-
   belongs_to :authority
   belongs_to :quiz
   belongs_to :schedule
@@ -44,7 +32,7 @@ class Position < ActiveRecord::Base
     # Spaces for period
     def vacancies_for_period(period)
       r = edges_for(period).collect do |date|
-        [date, proxy_owner.slots - overlap(date,date).position_id_eq(proxy_owner.id).count]
+        [date, proxy_owner.slots - overlap(date,date).where( :position_id => proxy_owner.id ).count]
       end
       return [] unless r.select { |a| a.last < 0 }.empty?
       r
@@ -84,11 +72,19 @@ class Position < ActiveRecord::Base
   end
   has_many :committees, :through => :enrollments
 
-  attr_accessor :slots_previously_was, :slots_previously_changed,
-    :schedule_id_previously_changed, :schedule_id_previously_was
-
-  alias :slots_previously_changed? :slots_previously_changed
-  alias :schedule_id_previously_changed? :schedule_id_previously_changed
+  scope :with_status, lambda { |status|
+    where( "(positions.statuses_mask & " +
+      "#{status.nil? ? 0 : 2**User::STATUSES.index(status.to_s)}) " +
+      "> 0 OR positions.statuses_mask = 0" )
+  }
+  scope :notifiable, where( :notifiable => true )
+  scope :requestable, where( :requestable => true )
+  scope :unrequestable, where( :requestable => false )
+  scope :renewable, where( :renewable => true )
+  scope :unrenewable, where( :renewable => false )
+  scope :requestable_by_committee_equals, lambda { |v|
+    where( :requestable_by_committee => v )
+  }
 
   validates_presence_of :name
   validates_uniqueness_of :name
@@ -97,13 +93,6 @@ class Position < ActiveRecord::Base
   validates_presence_of :schedule
   validates_numericality_of :slots, :only_integer => true, :greater_than => 0
 
-  before_save do |position|
-    position.slots_previously_was = position.slots_was
-    position.slots_previously_changed = position.slots_changed?
-    position.schedule_id_previously_was = position.schedule_id_was
-    position.schedule_id_previously_changed = position.schedule_id_changed?
-    true
-  end
   after_create { |r| r.memberships.populate_unassigned }
   after_update :repopulate_unassigned
 
@@ -142,7 +131,7 @@ class Position < ActiveRecord::Base
       memberships.unassigned.delete_all
     end
     if schedule_id_previously_changed?
-      memberships.unassigned.period_id_does_not_equal_any( schedule.period_ids ).delete_all
+      memberships.unassigned.where( :period_id.not_in => schedule.period_ids ).delete_all
     end
     if schedule_id_previously_changed? || slots_previously_changed?
       schedule.periods.each do |period|

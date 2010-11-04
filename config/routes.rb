@@ -1,4 +1,4 @@
-ActionController::Routing::Routes.draw do |map|
+ Rails.application.routes.draw do |map|
   map.resources :user_renewal_notices, :shallow => true do |notice|
     notice.resources :sendings, :only => [ :index, :show, :destroy ]
   end

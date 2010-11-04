@@ -56,13 +56,7 @@ class Membership < ActiveRecord::Base
     'memberships.confirmed_at IS NULL OR ' +
     '(requests.updated_at IS NOT NULL AND requests.updated_at > memberships.confirmed_at)'
   )
-  scope :user_name_like, lambda { |text|
-    includes(:user).where(
-      %w( first_name last_name middle_name net_id ).map { |c|
-        "users.#{c} LIKE " + connection.quote( "%#{text}%" )
-      }.join( ' OR ' )
-    )
-  }
+  scope :user_name_like, lambda { |text| joins(:user) & User.name_like(text) }
   scope :enrollments_committee_id_equals, lambda { |committee_id|
     joins('INNER JOIN enrollments ON enrollments.position_id = memberships.position_id').where(
       'enrollments.position_id = memberships.position_id ' +
@@ -88,7 +82,6 @@ class Membership < ActiveRecord::Base
   validate :concurrent_memberships_must_not_exceed_slots, :must_be_within_period, :user_must_be_qualified
 
   before_validation { |r| r.designees.each { |d| d.membership = r } }
-  before_save :record_previous_changes
   after_save :repopulate_unassigned, :claim_request!
   after_destroy :repopulate_unassigned
 
@@ -108,7 +101,7 @@ class Membership < ActiveRecord::Base
   def unconfirmed?; !confirmed?; end
 
   def confirm
-    self.confirmed_at = DateTime.now
+    self.confirmed_at = Time.zone.now
     save
   end
 
@@ -151,8 +144,8 @@ class Membership < ActiveRecord::Base
   end
 
   def concurrent_membership_counts
-    scope = Membership.position_id_eq(position_id)
-    scope = scope.id_ne(id) unless new_record? # exclude this record
+    scope = Membership.where( :position_id => position_id )
+    scope = scope.where( :id.ne => id ) unless new_record? # exclude this record
     scope = scope.assigned if user # unassigned will be regenerated anyways
     position.memberships.edges_for(self).inject({}) do |memo, date|
       memo[date] = scope.overlap( date, date ).count
@@ -164,7 +157,7 @@ class Membership < ActiveRecord::Base
   def concurrent_memberships_must_not_exceed_slots
     return unless starts_at && ends_at && position
     if position.slots < concurrent_membership_counts.values.sort.last
-      errors.add_to_base "lacks free slots for the specified time period"
+      errors.add :base, "lacks free slots for the specified time period"
     end
   end
 
@@ -206,21 +199,12 @@ class Membership < ActiveRecord::Base
     return if self.request || user.nil?
     request = nil
     if position.requestable?
-      request = user.requests.requestable_type_equals('Position').requestable_id_equals(position.id).first
+      request = user.requests.where(:requestable_type => 'Position', :requestable_id => position.id ).first
     end
     unless request || position.committee_ids.empty?
-      request = user.requests.requestable_type_equals('Committee').requestable_id_equals_any(position.committee_ids).first
+      request = user.requests.where(:requestable_type => 'Committee', :requestable_id.in => position.committee_ids ).first
     end
-    request.memberships << self unless request.nil?
-  end
-
-  def record_previous_changes
-    self.starts_at_previously_changed = starts_at_changed?
-    self.ends_at_previously_changed = ends_at_changed?
-    self.period_id_previously_changed = period_id_changed?
-    self.period_id_previously_was = period_id_was
-    self.ends_at_previously_was = ends_at_was
-    self.starts_at_previously_was = starts_at_was
+    request.memberships << self unless request.blank?
   end
 
   def repopulate_unassigned
@@ -229,7 +213,7 @@ class Membership < ActiveRecord::Base
     # Eliminate unassigned shifts in the new period for this shift
     periods = position.schedule.periods.overlaps( starts_at, ends_at ).to_a
     periods.each do |p|
-      position.memberships.unassigned.period_id_equals( p.id ).delete_all
+      position.memberships.unassigned.where( :period_id => p.id ).delete_all
     end
     # Fill unassigned shifts for current and previous unfilled period
     unless starts_at_previously_was.blank? || ends_at_previously_was.blank?
