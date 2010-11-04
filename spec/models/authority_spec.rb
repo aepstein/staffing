@@ -48,7 +48,7 @@ describe Authority do
     Factory(:request, :requestable => undergrad_committee, :user => Factory(:user, :statuses => ['grad']) )
     @authority.requests.length.should eql 3
     requests.each { |request| @authority.requests.should include request }
-    Factory(:authority).requests.should be_empty
+    Factory(:authority).requests.to_a.should be_empty
   end
 
 end
