@@ -57,10 +57,8 @@ class Membership < ActiveRecord::Base
   )
   scope :user_name_like, lambda { |text| joins(:user) & User.name_like(text) }
   scope :enrollments_committee_id_equals, lambda { |committee_id|
-    joins('INNER JOIN enrollments ON enrollments.position_id = memberships.position_id').where(
-      'enrollments.position_id = memberships.position_id ' +
-      'AND enrollments.committee_id = ?', committee_id
-    )
+    joins('INNER JOIN enrollments ON enrollments.position_id = memberships.position_id').
+    where( [ 'enrollments.committee_id = ?', committee_id ] )
   }
 
   delegate :enrollments, :to => :position
@@ -74,12 +72,14 @@ class Membership < ActiveRecord::Base
   validate :concurrent_memberships_must_not_exceed_slots, :must_be_within_period, :user_must_be_qualified
 
   before_validation { |r| r.designees.each { |d| d.membership = r } }
-  after_save :repopulate_unassigned, :claim_request!
+  before_save :flag_repopulate_unassigned
+  after_save :repopulate_unassigned, :if => :repopulate_unassigned?
+  after_save :claim_request!
   after_destroy :repopulate_unassigned
 
   # The notice_type should be (join|leave)
   def send_notice!(notice_type)
-    MembershipMailer.send "deliver_#{notice_type}_notice", self
+    MembershipMailer.send( "#{notice_type}_notice", self ).deliver
     self.send "#{notice_type}_notice_sent_at=", Time.zone.now
     save!
   end
@@ -199,9 +199,18 @@ class Membership < ActiveRecord::Base
     request.memberships << self unless request.blank?
   end
 
+  def repopulate_unassigned=(flag); @repopulate_unassigned = flag; end
+  def repopulate_unassigned?; @repopulate_unassigned.nil? ? false : @repopulate_unassigned; end
+  def flag_repopulate_unassigned
+    unless user && ( new_record? || period_id_changed? || starts_at_changed? || ends_at_changed? )
+      self.repopulate_unassigned= false
+    else
+      self.repopulate_unassigned= true
+    end
+    true
+  end
+
   def repopulate_unassigned
-    # Only necessary if this is an assigned shift and a timing-related parameter changed
-    return unless user && ( period_id_previously_changed? || starts_at_previously_changed? || ends_at_previously_changed? || destroyed? )
     # Eliminate unassigned shifts in the new period for this shift
     periods = position.schedule.periods.overlaps( starts_at, ends_at ).to_a
     periods.each do |p|
@@ -212,8 +221,10 @@ class Membership < ActiveRecord::Base
       periods += position.schedule.periods.overlaps( starts_at_previously_was, ends_at_previously_was ).to_a
     end
     periods.uniq.each do |p|
-      position.memberships(true).populate_unassigned_for_period p
+      position.memberships.reload
+      position.memberships.populate_unassigned_for_period p
     end
+    self.repopulate_unassigned= false
   end
 
 end

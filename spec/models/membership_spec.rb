@@ -5,7 +5,7 @@ describe Membership do
     @membership = Factory(:membership)
   end
 
-  it "should create a new instance given valid attributes" do
+  it 'should create a new instance given valid attributes' do
     @membership.id.should_not be_nil
   end
 
@@ -74,6 +74,7 @@ describe Membership do
     second = Factory( :membership, :starts_at => assigned.starts_at + 1.day,
       :ends_at => assigned.ends_at - 1.day, :position => assigned.position,
       :period => assigned.period )
+    assigned.reload
     over = Factory.build(:membership, :starts_at => assigned.starts_at,
       :ends_at => assigned.ends_at, :position => assigned.position,
       :period => assigned.period, :user => Factory(:user) )
@@ -86,7 +87,7 @@ describe Membership do
     over.save.should eql false
   end
 
-  it 'should regenerate assigned memberships when a membership is created' do
+  it 'should generate unassigned memberships when an assigned membership is created' do
     assigned = setup_membership_with_vacancies
     assigned.position.memberships.count.should eql 2
     assigned.position.memberships.should include assigned
@@ -94,7 +95,7 @@ describe Membership do
     assigned.position.memberships.unassigned.first.id.should > assigned.id
   end
 
-  it 'should regenerate assigned memberships when a membership is altered' do
+  it 'should regenerate assigned memberships when an assigned membership is altered' do
     assigned = setup_membership_with_vacancies
     unassigned = assigned.position.memberships.unassigned.first
     assigned.ends_at -= 1.days
@@ -267,7 +268,7 @@ describe Membership do
   def setup_membership_with_vacancies
     period = Factory(:period, :schedule => Factory(:schedule) )
     position = Factory(:position, :schedule => period.schedule, :slots => 2)
-    position.memberships.create( :user => Factory(:user), :period => period,
+    position.memberships.create!( :user => Factory(:user), :period => period,
       :starts_at => period.starts_at, :ends_at => period.ends_at )
   end
 end

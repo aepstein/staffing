@@ -1,4 +1,4 @@
- Rails.application.routes.draw do
+Staffing::Application.routes.draw do
   shallow do
     resources :user_renewal_notices do
       resources :sendings, :only => [ :index, :show, :destroy ]
