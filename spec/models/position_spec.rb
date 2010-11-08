@@ -82,7 +82,8 @@ describe Position do
 
   it 'should create unassigned shifts when the period\'s slots are increased' do
     period = position_with_period
-    @position.slots += 1
+    @position.slots = ( @position.slots + 1 )
+    @position.slots_was.should_not eql @position.slots
     @position.save!
     @position.memberships.unassigned.count.should eql @position.memberships.count
     @position.memberships.count.should eql @position.slots

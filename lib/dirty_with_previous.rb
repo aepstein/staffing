@@ -23,7 +23,7 @@ module ActiveModel
 
       # Handle <tt>*_previously_was</tt> for +method_missing+.
       def attribute_previously_was(attr)
-        attribute_previously_changed?(attr) ? attribute_previous_change.first : attribute_was(attr)
+        attribute_previously_changed?(attr) ? attribute_previous_change(attr).first : attribute_was(attr)
       end
 
   end

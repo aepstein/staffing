@@ -222,7 +222,7 @@ class Membership < ActiveRecord::Base
     end
     periods.uniq.each do |p|
       position.memberships.reload
-      position.memberships.populate_unassigned_for_period p
+      position.memberships.populate_unassigned_for_period! p
     end
     self.repopulate_unassigned= false
   end

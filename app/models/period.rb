@@ -15,13 +15,13 @@ class Period < ActiveRecord::Base
   validates_date :ends_at, :after => :starts_at
   validate :must_not_conflict_with_other_period
 
-  after_create { |r| r.schedule.positions.each { |p| p.memberships.populate_unassigned_for_period r } }
+  after_create { |r| r.schedule.positions.each { |p| p.memberships.populate_unassigned_for_period! r } }
   after_update { |r|
     return unless r.starts_at_previously_changed? || r.ends_at_previously_changed?
     r.memberships.where(:starts_at.lt => r.starts_at).update_all( "starts_at = #{r.connection.quote r.starts_at}" )
     r.memberships.where(:ends_at.gt => r.ends_at).update_all( "ends_at = #{r.connection.quote r.ends_at}" )
     Membership.unassigned.where(:period_id => r.id).delete_all
-    r.schedule.positions(true).each { |position| position.memberships.populate_unassigned_for_period r }
+    r.schedule.positions(true).each { |position| position.memberships.populate_unassigned_for_period! r }
   }
 
   def must_not_conflict_with_other_period

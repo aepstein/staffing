@@ -1,5 +1,5 @@
 class Position < ActiveRecord::Base
-  default_scope :order => 'positions.name ASC'
+  default_scope order( 'positions.name ASC' )
 
   belongs_to :authority
   belongs_to :quiz
@@ -8,11 +8,11 @@ class Position < ActiveRecord::Base
   has_and_belongs_to_many :qualifications
   has_many :memberships, :dependent => :destroy do
     # Create vacant memberships for all periods
-    def populate_unassigned
-      proxy_owner.periods.each { |p| populate_unassigned_for_period p }
+    def populate_unassigned!
+      proxy_owner.periods.each { |p| populate_unassigned_for_period! p }
     end
     # Create vacant memberships
-    def populate_unassigned_for_period(period)
+    def populate_unassigned_for_period!(period)
       return unless proxy_owner.schedule.periods.include? period
       previous_vacancies = nil
       memberships = vacancies_for_period(period).inject([]) do |memo, point|
@@ -21,13 +21,13 @@ class Position < ActiveRecord::Base
         elsif previous_vacancies < point.last
           (point.last - previous_vacancies).times { memo << start_unassigned(point.first, period) }
         elsif previous_vacancies > point.last
-          (previous_vacancies - point.last).times { memo.pop.save }
+          (previous_vacancies - point.last).times { memo.pop.save! }
         end
         memo.each { |membership| membership.ends_at = point.first }
         previous_vacancies = point.last
         memo
       end
-      memberships.each { |membership| membership.save }
+      memberships.each { |membership| membership.save! }
     end
     # Spaces for period
     def vacancies_for_period(period)
@@ -93,8 +93,8 @@ class Position < ActiveRecord::Base
   validates_presence_of :schedule
   validates_numericality_of :slots, :only_integer => true, :greater_than => 0
 
-  after_create { |r| r.memberships.populate_unassigned }
-  after_update :repopulate_unassigned
+  after_create { |r| r.memberships.populate_unassigned! }
+  after_update :repopulate_slots!
 
   def current_emails
     memberships.assigned.current.all(:include => [ :user ]).map { |membership| membership.user.email }
@@ -126,18 +126,12 @@ class Position < ActiveRecord::Base
 
   private
 
-  def repopulate_unassigned
-    if slots_previously_changed? && slots_previously_was > slots
+  def repopulate_slots!
+    return unless schedule_id_previously_changed? || slots_previously_changed?
+    if schedule_id_previously_changed? || ( slots_previously_changed? && slots_previously_was > slots )
       memberships.unassigned.delete_all
     end
-    if schedule_id_previously_changed?
-      memberships.unassigned.where( :period_id.not_in => schedule.period_ids ).delete_all
-    end
-    if schedule_id_previously_changed? || slots_previously_changed?
-      schedule.periods.each do |period|
-        memberships(true).populate_unassigned_for_period period
-      end
-    end
+    memberships.populate_unassigned!
   end
 
 end
