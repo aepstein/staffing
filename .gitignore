@@ -6,6 +6,7 @@ doc/api
 doc/app
 *~
 db/*.sqlite3
+db/*.sqlite3-journal
 db/*.sql
 db/schema.rb
 db/uploads

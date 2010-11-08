@@ -45,7 +45,7 @@ class Motion < ActiveRecord::Base
   validates_presence_of :period
   validates_presence_of :user
   validates_presence_of :committee
-  validate :user_must_be_voting_in_committee
+  validate :user_must_be_voting_in_committee, :period_must_be_in_committee_schedule
 
   before_create do |motion|
     if motion.referee?
@@ -128,6 +128,13 @@ class Motion < ActiveRecord::Base
     return unless user && committee && period
     if referring_motion.blank? && memberships.empty?
       errors.add :user, 'must be voting member of committee in specified period'
+    end
+  end
+
+  def period_must_be_in_committee_schedule
+    return unless period && committee
+    unless committee.schedule.periods.include? period
+      errors.add :period, 'must be in schedule of committee'
     end
   end
 

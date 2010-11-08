@@ -44,7 +44,9 @@ describe Motion do
 
   it 'should change status to referred when referred motion is created' do
     @motion.propose!
-    referee = @motion.referred_motions.build_referee( Factory(:committee) )
+    referee = @motion.referred_motions.build_referee(
+      Factory(:committee, :schedule => @motion.committee.schedule )
+    )
     referee.save!
     @motion.reload
     @motion.status.should eql 'referred'
@@ -109,7 +111,9 @@ describe Motion do
   def referee_motion
     referred = Factory(:motion)
     referred.propose!
-    motion = referred.referred_motions.build_referee( Factory(:committee) )
+    motion = referred.referred_motions.build_referee(
+      Factory(:committee, :schedule => referred.committee.schedule )
+    )
     motion.save!
     motion
   end

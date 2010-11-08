@@ -1,14 +1,13 @@
 class Enrollment < ActiveRecord::Base
   belongs_to :position
   belongs_to :committee
-
-  has_many :memberships, :through => :position, :primary_key => 'id'
+  has_many :memberships, :primary_key => :position_id, :foreign_key => :position_id
 
   default_scope includes(:committee, :position).
     order( 'committees.name ASC, enrollments.title ASC, positions.name ASC' )
 
   scope :memberships_user_id_equals, lambda { |user_id|
-    with_memberships & Membership.where( :user_id => user_id )
+     joins(:memberships) & Membership.where( :user_id => user_id )
   }
   scope :memberships_current, lambda { joins(:memberships) & Membership.current }
   scope :memberships_future, lambda { joins(:memberships) & Membership.future }
