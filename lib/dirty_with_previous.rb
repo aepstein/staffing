@@ -18,7 +18,7 @@ module ActiveModel
 
       # Handle <tt>*_previous_change</tt> for +method_missing+.
       def attribute_previous_change(attr)
-        previous_changes[attr] if attribute_changed?(attr)
+        previous_changes[attr] if attribute_previously_changed?(attr)
       end
 
       # Handle <tt>*_previously_was</tt> for +method_missing+.

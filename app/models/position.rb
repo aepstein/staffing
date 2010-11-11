@@ -7,17 +7,22 @@ class Position < ActiveRecord::Base
 
   has_and_belongs_to_many :qualifications
   has_many :memberships, :dependent => :destroy do
+    # Repopulate for a period
+    def repopulate_unassigned_for_period!( period )
+      unassigned.where( :period_id => period.id ).delete_all
+      populate_unassigned_for_period!( period )
+    end
     # Create vacant memberships for all periods
     def populate_unassigned!
       proxy_owner.periods.each { |p| populate_unassigned_for_period! p }
     end
     # Create vacant memberships
-    def populate_unassigned_for_period!(period)
+    def populate_unassigned_for_period!( period )
       return unless proxy_owner.schedule.periods.include? period
       previous_vacancies = nil
-      memberships = vacancies_for_period(period).inject([]) do |memo, point|
+      memberships = vacancies_for_period( period ).inject([]) do |memo, point|
         if previous_vacancies.nil?
-          point.last.times { memo << start_unassigned(point.first, period) }
+          point.last.times { memo << start_unassigned( point.first, period ) }
         elsif previous_vacancies < point.last
           (point.last - previous_vacancies).times { memo << start_unassigned(point.first, period) }
         elsif previous_vacancies > point.last
@@ -30,22 +35,8 @@ class Position < ActiveRecord::Base
       memberships.each { |membership| membership.save! }
     end
     # Spaces for period
-    def vacancies_for_period(period)
-      r = edges_for(period).collect do |date|
-        [date, proxy_owner.slots - overlap(date,date).where( :position_id => proxy_owner.id ).count]
-      end
-      return [] unless r.select { |a| a.last < 0 }.empty?
-      r
-    end
-    # Can take either a period or a membership
-    def edges_for(p)
-      overlap(p.starts_at,p.ends_at).inject([p.starts_at,p.ends_at]) do |memo, m|
-        memo << m.starts_at - 1.day unless m.starts_at == p.starts_at
-        memo << m.starts_at
-        memo << m.ends_at
-        memo << m.ends_at + 1.day unless m.ends_at == p.ends_at
-        memo
-      end.uniq.sort
+    def vacancies_for_period( period )
+      Membership.concurrent_counts( period, proxy_owner.id )
     end
     private
     def start_unassigned(starts_at, period)
