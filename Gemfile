@@ -19,7 +19,7 @@ gem 'repeated_auto_complete'
 gem 'paperclip'
 gem 'blind_date', '>= 1.0.0'
 gem 'daemons'
-gem 'bluecloth'
+gem 'bluecloth', :require => 'bluecloth'
 gem 'whenever'
 
 group :development, :test do

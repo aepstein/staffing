@@ -6,8 +6,8 @@ class Request < ActiveRecord::Base
         build :question => question
       end
       # Fill in most recent prior answer for each global question populated
-      proxy_owner.user.answers.global.question_id_equals_any( population.map { |a| a.question_id }
-      ).descend_by_updated_at.all( :group => 'question_id' ).each do |answer|
+      proxy_owner.user.answers.global.where( :question_id.in => population.map { |a| a.question_id }
+      ).order('answers.updated_at DESC').group('answers.question_id').each do |answer|
         fillable_answer = population.select { |a| a.question_id == answer.question_id }.first
         fillable_answer.content = answer.content unless fillable_answer.nil?
       end
@@ -78,13 +78,14 @@ class Request < ActiveRecord::Base
   after_save :claim_memberships!
 
   def send_reject_notice!
-    RequestMailer.deliver_reject_notice self
+    RequestMailer.reject_notice( self ).deliver
     self.rejection_notice_at = Time.zone.now
     save!
   end
 
   def rejected_by_authority_must_be_allowed_to_rejected_by_user
-    unless rejected_by_authority.blank? || rejected_by_user.blank? || rejected_by_user.allowed_authorities.include?( rejected_by_authority )
+    unless rejected_by_authority.blank? || rejected_by_user.blank? ||
+      rejected_by_user.allowed_authorities.include?( rejected_by_authority )
       errors.add :rejected_by_authority,
         "is not among the authorities under which #{rejected_by_user} may reject requests"
     end
@@ -115,7 +116,7 @@ class Request < ActiveRecord::Base
 
   def authorities
     return Authority.where(:id => nil) unless positions.length > 0
-    ( Authority.joins(:positions) & Position.where( :positions_id.in => position_ids ) ).uniq
+    ( Authority.joins(:positions) & Position.where( :id.in => position_ids ) ).uniq
   end
 
   def authority_ids; authorities.map(&:id); end

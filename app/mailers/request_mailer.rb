@@ -1,6 +1,6 @@
 class RequestMailer < ActionMailer::Base
 
-  def reject_notice(request)
+  def reject_notice( request )
     @request = request
     mail(
       :to => "#{request.user.name} <#{request.user.email}>",

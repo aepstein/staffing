@@ -13,6 +13,7 @@ module Staffing
     config.filter_parameters += [:password]
     config.time_zone = 'Eastern Time (US & Canada)'
     config.action_mailer.default_url_options = { :host => "assembly.cornell.edu", :protocol => 'https' }
+    config.abstract_controller.add_template_helper ApplicationHelper
   end
 end
 
