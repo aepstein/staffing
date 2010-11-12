@@ -82,28 +82,34 @@ class Membership < ActiveRecord::Base
         date_add('m.ends_at', 1.day),
         "m.ends_at"
       ].map do |marker|
-      "SELECT #{marker} AS focus, COUNT(c.id) AS quantity FROM memberships AS m " +
+      "SELECT #{marker} AS focus, COUNT(DISTINCT c.id) AS quantity FROM memberships AS m " +
       "LEFT JOIN memberships AS c " +
       "ON c.starts_at <= #{marker} AND c.ends_at >= #{marker} AND c.position_id = #{position_id} " +
       ( ( period.class == Membership && !period.new_record? ) ? "AND c.id != #{period.id} " : "" ) +
+      ( ( period.class == Membership && !period.user.blank? ) ? "AND c.user_id IS NOT NULL " : "" ) +
       "WHERE m.ends_at >= #{connection.quote period.starts_at} AND " +
       "m.starts_at <= #{connection.quote period.ends_at} AND " +
       "#{marker} >= #{connection.quote period.starts_at} AND " +
       "#{marker} <= #{connection.quote period.ends_at} AND " +
       "m.position_id = #{position_id} " +
-      "GROUP BY c.id"
+      "GROUP BY focus"
     end
     statement = statement_parts.join(" UNION ")
-    statement += " ORDER BY focus, quantity"
-    out = connection.select_rows( statement )
+    statement += " ORDER BY focus"
+    out = connection.select_rows( statement ).map { |r| [ Time.zone.parse(r.first).to_date, r.last.to_i ] }
     Membership.with_exclusive_scope do
-      if out.empty? || out.first.first != period.starts_at.to_formatted_s( :db )
-        out.unshift( [ period.starts_at.to_formatted_s( :db ),
-          Membership.overlap(period.starts_at,period.starts_at).where(:position_id => position_id).count ] )
+      memberships = Membership.scoped
+      if period.class == Membership
+        memberships = memberships.where(:user_id.ne => nil) unless period.user.blank?
+        memberships = memberships.where(:id.ne => period.id) if period.new_record?
       end
-      if out.empty? || out.last.first != period.ends_at.to_formatted_s( :db )
-        out.push( [ period.ends_at.to_formatted_s( :db ),
-          Membership.overlap(period.ends_at,period.ends_at).where(:position_id => position_id).count ] )
+      if out.empty? || out.first.first != period.starts_at.to_date
+        out.unshift( [ period.starts_at.to_date,
+          memberships.overlap(period.starts_at,period.starts_at).where(:position_id => position_id).count ] )
+      end
+      if out.empty? || out.last.first != period.ends_at.to_date
+        out.push( [ period.ends_at.to_date,
+          memberships.overlap(period.ends_at,period.ends_at).where(:position_id => position_id).count ] )
       end
     end
     out
@@ -173,7 +179,7 @@ class Membership < ActiveRecord::Base
 
   def concurrent_memberships_must_not_exceed_slots
     return unless starts_at && ends_at && position
-    if position.slots < max_concurrent_count
+    unless position.slots > max_concurrent_count
       errors.add :position, "lacks free slots for the specified time period"
     end
   end
@@ -229,24 +235,22 @@ class Membership < ActiveRecord::Base
     # TODO: kludge because of odd behavior of dirty tracking when correct behavior is resolved
     return unless destroyed? || period_id_changed? || starts_at_changed? || ends_at_changed? ||
       period_id_previously_changed? || starts_at_previously_changed? || ends_at_previously_changed?
+    position.reload
     # Eliminate unassigned shifts in the new period for this shift
     periods = position.schedule.periods.overlaps( starts_at, ends_at ).to_a
-    position.memberships.with_exclusive_scope do
-      periods.each do |p|
-         position.memberships.unassigned.where( :period_id => p.id ).delete_all
-      end
-      # Fill unassigned shifts for current and previous unfilled period
-      # TODO: kludge because of odd behavior of dirty tracking when correct behavior is resolved
-      unless starts_at_changed? || ends_at_changed?
-        periods += position.schedule.periods.overlaps( starts_at_was, ends_at_was ).to_a
-      end
-      unless starts_at_previously_changed? || ends_at_previously_changed?
-        periods += position.schedule.periods.overlaps( starts_at_previously_was, ends_at_previously_was ).to_a
-      end
-      periods.uniq.each do |p|
-        position.memberships.reload
-        position.memberships.populate_unassigned_for_period! p
-      end
+    periods.each do |p|
+       position.memberships.unassigned.where( :period_id => p.id ).delete_all
+    end
+    # Fill unassigned shifts for current and previous unfilled period
+    # TODO: kludge because of odd behavior of dirty tracking when correct behavior is resolved
+    unless starts_at_changed? || ends_at_changed?
+      periods += position.schedule.periods.overlaps( starts_at_was, ends_at_was ).to_a
+    end
+    unless starts_at_previously_changed? || ends_at_previously_changed?
+      periods += position.schedule.periods.overlaps( starts_at_previously_was, ends_at_previously_was ).to_a
+    end
+    periods.uniq.each do |p|
+      position.memberships.populate_unassigned_for_period! p
     end
   end
 

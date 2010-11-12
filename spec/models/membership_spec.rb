@@ -71,18 +71,18 @@ describe Membership do
 
   it 'should detect concurrent assigned memberships and prevent overstaffing' do
     assigned = setup_membership_with_vacancies
-    second = Factory( :membership, :starts_at => assigned.starts_at + 1.day,
-      :ends_at => assigned.ends_at - 1.day, :position => assigned.position,
-      :period => assigned.period )
+    second = Factory( :membership, :starts_at => assigned.starts_at + 1.days,
+      :ends_at => assigned.ends_at - 1.days, :position => assigned.position,
+      :period => assigned.period, :user => Factory(:user) )
     assigned.reload
     over = Factory.build(:membership, :starts_at => assigned.starts_at,
       :ends_at => assigned.ends_at, :position => assigned.position,
       :period => assigned.period, :user => Factory(:user) )
-    counts = over.concurrent_membership_counts
-    counts[assigned.starts_at].should eql 2
-    counts[second.starts_at].should eql 3
-    counts[second.ends_at].should eql 3
-    counts[assigned.ends_at].should eql 2
+    counts = over.concurrent_counts
+    counts[0].should eql [assigned.starts_at, 1]
+    counts[1].should eql [second.starts_at, 2]
+    counts[2].should eql [second.ends_at, 2]
+    counts[3].should eql [assigned.ends_at, 1]
     counts.size.should eql 4
     over.save.should eql false
   end
@@ -268,8 +268,11 @@ describe Membership do
   def setup_membership_with_vacancies
     period = Factory(:period, :schedule => Factory(:schedule) )
     position = Factory(:position, :schedule => period.schedule, :slots => 2)
-    position.memberships.create!( :user => Factory(:user), :period => period,
+    membership = position.memberships.create!( :user => Factory(:user), :period => period,
       :starts_at => period.starts_at, :ends_at => period.ends_at )
+    position.memberships.unassigned.length.should eql 1
+    position.memberships.assigned.length.should eql 1
+    membership
   end
 end
 
