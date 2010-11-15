@@ -116,20 +116,26 @@ class User < ActiveRecord::Base
     name.squeeze(' ').strip
   end
 
-  def enrollments
-    Enrollment.memberships_user_id_equals( id )
+  def enrollments(tense = nil)
+    Membership.send( :with_exclusive_scope ) do
+      if tense
+        Enrollment.joins(:memberships) & Membership.where( :user_id => id ).send(tense)
+      else
+        Enrollment.joins(:memberships) & Membership.where( :user_id => id )
+      end
+    end
   end
 
   def current_enrollments
-    enrollments.memberships_current
+    enrollments :current
   end
 
   def past_enrollments
-    enrollments.memberships_past
+    enrollments :past
   end
 
   def future_enrollments
-    enrollments.memberships_future
+    enrollments :future
   end
 
   def to_s; name; end

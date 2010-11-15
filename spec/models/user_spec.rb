@@ -135,7 +135,7 @@ describe User do
     file = Tempfile.new('resume.pdf')
     @temporary_files << file
     size.times { file << 'a' }
-    ActionController::TestUploadedFile.new(file.path,type)
+    fixture_file_upload file.path, type
   end
 end
 
