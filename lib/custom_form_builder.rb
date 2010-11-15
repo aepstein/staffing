@@ -23,24 +23,24 @@ class CustomFormBuilder < Formtastic::SemanticFormBuilder
   end
 
   def is_used_as_nested_attribute?
-    /\[#{class_name.pluralize}_attributes\]\[[0-9]+\]/.match @object_name.to_s
+    /\[#{self.class.to_s.pluralize}_attributes\]\[[0-9]+\]/.match @object_name.to_s
   end
 
   def text_field_with_auto_complete(method, tag_options = {}, completion_options = {})
     if completion_options[:child_index]
-      unique_object_name = "#{class_name}_#{completion_options[:child_index]}"
+      unique_object_name = "#{self.class.to_s}_#{completion_options[:child_index]}"
     elsif @options[:child_index]
-      unique_object_name = "#{class_name}_#{@options[:child_index]}"
+      unique_object_name = "#{self.class.to_s}_#{@options[:child_index]}"
     elsif is_used_as_nested_attribute?
       unique_object_name = sanitized_object_name
     elsif !(@object_name.to_s =~ /\[\]$/)
       unique_object_name = sanitized_object_name
     else
-      unique_object_name = "#{class_name}_#{Object.new.object_id.abs}"
+      unique_object_name = "#{self.class.to_s}_#{Object.new.object_id.abs}"
     end
     completion_options_for_class_name = {
-      :url => { :action => "auto_complete_for_#{class_name}_#{method}" },
-      :param_name => "#{class_name}[#{method}]"
+      :url => { :action => "auto_complete_for_#{self.class.to_s}_#{method}" },
+      :param_name => "#{self.class.to_s}[#{method}]"
     }.update(completion_options)
     @template.auto_complete_field_with_style_and_script(unique_object_name,
                                                         method,
