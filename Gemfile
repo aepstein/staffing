@@ -27,7 +27,8 @@ group :development, :test do
   gem 'rspec-rails', ">= 2.0"
   gem 'cucumber'
   gem 'cucumber-rails'
-  gem 'webrat'
+#  gem 'webrat'
+  gem 'webrat', '>=0.7.2.beta.6', :git => 'git://github.com/orangewise/webrat.git'
   gem 'factory_girl'
   gem 'pickle'
   gem 'email_spec'
