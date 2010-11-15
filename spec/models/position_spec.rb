@@ -43,14 +43,11 @@ describe Position do
     @position.save.should be_false
   end
 
-  it 'should have a memberships.edges_for that shows edges for a period' do
-    period = Factory(:period, :schedule => @position.schedule)
-    @position.memberships.create(:period => period, :starts_at => period.starts_at + 2.days,
-      :ends_at => period.ends_at - 2.days, :user => Factory(:user) )
-    edges = @position.memberships.edges_for(period)
-    edges.should eql [ period.starts_at, period.starts_at + 1.day,
-      period.starts_at + 2.days, period.ends_at - 2.days, period.ends_at - 1.day,
-      period.ends_at ]
+  it 'should have a requestable_by_committee scope' do
+    @position.requestable_by_committee.should eql false
+    focus = Factory(:position, :requestable_by_committee => true)
+    Position.requestable_by_committee.length.should eql 1
+    Position.requestable_by_committee.should include focus
   end
 
   it 'should have a membership.vacancies_for_period' do

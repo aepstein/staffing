@@ -80,7 +80,7 @@ class User < ActiveRecord::Base
   end
 
   def requestable_committees
-    Committee.requestable.joins(:positions) & Position.requestable_by_committee.with_status( status ).group(:id)
+    Committee.requestable.joins(:positions) & Position.requestable_by_committee.with_status( status )
   end
 
   def requestable_positions
