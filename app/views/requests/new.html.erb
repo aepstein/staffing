@@ -1,6 +1,6 @@
 <h2>New request of <%=h @request.user.name %> for <%=h @request.requestable %></h2>
 
-<% semantic_form_for(:request, @request, :url => polymorphic_path([
+<%= semantic_form_for(:request, @request, :url => polymorphic_path([
     (@membership ? @membership : @request.requestable), :requests
   ]),
   :html => { :multipart => true } ) do |f| %>

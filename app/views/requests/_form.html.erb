@@ -1,5 +1,5 @@
   <%= form.error_messages %>
-  <% form.inputs do %>
+  <%= form.inputs do %>
     <% if form.object.new_record? -%>
     <%= form.input :user_id, :as => :hidden %>
     <% end -%>
@@ -11,12 +11,12 @@
       :hint => 'Select the position among your unexpired requests that reflects '+
       'your level of preference for this committee or position.' %>
     <% form.object.answers.each do |answer| %>
-      <% form.semantic_fields_for :answers, answer do |subform| %>
+      <%= form.semantic_fields_for :answers, answer do |subform| %>
         <%= subform.input( :question_id, :as => :hidden ) if subform.object.new_record? %>
         <%= render_question subform %>
       <% end %>
     <% end %>
-    <% form.semantic_fields_for :user do |subform| %>
+    <%= form.semantic_fields_for :user do |subform| %>
       <%= subform.input :resume, :as => :file,
         :hint => 'You may optionally provide a resume (pdf only). This resume will appear in all your membership requests.' %>
     <% end %>

@@ -1,6 +1,6 @@
 <h2>Editing motion for <%=h @motion.committee %></h2>
 
-<% semantic_form_for(@motion) do |f| %>
+<%= semantic_form_for(@motion) do |f| %>
   <%= render :partial => 'form', :object => f %>
 <% end %>
 

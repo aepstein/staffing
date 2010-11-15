@@ -1,6 +1,6 @@
 <h2>Reject <%=h @request.user.name %> for <%=h @request.requestable %></h2>
 
-<% semantic_form_for(:request, @request, :url => do_reject_request_path(@request), :html => { :method => :put } ) do |form| %>
+<%= semantic_form_for(:request, @request, :url => do_reject_request_path(@request), :html => { :method => :put } ) do |form| %>
   <% form.inputs do %>
     <%= form.input :rejected_by_authority, :as => :select, :label => 'Authority',
       :hint => 'Under which authority should rejection be made?',

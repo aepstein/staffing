@@ -1,6 +1,6 @@
 <h2><%= params[:action].titleize %> committees<%= @user ? " for #{h(@user)}" : "" %></h2>
 
-<% semantic_form_for @search do |form| %>
+<%= semantic_form_for @search do |form| %>
 <p>
   <%= form.label :name_like, 'Name' %>
   <%= form.text_field :name_like %>

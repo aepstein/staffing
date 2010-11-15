@@ -1,6 +1,6 @@
 <h2>New enrollment for <%=h @enrollment.committee %></h2>
 
-<% semantic_form_for(:enrollment, @enrollment, :url => committee_enrollments_path(@enrollment.committee) ) do |f| %>
+<%= semantic_form_for(:enrollment, @enrollment, :url => committee_enrollments_path(@enrollment.committee) ) do |f| %>
   <%= render :partial => 'form', :object => f %>
 <% end %>
 

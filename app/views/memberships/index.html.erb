@@ -1,6 +1,6 @@
 <h2><%=h params[:action].titleize %> memberships<%=h @committee ?  " for #{@committee}" : "" %><%=h @user ?  " for #{@user}" : "" %><%=h @position ?  " for #{@position}" : "" %><%=h @authority ?  " for #{@authority}" : "" %></h2>
 
-<% semantic_form_for @search do |form| %>
+<%= semantic_form_for @search do |form| %>
   <% unless @user %>
   <p>
     <%= form.label :user_name_like,'User' %>

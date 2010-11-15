@@ -9,7 +9,7 @@ class Sending < ActiveRecord::Base
   scope :complete, where( :completed_at.ne => nil )
 
   def deliver!
-    SendingMailer.deliver_sending self
+    SendingMailer.sending( self ).deliver
     self.completed_at = Time.now
     save
   end

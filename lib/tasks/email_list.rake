@@ -70,7 +70,7 @@ namespace :email_list do
   end
 
   def current_email_lists_path
-    "#{RAILS_ROOT}/db/uploads/#{RAILS_ENV}/email_lists/current"
+    "#{::Rails.root}/db/uploads/#{::Rails.env}/email_lists/current"
   end
 
   def open_email_list_file(path, subject)
