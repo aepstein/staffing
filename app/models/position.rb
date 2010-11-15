@@ -73,9 +73,7 @@ class Position < ActiveRecord::Base
   scope :unrequestable, where( :requestable => false )
   scope :renewable, where( :renewable => true )
   scope :unrenewable, where( :renewable => false )
-  scope :requestable_by_committee_equals, lambda { |v|
-    where( :requestable_by_committee => v )
-  }
+  scope :requestable_by_committee, where( :requestable_by_committee => true )
 
   validates_presence_of :name
   validates_uniqueness_of :name
