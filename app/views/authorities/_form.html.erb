@@ -1,9 +1,9 @@
   <%= render "shared/error_messages", :target => form.object %>
-  <% form.inputs do %>
+  <%= form.inputs do %>
   <%= form.input :name %>
-  <%= form.input( :committee_name, :label => 'Committee', :as => :string_with_auto_complete, :remote => {
-    :url => committees_path(:format => :js), :method => :get, :with => "'search[name_like]=' + element.value"
-  }, :hint => "Specify the committee, if any, whose members should be able to read and comment on requests under this authority." ) %>
+  <%= form.input :committee_name, :label => 'Committee', :as => :string,
+    :hint => "Specify the committee, if any, whose members should be able to read " +
+    "and comment on requests under this authority." %>
   <%= form.input :join_message %>
   <%= form.input :leave_message %>
   <%= form.input :reject_message %>

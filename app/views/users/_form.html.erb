@@ -8,7 +8,7 @@
     <%= form.input :work_phone %>
     <%= form.input :home_phone %>
     <%= form.input :work_address %>
-    <%= form.input :date_of_birth, :as => :ft_calendar_date_select %>
+    <%= form.input :date_of_birth, :as => :string %>
     <%= form.input :resume, :as => :file, :hint => 'You may optionally provide a resume (pdf only)' %>
     <% if permitted_to? :manage, form.object %>
       <%= form.input :net_id %>

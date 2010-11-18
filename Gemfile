@@ -1,5 +1,5 @@
 source 'http://rubygems.org'
-gem 'rails', '3.0.1'
+gem 'rails', '3.0.3'
 gem 'sqlite3-ruby', :require => 'sqlite3'
 gem 'validates_timeliness', '~> 3.0'
 gem 'gettext'
@@ -27,7 +27,7 @@ group :development, :test do
   gem 'rspec', '>= 2.0'
   gem 'rspec-rails', ">= 2.0"
   gem 'cucumber'
-  gem 'cucumber-rails'
+  gem 'cucumber-rails', :git => 'git://github.com/aslakhellesoy/cucumber-rails.git', :branch => 'master'
 #  gem 'webrat'
 #  gem 'webrat', '>=0.7.2.beta.6', :git => 'git://github.com/orangewise/webrat.git'
   gem 'capybara'
