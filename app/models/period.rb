@@ -7,21 +7,34 @@ class Period < ActiveRecord::Base
     where( :schedule_id => period.schedule_id ) }
 
   belongs_to :schedule
-
-  has_many :memberships
+  has_many :memberships, :dependent => :destroy do
+    def populate_unassigned!
+      proxy_owner.schedule.positions.each do |position|
+        position.memberships.populate_unassigned_for_period! proxy_owner
+      end
+    end
+    def repopulate_unassigned!
+      where(:starts_at.lt => proxy_owner.starts_at).update_all(
+        "starts_at = #{connection.quote proxy_owner.starts_at}"
+      )
+      where(:ends_at.gt => proxy_owner.ends_at).update_all(
+        "ends_at = #{connection.quote proxy_owner.ends_at}"
+      )
+      Membership.unassigned.where(:period_id => proxy_owner.id).delete_all
+      proxy_owner.reload
+      populate_unassigned!
+    end
+  end
 
   validates_presence_of :schedule
   validates_date :starts_at
   validates_date :ends_at, :after => :starts_at
   validate :must_not_conflict_with_other_period
 
-  after_create { |r| r.schedule.positions.each { |p| p.memberships.populate_unassigned_for_period! r } }
+  after_create { |r| r.memberships.populate_unassigned! }
   after_update { |r|
-    return unless r.starts_at_previously_changed? || r.ends_at_previously_changed?
-    r.memberships.where(:starts_at.lt => r.starts_at).update_all( "starts_at = #{r.connection.quote r.starts_at}" )
-    r.memberships.where(:ends_at.gt => r.ends_at).update_all( "ends_at = #{r.connection.quote r.ends_at}" )
-    Membership.unassigned.where(:period_id => r.id).delete_all
-    r.schedule.positions(true).each { |position| position.memberships.populate_unassigned_for_period! r }
+    # TODO is this based on intended rails behavior?
+    r.memberships.repopulate_unassigned! if r.starts_at_changed? || r.ends_at_changed?
   }
 
   def must_not_conflict_with_other_period
@@ -33,5 +46,6 @@ class Period < ActiveRecord::Base
   def to_range; starts_at..ends_at; end
 
   def to_s; "#{starts_at.to_s :rfc822} - #{ends_at.to_s :rfc822}"; end
+
 end
 

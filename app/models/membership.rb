@@ -233,8 +233,7 @@ class Membership < ActiveRecord::Base
   def populate_unassigned
     return if user.blank?
     # TODO: kludge because of odd behavior of dirty tracking when correct behavior is resolved
-    return unless destroyed? || period_id_changed? || starts_at_changed? || ends_at_changed? ||
-      period_id_previously_changed? || starts_at_previously_changed? || ends_at_previously_changed?
+    return unless destroyed? || period_id_changed? || starts_at_changed? || ends_at_changed?
     position.reload
     # Eliminate unassigned shifts in the new period for this shift
     periods = position.schedule.periods.overlaps( starts_at, ends_at ).to_a
@@ -246,9 +245,9 @@ class Membership < ActiveRecord::Base
     unless starts_at_changed? || ends_at_changed?
       periods += position.schedule.periods.overlaps( starts_at_was, ends_at_was ).to_a
     end
-    unless starts_at_previously_changed? || ends_at_previously_changed?
-      periods += position.schedule.periods.overlaps( starts_at_previously_was, ends_at_previously_was ).to_a
-    end
+#    unless starts_at_previously_changed? || ends_at_previously_changed?
+#      periods += position.schedule.periods.overlaps( starts_at_previously_was, ends_at_previously_was ).to_a
+#    end
     periods.uniq.each do |p|
       position.memberships.populate_unassigned_for_period! p
     end

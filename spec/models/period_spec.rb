@@ -43,10 +43,11 @@ describe Period do
     first.save.should eql true
     second.user = Factory(:user)
     second.starts_at = original_start + 2.days
-    second.save.should eql true
+    second.save!
     @period.starts_at += 1.day
     @period.ends_at -= 1.day
     @period.save
+    @period.memberships.reload
     @period.memberships.should_not include third
     @period.memberships.should include first
     @period.memberships.should include second
