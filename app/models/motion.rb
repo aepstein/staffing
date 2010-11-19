@@ -25,16 +25,21 @@ class Motion < ActiveRecord::Base
     def build_divided( instances=false )
       instances ||= (empty? ? 2 : 1 )
       new_motions = []
+      new_attributes = proxy_owner.attributes
+      %w( committee_id id position created_at updated_at ).each { |attribute| new_attributes.delete attribute }
       instances.times do |i|
-        new_motion = build( proxy_owner.attributes.merge( { :name => "#{proxy_owner.name} (#{proxy_owner.id}-#{i})" } ) )
+        new_attributes[:name] = "#{proxy_owner.name} (#{proxy_owner.id}-#{i})"
+        new_motion = build new_attributes
         new_motion.committee = proxy_owner.committee
         new_motions << new_motion
       end
       new_motions
     end
 
-    def create_divided( instances=false )
-      build_divided( instances ).map { |motion| motion.save!; motion }
+    def create_divided!( instances=false )
+      with_exclusive_scope do
+        build_divided( instances ).map { |motion| motion.save!; motion }
+      end
     end
   end
 
@@ -42,18 +47,19 @@ class Motion < ActiveRecord::Base
 
   validates_presence_of :name
   validates_uniqueness_of :name, :scope => [ :period_id, :committee_id ]
+  validates_uniqueness_of :position, :scope => [ :period_id, :committee_id ]
   validates_presence_of :period
   validates_presence_of :user
   validates_presence_of :committee
   validate :user_must_be_voting_in_committee, :period_must_be_in_committee_schedule
 
+  before_validation :add_to_list_bottom, :on => :create
   before_create do |motion|
     if motion.referee?
       motion.referring_motion.lock!
       motion.referring_motion.refer!
     end
   end
-
   after_create do |motion|
     motion.referring_motion.save! if motion.referee?
   end
@@ -118,9 +124,11 @@ class Motion < ActiveRecord::Base
     committee.memberships.where( 'enrollments.votes > 0', :period_id => period_id, :user_id => user_id )
   end
 
+  def to_s; name; end
+
   protected
 
-  def do_divide; referred_motions.create_divided; end
+  def do_divide; referred_motions.create_divided!; end
 
   # User must have a vote in the committee associated with this motion unless
   # it has been referred or divided
