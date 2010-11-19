@@ -1,7 +1,7 @@
 <% committee ||= false %>
 <% period ||= false %>
 <% user ||= false %>
-  <% table_row_tag do %>
+  <%= table_row_tag do %>
     <% unless committee %>
     <td><%=h motion.committee %></td>
     <% end %>

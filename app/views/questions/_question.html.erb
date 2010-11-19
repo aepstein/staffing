@@ -1,4 +1,4 @@
-  <% table_row_tag do %>
+  <%= table_row_tag do %>
     <td><%=h question.name %></td>
     <td><%=h question.content %></td>
     <td><%= Question::DISPOSITIONS.key( question.disposition ) %></td>

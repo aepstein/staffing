@@ -1,21 +1,6 @@
 <h1>Listing sendings</h1>
 
-<table>
-  <tr>
-    <th>User</th>
-    <th>Message</th>
-  </tr>
-
-<% @sendings.each do |sending| %>
-  <tr>
-    <td><%=h sending.user %></td>
-    <td><%=h sending.message %></td>
-    <td><%= link_to 'Show', sending %></td>
-    <td><%= link_to( 'Edit', edit_sending_path(sending) ) if permitted_to? :edit, sending %></td>
-    <td><%= link_to( 'Destroy', sending, :confirm => 'Are you sure?', :method => :delete ) if permitted_to? :destroy, sending %></td>
-  </tr>
-<% end %>
-</table>
+<%= render :partial => "sendings", :object => @sendings %>
 
 <br />
 

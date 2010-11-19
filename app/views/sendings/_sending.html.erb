@@ -1,0 +1,8 @@
+  <%= table_row_tag do %>
+    <td><%=h sending.user %></td>
+    <td><%=h sending.message %></td>
+    <td><%= link_to 'Show', sending %></td>
+    <td><%= link_to( 'Edit', edit_sending_path(sending) ) if permitted_to? :edit, sending %></td>
+    <td><%= link_to( 'Destroy', sending, :confirm => 'Are you sure?', :method => :delete ) if permitted_to? :destroy, sending %></td>
+  <% end %>
+

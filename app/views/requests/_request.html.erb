@@ -1,5 +1,5 @@
 <% user ||= false; requestable ||= false %>
-  <% table_row_tag do %>
+  <%= table_row_tag do %>
     <% unless user %>
     <td><%=h request.user.name :last_first %></td>
     <% end %>

@@ -1,4 +1,4 @@
-  <% table_row_tag do %>
+  <%= table_row_tag do %>
     <td><%=h period.starts_at.to_s :rfc822 %></td>
     <td><%=h period.ends_at.to_s :rfc822 %></td>
     <% unless read_only %>

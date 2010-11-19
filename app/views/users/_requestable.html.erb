@@ -1,4 +1,4 @@
-<% table_row_tag do %>
+<%= table_row_tag do %>
   <td><%=h requestable %></td>
   <% if current_user.requestables.include? requestable %>
   <td><%= link_to 'Edit Request', edit_polymorphic_path( current_user.requests.select { |r| r.requestable == requestable }.first ) %></td>

@@ -1,4 +1,4 @@
-  <% table_row_tag do %>
+  <%= table_row_tag do %>
     <% unless user -%>
     <td><%= membership.user ? h(membership.user) : "<i>unassigned</i>" %></td>
     <% end -%>
