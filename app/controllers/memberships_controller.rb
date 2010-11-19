@@ -197,22 +197,27 @@ class MembershipsController < ApplicationController
     if params[:user_id]
       @user = User.find params[:user_id]
       @memberships = @user.memberships
+      @context = @user
     end
     if params[:request_id]
       @request = Request.find params[:request_id]
       @memberships = @request.memberships
+      @context = @request
     end
     if params[:position_id]
       @position = Position.find params[:position_id]
       @memberships = @position.memberships
+      @context = @position
     end
     if params[:committee_id]
       @committee = Committee.find params[:committee_id]
       @memberships = @committee.memberships
+      @context = @committee
     end
     if params[:authority_id]
       @authority = Authority.find params[:authority_id]
       @memberships = @authority.memberships
+      @context = @authority
     end
     @membership = Membership.find( params[:id], :include => :designees ) if params[:id]
   end
