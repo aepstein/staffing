@@ -1,4 +1,5 @@
 class RequestMailer < ActionMailer::Base
+  helper :application
 
   def reject_notice( request )
     @request = request

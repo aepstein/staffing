@@ -5,7 +5,7 @@ describe Request do
     @request = Factory(:request)
   end
 
-  it "should create a new instance given valid attributes" do
+  xit "should create a new instance given valid attributes" do
     @request.id.should_not be_nil
   end
 
