@@ -13,6 +13,7 @@ Spork.prefork do
     config.mock_with :rspec
     config.fixture_path = "#{::Rails.root}/spec/fixtures"
     config.use_transactional_fixtures = true
+    config.include ActionDispatch::TestProcess
     config.after(:all) do
       data_directory = File.expand_path(File.dirname(__FILE__) + "../../db/uploads/#{::Rails.env}")
       if File.directory?(data_directory)
