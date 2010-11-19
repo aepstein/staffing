@@ -32,7 +32,7 @@ Feature: Manage authorities
       | user    | create  | update  | destroy | show |
       | admin   | see     | see     | see     | see  |
       | regular | not see | not see | not see | see  |
-@wip
+
   Scenario: Register new authority and edit
     Given a committee exists with name: "First committee"
     And a committee exists with name: "Second committee"

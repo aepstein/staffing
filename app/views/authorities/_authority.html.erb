@@ -1,4 +1,4 @@
-  <% table_row_tag do %>
+  <%= table_row_tag do %>
     <td><%=h authority.name %></td>
     <td><%= link_to 'Show', authority %></td>
     <td><%= link_to( 'Edit', edit_authority_path(authority) ) if permitted_to? :edit, authority %></td>
