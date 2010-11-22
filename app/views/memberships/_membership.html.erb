@@ -1,6 +1,6 @@
   <%= table_row_tag do %>
     <% unless user -%>
-    <td><%= membership.user ? h(membership.user) : "<i>unassigned</i>" %></td>
+    <td><%= membership.user ? membership.user : raw("<i>unassigned</i>") %></td>
     <% end -%>
     <% unless position -%>
     <td><%=h membership.position %></td>

@@ -1,5 +1,5 @@
   <%= render "shared/error_messages", :target => form.object %>
-  <% form.inputs do %>
+  <%= form.inputs do %>
   <%= form.input :starts_at, :as => :string %>
   <%= form.input :ends_at, :as => :string %>
   <% end %>

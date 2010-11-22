@@ -1,4 +1,5 @@
 class MembershipMailer < ActionMailer::Base
+  helper :application
 
   def join_notice(membership)
     @membership = membership

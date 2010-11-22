@@ -56,7 +56,7 @@ Feature: Manage users
       | Requestable        |
       | Unexpired Position |
     And I should see "1 expired request"
-
+@wip
   Scenario: Register new user and edit
     Given I log in as user: "admin"
     And I am on the new user page

@@ -1,5 +1,5 @@
 <%= render "shared/error_messages", :target => form.object %>
-<% form.inputs do %>
+<%= form.inputs do %>
 <%= form.input :starts_at, :hint => 'After when should the memberships should start?',
   :as => :string %>
 <%= form.input :ends_at, :hint => 'After when should the memberships end?',

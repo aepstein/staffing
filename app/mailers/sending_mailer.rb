@@ -1,4 +1,5 @@
 class SendingMailer < ActionMailer::Base
+  helper :application
 
   def sending(sending)
     @sending = sending

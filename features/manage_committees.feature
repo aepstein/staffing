@@ -6,32 +6,24 @@ Feature: Manage committees
   Background:
     Given a user: "admin" exists with admin: true
 
-  Scenario: Show requestable committees for current user
-    Given a committee: "beta" exists with name: "Beta Committee", requestable: true
-    And a committee: "available" exists with name: "Available Committee", requestable: true
-    And a committee: "unrequestable" exists with name: "Unrequestable Committee", requestable: false
-    And a committee: "unavailable" exists with name: "Unavailable Committee", requestable: true
-    And a committee: "no_positions" exists with name: "No Positions Committee", requestable: true
-    And a position exists with name: "Available Position"
-    And an enrollment exists with position: the position, committee: committee "available"
-    And an enrollment exists with committee: committee "available"
-    And an enrollment exists with committee: committee "beta"
-    And a position exists with name: "Unrequestable Position"
-    And an enrollment exists with position: the position, committee: committee "unrequestable"
-    And a position exists with name: "Unavailable Position", statuses_mask: 2
-    And an enrollment exists with position: the position, committee: committee "unavailable"
-    And a user: "owner" exists with first_name: "John", last_name: "Doe"
-    And I log in as user: "owner"
-    Then I should see "You may browse 2 committees and 4 positions for which you are eligible to request membership."
-    Given I am on the requestable committees page for user: "owner"
-    Then I should see "Requestable committees for John Doe"
-    And I should see the following committees:
-      | Name                |
-      | Available Committee |
-      | Beta Committee      |
-    And I should not see "Unrequestable Committee"
-    And I should not see "Unavailable Committee"
-    And I should not see "No Positions Committee"
+  Scenario Outline: Show requestable committees for current user
+    Given a position exists with requestable: <p_req>, requestable_by_committee: <p_req_c>, statuses_mask: <mask>
+    And a committee exists with requestable: <c_req>
+    And an enrollment exists with position: the position, committee: the committee
+    And a user exists with statuses_mask: 1
+    And I log in as the user
+    Then I should see "You may browse <n_com> and <n_pos> for which you are eligible to request membership."
+    Examples:
+      | p_req | p_req_c | mask | c_req | n_pos       | n_com        |
+      | true  | false   | 0    | false | 1 position  | 0 committees |
+      | false | true    | 0    | false | 0 positions | 0 committees |
+      | false | false   | 0    | false | 0 positions | 0 committees |
+      | false | true    | 0    | true  | 0 positions | 1 committee  |
+      | true  | true    | 0    | true  | 1 position  | 1 committee  |
+      | false | true    | 2    | true  | 0 positions | 0 committees |
+      | true  | false   | 2    | false | 0 positions | 0 committees |
+      | false | true    | 3    | true  | 0 positions | 1 committee  |
+      | true  | false   | 3    | false | 1 position  | 0 committees |
 
   Scenario Outline: Test permissions for committees controller actions
     Given a committee exists with name: "Focus"

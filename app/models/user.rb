@@ -26,10 +26,11 @@ class User < ActiveRecord::Base
   scope :name_like, lambda { |name|
     where(
       %w( first_name last_name middle_name net_id ).map { |c|
-        "users.#{c} LIKE " + connection.quote( "%#{text}%" )
-      }.join( ' OR ' )
+        "users.#{c} LIKE :name"}.join( ' OR ' ), :name => "%#{name}%"
     )
   }
+
+  search_methods :name_like
 
   has_attached_file :resume,
     :path => ':rails_root/db/uploads/:rails_env/users/:attachment/:id_partition/:style/:basename.:extension',

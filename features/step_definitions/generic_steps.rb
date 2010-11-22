@@ -25,9 +25,10 @@ When /^(?:|I )attach a file of type "([^\"]*)" and (\d+) (bytes?|kilobytes?|mega
   file = Tempfile.new('resume.pdf')
   $temporary_files << file
   size.to_i.send( unit.to_sym ).times { file << 'a' }
-  ActionController::TestUploadedFile.new(file.path,type)
+#  fixture_file_upload file.path, type
 
-  attach_file(field, file.path, type)
+#  attach_file(field, file.path, type)
+  attach_file field, file.path
 end
 
 When /^I follow "(.+)" for the (\d+)(?:st|nd|rd|th) #{capture_factory}(?: for #{capture_model})?$/ do |link, position, subject, context|
@@ -91,7 +92,7 @@ end
 
 Given /^an? ([a-z\s]+) email is sent for #{capture_model}$/ do |notice, context|
   notice[" "]= "_" if notice[" "]
-  "#{model(context).class.to_s}Mailer".constantize.send( "deliver_#{notice}", model(context) )
+  "#{model(context).class.to_s}Mailer".constantize.send( notice, model(context) ).deliver
 end
 
 Then /^(?:I|they) should not see "([^"]*?)" in the email body$/ do |text|
