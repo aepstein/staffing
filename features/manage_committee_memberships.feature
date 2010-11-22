@@ -1,3 +1,4 @@
+
 Feature: Manage committee memberships
   In order to identify memberships and enrollments for users
   As a user interested in knowing affiliations of a user
