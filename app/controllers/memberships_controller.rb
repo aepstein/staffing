@@ -89,7 +89,7 @@ class MembershipsController < ApplicationController
   # GET /authorities/:authority_id/memberships
   # GET /authorities/:authority_id/memberships.xml
   def index
-    @search = @memberships ? @memberships.search( params[:search] ) : Membership.with_user.search( params[:search] )
+    @search = @memberships ? @memberships.ordered.search( params[:search] ) : Membership.ordered.with_user.search( params[:search] )
     @memberships = @search.paginate( :page => params[:page], :include => [ :request ] )
 
     respond_to do |format|
@@ -123,7 +123,7 @@ class MembershipsController < ApplicationController
 
   # GET /memberships/1/edit
   def edit
-    if @request
+    unless @request.blank?
       @membership.starts_at, @membership.ends_at, @membership.request = nil, nil, @request
     end
     @membership.designees.populate

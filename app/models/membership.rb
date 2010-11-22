@@ -17,7 +17,7 @@ class Membership < ActiveRecord::Base
     end
   end
 
-  default_scope includes(:user,:period).order(
+  scope :ordered, includes(:user,:period).order(
     "memberships.ends_at DESC, memberships.starts_at DESC, " +
     "users.last_name ASC, users.first_name ASC, users.middle_name ASC"
   )
@@ -73,7 +73,9 @@ class Membership < ActiveRecord::Base
   validates_date :ends_at
   validate :must_be_within_period, :user_must_be_qualified, :concurrent_memberships_must_not_exceed_slots
 
-  before_validation { |r| r.designees.each { |d| d.membership = r } }
+  before_validation :on => :create do |r|
+    r.designees.each { |d| d.membership = r }
+  end
   after_save :claim_request!, :populate_unassigned
   after_destroy :populate_unassigned
 
@@ -168,14 +170,14 @@ class Membership < ActiveRecord::Base
 
   def must_be_within_period
     return unless period && starts_at && ends_at
-    if starts_at && ends_at && ends_at < starts_at
-      errors.add :ends_at, "must be at or after #{starts_at.to_s :rfc822}"
+    if starts_at && ends_at && ( ends_at < starts_at )
+      errors.add :ends_at, "must be at or after start date"
     end
-    if starts_at && period && period.starts_at > starts_at
-      errors.add :starts_at, "must be within #{period}"
+    if starts_at && period && ( period.starts_at > starts_at || period.ends_at < starts_at )
+      errors.add :starts_at, "must be within #{period} (#{period.id})"
     end
-    if ends_at && period && period.ends_at < ends_at
-      errors.add :ends_at, "must be within #{period}"
+    if ends_at && period && ( period.starts_at > ends_at || period.ends_at < ends_at )
+      errors.add :ends_at, "must be within #{period} (#{period.id})"
     end
   end
 
