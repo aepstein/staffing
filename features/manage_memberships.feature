@@ -121,7 +121,6 @@ Feature: Manage memberships
     And I fill in "Ends at" with "2010-01-15"
     And I check "Check to remove this designee"
     And I press "Update"
-    Then show me the page
     Then I should see "Membership was successfully updated."
     And I should see "User: Mister Cellophane"
     And I should see "Period: 1 Jun 2009 - 31 May 2010"
