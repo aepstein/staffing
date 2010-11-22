@@ -96,7 +96,15 @@ Given /^an? ([a-z\s]+) email is sent for #{capture_model}$/ do |notice, context|
 end
 
 Then /^(?:I|they) should not see "([^"]*?)" in the email body$/ do |text|
-  current_email.body.should_not include(text)
+  current_email.default_part_body.to_s.should_not include(text)
+end
+
+Then /^(?:I|they) should not see "([^"]*?)" in the email html part body$/ do |text|
+  current_email.html_part.body.to_s.should_not include(text)
+end
+
+Then /^(?:I|they) should not see "([^"]*?)" in the email text part body$/ do |text|
+  current_email.text_part.body.to_s.should_not include(text)
 end
 
 Then /^(?:|I) should see a field labeled "(.+)"$/ do |text|

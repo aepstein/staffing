@@ -16,12 +16,12 @@ Feature: Request mailer
     And "johnny.applicant@example.org" opens the email
     Then I should see "Your request for appointment to Cool <what> was declined" in the email subject
     And I should see the email delivered from "The Authority <info@example.org>"
-    And I should see "Dear Johnny," in the email body
-    And I should see "This notice is to inform you that your request for appointment to Cool <what> has been declined for the following reason(s):" in the email body
-    And I should see "Committee is <em>full</em>." in the email body
-    And I should see "<what> is not for <em>everyone</em>." in the email body
-    And I should see "Authority is <em>very</em> selective." in the email body
-    And I should see "The Authority" in the email body
+    And I should see "Dear Johnny," in the email text part body
+    And I should see "This notice is to inform you that your request for appointment to Cool <what> has been declined for the following reason(s):" in the email text part body
+    And I should see "Committee is <em>full</em>." in the email html part body
+    And I should see "<what> is not for <em>everyone</em>." in the email html part body
+    And I should see "Authority is <em>very</em> selective." in the email html part body
+    And I should see "The Authority" in the email text part body
     Examples:
       | what      |
       | position  |

@@ -21,12 +21,12 @@ Feature: User mailer
     And "john.doe@example.org" opens the email
     Then I should see "Your Action is Required to Renew Your Committee Memberships" in the email subject
     And I should see the email delivered from "info@example.org"
-    And I should <s_int> "You are interested in reappointment" in the email body
-    And I should <s_nint> "You are *not* interested in reappointment" in the email body
-    And I should <s_pos> "Focus Position" in the email body
-    And I should <s_com> "Focus Committee" in the email body
-    And I should see "Please contact The Authority <info@example.org> if you have any questions or concerns.  Thank you for your time and your consideration." in the email body
-    And I should see "Please *renew*." in the email body
+    And I should <s_int> "You are interested in reappointment" in the email text part body
+    And I should <s_nint> "You are *not* interested in reappointment" in the email text part body
+    And I should <s_pos> "Focus Position" in the email text part body
+    And I should <s_com> "Focus Committee" in the email text part body
+    And I should see "Please contact The Authority <info@example.org> if you have any questions or concerns.  Thank you for your time and your consideration." in the email text part body
+    And I should see "Please *renew*." in the email text part body
     Examples:
       |starts    |ends      |p_req|c_req|renewable|requestable      |requestor|request    |position|s_int  |s_nint |s_pos  |s_com  |
       |2008-01-01|2008-12-31|true |true |true     |position "focus" |focus    |the request|focus   |not see|see    |see    |not see|

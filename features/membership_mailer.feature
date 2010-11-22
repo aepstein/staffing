@@ -19,30 +19,30 @@ Feature: User mailer
     And "david.skorton@example.org" opens the email
     Then I should see "Your appointment to <description>" in the email subject
     And I should see the email delivered from "The Authority <info@example.org>"
-    And I should see "Dear David," in the email body
+    And I should see "Dear David," in the email text part body
     And I should see "This notice is to inform you that you have been assigned a membership in <description>, for a term starting on June 1st, 2008 and ending on May 31st, 2009." in the email body
-    And I should see "Welcome on behalf of the Board." in the email body
-    And I should see "Welcome to the position." in the email body
-    And I should see "Welcome to First Committee." in the email body
-    And I should see "Welcome to <committee> Committee." in the email body
-    And I should not see "Welcome to <not_committee> Committee." in the email body
-    And I should see "Leader of The First Committee with 1 vote" in the email body
-    And I should see "Member of The <committee> Committee with 2 votes" in the email body
-    And I should not see "Member of The <not_committee> Committee with 2 votes" in the email body
+    And I should see "Welcome on behalf of the Board." in the email text part body
+    And I should see "Welcome to the position." in the email text part body
+    And I should see "Welcome to First Committee." in the email text part body
+    And I should see "Welcome to <committee> Committee." in the email text part body
+    And I should not see "Welcome to <not_committee> Committee." in the email text part body
+    And I should see "Leader of The First Committee with 1 vote" in the email text part body
+    And I should see "Member of The <committee> Committee with 2 votes" in the email text part body
+    And I should not see "Member of The <not_committee> Committee with 2 votes" in the email text part body
     Given a leave notice email is sent for the membership
     And "david.skorton@example.org" opens the email with subject "Expiration"
     Then I should see "Expiration of your appointment to <description>" in the email subject
     And I should see the email delivered from "The Authority <info@example.org>"
-    And I should see "Dear David," in the email body
-    And I should see "This notice is to inform you that your membership in <description>, which began on June 1st, 2008, has expired as of May 31st, 2009." in the email body
-    And I should see "Farewell on behalf of the Board." in the email body
-    And I should see "Farewell to the position." in the email body
-    And I should see "Farewell to First Committee." in the email body
-    And I should see "Farewell to <committee> Committee." in the email body
-    And I should not see "Farewell to <not_committee> Committee." in the email body
-    And I should see "Leader of The First Committee" in the email body
-    And I should see "Member of The <committee> Committee" in the email body
-    And I should not see "Member of The <not_committee> Committee with 2 votes" in the email body
+    And I should see "Dear David," in the email text part body
+    And I should see "This notice is to inform you that your membership in <description>, which began on June 1st, 2008, has expired as of May 31st, 2009." in the email text part body
+    And I should see "Farewell on behalf of the Board." in the email text part body
+    And I should see "Farewell to the position." in the email text part body
+    And I should see "Farewell to First Committee." in the email text part body
+    And I should see "Farewell to <committee> Committee." in the email text part body
+    And I should not see "Farewell to <not_committee> Committee." in the email text part body
+    And I should see "Leader of The First Committee" in the email text part body
+    And I should see "Member of The <committee> Committee" in the email text part body
+    And I should not see "Member of The <not_committee> Committee with 2 votes" in the email text part body
     Examples:
       | p_req | c_req | description         | committee | not_committee |
       | true  | true  | The Position        | Second    | Third         |
