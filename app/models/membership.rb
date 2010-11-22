@@ -61,6 +61,8 @@ class Membership < ActiveRecord::Base
     where( [ 'enrollments.committee_id = ?', committee_id ] )
   }
 
+  search_methods :user_name_like
+
   delegate :enrollments, :to => :position
 
   accepts_nested_attributes_for :designees, :reject_if => proc { |a| a['user_name'].blank? }, :allow_destroy => true
