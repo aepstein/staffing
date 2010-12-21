@@ -27,7 +27,7 @@ group :development, :test do
   gem 'rspec', '>= 2.0'
   gem 'rspec-rails', ">= 2.0"
   gem 'cucumber'
-  gem 'cucumber-rails', :git => 'git://github.com/aslakhellesoy/cucumber-rails.git', :branch => 'master'
+  gem 'cucumber-rails', :git => 'git://github.com/aslakhellesoy/cucumber-rails.git', :branch => 'ae7c956c50fcbe1b0ab3abbaa7ada89aded4accb'
 #  gem 'webrat'
 #  gem 'webrat', '>=0.7.2.beta.6', :git => 'git://github.com/orangewise/webrat.git'
   gem 'capybara'

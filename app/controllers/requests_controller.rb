@@ -121,7 +121,7 @@ class RequestsController < ApplicationController
 
   # GET /requests/1/reject
   def reject
-    @request.rejected_by_authority ||= ( current_user.allowed_authorities & @request.authorities ).first
+    @request.rejected_by_authority ||= ( current_user.allowed_authorities.to_a & @request.authorities ).first
     return
   end
 
