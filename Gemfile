@@ -26,7 +26,8 @@ group :development, :test do
   gem 'rspec', '>= 2.0'
   gem 'rspec-rails', ">= 2.0"
   gem 'cucumber'
-  gem 'cucumber-rails', :git => 'git://github.com/aslakhellesoy/cucumber-rails.git', :branch => 'ae7c956c50fcbe1b0ab3abbaa7ada89aded4accb'
+#  gem 'cucumber-rails', :git => 'git://github.com/aslakhellesoy/cucumber-rails.git', :branch => 'ae7c956c50fcbe1b0ab3abbaa7ada89aded4accb'
+  gem 'cucumber-rails'
   gem 'capybara'
   gem 'factory_girl'
   gem 'pickle'
