@@ -111,12 +111,12 @@ class Request < ActiveRecord::Base
 
   def questions
     return Question.where(:id => nil) unless quizzes.length > 0
-    ( Question.joins(:quizzes) & Quiz.where( :id.in => quizzes.map(&:id) ) ).uniq
+    ( Question.scoped.joins(:quizzes) & Quiz.where( :id.in => quizzes.map(&:id) ) ).uniq
   end
 
   def authorities
     return Authority.where(:id => nil) unless positions.length > 0
-    ( Authority.joins(:positions) & Position.where( :id.in => position_ids ) ).uniq
+    ( Authority.scoped.joins(:positions) & Position.where( :id.in => position_ids ) ).uniq
   end
 
   def authority_ids; authorities.map(&:id); end
