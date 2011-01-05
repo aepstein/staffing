@@ -2,7 +2,7 @@
   <%= form.inputs do %>
   <%= form.input :user_name, :label => 'User', :as => :string %>
   <%= form.input :period, :collection => form.object.position.schedule.periods %>
-  <%= form.input :starts_at, :as => :string %>
+  <%= form.input :starts_at, :as => :date_picker %>
   <%= form.input :ends_at, :as => :string %>
     <% form.object.designees.each do |designee| %>
       <%= form.semantic_fields_for :designees, designee do |designee_form| %>
