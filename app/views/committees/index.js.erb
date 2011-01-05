@@ -1,6 +1,0 @@
-<ul>
-<% @committees.each do |committee| %>
-<li><%= (params[:search] && params[:search][:name_like]) ? highlight(committee.name, params[:search][:name_like]) : h(committee.name) %></li>
-<% end %>
-</ul>
-

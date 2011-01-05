@@ -15,8 +15,8 @@ class CommitteesController < ApplicationController
   # GET /committees
   # GET /committees.xml
   def index
-    @committees ||= Committee
-    @search = @committees.search( params[:search] )
+    @committees ||= Committee.scoped
+    @search = @committees.search( params[:term] ? { :name_contains => params[:term] } : params[:search] )
     @committees = @search.paginate( :page => params[:page] )
 
     respond_to do |format|

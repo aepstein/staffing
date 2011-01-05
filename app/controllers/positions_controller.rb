@@ -17,8 +17,9 @@ class PositionsController < ApplicationController
   # GET /committees/:committee_id/positions
   # GET /committees/:committee_id/positions.xml
   def index
-    @search ||= @committee.positions.search( params[:search] ) if @committee
-    @search ||= Position.search( params[:search] )
+    search = params[:term] ? { :name_contains => params[:term] } : params[:search]
+    @search ||= @committee.positions.search( search ) if @committee
+    @search ||= Position.search( search )
     @positions = @search.paginate( :page => params[:page] )
 
     respond_to do |format|

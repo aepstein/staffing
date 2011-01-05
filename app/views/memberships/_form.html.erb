@@ -1,6 +1,7 @@
   <%= render "shared/error_messages", :target => form.object %>
   <%= form.inputs do %>
-  <%= form.input :user_name, :label => 'User', :as => :string %>
+  <%= form.autocompleted_input :user_name, :label => 'User',
+    :url => users_path( :format => :json ) %>
   <%= form.input :period, :collection => form.object.position.schedule.periods %>
   <%= form.input :starts_at, :as => :date_picker %>
   <%= form.input :ends_at, :as => :date_picker %>

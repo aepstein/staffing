@@ -8,12 +8,14 @@ class UsersController < ApplicationController
   # GET /users
   # GET /users.xml
   def index
-    @search = User.with_permissions_to(:show).search( params[:search] )
+    @search = User.with_permissions_to(:show).search(
+      params[:term] ? { :name_like => params[:term] } : params[:search]
+    )
     @users = @search.paginate(:page => params[:page])
 
     respond_to do |format|
       format.html # index.html.erb
-      format.js # index.js.erb
+      format.json # index.json.erb
       format.xml  { render :xml => @users }
     end
   end
