@@ -21,7 +21,7 @@ class CommitteesController < ApplicationController
 
     respond_to do |format|
       format.html { render :action => 'index' }
-      format.js # index.js.erb
+      format.json # index.json.erb
       format.xml  { render :xml => @committees }
     end
   end
