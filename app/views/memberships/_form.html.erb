@@ -1,7 +1,6 @@
   <%= render "shared/error_messages", :target => form.object %>
   <%= form.inputs do %>
-  <%= form.autocompleted_input :user_name, :label => 'User',
-    :url => users_path( :format => :json ) %>
+  <%= form.autocompleted_input :user_name, :label => 'User', :url => users_path( :format => :json ) %>
   <%= form.input :period, :collection => form.object.position.schedule.periods %>
   <%= form.input :starts_at, :as => :date_picker %>
   <%= form.input :ends_at, :as => :date_picker %>
@@ -9,8 +8,9 @@
       <%= form.semantic_fields_for :designees, designee do |designee_form| %>
         <%= designee_form.inputs do %>
           <%= designee_form.input :committee_id, :as => :hidden %>
-          <%= designee_form.input :user_name, :label => "Designee for #{designee_form.object.committee.name}",
-              :as => :string %>
+          <%= designee_form.autocompleted_input :user_name,
+            :label => "Designee for #{designee_form.object.committee.name}",
+            :url => users_path( :format => :json ) %>
           <%= designee_form.input :_destroy, :label => "Check to remove this designee", :as => :boolean %>
         <% end %>
       <% end %>
