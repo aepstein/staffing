@@ -1,11 +1,11 @@
 <%= render "shared/error_messages", :target => form.object %>
 <%= form.inputs do %>
 <%= form.input :starts_at, :hint => 'After when should the memberships should start?',
-  :as => :string %>
+  :as => :date_picker %>
 <%= form.input :ends_at, :hint => 'After when should the memberships end?',
-  :as => :string %>
+  :as => :date_picker %>
 <%= form.input :deadline, :hint => 'Before when should recipients create or update their requests?',
-  :as => :string %>
+  :as => :date_picker %>
 <%= form.input :authority, :hint => 'Choose if you want to limit to positions associated with a particular authority.' %>
 <%= form.input :message, :as => :text, :hint => 'Provide a custom message to include in the notice.' %>
 <% end %>

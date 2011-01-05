@@ -3,9 +3,9 @@
     <% if form.object.new_record? -%>
     <%= form.input :user_id, :as => :hidden %>
     <% end -%>
-    <%= form.input :starts_at, :as => :string, :label => 'Desired Start Date',
+    <%= form.input :starts_at, :as => :date_picker, :label => 'Desired Start Date',
       :hint => 'When is the earliest date you are interested in serving?' %>
-    <%= form.input :ends_at, :as => :string, :label => 'Desired End Date',
+    <%= form.input :ends_at, :as => :date_picker, :label => 'Desired End Date',
       :hint => 'When is the latest date you are interested in serving?' %>
     <%= form.input :new_position, :as => :select, :collection => form.object.new_position_options, :label => 'Move to',
       :hint => 'Select the position among your unexpired requests that reflects '+
