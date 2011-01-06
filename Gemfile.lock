@@ -112,7 +112,7 @@ GEM
       activesupport (~> 3.0.2)
       arel (~> 2.0.2)
     mime-types (1.16)
-    mysql (2.8.1)
+    mysql2 (0.2.6)
     net-ldap (0.1.1)
     net-scp (1.0.4)
       net-ssh (>= 1.99.1)
@@ -214,7 +214,7 @@ DEPENDENCIES
   launchy
   meta_search
   meta_where
-  mysql
+  mysql2
   paperclip
   pickle
   rails (= 3.0.3)
