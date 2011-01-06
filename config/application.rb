@@ -2,8 +2,6 @@ require File.expand_path('../boot', __FILE__)
 
 require 'rails/all'
 
-APP_CONFIG = YAML.load(File.read(File.expand_path('../application.yml', __FILE__)))[Rails.env]
-
 Bundler.require(:default, Rails.env) if defined?(Bundler)
 
 module Staffing
@@ -14,6 +12,11 @@ module Staffing
     config.time_zone = 'Eastern Time (US & Canada)'
     config.action_mailer.default_url_options = { :host => "assembly.cornell.edu", :protocol => 'https' }
     config.action_view.javascript_expansions[:defaults] = %w(jquery jquery-ui jquery-ui-timepicker-addon autocomplete-rails rails)
+
+    def self.app_config
+      @@app_config ||= YAML.load(File.read(File.expand_path('../application.yml', __FILE__)))[Rails.env]
+    end
+
   end
 end
 

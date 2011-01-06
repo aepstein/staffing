@@ -17,11 +17,11 @@ class Authority < ActiveRecord::Base
   end
 
   def effective_contact_name
-    contact_name? ? contact_name : APP_CONFIG['defaults']['authority']['contact_name']
+    contact_name? ? contact_name : Staffing::Application.app_config['defaults']['authority']['contact_name']
   end
 
   def effective_contact_email
-    contact_email? ? contact_email : APP_CONFIG['defaults']['authority']['contact_email']
+    contact_email? ? contact_email : Staffing::Application.app_config['defaults']['authority']['contact_email']
   end
 
   def committee_name; committee.name if committee; end

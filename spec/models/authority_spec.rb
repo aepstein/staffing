@@ -22,18 +22,18 @@ describe Authority do
 
   it 'should have effective contact email' do
     @authority.contact_email = 'other@example.org'
-    @authority.contact_email.should_not eql APP_CONFIG['defaults']['authority']['contact_email']
+    @authority.contact_email.should_not eql Staffing::Application.app_config['defaults']['authority']['contact_email']
     @authority.effective_contact_email.should eql @authority.contact_email
     @authority.contact_email = nil
-    @authority.effective_contact_email.should eql APP_CONFIG['defaults']['authority']['contact_email']
+    @authority.effective_contact_email.should eql Staffing::Application.app_config['defaults']['authority']['contact_email']
   end
 
   it 'should have effective contact name' do
     @authority.contact_name = 'other@example.org'
-    @authority.contact_name.should_not eql APP_CONFIG['defaults']['authority']['contact_name']
+    @authority.contact_name.should_not eql Staffing::Application.app_config['defaults']['authority']['contact_name']
     @authority.effective_contact_name.should eql @authority.contact_name
     @authority.contact_name = nil
-    @authority.effective_contact_name.should eql APP_CONFIG['defaults']['authority']['contact_name']
+    @authority.effective_contact_name.should eql Staffing::Application.app_config['defaults']['authority']['contact_name']
   end
 
   it 'should retrieve associated requests correctly' do

@@ -39,7 +39,7 @@ Please take a few moments before <%= @sending.message.deadline.to_s :long_ordina
 </p>
 
 <p>
-Please contact <%=h APP_CONFIG['defaults']['authority']['contact_name'] %> &lt;<%=h APP_CONFIG['defaults']['authority']['contact_email'] %>&gt; if you have any questions or concerns.  Thank you for your time and your consideration.
+Please contact <%=h Staffing::Application.app_config['defaults']['authority']['contact_name'] %> &lt;<%=h Staffing::Application.app_config['defaults']['authority']['contact_email'] %>&gt; if you have any questions or concerns.  Thank you for your time and your consideration.
 </p>
 
 <p>
@@ -47,7 +47,7 @@ Best regards,
 </p>
 
 <p>
-<%=h APP_CONFIG['defaults']['authority']['contact_name'] %>
+<%=h Staffing::Application.app_config['defaults']['authority']['contact_name'] %>
 </p>
 </body>
 </html>

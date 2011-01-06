@@ -20,9 +20,9 @@ Please take a few moments before <%= @sending.message.deadline.to_s :long_ordina
 
 <%= unrenewed_user_memberships_url @sending.user %>
 
-Please contact <%= APP_CONFIG['defaults']['authority']['contact_name'] %> <<%= APP_CONFIG['defaults']['authority']['contact_email'] %>> if you have any questions or concerns.  Thank you for your time and your consideration.
+Please contact <%= Staffing::Application.app_config['defaults']['authority']['contact_name'] %> <<%= Staffing::Application.app_config['defaults']['authority']['contact_email'] %>> if you have any questions or concerns.  Thank you for your time and your consideration.
 
 Best regards,
 
-<%= APP_CONFIG['defaults']['authority']['contact_name'] %>
+<%= Staffing::Application.app_config['defaults']['authority']['contact_name'] %>
 

@@ -5,7 +5,7 @@ class SendingMailer < ActionMailer::Base
     @sending = sending
     mail(
       :to => "#{sending.user.name} <#{sending.user.email}>",
-      :from => "#{APP_CONFIG['defaults']['authority']['contact_email']}",
+      :from => "#{Staffing::Application.app_config['defaults']['authority']['contact_email']}",
       :subject => sending.message.subject
     )
   end
