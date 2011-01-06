@@ -2,8 +2,8 @@
 require 'bundler/capistrano'
 
 set :application, "staffing"
-role :app, "xen1.assembly.cornell.edu", "kvm02.assembly.cornell.edu"
-role :web, "xen1.assembly.cornell.edu", "kvm02.assembly.cornell.edu"
+role :app, "kvm02.assembly.cornell.edu"
+role :web, "kvm02.assembly.cornell.edu"
 role :db,  "kvm02.assembly.cornell.edu", :primary => true
 
 set :user, "www-data"
