@@ -6,8 +6,9 @@ class Request < ActiveRecord::Base
         build :question => question
       end
       # Fill in most recent prior answer for each global question populated
-      proxy_owner.user.answers.global.where( :question_id.in => population.map { |a| a.question_id }
-      ).order('answers.updated_at DESC').group('answers.question_id').each do |answer|
+      s = proxy_owner.user.answers.global.where( :question_id.in => population.map { |a| a.question_id }
+      ).order('answers.updated_at DESC').group('answers.question_id')
+      s.each do |answer|
         fillable_answer = population.select { |a| a.question_id == answer.question_id }.first
         fillable_answer.content = answer.content unless fillable_answer.nil?
       end

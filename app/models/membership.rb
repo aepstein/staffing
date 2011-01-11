@@ -100,21 +100,22 @@ class Membership < ActiveRecord::Base
     end
     statement = statement_parts.join(" UNION ")
     statement += " ORDER BY focus"
-    out = connection.select_rows( statement ).map { |r| [ Time.zone.parse(r.first).to_date, r.last.to_i ] }
-    Membership.with_exclusive_scope do
-      memberships = Membership.scoped
-      if period.class == Membership
-        memberships = memberships.where(:user_id.ne => nil) unless period.user.blank?
-        memberships = memberships.where(:id.ne => period.id) if period.new_record?
-      end
-      if out.empty? || out.first.first != period.starts_at.to_date
-        out.unshift( [ period.starts_at.to_date,
-          memberships.overlap(period.starts_at,period.starts_at).where(:position_id => position_id).count ] )
-      end
-      if out.empty? || out.last.first != period.ends_at.to_date
-        out.push( [ period.ends_at.to_date,
-          memberships.overlap(period.ends_at,period.ends_at).where(:position_id => position_id).count ] )
-      end
+    out = connection.select_rows( statement ).map { |r| [
+      ( r.first.class == String ? Time.zone.parse(r.first).to_date : r.first ),
+      r.last.to_i
+    ] }
+    memberships = Membership.unscoped
+    if period.class == Membership
+      memberships = memberships.where(:user_id.ne => nil) unless period.user.blank?
+      memberships = memberships.where(:id.ne => period.id) if period.new_record?
+    end
+    if out.empty? || out.first.first != period.starts_at.to_date
+      out.unshift( [ period.starts_at.to_date,
+        memberships.overlap(period.starts_at,period.starts_at).where(:position_id => position_id).count ] )
+    end
+    if out.empty? || out.last.first != period.ends_at.to_date
+      out.push( [ period.ends_at.to_date,
+        memberships.overlap(period.ends_at,period.ends_at).where(:position_id => position_id).count ] )
     end
     out
   end
