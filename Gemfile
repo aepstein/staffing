@@ -20,7 +20,7 @@ gem 'paperclip'
 gem 'blind_date', '~> 1.0.2'
 gem 'daemons'
 gem 'bluecloth'
-gem 'whenever'
+gem 'whenever', :require => false
 gem 'jquery-rails'
 gem 'rails3-jquery-autocomplete'
 group :development, :test do
