@@ -19,6 +19,8 @@
 
 # Learn more: http://github.com/javan/whenever
 
+set :output, { :standard => nil }
+
 every 1.days do
   rake "email_list:build"
   rake "notices"
