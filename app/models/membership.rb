@@ -89,7 +89,7 @@ class Membership < ActiveRecord::Base
       "SELECT #{marker} AS focus, COUNT(DISTINCT c.id) AS quantity FROM memberships AS m " +
       "LEFT JOIN memberships AS c " +
       "ON c.starts_at <= #{marker} AND c.ends_at >= #{marker} AND c.position_id = #{position_id} " +
-      ( ( period.class == Membership && !period.new_record? ) ? "AND c.id != #{period.id} " : "" ) +
+      ( ( period.class != Membership || period.persisted? ) ? "AND c.id != #{period.id} " : "" ) +
       ( ( period.class == Membership && !period.user.blank? ) ? "AND c.user_id IS NOT NULL " : "" ) +
       "WHERE m.ends_at >= #{connection.quote period.starts_at} AND " +
       "m.starts_at <= #{connection.quote period.ends_at} AND " +
@@ -104,18 +104,18 @@ class Membership < ActiveRecord::Base
       ( r.first.class == String ? Time.zone.parse(r.first).to_date : r.first ),
       r.last.to_i
     ] }
-    memberships = Membership.unscoped
+    memberships = Membership.unscoped.where(:position_id => position_id)
     if period.class == Membership
       memberships = memberships.where(:user_id.ne => nil) unless period.user.blank?
-      memberships = memberships.where(:id.ne => period.id) if period.new_record?
+      memberships = memberships.where(:id.ne => period.id) if period.persisted?
     end
     if out.empty? || out.first.first != period.starts_at.to_date
       out.unshift( [ period.starts_at.to_date,
-        memberships.overlap(period.starts_at,period.starts_at).where(:position_id => position_id).count ] )
+        memberships.overlap(period.starts_at,period.starts_at).count ] )
     end
     if out.empty? || out.last.first != period.ends_at.to_date
       out.push( [ period.ends_at.to_date,
-        memberships.overlap(period.ends_at,period.ends_at).where(:position_id => position_id).count ] )
+        memberships.overlap(period.ends_at,period.ends_at).count ] )
     end
     out
   end
