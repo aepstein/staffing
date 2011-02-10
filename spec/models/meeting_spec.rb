@@ -19,20 +19,73 @@ describe Meeting do
     @meeting.save.should be_false
   end
 
+  it 'should not save without starts_at' do
+    @meeting.starts_at = nil
+    @meeting.save.should be_false
+  end
+
+  it 'should not save with a ends_at' do
+    @meeting.ends_at = nil
+    @meeting.save.should be_false
+  end
+
+  it 'should not save without a location' do
+    @meeting.location = nil
+    @meeting.save.should be_false
+  end
+
   it 'should not save with a period from a different schedule than that of committee' do
     @meeting.period = Factory(:period)
-    @meeting.when_scheduled = @meeting.period.starts_at
+    @meeting.starts_at = @meeting.period.starts_at.to_time + 1.hour
+    @meeting.ends_at = @meeting.starts_at + 1.hour
     @meeting.save.should be_false
   end
 
-  it 'should not save with a date outside the period' do
-    @meeting.when_scheduled = @meeting.period.starts_at - 1.day
+  it 'should not save with a starts_at outside the period' do
+    @meeting.starts_at = @meeting.period.starts_at.to_time - 1.day
+    @meeting.save.should be_false
+    @meeting.starts_at = @meeting.period.ends_at.to_time + 1.day
     @meeting.save.should be_false
   end
 
-  it 'should not save without a when_scheduled date' do
-    @meeting.when_scheduled = nil
+  it 'should not save with a ends_at outside the period' do
+    @meeting.ends_at = @meeting.period.starts_at.to_time - 1.day
     @meeting.save.should be_false
+    @meeting.ends_at = @meeting.period.ends_at.to_time + 1.day
+    @meeting.save.should be_false
+  end
+
+  it 'should not save with ends_at equal to or before starts_at' do
+    @meeting.ends_at = @meeting.starts_at
+    @meeting.save.should be_false
+    @meeting.ends_at = @meeting.starts_at - 1.minute
+    @meeting.save.should be_false
+  end
+
+  it 'should have a past scope' do
+    setup_past_and_future
+    Meeting.past.count.should eql 1
+    Meeting.past.should include @past
+  end
+
+  it 'should have a current scope' do
+    setup_past_and_future
+    Meeting.current.count.should eql 1
+    Meeting.current.should include @meeting
+  end
+
+  it 'should have a future scope' do
+    setup_past_and_future
+    Meeting.future.count.should eql 1
+    Meeting.future.should include @future
+  end
+
+  def setup_past_and_future
+    @meeting.starts_at = Time.zone.now
+    @meeting.ends_at = Time.zone.now + 1.hour
+    @meeting.save!
+    @past = Factory(:meeting, :starts_at => Time.zone.now - 1.week)
+    @future = Factory(:meeting, :starts_at => Time.zone.now + 1.week)
   end
 end
 

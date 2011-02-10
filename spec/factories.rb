@@ -121,7 +121,7 @@ Factory.define :request do |f|
       else
         periods = false
       end
-    else
+  else
       periods = false
     end
     (periods && periods.first) ? periods.first.ends_at : request.starts_at + 1.year
@@ -137,7 +137,9 @@ Factory.define :meeting do |f|
     meeting.committee.schedule.periods.reload
     meeting.committee.schedule.periods.first
   end
-  f.when_scheduled { |m| m.period.starts_at }
+  f.starts_at { |m| m.period.starts_at.to_time + 1.hour }
+  f.ends_at { |m| m.starts_at + 1.hour }
+  f.location 'Day Hall'
 end
 
 Factory.define :expired_request, :parent => :request do |f|
@@ -150,18 +152,18 @@ end
 
 Factory.define :period do |f|
   f.association :schedule
-  f.starts_at Date.today
-  f.ends_at { |p| p.starts_at + 1.year }
+  f.starts_at ( Time.zone.today - 1.year )
+  f.ends_at { |p| p.starts_at + 2.years }
 end
 
 Factory.define :past_period, :parent => :period do |f|
-  f.ends_at Date.today - 1.day
+  f.ends_at Time.zone.today - 1.day
   f.starts_at { |p| p.ends_at - 1.year }
 end
 
 Factory.define :future_period, :parent => :period do |f|
-  f.starts_at Date.today + 1.day
-  f.ends_at { |p| p.starts_at + 1.year }
+  f.starts_at Time.zone.today + 1.day
+  f.ends_at { |p| p.starts_at + 1.years }
 end
 
 Factory.define :user do |f|
