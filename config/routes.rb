@@ -17,6 +17,11 @@ Staffing::Application.routes.draw do
       get :available
     end
     resources :enrollments, :only => [ :index, :new, :create ]
+    resources :meetings, :only => [ :index, :new, :create ] do
+      collection do
+        get :past, :current, :future
+      end
+    end
     resources :memberships, :only => [ :index ] do
       collection do
         get :current, :future, :past, :unrenewed, :renewed
@@ -31,6 +36,11 @@ Staffing::Application.routes.draw do
     end
   end
   resources :enrollments, :except => [ :index, :new, :create ]
+  resources :meetings, :except => [ :new, :create ] do
+    collection do
+      get :past, :current, :future
+    end
+  end
   resources :memberships, :except => [ :index, :new, :create ] do
     member do
       put :confirm

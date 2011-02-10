@@ -1,0 +1,12 @@
+  <%= table_row_tag do %>
+    <% unless committee %>
+    <td><%= meeting.committee %></td>
+    <% end %>
+    <td><%= meeting.starts_at.to_formatted_s :rfc822 %></td>
+    <td><%= meeting.ends_at.to_formatted_s :rfc822 %></td>
+    <td><%= meeting.location %></td>
+    <td><%= link_to 'Show', meeting %></td>
+    <td><%= link_to( 'Edit', edit_meeting_path(meeting) ) if permitted_to? :edit, meeting %></td>
+    <td><%= link_to( 'Destroy', meeting, :confirm => 'Are you sure?', :method => :delete ) if permitted_to? :destroy, meeting %></td>
+  <% end %>
+

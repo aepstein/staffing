@@ -1,0 +1,13 @@
+<h2><%= params[:action].titleize %> meetings for <%= @committee ? @committee : "" %></h2>
+
+<%= render :partial => "meetings", :object => @meetings,
+  :locals => { :committee => @committee ? @committee : false, :position => @user ? true : false } %>
+
+<hr />
+
+<p>
+<% if @committee && permitted_to?( :create, @committee.meetings.build ) %>
+<%= link_to 'New meeting', new_committee_meeting_path( @committee ) %>
+<% end %>
+</p>
+

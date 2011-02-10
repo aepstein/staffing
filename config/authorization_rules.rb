@@ -1,15 +1,16 @@
 authorization do
   role :admin do
-    has_permission_on [ :authorities, :committees, :enrollments, :memberships,
-      :periods, :positions, :qualifications, :quizzes, :questions, :requests,
-      :schedules, :users, :user_renewal_notices, :sendings ], :to => :manage
+    has_permission_on [ :authorities, :committees, :enrollments, :meetings,
+      :memberships, :periods, :positions, :qualifications, :quizzes, :questions,
+      :requests, :schedules, :users, :user_renewal_notices, :sendings ],
+      :to => :manage
     has_permission_on :users, :to => :resume
     has_permission_on :memberships, :to => :confirm
     has_permission_on :requests, :to => [ :reject, :unreject ]
   end
   role :user do
-    has_permission_on [ :authorities, :committees, :enrollments, :memberships,
-      :periods, :positions, :qualifications, :schedules ],
+    has_permission_on [ :authorities, :committees, :enrollments, :meetings,
+      :memberships, :periods, :positions, :qualifications, :schedules ],
       :to => [:show, :index]
     has_permission_on :committees, :to => :vote do
       if_attribute :enrollments => { :position_id => is_in { user.memberships.current.map(&:position_id) }, :votes => gt { 0 } }

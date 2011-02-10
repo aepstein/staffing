@@ -1,0 +1,27 @@
+<p>
+  <b>Committee:</b> <%= @meeting.committee %>
+</p>
+
+<p>
+  <b>Period:</b> <%= @meeting.period %>
+</p>
+
+<p>
+  <b>Starts at:</b> <%= @meeting.starts_at.to_formatted_s :long_ordinal %>
+</p>
+
+<p>
+  <b>Ends at:</b> <%= @meeting.ends_at.to_formatted_s :long_ordinal %>
+</p>
+
+<p>
+  <b>Location:</b> <%= @meeting.location %>
+</p>
+
+<p>
+<% if permitted_to? :edit, @meeting -%>
+<%= link_to 'Edit', edit_meeting_path(@meeting) %> |
+<% end -%>
+<%= link_to "Back to #{@meeting.committee}", committee_meetings_path(@meeting.committee) %>
+</p>
+

@@ -1,26 +1,33 @@
 class MeetingsController < ApplicationController
   before_filter :initialize_context
+  before_filter :initialize_index, :only => [ :current, :past, :future, :index ]
   filter_access_to :new, :create, :edit, :update, :destroy, :show
   filter_access_to :index, :current, :past, :future do
-    @user ? permitted_to!( :show, @user ) : permitted_to!( :show, @committee )
+    true
   end
 
-  # GET /users/:user_id/meetings/current
-  # GET /users/:user_id/meetings/current.xml
+  # GET /meetings/current
+  # GET /meetings/current.xml
+  # GET /committees/:committee_id/meetings/current
+  # GET /committees/:committee_id/meetings/current.xml
   def current
     @meetings ||= @meetings.current
     index
   end
 
-  # GET /users/:user_id/meetings/past
-  # GET /users/:user_id/meetings/past.xml
+  # GET /meetings/past
+  # GET /meetings/past.xml
+  # GET /committees/:committee_id/meetings/past
+  # GET /committees/:committee_id/meetings/past.xml
   def past
     @meetings ||= @meetings.past
     index
   end
 
-  # GET /users/:user_id/meetings/future
-  # GET /users/:user_id/meetings/future.xml
+  # GET /meetings/future
+  # GET /meetings/future.xml
+  # GET /committees/:committee_id/meetings/future
+  # GET /committees/:committee_id/meetings/future.xml
   def future
     @meetings ||= @meetings.future
     index
@@ -28,12 +35,7 @@ class MeetingsController < ApplicationController
 
   # GET /committees/:committee_id/meetings
   # GET /committees/:committee_id/meetings.xml
-  # GET /users/:user_id/meetings
-  # GET /users/:user_id/meetings.xml
   def index
-    @meetings ||= @committee.meetings if @committee
-    @meetings ||= @user.meetings if @user
-
     respond_to do |format|
       format.html { render :action => 'index' } # index.html.erb
       format.xml  { render :xml => @meetings }
@@ -43,8 +45,6 @@ class MeetingsController < ApplicationController
   # GET /meetings/1
   # GET /meetings/1.xml
   def show
-    @meeting = Meeting.find(params[:id])
-
     respond_to do |format|
       format.html # show.html.erb
       format.xml  { render :xml => @meeting }
@@ -54,7 +54,7 @@ class MeetingsController < ApplicationController
   # GET /committees/:committee_id/meetings/new
   # GET /committees/:committee_id/meetings/new.xml
   def new
-    @meeting = Committee.find(params[:committee_id]).meetings.build
+    @meeting = @committee.meetings.build
 
     respond_to do |format|
       format.html # new.html.erb
@@ -70,7 +70,7 @@ class MeetingsController < ApplicationController
   # POST /committees/:committee_id/meetings
   # POST /committees/:committee_id/meetings.xml
   def create
-    @meeting = Committee.find(params[:committee_id]).meetings.build(params[:meeting])
+    @meeting = @committee.meetings.build(params[:meeting])
 
     respond_to do |format|
       if @meeting.save
@@ -87,8 +87,6 @@ class MeetingsController < ApplicationController
   # PUT /meetings/1
   # PUT /meetings/1.xml
   def update
-    @meeting = Meeting.find(params[:id])
-
     respond_to do |format|
       if @meeting.update_attributes(params[:meeting])
         flash[:notice] = 'Meeting was successfully updated.'
@@ -104,7 +102,6 @@ class MeetingsController < ApplicationController
   # DELETE /meetings/1
   # DELETE /meetings/1.xml
   def destroy
-    @meeting = Meeting.find(params[:id])
     @meeting.destroy
 
     respond_to do |format|
@@ -114,9 +111,14 @@ class MeetingsController < ApplicationController
   end
 
   private
+  def initialize_index
+    @meetings = Meeting.scoped
+    @meetings = @meetings.where(:committee_id => @committee.id) if @committee
+  end
+
   def initialize_context
+    @meeting = Meeting.find(params[:id]) if params[:id]
     @committee = Committee.find(params[:committee_id]) if params[:committee_id]
-    @user = User.find(params[:user_id]) if params[:user_id]
   end
 end
 

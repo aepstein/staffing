@@ -20,6 +20,8 @@ class Meeting < ActiveRecord::Base
   validates_datetime :ends_at, :after => :starts_at
   validate :period_must_be_in_committee_schedule, :must_be_in_period
 
+  default_scope order( 'meetings.starts_at DESC' )
+
   scope :past, lambda { where( :ends_at.lt => Time.zone.today.to_time ) }
   scope :future, lambda { where( :starts_at.gt => (Time.zone.today.to_time + 1.day) ) }
   scope :current, lambda { where( :starts_at.gte => Time.zone.today.to_time, :ends_at.lte => ( Time.zone.today.to_time + 1.day ) ) }

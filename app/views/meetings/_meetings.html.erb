@@ -1,0 +1,18 @@
+<% committee = false unless defined? committee %>
+<table>
+  <thead>
+  <tr>
+  <% unless committee %>
+    <th>Committee</th>
+  <% end %>
+    <th>Starts at</th>
+    <th>Ends at</th>
+    <th>Location</th>
+  </tr>
+  </thead>
+  <tbody>
+<%= render :partial => "meeting", :collection => meetings,
+  :locals => { :committee => committee } %>
+  </tbody>
+</table>
+

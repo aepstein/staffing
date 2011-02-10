@@ -1,0 +1,12 @@
+  <%= render "shared/error_messages", :target => form.object %>
+  <%= form.inputs do %>
+  <%= form.input :period, :collection => form.object.committee.schedule.periods %>
+  <%= form.input :starts_at, :as => :datetime_picker %>
+  <%= form.input :ends_at, :as => :datetime_picker %>
+  <%= form.input :location %>
+  <%= form.input :audio %>
+  <%= form.input :editable_minutes %>
+  <%= form.input :published_minutes %>
+  <% end %>
+  <%= form.buttons %>
+
