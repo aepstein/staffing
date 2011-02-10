@@ -8,21 +8,21 @@ class MeetingsController < ApplicationController
   # GET /users/:user_id/meetings/current
   # GET /users/:user_id/meetings/current.xml
   def current
-    @meetings ||= @user.current_meetings if @user
+    @meetings ||= @meetings.current
     index
   end
 
   # GET /users/:user_id/meetings/past
   # GET /users/:user_id/meetings/past.xml
   def past
-    @meetings ||= @user.past_meetings if @user
+    @meetings ||= @meetings.past
     index
   end
 
   # GET /users/:user_id/meetings/future
   # GET /users/:user_id/meetings/future.xml
   def future
-    @meetings ||= @user.future_meetings if @user
+    @meetings ||= @meetings.future
     index
   end
 
