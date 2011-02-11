@@ -11,7 +11,7 @@ class MeetingsController < ApplicationController
   # GET /committees/:committee_id/meetings/current
   # GET /committees/:committee_id/meetings/current.xml
   def current
-    @meetings ||= @meetings.current
+    @meetings = @meetings.current
     index
   end
 
@@ -20,7 +20,7 @@ class MeetingsController < ApplicationController
   # GET /committees/:committee_id/meetings/past
   # GET /committees/:committee_id/meetings/past.xml
   def past
-    @meetings ||= @meetings.past
+    @meetings = @meetings.past
     index
   end
 
@@ -29,7 +29,7 @@ class MeetingsController < ApplicationController
   # GET /committees/:committee_id/meetings/future
   # GET /committees/:committee_id/meetings/future.xml
   def future
-    @meetings ||= @meetings.future
+    @meetings = @meetings.future
     index
   end
 
