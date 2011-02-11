@@ -67,7 +67,7 @@ Feature: Manage meetings
     And I should see "Starts at: January 16th, 2009 16:00"
     And I should see "Ends at: January 16th, 2009 18:00"
     And I should see "Location: Red Room"
-@wip
+
   Scenario: Delete meeting
     Given an meeting: "meeting4" exists with committee: committee "committee", period: period "past", starts_at: "2010-01-01 16:00:00"
     And an meeting: "meeting3" exists with committee: committee "committee", period: period "past", starts_at: "2010-01-02 16:00:00"
@@ -76,8 +76,8 @@ Feature: Manage meetings
     And I log in as user: "admin"
     When I follow "Destroy" for the 3rd meeting for committee: "committee"
     Then I should see the following meetings:
-      | Starts at          |
-      |4 Jan 2010 16:00:00 |
-      |3 Jan 2010 16:00:00 |
-      |1 Jan 2010 16:00:00 |
+      | Starts at        |
+      |04 Jan 2010 16:00 |
+      |03 Jan 2010 16:00 |
+      |01 Jan 2010 16:00 |
 

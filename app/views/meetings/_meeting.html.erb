@@ -2,8 +2,8 @@
     <% unless committee %>
     <td><%= meeting.committee %></td>
     <% end %>
-    <td><%= meeting.starts_at.to_formatted_s :rfc822 %></td>
-    <td><%= meeting.ends_at.to_formatted_s :rfc822 %></td>
+    <td><%= meeting.starts_at.to_formatted_s :short_year %></td>
+    <td><%= meeting.ends_at.to_formatted_s :short_year %></td>
     <td><%= meeting.location %></td>
     <td><%= link_to 'Show', meeting %></td>
     <td><%= link_to( 'Edit', edit_meeting_path(meeting) ) if permitted_to? :edit, meeting %></td>
