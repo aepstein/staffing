@@ -55,11 +55,13 @@ end
 
 Factory.define :motion do |f|
   f.committee { |m| m.association( :enrollment ).committee }
-  f.user do |motion|
-    if motion.committee.memberships.first
-      motion.committee.memberships.first.user
+  f.user do |m|
+    if m.committee.memberships.where(:user_id.ne => nil).first
+      m.committee.memberships.where(:user_id.ne => nil).first.user
+    elsif m.committee.positions.length > 0
+      m.association( :membership, :position => m.committee.positions.first ).user
     else
-      motion.association( :membership, :position => motion.committee.positions.first ).user
+      m.association( :membership, :position => m.association( :enrollment, :committee => m.committee ).position ).user
     end
   end
   f.period { |m| ( m.committee.periods & m.user.memberships.enrollments_committee_id_equals(m.committee_id).map(&:period) ).first }
@@ -140,6 +142,11 @@ Factory.define :meeting do |f|
   f.starts_at { |m| m.period.starts_at.to_time + 1.hour }
   f.ends_at { |m| m.starts_at + 1.hour }
   f.location 'Day Hall'
+end
+
+Factory.define :meeting_motion do |f|
+  f.association :meeting
+  f.motion { |m| m.association :motion, :committee => m.meeting.committee }
 end
 
 Factory.define :expired_request, :parent => :request do |f|

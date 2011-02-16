@@ -19,9 +19,14 @@
 </p>
 
 <p>
+  <b>Motions:</b> <%= @meeting.motions.map(&:name).join(', ') %>
+</p>
+
+<p>
 <% if permitted_to? :edit, @meeting -%>
 <%= link_to 'Edit', edit_meeting_path(@meeting) %> |
 <% end -%>
+<%= link_to 'Motions', meeting_motions_path( @meeting ) %> |
 <%= link_to "Back to #{@meeting.committee}", committee_meetings_path(@meeting.committee) %>
 </p>
 

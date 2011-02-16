@@ -2,6 +2,15 @@ class Meeting < ActiveRecord::Base
   belongs_to :committee
   belongs_to :period
 
+  has_many :meeting_motions, :dependent => :destroy
+  has_many :motions, :through => :meeting_motions do
+    # Allowed motions are in same committee and period as the meeting
+    def allowed
+      return [] unless proxy_owner.committee && proxy_owner.period_id?
+      proxy_owner.committee.motions.where(:period_id => proxy_owner.period_id)
+    end
+  end
+
   has_attached_file :audio,
     :path => ':rails_root/db/uploads/:rails_env/meetings/:id_partition/:attachment/:style.:extension',
     :url => '/system/meetings/:id_partition/:attachment/:style.:extension'
@@ -11,6 +20,8 @@ class Meeting < ActiveRecord::Base
   has_attached_file :published_minutes,
     :path => ':rails_root/db/uploads/:rails_env/meetings/:id_partition/:attachment/:style.:extension',
     :url => '/system/meetings/:id_partition/:attachment/:style.:extension'
+
+  accepts_nested_attributes_for :meeting_motions, :reject_if => proc { |a| a['motion_name'].blank? && a['_destroy'].blank? }, :allow_destroy => true
 
   validates_presence_of :committee
   validates_presence_of :period
@@ -25,6 +36,8 @@ class Meeting < ActiveRecord::Base
   scope :past, lambda { where( :ends_at.lt => Time.zone.today.to_time ) }
   scope :future, lambda { where( :starts_at.gt => (Time.zone.today.to_time + 1.day) ) }
   scope :current, lambda { where( :starts_at.gte => Time.zone.today.to_time, :ends_at.lte => ( Time.zone.today.to_time + 1.day ) ) }
+
+  attr_readonly :period_id, :committee_id
 
   private
 

@@ -15,7 +15,8 @@ class Committee < ActiveRecord::Base
     end
   end
   has_many :authorities
-  has_many :meetings
+  has_many :meetings, :dependent => :destroy
+  has_many :motions, :dependent => :destroy
   has_many :requests, :as => :requestable
   has_many :enrollments
   has_many :positions, :through => :enrollments

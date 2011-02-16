@@ -13,6 +13,8 @@ class Motion < ActiveRecord::Base
   belongs_to :committee
   belongs_to :referring_motion, :class_name => 'Motion'
 
+  has_many :meeting_motions, :dependent => :destroy
+  has_many :meetings, :through => :meeting_motions
   has_many :motion_mergers, :dependent => :destroy
   has_many :merged_motions, :through => :motion_mergers, :source => :merged_motion
   has_many :referred_motions, :class_name => 'Motion', :foreign_key => :referring_motion_id, :dependent => :destroy do

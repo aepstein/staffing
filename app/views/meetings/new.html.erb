@@ -1,6 +1,7 @@
 <h2>New meeting for <%=h @meeting.committee %></h2>
 
-<%= semantic_form_for(@meeting, :url => committee_meetings_path(@meeting.committee) ) do |f| %>
+<%= semantic_form_for( @meeting, :url => committee_meetings_path(@meeting.committee),
+  :html => { :multipart => true } ) do |f| %>
   <%= render :partial => 'form', :object => f %>
 <% end %>
 

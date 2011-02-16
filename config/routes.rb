@@ -40,6 +40,11 @@ Staffing::Application.routes.draw do
     collection do
       get :past, :current, :future
     end
+    resources :motions, :only => [ :index ] do
+      collection do
+        get :allowed
+      end
+    end
   end
   resources :memberships, :except => [ :index, :new, :create ] do
     member do
@@ -47,7 +52,13 @@ Staffing::Application.routes.draw do
     end
     resources :requests, :only => [ :new, :create ]
   end
-  resources :motions, :except => [ :index, :new, :create ]
+  resources :motions, :except => [ :index, :new, :create ] do
+    resources :meetings, :only => [ :index ] do
+      collection do
+        get :past, :current, :future
+      end
+    end
+  end
   resources :periods, :except => [ :index, :new, :create ]
   resources :positions do
     resources :memberships, :only => [ :index, :new, :create ] do

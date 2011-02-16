@@ -80,6 +80,22 @@ describe Meeting do
     Meeting.future.should include @future
   end
 
+  it 'should have motions.allowed that returns only matching committee and period of meeting' do
+    allowed = Factory(:motion, :committee => @meeting.committee, :period => @meeting.period)
+    same_period = Factory(:motion, :committee => Factory(:committee, :schedule => @meeting.committee.schedule), :period => @meeting.period )
+    new_period = Factory( :period, :schedule => @meeting.period.schedule, :starts_at => ( @meeting.period.ends_at + 1.day ) )
+    @meeting.reload
+    same_committee = Factory(:motion, :committee => @meeting.committee, :period => new_period )
+    same_period.period.should eql @meeting.period
+    same_period.committee.should_not eql @meeting.committee
+    same_committee.committee.should eql @meeting.committee
+    same_committee.period.should_not eql @meeting.period
+    @meeting.motions.allowed.count.should eql 1
+    @meeting.motions.allowed.should include allowed
+    @meeting.motions.allowed.should_not include same_period
+    @meeting.motions.allowed.should_not include same_committee
+  end
+
   def setup_past_and_future
     @meeting.starts_at = Time.zone.now
     @meeting.ends_at = Time.zone.now + 1.hour

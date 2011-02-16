@@ -1,18 +1,26 @@
 class MotionsController < ApplicationController
   before_filter :initialize_context
+  before_filter :initialize_index
   before_filter :new_motion_from_params, :only => [ :new, :create ]
   filter_access_to :new, :create, :edit, :update, :destroy, :show
 
+  # GET /meetings/:meeting_id/motions/allowed
+  # GET /meetings/:meeting_id/motions/allowed.xml
+  def allowed
+    @motions = @motions.allowed
+    index
+  end
+
   # GET /committees/:committee_id/motions
   # GET /committees/:committee_id/motions.xml
+  # GET /meetings/:meeting_id/motions
+  # GET /meetings/:meeting_id/motions.xml
   # GET /users/:user_id/motions
   # GET /users/:user_id/motions.xml
   def index
-    @motions ||= @committee.motions if @committee
-    @motions ||= @user.motions if @user
-
     respond_to do |format|
       format.html { render :action => 'index' } # index.html.erb
+      format.json { render :action => 'index' } # index.json.erb
       format.xml  { render :xml => @motions }
     end
   end
@@ -90,7 +98,14 @@ class MotionsController < ApplicationController
   def initialize_context
     @committee = Committee.find(params[:committee_id]) if params[:committee_id]
     @user = User.find(params[:user_id]) if params[:user_id]
+    @meeting = Meeting.find(params[:meeting_id]) if params[:meeting_id]
     @motion = Motion.find(params[:id]) if params[:id]
+  end
+
+  def initialize_index
+    @motions ||= @committee.motions if @committee
+    @motions ||= @user.motions if @user
+    @motions ||= @meeting.motions if @meeting
   end
 
   def new_motion_from_params
