@@ -5,50 +5,50 @@ describe Request do
     @request = Factory(:request)
   end
 
-  xit "should create a new instance given valid attributes" do
+  it "should create a new instance given valid attributes" do
     @request.id.should_not be_nil
   end
 
-  xit  'should not save without a start date' do
+  it  'should not save without a start date' do
     @request.starts_at = nil
     @request.save.should be_false
   end
 
-  xit  'should not save without an end date' do
+  it  'should not save without an end date' do
     @request.ends_at = nil
     @request.save.should be_false
   end
 
-  xit  'should not save with an end date that is before the start date' do
+  it  'should not save with an end date that is before the start date' do
     @request.ends_at = @request.starts_at
     @request.save.should be_false
   end
 
-  xit  'should not save without a requestable' do
+  it  'should not save without a requestable' do
     @request.requestable = nil
     @request.save.should be_false
   end
 
-  xit  'should not save without a user' do
+  it  'should not save without a user' do
     @request.user = nil
     @request.save.should be_false
   end
 
-  xit  'should not save a duplicate for certain user and requestable' do
+  it  'should not save a duplicate for certain user and requestable' do
     duplicate = Factory.build(:request)
     duplicate.user = @request.user
     duplicate.requestable = @request.requestable
     duplicate.save.should be_false
   end
 
-  xit  'should not save if for a position and the user does not meet status requirements of the position' do
+  it  'should not save if for a position and the user does not meet status requirements of the position' do
     @request.requestable.statuses = ['undergrad']
     @request.requestable.save
     @request.user.status.should_not eql 'undergrad'
     @request.save.should be_false
   end
 
-  xit  'should have an questions method that returns only questions in the quiz of requestable if it is a position' do
+  it  'should have an questions method that returns only questions in the quiz of requestable if it is a position' do
     allowed = Factory(:question)
     @request.requestable.quiz.questions << allowed
     unallowed = Factory(:question)
@@ -56,7 +56,7 @@ describe Request do
     @request.questions.should include allowed
   end
 
-  xit  'should have an questions method that returns only questions in the quiz of allowed positions of requestable if it is a committee' do
+  it  'should have an questions method that returns only questions in the quiz of allowed positions of requestable if it is a committee' do
     user = Factory(:user, :status => 'undergrad')
     user.status.should eql 'undergrad'
 
@@ -100,7 +100,7 @@ describe Request do
     full_quiz = Factory(:quiz, :questions => questions)
 
     less_recent = generate_answered_request user, short_quiz, 'less recent answer'
-    sleep 2
+    sleep 1
     most_recent = generate_answered_request user, short_quiz, 'most recent answer'
 
     request = Factory.build(:request, :user => user, :requestable => Factory(:position, :quiz => full_quiz))
@@ -123,7 +123,7 @@ describe Request do
     qa[answered_global].should eql 'most recent answer'
   end
 
-  xit  'should have a expired and unexpired scopes' do
+  it  'should have a expired and unexpired scopes' do
     older = Factory(:expired_request)
     old = Factory(:expired_request, :ends_at => Date.today)
     @request.ends_at.should > Date.today
@@ -134,7 +134,7 @@ describe Request do
     Request.unexpired.should include @request
   end
 
-  xit  'should claim unrequested memberships that the request could apply to' do
+  it  'should claim unrequested memberships that the request could apply to' do
     m = Factory(:membership)
     r = Factory.build(:request, :user => m.user)
     r.stub!(:position_ids).and_return([m.position_id])
@@ -143,44 +143,44 @@ describe Request do
     r.memberships.should include m
   end
 
-  xit  'should have a rejected? method that returns rejected_at? result' do
+  it  'should have a rejected? method that returns rejected_at? result' do
     @request.rejected_at.should be_nil
     @request.rejected?.should be_false
     @request.rejected_at = Time.zone.now
     @request.rejected?.should be_true
   end
 
-  xit  'should save with valid parameters from administrator' do
+  it  'should save with valid parameters from administrator' do
     setup_rejection
     @request.reject(@valid_parameters).should be_true
   end
 
-  xit  'should save with valid parameters from authorized user for the authority' do
+  it  'should save with valid parameters from authorized user for the authority' do
     setup_rejection
     @request.rejected_by_user = @authorized
     @request.reject(@valid_parameters).should be_true
   end
 
-  xit  'should not save with valid parameters from unauthorized user for the authority' do
+  it  'should not save with valid parameters from unauthorized user for the authority' do
     setup_rejection
     @request.rejected_by_user = @unauthorized
     @request.reject(@valid_parameters).should be_false
   end
 
-  xit  'should not save if rejected without a comment' do
+  it  'should not save if rejected without a comment' do
     setup_rejection
     @valid_parameters.delete(:rejection_comment)
     @request.reject(@valid_parameters).should be_false
   end
 
-  xit  'should have an unreject method that removes rejection status' do
+  it  'should have an unreject method that removes rejection status' do
     setup_rejection
     @request.reject(@valid_parameters).should be_true
     @request.unreject.should be_true
     @request.rejected?.should be_false
   end
 
-  xit  'should have a send_reject_notice! method which sends a rejection notice and saves' do
+  it  'should have a send_reject_notice! method which sends a rejection notice and saves' do
     setup_rejection
     @request.reject(@valid_parameters).should be_true
     @request.send_reject_notice!
@@ -188,7 +188,7 @@ describe Request do
     @request.rejection_notice_at.should_not be_nil
   end
 
-  xit  'should have a reject_notice_pending scope' do
+  it  'should have a reject_notice_pending scope' do
     Request.reject_notice_pending.length.should eql 0
     setup_rejection
     @request.reject(@valid_parameters).should be_true

@@ -1,5 +1,5 @@
 class Period < ActiveRecord::Base
-  default_scope :order => 'periods.starts_at DESC'
+  default_scope order( 'periods.starts_at DESC' )
 
   scope :current, lambda { overlaps(Time.zone.today,Time.zone.today) }
   scope :overlaps, lambda { |starts, ends|  where(:ends_at.gte => starts, :starts_at.lte => ends) }
@@ -33,9 +33,13 @@ class Period < ActiveRecord::Base
 
   after_create { |r| r.memberships.populate_unassigned! }
   after_update { |r|
-    # TODO is this based on intended rails behavior?
     r.memberships.repopulate_unassigned! if r.starts_at_changed? || r.ends_at_changed?
   }
+
+  def current?
+    return false unless Time.zone.now >= starts_at.to_time && Time.zone.now <= ends_at.to_time
+    true
+  end
 
   def must_not_conflict_with_other_period
     conflicts = Period.conflict_with(self) if new_record?

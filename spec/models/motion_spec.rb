@@ -15,8 +15,7 @@ describe Motion do
   end
 
   it 'should not save with a duplicate name for given committee and period' do
-    @duplicate = Factory( :motion, :user => @motion.user,
-      :committee => @motion.committee, :period => @motion.period )
+    @duplicate = Factory( :motion, :committee => @motion.committee, :period => @motion.period )
     @duplicate.name = @motion.name
     @duplicate.save.should be_false
   end
@@ -29,11 +28,6 @@ describe Motion do
   it 'should not save with a period that is not in the schedule of the committee' do
     @motion.period = Factory(:period)
     @motion.committee.schedule.periods.should_not include @motion.period
-    @motion.save.should be_false
-  end
-
-  it 'should not save without a user' do
-    @motion.user = nil
     @motion.save.should be_false
   end
 
@@ -98,6 +92,22 @@ describe Motion do
     referee = referee_motion
     referee.divisee?.should be_false
     referee.referring_motion.divisee?.should be_false
+  end
+
+  it 'should have a users.allowed which returns only users who may sponsor' do
+    right_position = Factory( :position, :schedule => @motion.committee.schedule )
+    wrong_position = Factory( :position, :schedule => @motion.committee.schedule )
+    wrong_period = Factory(:period, :schedule => @motion.committee.schedule,
+      :starts_at => ( @motion.period.ends_at + 1.day ) )
+    Factory( :enrollment, :position => right_position, :committee => @motion.committee )
+    allowed_user = Factory( :membership, :period => @motion.period, :position => right_position ).user
+    wrong_period_user = Factory( :membership, :period => wrong_period, :position => right_position ).user
+    wrong_committee_user = Factory( :membership, :period => @motion.period, :position => wrong_position ).user
+    @motion.reload
+    @motion.users.allowed.should include allowed_user
+    @motion.users.allowed.should_not include wrong_period_user
+    @motion.users.allowed.should_not include wrong_committee_user
+    @motion.users.allowed.length.should eql 1
   end
 
   def divided_motions

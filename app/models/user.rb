@@ -8,6 +8,8 @@ class User < ActiveRecord::Base
   has_and_belongs_to_many :qualifications
   has_many :memberships
   has_many :requests
+  has_many :sponsorships, :inverse_of => :user
+  has_many :motions, :through => :sponsorships
   has_many :answers, :through => :requests
   has_many :periods, :through => :memberships
   has_many :positions, :through => :memberships do
@@ -118,13 +120,11 @@ class User < ActiveRecord::Base
   end
 
   def enrollments(tense = nil)
-    Membership.send( :with_exclusive_scope ) do
-      if tense
-        Enrollment.joins(:memberships) & Membership.where( :user_id => id ).send(tense)
-      else
-        Enrollment.joins(:memberships) & Membership.where( :user_id => id )
-      end
-    end
+    Enrollment.joins(:memberships) & memberships_scope(tense)
+  end
+
+  def committees(tense = nil)
+    Committee.joins(:enrollments) & Enrollment.unscoped.joins(:memberships) & memberships_scope(tense)
   end
 
   def current_enrollments
@@ -158,6 +158,11 @@ class User < ActiveRecord::Base
   end
 
   protected
+
+  def memberships_scope(tense = nil)
+    scope = Membership.unscoped.where( :user_id => id )
+    tense.blank? ? scope : scope.send( tense )
+  end
 
   def initialize_password
     reset_password unless crypted_password?

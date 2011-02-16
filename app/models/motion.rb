@@ -1,7 +1,7 @@
 class Motion < ActiveRecord::Base
   include AASM
 
-  default_scope :order => 'motions.position ASC'
+  default_scope order( 'motions.position ASC' )
 
   attr_protected :committee_id
   attr_readonly :period_id, :user_id
@@ -9,10 +9,18 @@ class Motion < ActiveRecord::Base
   acts_as_list :scope => [:period_id, :committee_id]
 
   belongs_to :period
-  belongs_to :user
   belongs_to :committee
   belongs_to :referring_motion, :class_name => 'Motion'
 
+  has_many :sponsorships, :inverse_of => :motion
+  has_many :users, :through => :sponsorships do
+    # Only voting members may be sponsors
+    def allowed
+      return [] unless proxy_owner.committee && proxy_owner.period_id?
+      User.joins(:memberships) & proxy_owner.committee.memberships.where(
+        'enrollments.votes > 0' ).overlap( proxy_owner.period.starts_at, proxy_owner.period.ends_at )
+    end
+  end
   has_many :meeting_motions, :dependent => :destroy
   has_many :meetings, :through => :meeting_motions
   has_many :motion_mergers, :dependent => :destroy
@@ -51,9 +59,8 @@ class Motion < ActiveRecord::Base
   validates_uniqueness_of :name, :scope => [ :period_id, :committee_id ]
   validates_uniqueness_of :position, :scope => [ :period_id, :committee_id ]
   validates_presence_of :period
-  validates_presence_of :user
   validates_presence_of :committee
-  validate :user_must_be_voting_in_committee, :period_must_be_in_committee_schedule
+  validate :period_must_be_in_committee_schedule
 
   before_validation :add_to_list_bottom, :on => :create
   before_create do |motion|
@@ -121,25 +128,11 @@ class Motion < ActiveRecord::Base
     false
   end
 
-  def memberships
-    return nil unless committee
-    committee.memberships.where( 'enrollments.votes > 0', :period_id => period_id, :user_id => user_id )
-  end
-
   def to_s; name; end
 
   protected
 
   def do_divide; referred_motions.create_divided!; end
-
-  # User must have a vote in the committee associated with this motion unless
-  # it has been referred or divided
-  def user_must_be_voting_in_committee
-    return unless user && committee && period
-    if referring_motion.blank? && memberships.empty?
-      errors.add :user, 'must be voting member of committee in specified period'
-    end
-  end
 
   def period_must_be_in_committee_schedule
     return unless period && committee

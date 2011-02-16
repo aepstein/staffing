@@ -55,17 +55,16 @@ end
 
 Factory.define :motion do |f|
   f.committee { |m| m.association( :enrollment ).committee }
-  f.user do |m|
-    if m.committee.memberships.where(:user_id.ne => nil).first
-      m.committee.memberships.where(:user_id.ne => nil).first.user
-    elsif m.committee.positions.length > 0
-      m.association( :membership, :position => m.committee.positions.first ).user
+  f.period do |m|
+    if m.committee.schedule.periods.any?
+      m.committee.schedule.periods.first
     else
-      m.association( :membership, :position => m.association( :enrollment, :committee => m.committee ).position ).user
+      p = m.association( :period, :schedule => m.committee.schedule )
+      m.committee.schedule.reload
+      p
     end
   end
-  f.period { |m| ( m.committee.periods & m.user.memberships.enrollments_committee_id_equals(m.committee_id).map(&:period) ).first }
-  f.sequence( :name ) { |n| "motion #{n}" }
+  f.sequence( :name ) { |n| "Motion #{n}" }
 end
 
 Factory.define :motion_merger do |f|
@@ -191,5 +190,18 @@ end
 Factory.define :sending do |f|
   f.association :user
   f.message { |sending| sending.association :user_renewal_notice }
+end
+
+Factory.define :sponsorship do |f|
+  f.association :motion
+  f.user do |s|
+    if s.motion.users.allowed.any?
+      s.motion.users.allowed.first
+    else
+      p = s.association( :position, :schedule => s.motion.committee.schedule )
+      e = s.association( :enrollment, :committee => s.motion.committee, :position => p )
+      s.association( :membership, :period => s.motion.period, :position => p ).user
+    end
+  end
 end
 

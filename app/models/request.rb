@@ -7,7 +7,12 @@ class Request < ActiveRecord::Base
       end
       # Fill in most recent prior answer for each global question populated
       s = proxy_owner.user.answers.global.where( :question_id.in => population.map { |a| a.question_id }
-      ).order('answers.updated_at DESC').group('answers.question_id')
+      ).where(<<-SQL
+        answers.updated_at = ( SELECT MAX(a.updated_at) FROM answers AS a
+        INNER JOIN requests AS r ON a.request_id = r.id
+        WHERE a.question_id = answers.question_id AND r.user_id = #{proxy_owner.user_id} )
+      SQL
+      )
       s.each do |answer|
         fillable_answer = population.select { |a| a.question_id == answer.question_id }.first
         fillable_answer.content = answer.content unless fillable_answer.nil?
