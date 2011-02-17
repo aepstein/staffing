@@ -1,5 +1,5 @@
 class Committee < ActiveRecord::Base
-  default_scope :order => 'committees.name ASC'
+  default_scope order( 'committees.name ASC' )
 
   scope :requestable, where( :requestable.eq => true )
   scope :unrequestable, where( :requestable.eq => false )
@@ -8,17 +8,18 @@ class Committee < ActiveRecord::Base
     joins( :positions ).where("(positions.statuses_mask & #{status.nil? ? 0 : 2**User::STATUSES.index(status.to_s)}) > 0 OR positions.statuses_mask = 0")
   }
 
-  belongs_to :schedule
+  belongs_to :schedule, :inverse_of => :committees
   has_many :periods, :through => :schedule do
     def active
       current.first
     end
   end
-  has_many :authorities
-  has_many :meetings, :dependent => :destroy
-  has_many :motions, :dependent => :destroy
+  has_many :designees, :inverse_of => :committee
+  has_many :authorities, :inverse_of => :committee
+  has_many :meetings, :inverse_of => :committee, :dependent => :destroy
+  has_many :motions, :inverse_of => :committee, :dependent => :destroy
   has_many :requests, :as => :requestable
-  has_many :enrollments
+  has_many :enrollments, :inverse_of => :committee
   has_many :positions, :through => :enrollments
 
   validates_presence_of :name

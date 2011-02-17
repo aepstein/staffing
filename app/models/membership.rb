@@ -1,8 +1,8 @@
 class Membership < ActiveRecord::Base
-  belongs_to :user
-  belongs_to :period
-  belongs_to :position
-  belongs_to :request
+  belongs_to :user, :inverse_of => :memberships
+  belongs_to :period, :inverse_of => :memberships
+  belongs_to :position, :inverse_of => :memberships
+  belongs_to :request, :inverse_of => :memberships
   has_many :designees, :dependent => :delete_all do
     def populate
       return Array.new unless proxy_owner.position
@@ -73,9 +73,6 @@ class Membership < ActiveRecord::Base
   validates_date :ends_at
   validate :must_be_within_period, :user_must_be_qualified, :concurrent_memberships_must_not_exceed_slots
 
-  before_validation :on => :create do |r|
-    r.designees.each { |d| d.membership = r }
-  end
   after_save :claim_request!, :populate_unassigned
   after_destroy :populate_unassigned
 
@@ -124,13 +121,6 @@ class Membership < ActiveRecord::Base
 
   def max_concurrent_count; concurrent_counts.map(&:last).max; end
 
-  # The notice_type should be (join|leave)
-  def send_notice!(notice_type)
-    MembershipMailer.send( "#{notice_type}_notice", self ).deliver
-    self.send "#{notice_type}_notice_sent_at=", Time.zone.now
-    save!
-  end
-
   def confirmed?
     return false unless confirmed_at?
     return request.updated_at < confirmed_at if request
@@ -160,33 +150,6 @@ class Membership < ActiveRecord::Base
   # Returns the context in which this membership should be framed (useful for polymorphic_path)
   def context
     request || position || raise( "No context is possible" )
-  end
-
-  def user_must_be_qualified
-    return unless user && position
-    if (position.qualification_ids - user.qualification_ids).size > 0
-      errors.add :user, "is not qualified for position"
-    end
-  end
-
-  def must_be_within_period
-    return unless period && starts_at && ends_at
-    if starts_at && ends_at && ( ends_at < starts_at )
-      errors.add :ends_at, "must be at or after start date"
-    end
-    if starts_at && period && ( period.starts_at > starts_at || period.ends_at < starts_at )
-      errors.add :starts_at, "must be within #{period} (#{period.id})"
-    end
-    if ends_at && period && ( period.starts_at > ends_at || period.ends_at < ends_at )
-      errors.add :ends_at, "must be within #{period} (#{period.id})"
-    end
-  end
-
-  def concurrent_memberships_must_not_exceed_slots
-    return unless starts_at && ends_at && position
-    unless position.slots > max_concurrent_count
-      errors.add :position, "lacks free slots for the specified time period"
-    end
   end
 
   def request_id=(new_id)
@@ -221,7 +184,41 @@ class Membership < ActiveRecord::Base
 
   def to_s; "#{position} (#{starts_at.to_s :rfc822} - #{ends_at.to_s :rfc822})"; end
 
-  private
+  protected
+
+  # The notice_type should be (join|leave)
+  def send_notice!(notice_type)
+    MembershipMailer.send( "#{notice_type}_notice", self ).deliver
+    self.send "#{notice_type}_notice_sent_at=", Time.zone.now
+    save!
+  end
+
+  def user_must_be_qualified
+    return unless user && position
+    if (position.qualification_ids - user.qualification_ids).size > 0
+      errors.add :user, "is not qualified for position"
+    end
+  end
+
+  def must_be_within_period
+    return unless period && starts_at && ends_at
+    if starts_at && ends_at && ( ends_at < starts_at )
+      errors.add :ends_at, "must be at or after start date"
+    end
+    if starts_at && period && ( period.starts_at > starts_at || period.ends_at < starts_at )
+      errors.add :starts_at, "must be within #{period} (#{period.id})"
+    end
+    if ends_at && period && ( period.starts_at > ends_at || period.ends_at < ends_at )
+      errors.add :ends_at, "must be within #{period} (#{period.id})"
+    end
+  end
+
+  def concurrent_memberships_must_not_exceed_slots
+    return unless starts_at && ends_at && position
+    unless position.slots > max_concurrent_count
+      errors.add :position, "lacks free slots for the specified time period"
+    end
+  end
 
   def claim_request!
     return if self.request || user.nil?
@@ -237,22 +234,17 @@ class Membership < ActiveRecord::Base
 
   def populate_unassigned
     return if user.blank?
-    # TODO: kludge because of odd behavior of dirty tracking when correct behavior is resolved
     return unless destroyed? || period_id_changed? || starts_at_changed? || ends_at_changed?
     position.reload
-    # Eliminate unassigned shifts in the new period for this shift
+    # Eliminate unassigned memberships in the new period for this membership
     periods = position.schedule.periods.overlaps( starts_at, ends_at ).to_a
     periods.each do |p|
        position.memberships.unassigned.where( :period_id => p.id ).delete_all
     end
-    # Fill unassigned shifts for current and previous unfilled period
-    # TODO: kludge because of odd behavior of dirty tracking when correct behavior is resolved
+    # Fill unassigned memberships for current and previous unfilled period
     unless starts_at_changed? || ends_at_changed?
       periods += position.schedule.periods.overlaps( starts_at_was, ends_at_was ).to_a
     end
-#    unless starts_at_previously_changed? || ends_at_previously_changed?
-#      periods += position.schedule.periods.overlaps( starts_at_previously_was, ends_at_previously_was ).to_a
-#    end
     periods.uniq.each do |p|
       position.memberships.populate_unassigned_for_period! p
     end

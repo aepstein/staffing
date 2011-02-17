@@ -229,13 +229,13 @@ describe Membership do
   end
 
   it 'should have a send_notice! method that works for join' do
-    @membership.send_notice! :join
+    @membership.send( :send_notice!, :join )
     @membership.reload
     @membership.join_notice_sent_at.should_not be_nil
   end
 
   it 'should have a send_notice! method that works for leave' do
-    @membership.send_notice! :leave
+    @membership.send( :send_notice!, :leave )
     @membership.reload
     @membership.leave_notice_sent_at.should_not be_nil
   end

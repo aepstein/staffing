@@ -6,12 +6,15 @@ class Period < ActiveRecord::Base
   scope :conflict_with, lambda { |period| overlaps( period.starts_at, period.ends_at ).
     where( :schedule_id => period.schedule_id ) }
 
-  belongs_to :schedule
-  has_many :memberships, :dependent => :destroy do
+  belongs_to :schedule, :inverse_of => :periods
+  has_many :motions, :inverse_of => :period
+  has_many :meetings, :inverse_of => :period
+  has_many :memberships, :inverse_of => :period, :dependent => :destroy do
     def populate_unassigned!
       proxy_owner.schedule.positions.each do |position|
         position.memberships.populate_unassigned_for_period! proxy_owner
       end
+      reload
     end
     def repopulate_unassigned!
       where(:starts_at.lt => proxy_owner.starts_at).update_all(
@@ -21,7 +24,7 @@ class Period < ActiveRecord::Base
         "ends_at = #{connection.quote proxy_owner.ends_at}"
       )
       Membership.unassigned.where(:period_id => proxy_owner.id).delete_all
-      proxy_owner.reload
+      reload
       populate_unassigned!
     end
   end
@@ -31,10 +34,16 @@ class Period < ActiveRecord::Base
   validates_date :ends_at, :after => :starts_at
   validate :must_not_conflict_with_other_period
 
-  after_create { |r| r.memberships.populate_unassigned! }
-  after_update { |r|
-    r.memberships.repopulate_unassigned! if r.starts_at_changed? || r.ends_at_changed?
-  }
+  after_create do |period|
+    period.reload
+    period.memberships.populate_unassigned!
+  end
+  after_update do |period|
+    if period.starts_at_changed? || period.ends_at_changed?
+      period.reload
+      period.memberships.repopulate_unassigned!
+    end
+  end
 
   def current?
     return false unless Time.zone.now >= starts_at.to_time && Time.zone.now <= ends_at.to_time

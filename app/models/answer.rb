@@ -1,6 +1,6 @@
 class Answer < ActiveRecord::Base
-  belongs_to :question
-  belongs_to :request
+  belongs_to :question, :inverse_of => :answers
+  belongs_to :request, :inverse_of => :answers
 
   validates_presence_of :request
   validates_presence_of :question

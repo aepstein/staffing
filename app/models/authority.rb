@@ -1,12 +1,13 @@
 class Authority < ActiveRecord::Base
   default_scope order( 'authorities.name ASC' )
 
-  belongs_to :committee
-  has_many :positions
+  belongs_to :committee, :inverse_of => :authorities
+  has_many :positions, :inverse_of => :authority
   has_many :enrollments, :through => :positions
   has_many :memberships, :through => :positions
   has_many :quizzes, :through => :positions
   has_many :schedules, :through => :positions
+  has_many :user_renewal_notices, :inverse_of => :authority
 
   validates_presence_of :name
   validates_uniqueness_of :name

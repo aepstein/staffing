@@ -1,6 +1,6 @@
 class MotionMerger < ActiveRecord::Base
   belongs_to :merged_motion, :class_name => 'Motion'
-  belongs_to :motion
+  belongs_to :motion, :inverse_of => :motion_mergers
 
   validates_presence_of :merged_motion
   validates_presence_of :motion

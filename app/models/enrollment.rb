@@ -1,6 +1,6 @@
 class Enrollment < ActiveRecord::Base
-  belongs_to :position
-  belongs_to :committee
+  belongs_to :position, :inverse_of => :enrollments
+  belongs_to :committee, :inverse_of => :enrollments
   has_many :memberships, :primary_key => :position_id, :foreign_key => :position_id
 
   default_scope includes(:committee, :position).

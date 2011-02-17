@@ -36,7 +36,8 @@ Factory.define :membership do |f|
     if m.position.schedule.periods.length > 0
       m.position.schedule.periods.first
     else
-      m.association(:period, :schedule => m.position.schedule)
+      m.position.schedule.reload
+      m.association( :period, :schedule => m.position.schedule )
     end
   end
   f.starts_at { |m| m.period.starts_at }
@@ -59,9 +60,8 @@ Factory.define :motion do |f|
     if m.committee.schedule.periods.any?
       m.committee.schedule.periods.first
     else
-      p = m.association( :period, :schedule => m.committee.schedule )
       m.committee.schedule.reload
-      p
+      m.association( :period, :schedule => m.committee.schedule )
     end
   end
   f.sequence( :name ) { |n| "Motion #{n}" }
@@ -69,7 +69,10 @@ end
 
 Factory.define :motion_merger do |f|
   f.merged_motion { |m| m.association :motion, :status => 'proposed' }
-  f.motion { |m| m.association :motion, :committee => m.merged_motion.committee, :period => m.merged_motion.period }
+  f.motion do |m|
+    m.merged_motion.reload
+    m.association :motion, :committee => m.merged_motion.committee, :period => m.merged_motion.period
+  end
 end
 
 Factory.define :position do |f|
@@ -110,7 +113,7 @@ Factory.define :request do |f|
     else
       periods = false
     end
-    (periods && periods.last) ? periods.last.starts_at : Date.today
+    (periods && periods.last) ? periods.last.starts_at : Time.zone.today
   end
   f.ends_at do |request|
     case request.requestable.class.to_s
@@ -133,9 +136,9 @@ Factory.define :meeting do |f|
   f.association :committee
   f.period do |meeting|
     if meeting.committee.schedule.periods.empty?
+      meeting.committee.reload
       meeting.association(:period, :schedule => meeting.committee.schedule)
     end
-    meeting.committee.schedule.periods.reload
     meeting.committee.schedule.periods.first
   end
   f.starts_at { |m| m.period.starts_at.to_time + 1.hour }
@@ -145,7 +148,10 @@ end
 
 Factory.define :meeting_motion do |f|
   f.association :meeting
-  f.motion { |m| m.association :motion, :committee => m.meeting.committee }
+  f.motion do |m|
+    m.meeting.reload
+    m.association :motion, :committee => m.meeting.committee
+  end
 end
 
 Factory.define :expired_request, :parent => :request do |f|
@@ -189,7 +195,9 @@ end
 
 Factory.define :sending do |f|
   f.association :user
-  f.message { |sending| sending.association :user_renewal_notice }
+  f.message do |sending|
+    sending.association :user_renewal_notice
+  end
 end
 
 Factory.define :sponsorship do |f|
@@ -199,7 +207,8 @@ Factory.define :sponsorship do |f|
       s.motion.users.allowed.first
     else
       p = s.association( :position, :schedule => s.motion.committee.schedule )
-      e = s.association( :enrollment, :committee => s.motion.committee, :position => p )
+      s.association( :enrollment, :committee => s.motion.committee, :position => p )
+      s.motion.reload; p.reload
       s.association( :membership, :period => s.motion.period, :position => p ).user
     end
   end

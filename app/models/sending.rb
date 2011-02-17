@@ -1,5 +1,5 @@
 class Sending < ActiveRecord::Base
-  belongs_to :user
+  belongs_to :user, :inverse_of => :sendings
   belongs_to :message, :polymorphic => true
 
   validates_presence_of :user

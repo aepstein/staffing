@@ -1,5 +1,5 @@
 class UserRenewalNotice < ActiveRecord::Base
-  belongs_to :authority
+  belongs_to :authority, :inverse_of => :user_renewal_notices
 
   has_many :sendings, :as => :message, :dependent => :delete_all do
     def populate!

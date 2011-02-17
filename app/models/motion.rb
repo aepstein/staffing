@@ -8,9 +8,9 @@ class Motion < ActiveRecord::Base
 
   acts_as_list :scope => [:period_id, :committee_id]
 
-  belongs_to :period
-  belongs_to :committee
-  belongs_to :referring_motion, :class_name => 'Motion'
+  belongs_to :period, :inverse_of => :motions
+  belongs_to :committee, :inverse_of => :motions
+  belongs_to :referring_motion, :inverse_of => :referred_motions, :class_name => 'Motion'
 
   has_many :sponsorships, :inverse_of => :motion
   has_many :users, :through => :sponsorships do
@@ -23,9 +23,9 @@ class Motion < ActiveRecord::Base
   end
   has_many :meeting_motions, :dependent => :destroy
   has_many :meetings, :through => :meeting_motions
-  has_many :motion_mergers, :dependent => :destroy
+  has_many :motion_mergers, :inverse_of => :motion, :dependent => :destroy
   has_many :merged_motions, :through => :motion_mergers, :source => :merged_motion
-  has_many :referred_motions, :class_name => 'Motion', :foreign_key => :referring_motion_id, :dependent => :destroy do
+  has_many :referred_motions, :inverse_of => :referring_motion, :class_name => 'Motion', :foreign_key => :referring_motion_id, :dependent => :destroy do
     def build_referee( new_committee )
       new_motion = build( proxy_owner.attributes )
       new_motion.committee = new_committee

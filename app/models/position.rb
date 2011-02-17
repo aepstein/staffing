@@ -1,16 +1,16 @@
 class Position < ActiveRecord::Base
   default_scope order( 'positions.name ASC' )
 
-  belongs_to :authority
-  belongs_to :quiz
-  belongs_to :schedule
+  belongs_to :authority, :inverse_of => :positions
+  belongs_to :quiz, :inverse_of => :positions
+  belongs_to :schedule, :inverse_of => :positions
 
   has_and_belongs_to_many :qualifications
-  has_many :memberships, :dependent => :destroy do
+  has_many :memberships, :inverse_of => :position, :dependent => :destroy do
     # Repopulate for a period
     def repopulate_unassigned_for_period!( period )
       unassigned.where( :period_id => period.id ).delete_all
-      populate_unassigned_for_period!( period )
+      populate_unassigned_for_period! period
     end
     # Create vacant memberships for all periods
     def populate_unassigned!
@@ -38,7 +38,9 @@ class Position < ActiveRecord::Base
     def vacancies_for_period( period )
       Membership.concurrent_counts( period, proxy_owner.id ).map { |r| [r.first, ( proxy_owner.slots - r.last )] }
     end
+
     private
+
     def start_unassigned(starts_at, period)
       build(:starts_at => starts_at, :period => period)
     end
@@ -47,7 +49,7 @@ class Position < ActiveRecord::Base
   has_many :users, :through => :memberships
   has_many :periods, :through => :schedule
   has_many :answers, :through => :requests
-  has_many :enrollments, :dependent => :destroy do
+  has_many :enrollments, :inverse_of => :position, :dependent => :destroy do
     def for_committee(committee)
       self.select { |enrollment| enrollment.committee_id == committee.id }
     end

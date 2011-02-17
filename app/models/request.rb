@@ -1,5 +1,5 @@
 class Request < ActiveRecord::Base
-  has_many :answers do
+  has_many :answers, :inverse_of => :request do
     def populate
       # Generate blank answers for any allowed question not in answer set
       population = proxy_owner.questions.reject { |q| populated_question_ids.include? q.id }.map do |question|
@@ -26,14 +26,21 @@ class Request < ActiveRecord::Base
     end
   end
   belongs_to :requestable, :polymorphic => true
-  belongs_to :user
+  belongs_to :user, :inverse_of => :requests
   belongs_to :rejected_by_authority, :class_name => 'Authority'
   belongs_to :rejected_by_user, :class_name => 'User'
 
-  has_many :memberships, :dependent => :nullify do
+  has_many :memberships, :inverse_of => :request, :dependent => :nullify do
     def assignable
       proxy_owner.requestable.memberships.overlap( proxy_owner.starts_at, proxy_owner.ends_at
       ).position_with_status( proxy_owner.user.status ).unassigned
+    end
+    def claim!
+      return if proxy_owner.position_ids.empty?
+      proxy_owner.user.memberships.unrequested.where(
+        :position_id.in => proxy_owner.position_ids ).each do |membership|
+        self << membership
+      end
     end
   end
 
@@ -80,22 +87,11 @@ class Request < ActiveRecord::Base
   validates_presence_of :rejected_by_user, :if => :rejected?
   validate :rejected_by_authority_must_be_allowed_to_rejected_by_user, :if => :rejected?
 
-  before_validation :initialize_answers, :on => :create
-  after_save :claim_memberships!
+  after_save { |request| request.memberships.claim! }
+  after_save :insert_at_new_position
 
-  def send_reject_notice!
-    RequestMailer.reject_notice( self ).deliver
-    self.rejection_notice_at = Time.zone.now
-    save!
-  end
-
-  def rejected_by_authority_must_be_allowed_to_rejected_by_user
-    unless rejected_by_authority.blank? || rejected_by_user.blank? ||
-      rejected_by_user.allowed_authorities.include?( rejected_by_authority )
-      errors.add :rejected_by_authority,
-        "is not among the authorities under which #{rejected_by_user} may reject requests"
-    end
-  end
+  accepts_nested_attributes_for :answers
+  accepts_nested_attributes_for :user
 
   def positions
     return Position.where(:id => nil) unless requestable
@@ -129,18 +125,6 @@ class Request < ActiveRecord::Base
 
   def authority_ids; authorities.map(&:id); end
 
-  def requestable_must_be_requestable
-    return unless requestable
-    errors.add :requestable, "is not requestable." unless requestable.requestable?
-  end
-
-  def user_status_must_match_position
-    return unless requestable && requestable.class == Position
-    unless requestable.statuses.empty? || requestable.statuses.include?(user.status)
-      errors.add :user, "must have a status of #{requestable.statuses.join ' or '}."
-    end
-  end
-
   attr_accessor :new_position
 
   def new_position_options
@@ -172,29 +156,41 @@ class Request < ActiveRecord::Base
     rejected_at?
   end
 
-  after_save :insert_at_new_position
-
-  accepts_nested_attributes_for :answers
-  accepts_nested_attributes_for :user
+  def to_s; requestable.to_s; end
 
   protected
+
+  def send_reject_notice!
+    RequestMailer.reject_notice( self ).deliver
+    self.rejection_notice_at = Time.zone.now
+    save!
+  end
+
+  def rejected_by_authority_must_be_allowed_to_rejected_by_user
+    unless rejected_by_authority.blank? || rejected_by_user.blank? ||
+      rejected_by_user.allowed_authorities.include?( rejected_by_authority )
+      errors.add :rejected_by_authority,
+        "is not among the authorities under which #{rejected_by_user} may reject requests"
+    end
+  end
+
+  def requestable_must_be_requestable
+    return unless requestable
+    errors.add :requestable, "is not requestable." unless requestable.requestable?
+  end
+
+  def user_status_must_match_position
+    return unless requestable && requestable.class == Position
+    unless requestable.statuses.empty? || requestable.statuses.include?(user.status)
+      errors.add :user, "must have a status of #{requestable.statuses.join ' or '}."
+    end
+  end
 
   def insert_at_new_position
     return if new_position.blank? || new_position == position
     pos = new_position
     self.new_position = nil
     insert_at pos
-  end
-
-  def initialize_answers; answers.each { |a| a.request = self }; end
-
-  def to_s; requestable.to_s; end
-
-  def claim_memberships!
-    return if position_ids.empty?
-    user.memberships.unrequested.where( :position_id.in => position_ids).each do |membership|
-      memberships << membership
-    end
   end
 
 end

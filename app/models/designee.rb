@@ -1,7 +1,7 @@
 class Designee < ActiveRecord::Base
-  belongs_to :membership
+  belongs_to :membership, :inverse_of => :designees
   belongs_to :user
-  belongs_to :committee
+  belongs_to :committee, :inverse_of => :designees
 
   validates_presence_of :membership
   validates_presence_of :user

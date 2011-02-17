@@ -6,8 +6,8 @@ class User < ActiveRecord::Base
   attr_protected :admin, :net_id, :status, :statuses, :statuses_mask
 
   has_and_belongs_to_many :qualifications
-  has_many :memberships
-  has_many :requests
+  has_many :memberships, :inverse_of => :user
+  has_many :requests, :inverse_of => :user
   has_many :sponsorships, :inverse_of => :user
   has_many :motions, :through => :sponsorships
   has_many :answers, :through => :requests
@@ -20,6 +20,7 @@ class User < ActiveRecord::Base
       ] )
     end
   end
+  has_many :sendings, :inverse_of => :user
 
   scope :no_notice_since, lambda { |notice, time|
     where( ['users.id NOT IN ( SELECT user_id FROM sendings WHERE message_type = ? AND created_at > ? )',

@@ -1,6 +1,6 @@
 class MeetingMotion < ActiveRecord::Base
-  belongs_to :meeting
-  belongs_to :motion
+  belongs_to :meeting, :inverse_of => :meeting_motions
+  belongs_to :motion, :inverse_of => :meeting_motions
 
   has_attached_file :introduced_version,
     :path => ':rails_root/db/uploads/:rails_env/meeting_motions/:id_partition/:attachment/:style.:extension',
