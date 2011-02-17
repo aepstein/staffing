@@ -14,7 +14,8 @@ class Period < ActiveRecord::Base
       proxy_owner.schedule.positions.each do |position|
         position.memberships.populate_unassigned_for_period! proxy_owner
       end
-      reload
+      # Reset so changes are loaded in this collection
+      reset
     end
     def repopulate_unassigned!
       where(:starts_at.lt => proxy_owner.starts_at).update_all(
@@ -24,7 +25,8 @@ class Period < ActiveRecord::Base
         "ends_at = #{connection.quote proxy_owner.ends_at}"
       )
       Membership.unassigned.where(:period_id => proxy_owner.id).delete_all
-      reload
+      # Reset so changes are loaded in this collection
+      reset
       populate_unassigned!
     end
   end

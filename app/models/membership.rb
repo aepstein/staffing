@@ -235,7 +235,7 @@ class Membership < ActiveRecord::Base
   def populate_unassigned
     return if user.blank?
     return unless destroyed? || period_id_changed? || starts_at_changed? || ends_at_changed?
-    position.reload
+#    position.reload
     # Eliminate unassigned memberships in the new period for this membership
     periods = position.schedule.periods.overlaps( starts_at, ends_at ).to_a
     periods.each do |p|
