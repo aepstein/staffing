@@ -32,7 +32,8 @@ class Position < ActiveRecord::Base
         previous_vacancies = ( point.last > 0 ? point.last : 0 )
         memo
       end
-      memberships.each { |membership| membership.save! }
+      # Save without validation -- method should produce valid memberships
+      memberships.each { |membership| membership.save! :validate => false }
     end
     # Spaces for period
     def vacancies_for_period( period )

@@ -3,7 +3,7 @@ class Membership < ActiveRecord::Base
   belongs_to :period, :inverse_of => :memberships
   belongs_to :position, :inverse_of => :memberships
   belongs_to :request, :inverse_of => :memberships
-  has_many :designees, :dependent => :delete_all do
+  has_many :designees, :inverse_of => :membership, :dependent => :delete_all do
     def populate
       return Array.new unless proxy_owner.position
       proxy_owner.position.committees.inject([]) do |memo, committee|
