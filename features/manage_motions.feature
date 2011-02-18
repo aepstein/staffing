@@ -1,0 +1,100 @@
+Feature: Manage motions
+  In order to record motions of committees
+  As a committee member or administrator
+  I want to create, modify, list, show, and destroy motions
+
+  Background:
+    Given a position: "voting" exists with name: "Member of Committee", slots: 2
+    And a position: "non-voting" exists with name: "Ex-Officio Member of Committee", slots: 2
+    And a schedule: "committee" exists
+    And a past_period exists with schedule: schedule "committee"
+    And a current_period exists with schedule: schedule "committee"
+    And a future_period exists with schedule: schedule "committee"
+    And a committee: "committee" exists with name: "Active Committee", schedule: the schedule
+    And an enrollment exists with position: position "voting", committee: committee "committee", votes: 1
+    And an enrollment exists with position: position "non-voting", committee: committee "committee", votes: 0
+    And a user: "admin" exists with admin: true
+
+  Scenario Outline: Test permissions for motions controller actions
+    Given a motion: "focus" exists with name: "Focus", committee: committee "committee", period: the <period>period, status: "<status>"
+    And a user: "sponsor" exists
+    And a membership exists with user: user "sponsor", position: position "voting", period: the <period>period
+    And a sponsorship exists with motion: the motion, user: user "sponsor"
+    And a user: "member" exists
+    And a membership exists with user: user "member", position: position "<position>", period: the <period>period
+    And a user: "regular" exists
+    And I log in as user: "<user>"
+    And I am on the page for the motion
+    Then I should <show> authorized
+    And I should <update> "Edit"
+    Given I am on the motions page
+    And I am on the motions page for committee: "committee"
+    Then I should <show> "Focus"
+    And I should <update> "Edit"
+    And I should <destroy> "Destroy"
+    And I should <create> "New motion"
+    Given I am on the new motion page for committee: "committee"
+    Then I should <create> authorized
+    Given I post on the motions page for committee: "committee"
+    Then I should <create> authorized
+    And I am on the edit page for the motion
+    Then I should <update> authorized
+    Given I put on the page for the motion
+    Then I should <update> authorized
+    Given I delete on the page for the motion
+    Then I should <destroy> authorized
+    Examples:
+      | period   | status  | position   | user    | create  | update  | destroy | show     |
+      | current_ | started | voting     | admin   | see     | see     | see     | see      |
+      | past_    | started | voting     | admin   | see     | see     | see     | see      |
+      | future_  | started | voting     | admin   | see     | see     | see     | see      |
+      | current_ | started | voting     | sponsor | see     | see     | see     | see      |
+      | past_    | started | voting     | sponsor | not see | not see | not see | see      |
+      | future_  | started | voting     | sponsor | not see | not see | not see | see      |
+      | current_ | started | voting     | member  | see     | not see | not see | not see  |
+      | past_    | started | voting     | member  | not see | not see | not see | not see  |
+      | future_  | started | voting     | member  | not see | not see | not see | not see  |
+      | current_ | started | non-voting | member  | not see | not see | not see | not see  |
+      | past_    | started | non-voting | member  | not see | not see | not see | not see  |
+      | future_  | started | non-voting | member  | not see | not see | not see | not see  |
+      | current_ | started | voting     | regular | not see | not see | not see | not see  |
+
+@wip
+  Scenario: Register new motion
+    Given a schedule exists
+    And a period exists with schedule: the schedule, starts_at: "2010-01-01", ends_at: "2010-12-31"
+    And a period exists with schedule: the schedule, starts_at: "2009-01-01", ends_at: "2009-12-31"
+    And a committee exists with name: "Powerful Committee", schedule: the schedule
+    And I log in as user: "admin"
+    And I am on the new motion page for the committee
+    When I select "1 Jan 2010 - 31 Dec 2010" from "Period"
+    And I fill in "Name" with "Charter amendment"
+    And I fill in "Description" with "This is a *big* change"
+    And I press "Create"
+    Then I should see "Motion was successfully created."
+    And I should see "Committee: Powerful Committee"
+    And I should see "Period: 1 Jan 2010 - 31 Dec 2010"
+    And I should see "Name: Charter amendment"
+    And I should see "This is a big change."
+    When I follow "Edit"
+    And I fill in "Name" with "Charter amendment"
+    And I fill in "Description" with "This is a *big* change"
+    And I press "Update"
+    Then I should see "Motion was successfully updated."
+    And I should see "Committee: Favorite Committee"
+    And I should see "Name: Charter amendment"
+    And I should see "This is a big change."
+
+  Scenario: Delete motion
+    Given an motion: "motion4" exists with committee: committee "committee", period: period "past", starts_at: "2010-01-01 16:00:00"
+    And an motion: "motion3" exists with committee: committee "committee", period: period "past", starts_at: "2010-01-02 16:00:00"
+    And an motion: "motion2" exists with committee: committee "committee", period: period "past", starts_at: "2010-01-03 16:00:00"
+    And an motion: "motion1" exists with committee: committee "committee", period: period "past", starts_at: "2010-01-04 16:00:00"
+    And I log in as user: "admin"
+    When I follow "Destroy" for the 3rd motion for committee: "committee"
+    Then I should see the following motions:
+      | Starts at        |
+      |04 Jan 2010 16:00 |
+      |03 Jan 2010 16:00 |
+      |01 Jan 2010 16:00 |
+

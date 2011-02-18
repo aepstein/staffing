@@ -3,8 +3,8 @@ class Motion < ActiveRecord::Base
 
   default_scope order( 'motions.position ASC' )
 
-  attr_protected :committee_id
-  attr_readonly :period_id, :user_id
+  attr_protected :committee_id, :status
+  attr_readonly :period_id
 
   acts_as_list :scope => [:period_id, :committee_id]
 
@@ -12,7 +12,13 @@ class Motion < ActiveRecord::Base
   belongs_to :committee, :inverse_of => :motions
   belongs_to :referring_motion, :inverse_of => :referred_motions, :class_name => 'Motion'
 
-  has_many :sponsorships, :inverse_of => :motion
+  has_many :sponsorships, :inverse_of => :motion do
+    # Build and return a sponsorship if provided user is allowed
+    # Otherwise, return nil
+    def populate_for( user )
+      build( :user => user ) if proxy_owner.users.allowed.include? user
+    end
+  end
   has_many :users, :through => :sponsorships do
     # Only voting members may be sponsors
     def allowed
@@ -52,6 +58,9 @@ class Motion < ActiveRecord::Base
       end
     end
   end
+
+  accepts_nested_attributes_for :sponsorships, :allow_destroy => true,
+    :reject_if => proc { |a| a['user_name'].blank? && a['_destroy'].blank? }
 
   delegate :periods, :period_ids, :to => :committee
 

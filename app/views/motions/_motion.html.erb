@@ -1,15 +1,11 @@
 <% committee ||= false %>
 <% period ||= false %>
-<% user ||= false %>
   <%= table_row_tag do %>
     <% unless committee %>
     <td><%=h motion.committee %></td>
     <% end %>
     <% unless period %>
     <td><%=h motion.period %></td>
-    <% end %>
-    <% unless user %>
-    <td><%=h motion.user %></td>
     <% end %>
     <td><%= motion.position %></td>
     <td><%=h motion.name %></td>

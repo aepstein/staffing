@@ -2,7 +2,7 @@ class MotionsController < ApplicationController
   before_filter :initialize_context
   before_filter :initialize_index
   before_filter :new_motion_from_params, :only => [ :new, :create ]
-  filter_access_to :new, :create, :edit, :update, :destroy, :show
+  filter_access_to :new, :create, :edit, :update, :destroy, :show, :attribute_check => true
 
   # GET /meetings/:meeting_id/motions/allowed
   # GET /meetings/:meeting_id/motions/allowed.xml
@@ -17,7 +17,14 @@ class MotionsController < ApplicationController
   # GET /meetings/:meeting_id/motions.xml
   # GET /users/:user_id/motions
   # GET /users/:user_id/motions.xml
+  # GET /motions
+  # GET /motions.xml
   def index
+    @search = @motions.with_permissions_to(:show).search(
+      params[:term] ? { :name_contains => params[:term] } : params[:search]
+    )
+    @motions = @search.paginate(:page => params[:page])
+
     respond_to do |format|
       format.html { render :action => 'index' } # index.html.erb
       format.json { render :action => 'index' } # index.json.erb
@@ -37,6 +44,7 @@ class MotionsController < ApplicationController
   # GET /committees/:committee_id/motions/new
   # GET /committees/:committee_id/motions/new.xml
   def new
+    @motion.sponsorships.build unless @motion.sponsorships.populate_for( current_user )
     respond_to do |format|
       format.html # new.html.erb
       format.xml  { render :xml => @motion }
@@ -45,6 +53,10 @@ class MotionsController < ApplicationController
 
   # GET /motions/1/edit
   def edit
+    @motion.sponsorships.build
+    respond_to do |format|
+      format.html # edit.html.erb
+    end
   end
 
   # POST /committees/:committee_id/motions
@@ -103,17 +115,15 @@ class MotionsController < ApplicationController
   end
 
   def initialize_index
-    @motions ||= @committee.motions if @committee
-    @motions ||= @user.motions if @user
-    @motions ||= @meeting.motions if @meeting
+    @motions = Motion.scoped
+    @motions = @committee.motions if @committee
+    @motions = @user.motions if @user
+    @motions = @meeting.motions if @meeting
   end
 
   def new_motion_from_params
     @motion = @committee.motions.build( params[:motion] )
-    unless permitted_to? :manage, @motion
-      @motion.user = current_user
-      @motion.period = @motion.periods.current
-    end
+    @motion.period = @committee.periods.active
   end
 end
 

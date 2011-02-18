@@ -52,7 +52,12 @@ Staffing::Application.routes.draw do
     end
     resources :requests, :only => [ :new, :create ]
   end
-  resources :motions, :except => [ :index, :new, :create ] do
+  resources :motions, :except => [ :new, :create ] do
+    resources :users, :only => [ :index ] do
+      collection do
+        get :allowed
+      end
+    end
     resources :meetings, :only => [ :index ] do
       collection do
         get :past, :current, :future

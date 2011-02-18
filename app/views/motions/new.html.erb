@@ -1,6 +1,7 @@
-<h2>New motion for <%=h @motion.committee %></h2>
+<h2>New motion for <%= @motion.committee %></h2>
 
-<%= semantic_form_for(:motion, @motion, :url => committee_motions_path(@motion.committee) ) do |f| %>
+<%= semantic_form_for( @motion, :html => { :multipart => true },
+  :url => committee_motions_path(@motion.committee) ) do |f| %>
   <%= render :partial => 'form', :object => f %>
 <% end %>
 

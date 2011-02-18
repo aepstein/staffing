@@ -1,4 +1,6 @@
 class Membership < ActiveRecord::Base
+  include UserNameLookup
+
   belongs_to :user, :inverse_of => :memberships
   belongs_to :period, :inverse_of => :memberships
   belongs_to :position, :inverse_of => :memberships
@@ -132,19 +134,6 @@ class Membership < ActiveRecord::Base
   def confirm
     self.confirmed_at = Time.zone.now
     save
-  end
-
-  def user_name
-    "#{user.name} (#{user.net_id})" if user
-  end
-
-  def user_name=(name)
-    if name.to_net_ids.empty?
-      self.user = User.find_by_net_id name[/\(([^\s]*)\)/,1]
-    else
-      self.user = User.find_or_create_by_net_id name.to_net_ids.first
-    end
-    self.user = nil if user && user.id.nil?
   end
 
   # Returns the context in which this membership should be framed (useful for polymorphic_path)

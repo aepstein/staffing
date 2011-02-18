@@ -14,10 +14,10 @@ class User < ActiveRecord::Base
   has_many :periods, :through => :memberships
   has_many :positions, :through => :memberships do
     def current
-      scoped.where( [
-        'memberships.starts_at =< :d AND memberships.ends_at >= :d',
-        { :d => Date.today }
-      ] )
+      scoped.where(
+        'memberships.starts_at <= :d AND memberships.ends_at >= :d',
+        { :d => Time.zone.today }
+      )
     end
   end
   has_many :sendings, :inverse_of => :user

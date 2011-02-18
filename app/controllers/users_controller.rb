@@ -1,21 +1,32 @@
 class UsersController < ApplicationController
   before_filter :require_user, :initialize_context
-  before_filter :initialize_index, :only => [ :index ]
+  before_filter :initialize_index, :only => [ :index, :allowed ]
   before_filter :new_user_from_params, :only => [ :new, :create ]
   before_filter :set_admin_properties, :only => [ :create, :update ]
   filter_access_to :new, :create, :edit, :update, :destroy, :show, :attribute_check => true
 
+  # GET /motions/:motion_id/users/allowed
+  # GET /motions/:motion_id/users/allowed
+  def allowed
+    @users = @users.allowed
+    index
+  end
+
+  # GET /motions/:motion_id/users
+  # GET /motions/:motion_id/users
+  # GET /meetings/:meetings_id/users
+  # GET /meetings/:meetings_id/users
   # GET /users
   # GET /users.xml
   def index
-    @search = User.with_permissions_to(:show).search(
+    @search = @users.with_permissions_to(:show).search(
       params[:term] ? { :name_like => params[:term] } : params[:search]
     )
     @users = @search.paginate(:page => params[:page])
 
     respond_to do |format|
-      format.html # index.html.erb
-      format.json # index.json.erb
+      format.html { render :action => 'index' } # index.html.erb
+      format.json { render :action => 'index' } # index.json.erb
       format.xml  { render :xml => @users }
     end
   end
@@ -110,11 +121,13 @@ class UsersController < ApplicationController
   def initialize_context
     @user = User.find params[:id] if params[:id]
     @membership = Membership.find params[:membership_id] if params[:membership_id]
+    @motion = Motion.find params[:motion_id] if params[:motion_id]
   end
 
   def initialize_index
-    @users = User
+    @users = User.scoped
     @users = @membership.users if @membership
+    @users = @motion.users if @motion
   end
 
   def new_user_from_params

@@ -6,7 +6,7 @@
 <hr />
 
 <p>
-<% if @committee && permitted_to?( :create, @committee.motions.build( :user => current_user, :period => @committee.periods.active ) ) %>
+<% if @committee && permitted_to?( :create, @committee.motions.build( :period => @committee.periods.active ) ) %>
 <%= link_to 'New motion', new_committee_motion_path( @committee ) %>
 <% end %>
 <% if @user %>

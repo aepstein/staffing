@@ -1,8 +1,9 @@
 authorization do
   role :admin do
     has_permission_on [ :authorities, :committees, :enrollments, :meetings,
-      :memberships, :periods, :positions, :qualifications, :quizzes, :questions,
-      :requests, :schedules, :users, :user_renewal_notices, :sendings ],
+      :memberships, :motions, :periods, :positions, :qualifications, :quizzes,
+      :questions, :requests, :schedules, :users, :user_renewal_notices,
+      :sendings ],
       :to => :manage
     has_permission_on :users, :to => :resume
     has_permission_on :memberships, :to => :confirm
@@ -15,17 +16,16 @@ authorization do
     has_permission_on :committees, :to => :vote do
       if_attribute :enrollments => { :position_id => is_in { user.memberships.current.map(&:position_id) }, :votes => gt { 0 } }
     end
-    has_permission_on :motions, :to => :show do
-      if_attribute :status => is_not { 'started' }
-      if_attribute :user_id => is { user.id }
-    end
-    has_permission_on :motions, :to => :create, :join_by => :and do
-      if_permitted_to :vote, :committee
+    has_permission_on :motions, :to => :show, :join_by => :and do
       if_attribute :status => is { 'started' }
+      if_attribute :sponsorships => { :user_id => is { user.id } }
     end
-    has_permission_on :motions, :to => [:update, :destroy], :join_by => :and do
+    has_permission_on :motions, :to => :create do
       if_permitted_to :vote, :committee
-      if_attribute :status => is { 'started' }, :user_id => is { user.id }
+    end
+    has_permission_on :motions, :to => :manage, :join_by => :and do
+      if_permitted_to :vote, :committee
+      if_attribute :status => is { 'started' }, :sponsorships => { :user_id => is { user.id } }
     end
     has_permission_on :users, :to => :resume do
       if_attribute :id => is { user.id }
@@ -62,6 +62,9 @@ privileges do
   end
   privilege :reject do
     includes :unreject, :do_reject
+  end
+  privilege :vote do
+    includes :show
   end
   privilege :create do
     includes :new
