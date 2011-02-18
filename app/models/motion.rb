@@ -66,12 +66,12 @@ class Motion < ActiveRecord::Base
 
   validates_presence_of :name
   validates_uniqueness_of :name, :scope => [ :period_id, :committee_id ]
-  validates_uniqueness_of :position, :scope => [ :period_id, :committee_id ]
+#  validates_uniqueness_of :position, :scope => [ :period_id, :committee_id ]
   validates_presence_of :period
   validates_presence_of :committee
   validate :period_must_be_in_committee_schedule
 
-  before_validation :add_to_list_bottom, :on => :create
+#  before_validation :add_to_list_bottom, :on => :create
   before_create do |motion|
     if motion.referee?
       motion.referring_motion.lock!

@@ -84,15 +84,20 @@ Feature: Manage motions
     And I should see "This is a big change."
 
   Scenario: Delete motion
-    Given an motion: "motion4" exists with committee: committee "committee", period: period "past", starts_at: "2010-01-01 16:00:00"
-    And an motion: "motion3" exists with committee: committee "committee", period: period "past", starts_at: "2010-01-02 16:00:00"
-    And an motion: "motion2" exists with committee: committee "committee", period: period "past", starts_at: "2010-01-03 16:00:00"
-    And an motion: "motion1" exists with committee: committee "committee", period: period "past", starts_at: "2010-01-04 16:00:00"
+    Given there are no motions
+    And a schedule exists
+    And a period exists with schedule: the schedule, starts_at: "2010-01-01", ends_at: "2010-12-31"
+    And a committee exists with schedule: the schedule
+    And a motion exists with name: "Motion 4", committee: the committee
+    And a motion exists with name: "Motion 3", committee: the committee
+    And a motion exists with name: "Motion 2", committee: the committee
+    And a motion exists with name: "Motion 1", committee: the committee
     And I log in as user: "admin"
-    When I follow "Destroy" for the 3rd motion for committee: "committee"
+    When I follow "Destroy" for the 3rd motion for the committee
+    Then show me the page
     Then I should see the following motions:
-      | Starts at        |
-      |04 Jan 2010 16:00 |
-      |03 Jan 2010 16:00 |
-      |01 Jan 2010 16:00 |
+      | Period                   | Position | Name     |
+      | 1 Jan 2010 - 31 Dec 2010 | 1        | Motion 4 |
+      | 1 Jan 2010 - 31 Dec 2010 | 2        | Motion 3 |
+      | 1 Jan 2010 - 31 Dec 2010 | 3        | Motion 1 |
 

@@ -68,7 +68,7 @@ module ActiveRecord
 
             #{scope_condition_method}
 
-            before_destroy :decrement_positions_on_lower_items
+            after_destroy :decrement_positions_on_lower_items
             before_validation  :add_to_list_bottom, :on => :create
           EOV
         end
@@ -200,7 +200,7 @@ module ActiveRecord
           def bottom_item(except = nil)
             conditions = scope_condition
             conditions = "#{conditions} AND #{self.class.primary_key} != #{except.id}" if except
-            scope = acts_as_list_class.scoped.where(conditions).order("#{position_column} DESC")
+            scope = acts_as_list_class.unscoped.where(conditions).order("#{position_column} DESC")
             scope.reload
             scope.first
           end

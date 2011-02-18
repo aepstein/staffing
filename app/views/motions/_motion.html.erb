@@ -2,13 +2,13 @@
 <% period ||= false %>
   <%= table_row_tag do %>
     <% unless committee %>
-    <td><%=h motion.committee %></td>
+    <td><%= motion.committee %></td>
     <% end %>
     <% unless period %>
-    <td><%=h motion.period %></td>
+    <td><%= motion.period %></td>
     <% end %>
     <td><%= motion.position %></td>
-    <td><%=h motion.name %></td>
+    <td><%= motion.name %></td>
     <td><%= motion.status %></td>
     <td><%= link_to 'Show', motion %></td>
     <td><%= link_to( 'Edit', edit_motion_path(motion) ) if permitted_to? :edit, motion %></td>
