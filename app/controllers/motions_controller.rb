@@ -123,7 +123,7 @@ class MotionsController < ApplicationController
 
   def new_motion_from_params
     @motion = @committee.motions.build( params[:motion] )
-    @motion.period = @committee.periods.active
+    @motion.period ||= @committee.periods.active
   end
 end
 

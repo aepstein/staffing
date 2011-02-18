@@ -59,7 +59,6 @@ Feature: Manage motions
       | future_  | started | non-voting | member  | not see | not see | not see | not see  |
       | current_ | started | voting     | regular | not see | not see | not see | not see  |
 
-@wip
   Scenario: Register new motion
     Given a schedule exists
     And a period exists with schedule: the schedule, starts_at: "2010-01-01", ends_at: "2010-12-31"
@@ -69,7 +68,7 @@ Feature: Manage motions
     And I am on the new motion page for the committee
     When I select "1 Jan 2010 - 31 Dec 2010" from "Period"
     And I fill in "Name" with "Charter amendment"
-    And I fill in "Description" with "This is a *big* change"
+    And I fill in "Description" with "This is a *big* change."
     And I press "Create"
     Then I should see "Motion was successfully created."
     And I should see "Committee: Powerful Committee"
@@ -77,12 +76,11 @@ Feature: Manage motions
     And I should see "Name: Charter amendment"
     And I should see "This is a big change."
     When I follow "Edit"
-    And I fill in "Name" with "Charter amendment"
-    And I fill in "Description" with "This is a *big* change"
+    And I fill in "Name" with "Charter change"
+    And I fill in "Description" with "This is a big change."
     And I press "Update"
     Then I should see "Motion was successfully updated."
-    And I should see "Committee: Favorite Committee"
-    And I should see "Name: Charter amendment"
+    And I should see "Name: Charter change"
     And I should see "This is a big change."
 
   Scenario: Delete motion
