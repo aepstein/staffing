@@ -1,17 +1,17 @@
 <p>
-  <b>Committee:</b> <%=h @motion.committee %>
+  <b>Committee:</b> <%= @motion.committee %>
 </p>
 
 <p>
-  <b>Period:</b> <%=h @motion.period %>
+  <b>Period:</b> <%= @motion.period %>
 </p>
 
 <p>
-  <b>Position:</b> <%=h @motion.position %>
+  <b>Position:</b> <%= @motion.position %>
 </p>
 
 <p>
-  <b>Name:</b> <%=h @motion.name %>
+  <b>Name:</b> <%= @motion.name %>
 </p>
 
 <p>
@@ -19,6 +19,8 @@
 </p>
 
 <%=markdown @motion.description %>
+
+<p><b>Sponsors:</b> <%= @motion.users.map(&:name).join(', ') %> </p>
 
 <p>
 <% if permitted_to? :edit, @motion -%>

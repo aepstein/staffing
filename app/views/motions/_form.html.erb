@@ -4,6 +4,17 @@
     <%= form.input :description, :hint => 'Briefly describe purpose and effect of motion' %>
     <%= form.input :period, :collection => form.object.committee.schedule.periods,
       :hint => 'For what period is the motion sponsored' %>
+    <%= form.semantic_fields_for :sponsorships do |subform| %>
+      <%= subform.inputs do %>
+        <% if subform.object.persisted? %>
+          <li>User: <%= subform.object.user %></li>
+          <%= subform.input :_destroy, :label => "Remove sponsorship", :as => :boolean,
+            :hint => "Check to remove this sponsorship from the motion" %>
+        <% else %>
+          <%= render :partial => 'sponsorships/form', :object => subform %>
+        <% end %>
+      <% end %>
+    <% end %>
   <% end %>
   <%= form.buttons %>
 

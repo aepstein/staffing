@@ -11,6 +11,8 @@ class Sponsorship < ActiveRecord::Base
 
   attr_readonly :motion_id, :user_id, :user_name
 
+  def to_s; user ? user.to_s : ''; end
+
   protected
 
   def user_must_be_allowed

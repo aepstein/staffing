@@ -3,6 +3,9 @@ class Motion < ActiveRecord::Base
 
   default_scope order( 'motions.position ASC' )
 
+  scope :past, lambda { joins(:periods) & Period.past }
+  scope :current, lambda { joins(:periods) & Period.current }
+
   attr_protected :committee_id, :status
   attr_readonly :period_id
 

@@ -11,6 +11,20 @@ class MotionsController < ApplicationController
     index
   end
 
+  # GET /committees/:committee_id/motions/past
+  # GET /committees/:committee_id/motions/past.xml
+  def past
+    @motions = @motions.past
+    index
+  end
+
+  # GET /committees/:committee_id/motions/current
+  # GET /committees/:committee_id/motions/current.xml
+  def current
+    @motions = @motions.current
+    index
+  end
+
   # GET /committees/:committee_id/motions
   # GET /committees/:committee_id/motions.xml
   # GET /meetings/:meeting_id/motions

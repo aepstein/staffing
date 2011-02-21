@@ -1,8 +1,3 @@
-<% if form.object.persisted? %>
-  <li>Sponsor: <%= form.object.user %></li>
-  <%= form.input :_destroy, :label => 'Remove sponsor' %>
-<% else %>
-  <%= form.autocompleted_input :user_name, :label => "Add sponsor",
-    :url => form.object.motion.persisted? ? allowed_motion_users_path( form.object.motion, :format => :json ) : users_path( :format => :json ) %>
-<% end %>
+<%= form.autocompleted_input :user_name, :label => "User",
+:url => form.object.motion.persisted? ? allowed_motion_users_path( form.object.motion, :format => :json ) : users_path( :format => :json ) %>
 

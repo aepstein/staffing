@@ -61,27 +61,39 @@ Feature: Manage motions
 
   Scenario: Register new motion
     Given a schedule exists
-    And a period exists with schedule: the schedule, starts_at: "2010-01-01", ends_at: "2010-12-31"
+    And a period: "focus" exists with schedule: the schedule, starts_at: "2010-01-01", ends_at: "2010-12-31"
     And a period exists with schedule: the schedule, starts_at: "2009-01-01", ends_at: "2009-12-31"
     And a committee exists with name: "Powerful Committee", schedule: the schedule
+    And a user: "abc1" exists with first_name: "George", last_name: "Washington", net_id: "abc1"
+    And a user: "abc2" exists with first_name: "John", last_name: "Adams", net_id: "abc2"
+    And a position exists with schedule: the schedule, slots: 2
+    And an enrollment exists with committee: the committee, position: the position
+    And a membership exists with period: period "focus", position: the position, user: user "abc1"
+    And a membership exists with period: period "focus", position: the position, user: user "abc2"
     And I log in as user: "admin"
     And I am on the new motion page for the committee
     When I select "1 Jan 2010 - 31 Dec 2010" from "Period"
     And I fill in "Name" with "Charter amendment"
     And I fill in "Description" with "This is a *big* change."
+    And I fill in "User" with "abc1"
     And I press "Create"
     Then I should see "Motion was successfully created."
     And I should see "Committee: Powerful Committee"
     And I should see "Period: 1 Jan 2010 - 31 Dec 2010"
     And I should see "Name: Charter amendment"
+    And I should see "George Washington"
     And I should see "This is a big change."
     When I follow "Edit"
     And I fill in "Name" with "Charter change"
     And I fill in "Description" with "This is a big change."
+    And I check "Remove sponsor"
+    And I fill in "User" with "abc2"
     And I press "Update"
     Then I should see "Motion was successfully updated."
     And I should see "Name: Charter change"
     And I should see "This is a big change."
+    And I should see "John Adams"
+    And I should not see "George Washington"
 
   Scenario: Delete motion
     Given there are no motions
@@ -94,7 +106,6 @@ Feature: Manage motions
     And a motion exists with name: "Motion 1", committee: the committee
     And I log in as user: "admin"
     When I follow "Destroy" for the 3rd motion for the committee
-    Then show me the page
     Then I should see the following motions:
       | Period                   | Position | Name     |
       | 1 Jan 2010 - 31 Dec 2010 | 1        | Motion 4 |

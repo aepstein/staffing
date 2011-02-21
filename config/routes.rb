@@ -27,7 +27,11 @@ Staffing::Application.routes.draw do
         get :current, :future, :past, :unrenewed, :renewed
       end
     end
-    resources :motions, :only => [ :index, :new, :create ]
+    resources :motions, :only => [ :index, :new, :create ] do
+      collection do
+        get :past, :current
+      end
+    end
     resources :positions, :only => [ :index ]
     resources :requests, :only => [ :new, :create, :index ] do
       collection do

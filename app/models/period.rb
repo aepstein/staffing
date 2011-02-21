@@ -1,6 +1,7 @@
 class Period < ActiveRecord::Base
   default_scope order( 'periods.starts_at DESC' )
 
+  scope :past, lambda { where( :ends_at.lt => Time.zone.today ) }
   scope :current, lambda { overlaps(Time.zone.today,Time.zone.today) }
   scope :overlaps, lambda { |starts, ends|  where(:ends_at.gte => starts, :starts_at.lte => ends) }
   scope :conflict_with, lambda { |period| overlaps( period.starts_at, period.ends_at ).
