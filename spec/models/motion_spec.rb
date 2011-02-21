@@ -110,6 +110,25 @@ describe Motion do
     @motion.users.allowed.length.should eql 1
   end
 
+  it 'should have a current scope that returns motions with a current period' do
+    setup_temporal_motions
+    Motion.current.length.should eql 1
+    Motion.current.should include @current
+  end
+
+  it 'should have a past scope that returns motions with a past period' do
+    setup_temporal_motions
+    Motion.past.length.should eql 1
+    Motion.past.should include @past
+  end
+
+  def setup_temporal_motions
+    Motion.delete_all
+    committee = Factory( :committee )
+    @current = Factory( :motion, :committee => committee, :period => Factory( :current_period, :schedule => committee.schedule ) )
+    @past = Factory( :motion, :committee => committee, :period => Factory( :past_period, :schedule => committee.schedule ) )
+  end
+
   def divided_motions
     divided = Factory(:motion)
     divided.propose!

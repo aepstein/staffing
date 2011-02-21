@@ -1,11 +1,6 @@
 class Motion < ActiveRecord::Base
   include AASM
 
-  default_scope order( 'motions.position ASC' )
-
-  scope :past, lambda { joins(:periods) & Period.past }
-  scope :current, lambda { joins(:periods) & Period.current }
-
   attr_protected :committee_id, :status
   attr_readonly :period_id
 
@@ -61,6 +56,10 @@ class Motion < ActiveRecord::Base
       end
     end
   end
+
+  default_scope order( 'motions.position ASC' )
+  scope :past, lambda { joins(:period) & Period.unscoped.past }
+  scope :current, lambda { joins(:period) & Period.unscoped.current }
 
   accepts_nested_attributes_for :sponsorships, :allow_destroy => true,
     :reject_if => proc { |a| a['user_name'].blank? && a['_destroy'].blank? }

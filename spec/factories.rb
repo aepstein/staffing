@@ -56,12 +56,12 @@ end
 
 Factory.define :motion do |f|
   f.sequence( :name ) { |n| "Motion #{n}" }
-  f.committee { |m| m.association( :enrollment ).committee }
+  f.association :committee
   f.period do |m|
     if m.committee.schedule.periods.any?
       m.committee.schedule.periods.first
     else
-      m.committee.schedule.reload
+      m.committee.schedule.periods.reset
       m.association( :period, :schedule => m.committee.schedule )
     end
   end
