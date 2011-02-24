@@ -80,11 +80,11 @@ class User < ActiveRecord::Base
   def authorized_committee_ids
     return [] if authority_ids.empty?
     ( Committee.joins(:positions) & Position.where( :authority_id.in => authority_ids ).
-      select( 'committees.id' ) ).map(&:id)
+      select( 'DISTINCT committees.id' ) ).map(&:id)
   end
 
   def requestable_committees
-    Committee.requestable.joins(:positions) & Position.requestable_by_committee.with_status( status )
+    Committee.requestable.select('DISTINCT committees.*').joins(:positions) & Position.requestable_by_committee.with_status( status )
   end
 
   def requestable_positions
