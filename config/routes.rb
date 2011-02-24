@@ -51,9 +51,6 @@ Staffing::Application.routes.draw do
     end
   end
   resources :memberships, :except => [ :index, :new, :create ] do
-    member do
-      put :confirm
-    end
     resources :requests, :only => [ :new, :create ]
   end
   resources :motions, :except => [ :new, :create ] do

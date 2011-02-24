@@ -6,7 +6,6 @@ authorization do
       :sendings ],
       :to => :manage
     has_permission_on :users, :to => :resume
-    has_permission_on :memberships, :to => :confirm
     has_permission_on :requests, :to => [ :reject, :unreject ]
   end
   role :user do
@@ -39,9 +38,6 @@ authorization do
     end
     has_permission_on :memberships, :to => [ :manage ] do
       if_attribute :position_id => is_in { user.authorized_position_ids }
-    end
-    has_permission_on :memberships, :to => [ :confirm ] do
-      if_attribute :user_id => is { user.id }
     end
     has_permission_on :users, :to => [ :show ] do
       if_permitted_to :show, :requests

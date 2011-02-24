@@ -48,15 +48,6 @@ class Membership < ActiveRecord::Base
         " memberships.position_id = renewable_memberships.position_id AND " +
         " #{date_add :ends_at, 1.day} = #{date_add 'renewable_memberships.starts_at', 0.days}").
         where( 'renewable_memberships.id IS NULL' )
-  scope :confirmed, includes(:request).where(
-    'memberships.confirmed_at IS NOT NULL AND ' +
-    '( requests.updated_at IS NULL OR ' +
-    ' requests.updated_at <= memberships.confirmed_at )'
-  )
-  scope :unconfirmed, includes(:request).where(
-    'memberships.confirmed_at IS NULL OR ' +
-    '(requests.updated_at IS NOT NULL AND requests.updated_at > memberships.confirmed_at)'
-  )
   scope :user_name_like, lambda { |text| joins(:user) & User.name_like(text) }
   scope :enrollments_committee_id_equals, lambda { |committee_id|
     joins('INNER JOIN enrollments ON enrollments.position_id = memberships.position_id').
@@ -72,7 +63,8 @@ class Membership < ActiveRecord::Base
   validates_presence_of :period
   validates_presence_of :position
   validates_date :starts_at
-  validates_date :ends_at
+  validates_date :ends_at, :on_or_after => :starts_at
+  validates_date :renew_until, :after => :ends_at, :allow_blank => true
   validate :must_be_within_period, :user_must_be_qualified, :concurrent_memberships_must_not_exceed_slots
 
   after_save :claim_request!, :populate_unassigned
@@ -158,11 +150,6 @@ class Membership < ActiveRecord::Base
     self.request_without_population = new_request
   end
 
-  def renew_until
-    return unless request && request.ends_at > ends_at
-    request.ends_at
-  end
-
   alias_method_chain :request=, :population
 
   def description
@@ -191,9 +178,6 @@ class Membership < ActiveRecord::Base
 
   def must_be_within_period
     return unless period && starts_at && ends_at
-    if starts_at && ends_at && ( ends_at < starts_at )
-      errors.add :ends_at, "must be at or after start date"
-    end
     if starts_at && period && ( period.starts_at > starts_at || period.ends_at < starts_at )
       errors.add :starts_at, "must be within #{period} (#{period.id})"
     end
@@ -224,7 +208,6 @@ class Membership < ActiveRecord::Base
   def populate_unassigned
     return if user.blank?
     return unless destroyed? || period_id_changed? || starts_at_changed? || ends_at_changed?
-#    position.reload
     # Eliminate unassigned memberships in the new period for this membership
     periods = position.schedule.periods.overlaps( starts_at, ends_at ).to_a
     periods.each do |p|

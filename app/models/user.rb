@@ -51,8 +51,10 @@ class User < ActiveRecord::Base
   validates_presence_of :last_name
   validates_presence_of :email
   validates_date :date_of_birth, :allow_nil => true, :allow_blank => true
+  validates_datetime :renewal_checkpoint
 
   before_validation :import_ldap_attributes, :initialize_password, :on => :create
+  before_validation { |r| r.renewal_checkpoint ||= Time.zone.now unless r.persisted? }
 
   def authority_ids
     authorities.map(&:id)

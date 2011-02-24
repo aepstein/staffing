@@ -166,20 +166,6 @@ class MembershipsController < ApplicationController
     end
   end
 
-  def confirm
-    respond_to do |format|
-      if @membership.confirm
-        flash[:notice] = 'Membership settings confirmed.'
-        format.html { redirect_to unrenewed_user_memberships_url @membership.user }
-        format.xml  { head :ok }
-      else
-        @membership.designees.populate
-        format.html { render :action => "edit" }
-        format.xml  { render :xml => @membership.errors, :status => :unprocessable_entity }
-      end
-    end
-  end
-
   # DELETE /memberships/1
   # DELETE /memberships/1.xml
   def destroy

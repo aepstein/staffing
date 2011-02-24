@@ -169,40 +169,6 @@ describe Membership do
     Factory(:membership, :position => c_r_p, :user => c_r.user ).request.should eql c_r
   end
 
-  it 'should have a confirm method that sets confirmed_at and saves' do
-    @membership.confirmed_at.should be_nil
-    @membership.confirm.should be_true
-    @membership.changed?.should be_false
-    @membership.confirmed_at.should_not be_nil
-  end
-
-  it 'should have a confirmed/unconfirmed scopes and boolean checkers' do
-    confirmed_no_request = Factory(:membership)
-    confirmed_no_request.confirm
-    unconfirmed_request = Factory(:membership, :request => Factory(:request) )
-    changed_request = Factory(:membership, :request => Factory(:request) )
-    confirmed_request = Factory(:membership, :request => Factory(:request) )
-    changed_request.confirm
-    sleep 1
-    changed_request.request.ends_at += 1.day
-    changed_request.request.save.should be_true
-    confirmed_request.confirm
-    unconfirmed = [ @membership, unconfirmed_request, changed_request ]
-    unconfirmed.each do |m|
-      m.confirmed?.should be_false
-      m.unconfirmed?.should be_true
-      Membership.unconfirmed.should include m
-      Membership.confirmed.should_not include m
-    end
-    confirmed = [ confirmed_no_request, confirmed_request ]
-    confirmed.each do |m|
-      m.confirmed?.should be_true
-      m.unconfirmed?.should be_false
-      Membership.unconfirmed.should_not include m
-      Membership.confirmed.should include m
-    end
-  end
-
   it 'should have a notifiable scope that returns only memberships with users and notifiable position' do
     notifiable_scenario
     Membership.notifiable.length.should eql 1
@@ -238,6 +204,13 @@ describe Membership do
     @membership.send( :send_notice!, :leave )
     @membership.reload
     @membership.leave_notice_sent_at.should_not be_nil
+  end
+
+  it 'should not save with an invalid renew_until value' do
+    @membership.renew_until = @membership.ends_at
+    @membership.save.should be_false
+    @membership.renew_until = 'coriander'
+    @membership.save.should be_false
   end
 
   def notifiable_scenario(starts_at = nil, ends_at = nil)

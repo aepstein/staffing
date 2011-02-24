@@ -93,7 +93,9 @@ describe UserRenewalNotice do
   end
 
   def eligible_user
-    Factory(:membership, :position => Factory(:position, :renewable => true) ).user
+    membership = Factory(:membership, :position => Factory(:position, :renewable => true) )
+    membership.user.update_attribute :renewal_checkpoint, ( membership.updated_at - 1.second )
+    membership.user
   end
 
 end

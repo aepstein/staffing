@@ -78,8 +78,6 @@ Feature: Manage memberships
     Then I should <update> authorized
     Given I put on the page for membership: "focus"
     Then I should <update> authorized
-    Given I put on the confirm page for membership: "focus"
-    Then I should <confirm> authorized
     Given I am on the page for membership: "focus"
     Then I should <show> authorized
     Given I am on the memberships page for position: "focus"
@@ -87,11 +85,11 @@ Feature: Manage memberships
     Given I delete on the page for membership: "focus"
     Then I should <destroy> authorized
     Examples:
-      | user      | create  | update  | destroy | index | show    | confirm |
-      | admin     | see     | see     | see     | see   | see     | see     |
-      | authority | see     | see     | see     | see   | see     | not see |
-      | owner     | not see | not see | not see | see   | see     | see     |
-      | regular   | not see | not see | not see | see   | see     | not see |
+      | user      | create  | update  | destroy | index | show    |
+      | admin     | see     | see     | see     | see   | see     |
+      | authority | see     | see     | see     | see   | see     |
+      | owner     | not see | not see | not see | see   | see     |
+      | regular   | not see | not see | not see | see   | see     |
 
   Scenario: Register new membership given a position or edit
     Given a period: "2009" exists with schedule: schedule "annual", starts_at: "2009-06-01", ends_at: "2010-05-31"
