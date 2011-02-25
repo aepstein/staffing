@@ -115,7 +115,8 @@ Staffing::Application.routes.draw do
     end
     resources :memberships, :only => [ :index ] do
       collection do
-        get :current, :future, :past, :unrenewed, :renewed
+        get :current, :future, :past, :unrenewed, :renewed, :renew
+        put :renew
       end
     end
     resources :positions, :only => [] do

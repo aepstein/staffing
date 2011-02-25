@@ -1,0 +1,35 @@
+<%= semantic_form_for @user, :url => renew_user_memberships_path(@user) do |form| %>
+<table>
+<thead>
+  <tr>
+    <th>Position</th>
+    <th>Ends on</th>
+    <th>Renew until</th>
+  </tr>
+</thead>
+<tbody>
+  <%= form.semantic_fields_for :memberships, @user.memberships.unrenewed do |subform| %>
+    <%= table_row_tag do %>
+      <td><%= subform.label :renew_until, subform.object.position.to_s %></td>
+      <td><%= subform.object.ends_at.to_formatted_s :rfc822 %></td>
+      <td><%= subform.text_field :renew_until, :value => subform.object.renew_until.try( :to_formatted_s, :rfc822 ), :class => 'ui-date-picker' %></td>
+    <% end %>
+    <% unless subform.object.errors.empty? do %>
+      <%= table_row_tag false do %>
+        <td colspan="3"><span style="font-color: #FF0000;"><%= subform.object.errors.full_messages.join ', ' %></style></td>
+      <% end %>
+    <% end %>
+  <% end %>
+</tbody>
+</table>
+
+<%= form.inputs do %>
+  <%= form.input :renewal_checkpoint, :as => :radio, :label => "Notify again?",
+    :collection => { 'Yes' => form.object.renewal_checkpoint, 'No' => Time.zone.now },
+    :hint => 'Do you wish to continue receiving renewal notices about these positions?' %>
+  <% end %>
+<% end %>
+
+<%= form.submit 'Update renewals' %>
+<% end %>
+

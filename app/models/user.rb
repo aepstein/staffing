@@ -53,6 +53,8 @@ class User < ActiveRecord::Base
   validates_date :date_of_birth, :allow_nil => true, :allow_blank => true
   validates_datetime :renewal_checkpoint
 
+  accepts_nested_attributes_for :memberships
+
   before_validation :import_ldap_attributes, :initialize_password, :on => :create
   before_validation { |r| r.renewal_checkpoint ||= Time.zone.now unless r.persisted? }
 

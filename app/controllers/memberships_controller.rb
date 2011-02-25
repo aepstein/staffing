@@ -9,6 +9,21 @@ class MembershipsController < ApplicationController
     @user ? permitted_to!( :show, @user ) : permitted_to!( :index )
   end
 
+  # GET /users/:user_id/memberships/renew
+  # PUT /users/:user_id/memberships/renew
+  def renew
+    respond_to do |format|
+      if request.request_method_symbol == :get
+        format.html
+      else
+        if @user.update_attributes( params[:user] )
+          flash[:notice] = 'Renewal preferences successfully updated.'
+        end
+        format.html
+      end
+    end
+  end
+
   # GET /committees/:committee_id/memberships/renewed
   # GET /committees/:committee_id/memberships/renewed.xml
   # GET /users/:user_id/memberships/renewed
