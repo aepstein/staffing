@@ -42,11 +42,15 @@ class UsersController < ApplicationController
 
   # GET /users/1/resume.pdf
   def resume
-    if @user.resume.file?
-      send_file @user.resume.path, :filename => "#{@user.name :file}-resume.pdf",
-        :type => @user.resume.content_type, :disposition => 'inline'
-    else
-      head(:not_found)
+    respond_to do |format|
+      format.pdf do
+        if @user.resume.file?
+          send_file @user.resume.path, :filename => "#{@user.name :file}-resume.pdf",
+            :type => @user.resume.content_type, :disposition => 'inline'
+        else
+          head(:not_found)
+        end
+      end
     end
   end
 
