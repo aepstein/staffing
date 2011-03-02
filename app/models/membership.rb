@@ -160,14 +160,14 @@ class Membership < ActiveRecord::Base
 
   def to_s; "#{position} (#{starts_at.to_s :rfc822} - #{ends_at.to_s :rfc822})"; end
 
-  protected
-
   # The notice_type should be (join|leave)
   def send_notice!(notice_type)
     MembershipMailer.send( "#{notice_type}_notice", self ).deliver
     self.send "#{notice_type}_notice_sent_at=", Time.zone.now
     save!
   end
+
+  protected
 
   def user_must_be_qualified
     return unless user && position
