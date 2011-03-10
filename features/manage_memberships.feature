@@ -66,17 +66,21 @@ Feature: Manage memberships
       | focus    | other    | user: "focus"      | Committee |
       | other    | other    | committee: "focus" | User      |
 
-#TODO: test past, current, future authority with past, current, future membership
+  # Note: we are testing "create" always with a current membership
   Scenario Outline: Test permissions for memberships controller actions
     Given a committee: "authority" exists
-    And a position: "authority" exists
+    And a schedule exists
+    And a past_period exists with schedule: the schedule
+    And a current_period exists with schedule: the schedule
+    And a future_period exists with schedule: the schedule
+    And a position: "authority" exists with schedule: the schedule
     And an enrollment exists with committee: committee "authority", position: position "authority"
     And an authority: "authority" exists with committee: committee "authority"
     And a user: "authority" exists with net_id: "authority", password: "secret", admin: false
-    And a membership exists with user: user "authority", position: position "authority"
-    And a position: "focus" exists with name: "Focus Position", authority: authority "authority"
+    And a membership exists with user: user "authority", position: position "authority", period: the <authority>_period
+    And a position: "focus" exists with name: "Focus Position", authority: authority "authority", schedule: the schedule
     And a user: "owner" exists with net_id: "owner", password: "secret", admin: false, last_name: "Owner"
-    And a membership: "focus" exists with position: position "focus", user: user "owner"
+    And a membership: "focus" exists with position: position "focus", user: user "owner", period: the <membership>_period
     And a user: "regular" exists
     And I log in as user: "<user>"
     And I am on the new membership page for position: "focus"
@@ -94,11 +98,16 @@ Feature: Manage memberships
     Given I delete on the page for membership: "focus"
     Then I should <destroy> authorized
     Examples:
-      | user      | create  | update  | destroy | index | show    |
-      | admin     | see     | see     | see     | see   | see     |
-      | authority | see     | see     | see     | see   | see     |
-      | owner     | not see | not see | not see | see   | see     |
-      | regular   | not see | not see | not see | see   | see     |
+      | authority | membership | user      | create  | update  | destroy | index | show    |
+      | current   | current    | admin     | see     | see     | see     | see   | see     |
+      | current   | current    | authority | see     | see     | see     | see   | see     |
+      | future    | future     | authority | not see | see     | see     | see   | see     |
+      | future    | current    | authority | not see | not see | not see | see   | see     |
+      | current   | future     | authority | see     | not see | not see | see   | see     |
+      | current   | past       | authority | see     | not see | not see | see   | see     |
+      | past      | past       | authority | not see | not see | not see | see   | see     |
+      | current   | current    | owner     | not see | not see | not see | see   | see     |
+      | current   | current    | regular   | not see | not see | not see | see   | see     |
 
   Scenario: Register new membership given a position or edit
     Given a period: "2009" exists with schedule: schedule "annual", starts_at: "2009-06-01", ends_at: "2010-05-31"

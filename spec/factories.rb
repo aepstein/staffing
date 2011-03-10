@@ -44,6 +44,11 @@ Factory.define :membership do |f|
   f.ends_at { |m| m.period.ends_at }
 end
 
+Factory.define :current_membership, :parent => :membership do |f|
+  f.association :position
+  f.period { |m| m.association(:current_period, :schedule => m.position.schedule) }
+end
+
 Factory.define :future_membership, :parent => :membership do |f|
   f.association :position
   f.period { |m| m.association(:future_period, :schedule => m.position.schedule) }

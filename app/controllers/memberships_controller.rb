@@ -150,8 +150,6 @@ class MembershipsController < ApplicationController
   # POST /positions/:position_id/memberships
   # POST /positions/:position_id/memberships.xml
   def create
-    @membership.attributes = params[:membership]
-
     respond_to do |format|
       if @membership.save
         flash[:notice] = 'Membership was successfully created.'
@@ -226,7 +224,9 @@ class MembershipsController < ApplicationController
   def new_membership_from_params
     @membership = Membership.new(:request => @request) if @request
     @membership = @position.memberships.build if @position
+    @membership.attributes = params[:membership] if params[:membership]
     @membership.period ||= @membership.position.schedule.periods.active
+    @membership.period ||= @membership.position.schedule.periods.first
     if @membership.period
       @membership.starts_at ||= @membership.period.starts_at
       @membership.ends_at ||= @membership.period.ends_at
