@@ -7,7 +7,7 @@ class Enrollment < ActiveRecord::Base
     order( 'committees.name ASC, enrollments.title ASC, positions.name ASC' )
 
   scope :memberships_user_id_equals, lambda { |user_id|
-     joins(:memberships) & Membership.where( :user_id => user_id )
+     joins(:memberships).merge( Membership.where( :user_id => user_id ) )
   }
   scope :memberships_current, lambda { joins(:memberships) & Membership.current }
   scope :memberships_future, lambda { joins(:memberships) & Membership.future }

@@ -19,7 +19,7 @@ class Membership < ActiveRecord::Base
     end
   end
 
-  scope :ordered, includes(:user,:period).order(
+  scope :ordered, includes( :user, :period ).order(
     "memberships.ends_at DESC, memberships.starts_at DESC, " +
     "users.last_name ASC, users.first_name ASC, users.middle_name ASC"
   )
@@ -30,11 +30,20 @@ class Membership < ActiveRecord::Base
   scope :current, lambda { where( :starts_at.lte => Time.zone.today, :ends_at.gte => Time.zone.today ) }
   scope :future, lambda { where( :starts_at.gt => Time.zone.today ) }
   scope :past, lambda { where( :ends_at.lt => Time.zone.today ) }
+  scope :current_or_future, lambda { where( :ends_at.gte => Time.zone.today ) }
   scope :renewable, lambda { joins(:position) & Position.renewable }
   scope :unrenewable, lambda { joins(:position) & Position.unrenewable }
   scope :overlap, lambda { |starts, ends| where( :starts_at.lte => ends, :ends_at.gte => starts) }
   scope :pending_renewal_within, lambda { |starts, ends|
     renewable.unrenewed.where( :starts_at.gte => starts, :ends_at.lte => ends)
+  }
+  scope :authorized_user_id_equals, lambda { |user_id|
+    select("DISTINCT #{arel_table.name}.*").joins(:position).
+    merge( Position.unscoped.joins(:authority).
+    merge( Authority.unscoped.joins(:authorized_enrollments).
+    merge( Enrollment.unscoped.joins( :memberships ).
+    merge( Membership.unscoped.current_or_future.
+      overlap( arel_table[:starts_at], arel_table[:ends_at] ).where( :user_id => user_id ) ) ) ) )
   }
   scope :join_notice_pending, lambda { notifiable.current.where(:join_notice_sent_at => nil) }
   scope :leave_notice_pending, lambda { notifiable.past.where(:leave_notice_sent_at => nil) }

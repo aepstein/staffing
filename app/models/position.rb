@@ -50,6 +50,7 @@ class Position < ActiveRecord::Base
   has_many :users, :through => :memberships
   has_many :periods, :through => :schedule
   has_many :answers, :through => :requests
+  has_many :authorized_enrollments, :through => :authority
   has_many :enrollments, :inverse_of => :position, :dependent => :destroy do
     def for_committee(committee)
       self.select { |enrollment| enrollment.committee_id == committee.id }

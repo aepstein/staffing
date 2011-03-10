@@ -226,6 +226,11 @@ class MembershipsController < ApplicationController
   def new_membership_from_params
     @membership = Membership.new(:request => @request) if @request
     @membership = @position.memberships.build if @position
+    @membership.period ||= @membership.position.schedule.periods.active
+    if @membership.period
+      @membership.starts_at ||= @membership.period.starts_at
+      @membership.ends_at ||= @membership.period.ends_at
+    end
   end
 
   def csv_index

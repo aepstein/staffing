@@ -6,7 +6,15 @@ class User < ActiveRecord::Base
   attr_protected :admin, :net_id, :status, :statuses, :statuses_mask
 
   has_and_belongs_to_many :qualifications
-  has_many :memberships, :inverse_of => :user
+  has_many :memberships, :inverse_of => :user do
+    # Return memberships a user is authorized to review
+    # User must have voting membership with future end date in committee of
+    # authority for the position of the membership which overlaps the membership's
+    # duration
+    def authorized
+      Membership.authorized_user_id_equals proxy_owner.id
+    end
+  end
   has_many :requests, :inverse_of => :user
   has_many :sponsorships, :inverse_of => :user
   has_many :motions, :through => :sponsorships
@@ -58,16 +66,16 @@ class User < ActiveRecord::Base
   before_validation :import_ldap_attributes, :initialize_password, :on => :create
   before_validation { |r| r.renewal_checkpoint ||= Time.zone.now unless r.persisted? }
 
-  def authority_ids
-    authorities.map(&:id)
+  def authority_ids( membership_constraints = { } )
+    authorities( membership_constraints ).map(&:id)
   end
 
-  def authorities
-    Authority.joins( "INNER JOIN committees ON authorities.committee_id = committees.id " +
-      "INNER JOIN enrollments ON committees.id = enrollments.committee_id " +
-      "INNER JOIN memberships ON enrollments.position_id = memberships.position_id" ).
-      where( [ "memberships.user_id = :id AND memberships.starts_at <= :today AND " +
-      "memberships.ends_at >= :today", { :id => id, :today => Time.zone.today } ] )
+  # A users authorities are:
+  #  * associated with a committee of which the user is a current or future member
+  def authorities( membership_constraints = { } )
+    return [] unless persisted?
+    Authority.scoped &
+    committees(:current_or_future).where( :enrollments => { :votes.gt => 0 } )
   end
 
   # Where necessary, provide for admin to get listing of all authorities

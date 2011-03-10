@@ -10,14 +10,13 @@ Feature: Manage memberships
     And a period: "2008" exists with schedule: schedule "annual", starts_at: "2008-06-01", ends_at: "2009-05-31"
     And a position: "officer" exists with name: "Officer", schedule: schedule "annual", slots: 4
     And a user: "admin" exists with admin: true
-@wip
+
   Scenario: Register renewals of memberships
     Given a membership exists with position: position "officer", user: user "popular", period: period "2008"
     And I log in as user: "popular"
     And I am on the renew memberships page for user: "popular"
     When I fill in "Officer" with "1 Sep 2010"
     And I press "Update renewals"
-    Then show me the page
     Then I should see "Renewal preferences successfully updated."
 
   Scenario Outline: List search elements for a membership
@@ -67,6 +66,7 @@ Feature: Manage memberships
       | focus    | other    | user: "focus"      | Committee |
       | other    | other    | committee: "focus" | User      |
 
+#TODO: test past, current, future authority with past, current, future membership
   Scenario Outline: Test permissions for memberships controller actions
     Given a committee: "authority" exists
     And a position: "authority" exists

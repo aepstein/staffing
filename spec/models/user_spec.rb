@@ -82,7 +82,7 @@ describe User do
     @user.past_enrollments.should include( e3 )
   end
 
-  it 'should have an authority_ids method that identifies the authorities in which the user is enrolled' do
+  it 'should have an authority_ids method that identifies the authorities in which the user is enrolled now or in the future' do
     memberships = {
       :current => Factory(:membership, :user => @user),
       :past => Factory(:past_membership, :user => @user),
@@ -94,8 +94,9 @@ describe User do
     authorities = { }
     authorities[:no_committee] = Factory(:authority)
     committees.each { |key, committee| authorities[key] = Factory(:authority, :committee => committee) }
-    @user.authority_ids.length.should eql 1
+    @user.authority_ids.length.should eql 2
     @user.authority_ids.should include authorities[:current].id
+    @user.authority_ids.should include authorities[:future].id
     Factory(:user).authority_ids.should be_empty
   end
 
