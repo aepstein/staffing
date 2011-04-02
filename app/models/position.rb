@@ -67,11 +67,19 @@ class Position < ActiveRecord::Base
   end
   has_many :committees, :through => :enrollments
 
+  scope :with_enrollments, joins( "LEFT JOIN enrollments ON enrollments.position_id = positions.id" )
+  scope :with_requests, lambda {
+    with_enrollments.joins( "INNER JOIN requests" ).where( Request::POSITIONS_JOIN_SQL )
+  }
   scope :with_status, lambda { |status|
     where( "(positions.statuses_mask & " +
       "#{status.nil? ? 0 : 2**User::STATUSES.index(status.to_s)}) " +
       "> 0 OR positions.statuses_mask = 0" )
   }
+  # Limit to positions compatible with users' status
+  # * assumes a join with the users table
+  scope :with_users_status, where(
+   "positions.statuses_mask = 0 OR ( users.statuses_mask & positions.statuses_mask ) > 0" )
   scope :notifiable, where( :notifiable => true )
   scope :requestable, where( :requestable => true )
   scope :unrequestable, where( :requestable => false )

@@ -161,6 +161,13 @@ class Membership < ActiveRecord::Base
 
   alias_method_chain :request=, :population
 
+  # Identify users who are interested in the position
+  def users
+    User.joins( :requests ).merge(
+    Request.unscoped.active.overlap(starts_at, ends_at).with_positions.merge(
+    Position.with_users_status.where( :id => position_id ) ) )
+  end
+
   def description
     return request.requestable.to_s if request
     return position.requestables.first.to_s unless position.requestables.empty?

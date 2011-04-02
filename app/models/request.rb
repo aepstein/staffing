@@ -1,9 +1,17 @@
 class Request < ActiveRecord::Base
+
+  POSITIONS_JOIN_SQL = "(requests.requestable_type = 'Position' AND " +
+    "requests.requestable_id = positions.id) OR " +
+    "(enrollments.position_id = positions.id AND " +
+    "positions.requestable_by_committee = #{connection.quote true})"
+
   has_many :answers, :inverse_of => :request do
     def populate
       # Generate blank answers for any allowed question not in answer set
-      population = proxy_owner.questions.reject { |q| populated_question_ids.include? q.id }.map do |question|
-        build :question => question
+      population = proxy_owner.questions.reject { |q|
+        populated_question_ids.include? q.id
+      }.map do |question|
+          build :question => question
       end
       # Fill in most recent prior answer for each global question populated
       s = proxy_owner.user.answers.global.where( :question_id.in => population.map { |a| a.question_id }
@@ -53,23 +61,31 @@ class Request < ActiveRecord::Base
   }
   scope :rejected, where( :rejected_at.ne => nil )
   scope :unrejected, where( :rejected_at => nil )
+  scope :staffed, joins( :memberships )
+  scope :unstaffed, joins( "LEFT JOIN memberships ON memberships.request_id = requests.id" ).
+    where( "memberships.id IS NULL" )
   scope :active, lambda { unexpired.unrejected }
   scope :reject_notice_pending, lambda { rejected.where( :rejection_notice_at => nil ) }
-  scope :authority_id_equals, lambda { |authority_id|
+  # Joins to enrollments to get position_ids for requests where the requestable
+  # is a committee
+  scope :with_enrollments, lambda {
       joins( "LEFT JOIN enrollments ON " +
         "requests.requestable_type = 'Committee' AND " +
-        "requests.requestable_id = enrollments.committee_id " +
-        "LEFT JOIN positions ON " +
-        "(requests.requestable_type = 'Position' AND " +
-        "requests.requestable_id = positions.id) OR " +
-        "(enrollments.position_id = positions.id AND " +
-        "positions.requestable_by_committee = #{connection.quote true})" ).
-      where( [ "positions.authority_id = ? AND " +
-        "( positions.statuses_mask = 0 OR " +
-        "((positions.statuses_mask & users.statuses_mask) > 0) )", authority_id ] ).
-      group( 'requests.id' )
+        "requests.requestable_id = enrollments.committee_id" )
   }
-
+  # Joins to requestable tables
+  # * assumes a join with enrollments
+  scope :with_positions, lambda {
+      with_enrollments.joins( "INNER JOIN positions" ).
+      where( Request::POSITIONS_JOIN_SQL )
+  }
+  # Identifies requests an authority may staff
+  # * may be deprecated: we have finer-grained permission controls than this
+  scope :authority_id_equals, lambda { |authority_id|
+      with_positions.where( "positions.authority_id = ?", authority_id ).
+      group( 'requests.id' ).
+      merge( Position.unscoped.with_users_status )
+  }
 
   attr_protected :rejected_at, :rejection_notice_at, :rejection_comment
   attr_readonly :user_id
