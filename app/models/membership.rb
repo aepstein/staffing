@@ -31,8 +31,18 @@ class Membership < ActiveRecord::Base
   scope :future, lambda { where( :starts_at.gt => Time.zone.today ) }
   scope :past, lambda { where( :ends_at.lt => Time.zone.today ) }
   scope :current_or_future, lambda { where( :ends_at.gte => Time.zone.today ) }
-  scope :renewable, lambda { joins(:position) & Position.renewable }
-  scope :unrenewable, lambda { joins(:position) & Position.unrenewable }
+  # To be renewable a membership must have a renewable position and be in either
+  # a current period or immediately preceeding a current period
+  scope :renewable, lambda {
+    joins(:position).merge( Position.unscoped.renewable ).
+    where( "(periods.starts_at <= :today AND periods.ends_at >= :today) " +
+           "OR #{date_add( 'periods.ends_at', 1.day )} IN " +
+           "( SELECT starts_at FROM periods AS p " +
+           "WHERE p.starts_at <= :today AND p.ends_at >= :today AND " +
+           "p.schedule_id = positions.schedule_id )",
+           :today => Time.zone.today  ) }
+  # Unrenewable memberships are associated with unrenewable positions
+  scope :unrenewable, lambda { joins(:position).merge( Position.unscoped.unrenewable ) }
   scope :overlap, lambda { |starts, ends| where( :starts_at.lte => ends, :ends_at.gte => starts) }
   scope :pending_renewal_within, lambda { |starts, ends|
     renewable.unrenewed.where( :starts_at.gte => starts, :ends_at.lte => ends)
@@ -47,7 +57,9 @@ class Membership < ActiveRecord::Base
   }
   scope :join_notice_pending, lambda { notifiable.current.where(:join_notice_sent_at => nil) }
   scope :leave_notice_pending, lambda { notifiable.past.where(:leave_notice_sent_at => nil) }
-  scope :notifiable, includes(:position).where( :user_id.ne => nil ) & Position.notifiable
+  scope :notifiable, includes(:position).where( :user_id.ne => nil ).merge( Position.unscoped.notifiable )
+  scope :renewal_confirmed, lambda { renewable.where( :renewal_confirmed_at.ne => nil ) }
+  scope :renewal_unconfirmed, lambda { renewable.where( :renewal_confirmed_at => nil ) }
   scope :renewed, joins("INNER JOIN memberships AS renewable_memberships ON " +
         " memberships.user_id = renewable_memberships.user_id AND " +
         " memberships.position_id = renewable_memberships.position_id AND " +
@@ -57,7 +69,7 @@ class Membership < ActiveRecord::Base
         " memberships.position_id = renewable_memberships.position_id AND " +
         " #{date_add :ends_at, 1.day} = #{date_add 'renewable_memberships.starts_at', 0.days}").
         where( 'renewable_memberships.id IS NULL' )
-  scope :user_name_like, lambda { |text| joins(:user) & User.name_like(text) }
+  scope :user_name_like, lambda { |text| joins(:user).merge( User.unscoped.name_like(text) ) }
   scope :enrollments_committee_id_equals, lambda { |committee_id|
     joins('INNER JOIN enrollments ON enrollments.position_id = memberships.position_id').
     where( [ 'enrollments.committee_id = ?', committee_id ] )

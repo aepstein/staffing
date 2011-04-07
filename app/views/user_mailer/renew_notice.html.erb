@@ -1,0 +1,50 @@
+<p>
+Dear <%= @user.first_name %>,
+</p>
+
+<p>
+You are receiving this notice because you have memberships either ending soon or recently ended and your action is required to renew your membership.
+</p>
+
+<% if @user.memberships.renewal_unconfirmed.any? %>
+<p>
+You have not confirmed your preferences for the following memberships:
+</p>
+
+<ul>
+<%= render :partial => 'membership', :collection => @user.memberships.renewal_unconfirmed %>
+</ul>
+<% end %>
+
+<% if @user.memberships.renewal_confirmed.any? %>
+<p>
+You have confirmed your preferences for the following memberships, although you may wish to adjust further:
+</p>
+
+<ul>
+<%= render :partial => 'membership', :collection => @user.memberships.renewal_confirmed %>
+</ul>
+<% end %>
+
+<p>
+Please take a few moments to specify your renewal preferences here:
+<br/>
+&lt;<%= link_to renew_user_memberships_url( @user ), renew_user_memberships_url( @user ) %>&gt;
+</p>
+
+<p>
+Once you have recorded your preferences you should not receive additional notices regarding these memberships.
+</p>
+
+<p>
+Please contact <%= Staffing::Application.app_config['defaults']['authority']['contact_name'] %> <<%= Staffing::Application.app_config['defaults']['authority']['contact_email'] %>> if you have any questions or concerns.  Thank you for your time and your consideration.
+</p>
+
+<p>
+Best regards,
+</p>
+
+<p>
+<%= Staffing::Application.app_config['defaults']['authority']['contact_name'] %>
+</p>
+

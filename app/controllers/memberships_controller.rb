@@ -12,15 +12,14 @@ class MembershipsController < ApplicationController
   # GET /users/:user_id/memberships/renew
   # PUT /users/:user_id/memberships/renew
   def renew
-    respond_to do |format|
-      if request.request_method_symbol == :get
-        format.html
-      else
-        if @user.update_attributes( params[:user] )
-          flash[:notice] = 'Renewal preferences successfully updated.'
-        end
-        format.html
+    unless request.request_method_symbol == :get
+      if @user.update_attributes( params[:user] )
+        flash[:notice] = 'Renewal preferences successfully updated.'
       end
+    end
+
+    respond_to do |format|
+      format.html
     end
   end
 
