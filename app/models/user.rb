@@ -34,6 +34,13 @@ class User < ActiveRecord::Base
     where( ['users.id NOT IN ( SELECT user_id FROM sendings WHERE message_type = ? AND created_at > ? )',
       notice, time.utc ] )
   }
+  scope :no_renew_notice_since, lambda { |checkpoint|
+    t = arel_table
+    where( t[:renew_notice_sent_at].eq( nil ).or( t[:renew_notice_sent_at].lt( checkpoint ) ) )
+  }
+  scope :unconfirmed_renewal_preferences, lambda {
+    joins( :memberships ).merge( Membership.unscoped.joins( :period ).renewal_unconfirmed )
+  }
   scope :name_like, lambda { |name|
     where(
       %w( first_name last_name middle_name net_id ).map { |c|
