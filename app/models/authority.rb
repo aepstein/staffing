@@ -15,7 +15,6 @@ class Authority < ActiveRecord::Base
   has_many :memberships, :through => :positions
   has_many :quizzes, :through => :positions
   has_many :schedules, :through => :positions
-  has_many :user_renewal_notices, :inverse_of => :authority
 
   validates_presence_of :name
   validates_uniqueness_of :name

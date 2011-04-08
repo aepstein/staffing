@@ -104,7 +104,8 @@ describe Request do
     most_recent = generate_answered_request user, short_quiz, 'most recent answer'
 
     request = Factory.build(:request, :user => user, :requestable => Factory(:position, :quiz => full_quiz))
-    request.answers.build(:question => unanswered_local)
+    a = request.answers.build
+    a.question = unanswered_local
     request.answers.send(:populated_question_ids).size.should eql 1
     request.answers.send(:populated_question_ids).should include unanswered_local.id
     answers = request.answers.populate
@@ -214,7 +215,9 @@ describe Request do
   def generate_answered_request(user, quiz, answer)
     request = Factory.build(:request, :user => user, :requestable => Factory(:position, :quiz => quiz) )
     quiz.questions.each do |question|
-      request.answers.build(:content => answer, :question => question)
+      a = request.answers.build
+      a.content = answer
+      a.question = question
     end
     request.save!
     request

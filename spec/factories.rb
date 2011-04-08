@@ -195,19 +195,6 @@ Factory.define :user do |f|
   f.password_confirmation { |u| u.password }
 end
 
-Factory.define :user_renewal_notice do |f|
-  f.starts_at Date.today
-  f.ends_at { |n| n.starts_at + 1.year }
-  f.deadline { |n| n.starts_at + 1.week }
-end
-
-Factory.define :sending do |f|
-  f.association :user
-  f.message do |sending|
-    sending.association :user_renewal_notice
-  end
-end
-
 Factory.define :sponsorship do |f|
   f.association :motion
   f.user do |s|

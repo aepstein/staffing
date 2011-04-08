@@ -1,8 +1,8 @@
 Feature: User mailer
-  In order to send notices to the user
-  As a reminder and notice driven organization
+  In order to send notices regarding recently expired or about to expire renewable memberships
+  As a person potentially interested in renewing membership
   I want to send email notices to users
-
+  @wip
   Scenario Outline: Send renewal notice to a user
     Given a user: "focus" exists with first_name: "John", last_name: "Doe", email: "john.doe@example.org", password: "secret"
     And a user: "other" exists

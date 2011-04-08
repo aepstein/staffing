@@ -43,7 +43,9 @@ class Position < ActiveRecord::Base
     private
 
     def start_unassigned(starts_at, period)
-      build(:starts_at => starts_at, :period => period)
+      membership = build
+      membership.send(:attributes=, { :starts_at => starts_at, :period => period }, false )
+      membership
     end
   end
   has_many :requests, :as => :requestable

@@ -28,17 +28,12 @@ class User < ActiveRecord::Base
       )
     end
   end
-  has_many :sendings, :inverse_of => :user
 
-  scope :no_notice_since, lambda { |notice, time|
-    where( ['users.id NOT IN ( SELECT user_id FROM sendings WHERE message_type = ? AND created_at > ? )',
-      notice, time.utc ] )
-  }
   scope :no_renew_notice_since, lambda { |checkpoint|
     t = arel_table
     where( t[:renew_notice_sent_at].eq( nil ).or( t[:renew_notice_sent_at].lt( checkpoint ) ) )
   }
-  scope :unconfirmed_renewal_preferences, lambda {
+  scope :renewal_unconfirmed, lambda {
     joins( :memberships ).merge( Membership.unscoped.joins( :period ).renewal_unconfirmed )
   }
   scope :name_like, lambda { |name|
@@ -175,6 +170,13 @@ class User < ActiveRecord::Base
 
   def statuses
     User::STATUSES.reject { |status| ((statuses_mask || 0) & 2**User::STATUSES.index(status)).zero? }
+  end
+
+  # The notice_type should be (renew)
+  def send_notice!(notice_type)
+    UserMailer.send( "#{notice_type}_notice", self ).deliver
+    self.send "#{notice_type}_notice_sent_at=", Time.zone.now
+    save!
   end
 
   protected

@@ -27,7 +27,7 @@ You have confirmed your preferences for the following memberships, although you 
 <% end %>
 
 <p>
-Please take a few moments to specify your renewal preferences here:
+Please take a few moments between now and <%= ( Date.today + 1.week ).to_s :long_ordinal %> to specify your renewal preferences here:
 <br/>
 &lt;<%= link_to renew_user_memberships_url( @user ), renew_user_memberships_url( @user ) %>&gt;
 </p>

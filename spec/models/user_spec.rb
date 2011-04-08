@@ -124,6 +124,16 @@ describe User do
     Factory(:user).authorized_committee_ids.should be_empty
   end
 
+  it 'should have no_renew_notice_since scope' do
+    old = Factory(:user, :renew_notice_sent_at => ( Time.zone.now - 1.week ) )
+    recent = Factory(:user, :renew_notice_sent_at => Time.zone.now )
+    @user.renew_notice_sent_at.should be_nil
+    scope = User.no_renew_notice_since( Time.zone.now - 1.day )
+    scope.count.should eql 2
+    scope.should include @user
+    scope.should include old
+  end
+
   def setup_authority_id_scenario
     @authorized = Factory(:position)
     @unauthorized = Factory(:position)

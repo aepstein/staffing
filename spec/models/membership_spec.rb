@@ -61,7 +61,8 @@ describe Membership do
   it 'should populate a membership from a request' do
     request = Factory(:request)
     period = Factory(:period, :schedule => request.requestable.schedule, :starts_at => request.starts_at, :ends_at => request.ends_at)
-    membership = Membership.new( :request_id => request.id )
+    membership = Membership.new
+    membership.request_id = request.id
     membership.period.should eql period
     membership.starts_at.should eql period.starts_at
     membership.ends_at.should eql period.ends_at
@@ -241,8 +242,12 @@ describe Membership do
   def setup_membership_with_vacancies
     period = Factory(:period, :schedule => Factory(:schedule) )
     position = Factory(:position, :schedule => period.schedule, :slots => 2)
-    membership = position.memberships.create!( :user => Factory(:user), :period => period,
-      :starts_at => period.starts_at, :ends_at => period.ends_at )
+    membership = position.memberships.build
+    membership.user = Factory(:user)
+    membership.period = period
+    membership.starts_at = period.starts_at
+    membership.ends_at = period.ends_at
+    membership.save!
     position.memberships.unassigned.length.should eql 1
     position.memberships.assigned.length.should eql 1
     membership

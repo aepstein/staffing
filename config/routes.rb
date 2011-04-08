@@ -129,10 +129,6 @@ Staffing::Application.routes.draw do
         get :expired, :unexpired, :rejected, :active
       end
     end
-    resources :sendings, :only => [ :index ]
-  end
-  resources :user_renewal_notices do
-    resources :sendings, :only => [ :index, :show, :destroy ]
   end
   resource :user_session, :only => [:create]
 

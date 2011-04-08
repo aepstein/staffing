@@ -9,7 +9,11 @@ class Membership < ActiveRecord::Base
     def populate
       return Array.new unless proxy_owner.position
       proxy_owner.position.committees.inject([]) do |memo, committee|
-        memo << build(:committee => committee) unless committee_ids.include? committee.id
+        unless committee_ids.include? committee.id
+          designee = build
+          designee.committee = committee
+          memo << designee
+        end
         memo
       end
     end
@@ -34,7 +38,7 @@ class Membership < ActiveRecord::Base
   # To be renewable a membership must have a renewable position and be in either
   # a current period or immediately preceeding a current period
   scope :renewable, lambda {
-    joins(:position).merge( Position.unscoped.renewable ).
+    joins( :position, :period ).merge( Position.unscoped.renewable ).
     where( "(periods.starts_at <= :today AND periods.ends_at >= :today) " +
            "OR #{date_add( 'periods.ends_at', 1.day )} IN " +
            "( SELECT starts_at FROM periods AS p " +

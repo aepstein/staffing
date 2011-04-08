@@ -11,7 +11,9 @@ class Request < ActiveRecord::Base
       population = proxy_owner.questions.reject { |q|
         populated_question_ids.include? q.id
       }.map do |question|
-          build :question => question
+          answer = build
+          answer.question = question
+          answer
       end
       # Fill in most recent prior answer for each global question populated
       s = proxy_owner.user.answers.global.where( :question_id.in => population.map { |a| a.question_id }
