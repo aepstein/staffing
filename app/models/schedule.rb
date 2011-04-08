@@ -1,4 +1,6 @@
 class Schedule < ActiveRecord::Base
+  attr_accessible :name
+
   default_scope order('schedules.name ASC')
 
   has_many :positions, :inverse_of => :schedule

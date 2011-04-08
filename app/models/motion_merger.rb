@@ -1,4 +1,6 @@
 class MotionMerger < ActiveRecord::Base
+  attr_accessible :merged_motion_id, :motion_id
+
   belongs_to :merged_motion, :class_name => 'Motion'
   belongs_to :motion, :inverse_of => :motion_mergers
 

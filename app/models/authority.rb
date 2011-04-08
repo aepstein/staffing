@@ -1,4 +1,7 @@
 class Authority < ActiveRecord::Base
+  attr_accessible :name, :join_message, :leave_message, :committee_id,
+    :committee_name, :contact_name, :contact_email, :reject_message
+
   default_scope order( 'authorities.name ASC' )
 
   scope :user_id_equals, lambda { |user_id|

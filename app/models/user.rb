@@ -1,9 +1,11 @@
 class User < ActiveRecord::Base
   STATUSES = %w( staff faculty undergrad grad alumni temporary )
+  ADMIN_UPDATABLE = [ :net_id, :admin, :status ]
+
+  attr_accessible :first_name, :middle_name, :last_name, :email, :mobile_phone,
+    :work_phone, :home_phone, :work_address, :date_of_birth, :resume
 
   default_scope order( 'users.last_name ASC, users.first_name ASC, users.middle_name ASC' )
-
-  attr_protected :admin, :net_id, :status, :statuses, :statuses_mask
 
   has_and_belongs_to_many :qualifications
   has_many :memberships, :inverse_of => :user do

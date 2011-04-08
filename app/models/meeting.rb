@@ -1,4 +1,8 @@
 class Meeting < ActiveRecord::Base
+  attr_accessible :period_id, :committee_id, :audio, :editable_minutes,
+    :published_minutes, :starts_at, :ends_at, :location
+  attr_readonly :period_id, :committee_id
+
   belongs_to :committee, :inverse_of => :meetings
   belongs_to :period, :inverse_of => :meetings
 
@@ -36,8 +40,6 @@ class Meeting < ActiveRecord::Base
   scope :past, lambda { where( :ends_at.lt => Time.zone.today.to_time ) }
   scope :future, lambda { where( :starts_at.gt => (Time.zone.today.to_time + 1.day) ) }
   scope :current, lambda { where( :starts_at.gte => Time.zone.today.to_time, :ends_at.lte => ( Time.zone.today.to_time + 1.day ) ) }
-
-  attr_readonly :period_id, :committee_id
 
   private
 

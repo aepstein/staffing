@@ -1,4 +1,8 @@
 class Position < ActiveRecord::Base
+  attr_accessible :authority_id, :quiz_id, :schedule_id, :slots, :name,
+    :join_message, :leave_message, :statuses, :requestable, :renewable,
+    :notifiable, :requestable_by_committee, :reject_message
+
   default_scope order( 'positions.name ASC' )
 
   belongs_to :authority, :inverse_of => :positions

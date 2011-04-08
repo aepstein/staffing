@@ -1,4 +1,7 @@
 class Period < ActiveRecord::Base
+  attr_accessible :schedule_id, :starts_at, :ends_at
+  attr_readonly :schedule_id
+
   default_scope order( 'periods.starts_at DESC' )
 
   scope :past, lambda { where( :ends_at.lt => Time.zone.today ) }

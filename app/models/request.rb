@@ -5,6 +5,10 @@ class Request < ActiveRecord::Base
     "(enrollments.position_id = positions.id AND " +
     "positions.requestable_by_committee = #{connection.quote true})"
 
+  attr_accessible :starts_at, :ends_at, :new_position, :answers_attributes,
+    :user_attributes
+  attr_readonly :user_id, :requestable_id, :requestable_type
+
   has_many :answers, :inverse_of => :request do
     def populate
       # Generate blank answers for any allowed question not in answer set

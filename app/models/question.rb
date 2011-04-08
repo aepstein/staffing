@@ -4,7 +4,10 @@ class Question < ActiveRecord::Base
     'Text Box' => 'text',
     'Yes/No' => 'boolean'
   }
-  default_scope :order => 'questions.name ASC'
+
+  attr_accessible :name, :content, :global
+
+  default_scope order( 'questions.name ASC' )
 
   has_and_belongs_to_many :quizzes
   has_many :answers, :inverse_of => :question

@@ -94,6 +94,7 @@ class UsersController < ApplicationController
   # PUT /users/1
   # PUT /users/1.xml
   def update
+    @user.accessible += User::ADMIN_UPDATABLE
     respond_to do |format|
       if @user.update_attributes(params[:user])
         flash[:notice] = 'User was successfully updated.'
@@ -132,15 +133,10 @@ class UsersController < ApplicationController
   end
 
   def new_user_from_params
-    @user = User.new( params[:user] )
+    @user = User.new
+    @user.accessible += User::ADMIN_UPDATABLE
+    @user.attributes = params[:user]
   end
 
-  def set_admin_properties
-    if current_user.admin? && params[:user]
-      @user.admin = params[:user][:admin] unless params[:user][:admin].blank?
-      @user.net_id = params[:user][:net_id] unless params[:user][:net_id].blank?
-      @user.status = params[:user][:status] unless params[:user][:status].blank?
-    end
-  end
 end
 

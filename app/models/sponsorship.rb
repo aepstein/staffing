@@ -1,6 +1,9 @@
 class Sponsorship < ActiveRecord::Base
   include UserNameLookup
 
+  attr_accessible :user_id
+  attr_readonly :user_id
+
   belongs_to :motion, :inverse_of => :sponsorships
   belongs_to :user, :inverse_of => :sponsorships
 

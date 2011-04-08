@@ -1,4 +1,7 @@
 class Enrollment < ActiveRecord::Base
+  attr_accessible :committee_id, :position_name, :position_id, :title, :votes
+  attr_readonly :committee_id
+
   belongs_to :position, :inverse_of => :enrollments
   belongs_to :committee, :inverse_of => :enrollments
   has_many :memberships, :primary_key => :position_id, :foreign_key => :position_id

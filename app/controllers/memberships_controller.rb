@@ -165,6 +165,7 @@ class MembershipsController < ApplicationController
   # PUT /memberships/1
   # PUT /memberships/1.xml
   def update
+    @membership.accessible += Membership::UPDATE_ATTRIBUTES
     respond_to do |format|
       if @membership.update_attributes(params[:membership])
         flash[:notice] = 'Membership was successfully updated.'

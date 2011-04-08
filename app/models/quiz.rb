@@ -1,4 +1,6 @@
 class Quiz < ActiveRecord::Base
+  attr_accessible :name
+
   default_scope order('quizzes.name ASC')
 
   has_many :positions, :inverse_of => :quiz

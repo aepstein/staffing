@@ -118,7 +118,9 @@ class MeetingsController < ApplicationController
   private
 
   def new_meeting_from_params
-    @meeting = @committee.meetings.build( params[:meeting] )
+    @meeting = @committee.meetings.build
+    @meeting.accessible += [ :committee_id, :period_id ]
+    @meeting.attributes = params[:meeting]
   end
 
   def initialize_index

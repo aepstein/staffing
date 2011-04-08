@@ -1,7 +1,8 @@
 class Motion < ActiveRecord::Base
   include AASM
 
-  attr_protected :committee_id, :status
+  attr_accessible :period_id, :name, :description, :complete,
+    :referring_motion_id
   attr_readonly :period_id
 
   acts_as_list :scope => [:period_id, :committee_id]

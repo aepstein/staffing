@@ -1,4 +1,6 @@
 class Qualification < ActiveRecord::Base
+  attr_accessible :name, :description
+
   default_scope :order => 'qualifications.name ASC'
 
   has_and_belongs_to_many :positions
