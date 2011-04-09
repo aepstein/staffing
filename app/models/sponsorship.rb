@@ -1,8 +1,8 @@
 class Sponsorship < ActiveRecord::Base
   include UserNameLookup
 
-  attr_accessible :user_id
-  attr_readonly :user_id
+  attr_accessible :motion_id, :user_id, :user_name, :_destroy
+  attr_readonly :motion_id, :user_id, :user_name
 
   belongs_to :motion, :inverse_of => :sponsorships
   belongs_to :user, :inverse_of => :sponsorships
@@ -11,8 +11,6 @@ class Sponsorship < ActiveRecord::Base
   validates_presence_of :user
   validates_uniqueness_of :motion_id, :scope => [ :user_id ]
   validate :user_must_be_allowed
-
-  attr_readonly :motion_id, :user_id, :user_name
 
   def to_s; user ? user.to_s : ''; end
 

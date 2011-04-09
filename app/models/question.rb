@@ -5,7 +5,7 @@ class Question < ActiveRecord::Base
     'Yes/No' => 'boolean'
   }
 
-  attr_accessible :name, :content, :global
+  attr_accessible :name, :content, :global, :disposition, :quiz_ids
 
   default_scope order( 'questions.name ASC' )
 

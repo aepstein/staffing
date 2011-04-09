@@ -1,7 +1,7 @@
 class Membership < ActiveRecord::Base
-  UPDATE_ATTRIBUTES = [ :user_name, :user_id, :period_id, :position_id,
+  UPDATABLE_ATTRIBUTES = [ :user_name, :user_id, :period_id, :position_id,
     :request_id, :starts_at, :ends_at, :join_notice_sent_at,
-    :leave_notice_sent_at, :designees_attributes ]
+    :leave_notice_sent_at, :designees_attributes, :designees_attributes ]
   attr_accessible :renew_until, :renewal_confirmed_at
   attr_readonly :position_id
 

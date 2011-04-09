@@ -1,6 +1,6 @@
 class MeetingMotion < ActiveRecord::Base
   attr_accessible :meeting_id, :motion_id, :motion_name, :comment,
-    :introduced_version, :final_version
+    :introduced_version, :final_version, :_destroy
   attr_readonly :meeting_id, :motion_id, :motion_name
 
   belongs_to :meeting, :inverse_of => :meeting_motions

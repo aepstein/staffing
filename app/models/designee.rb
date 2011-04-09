@@ -1,5 +1,5 @@
 class Designee < ActiveRecord::Base
-  attr_accessible :committee_id, :user_id
+  attr_accessible :committee_id, :user_id, :user_name, :_destroy
   attr_readonly :committee_id
 
   belongs_to :membership, :inverse_of => :designees

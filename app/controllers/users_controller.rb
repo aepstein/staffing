@@ -2,7 +2,6 @@ class UsersController < ApplicationController
   before_filter :require_user, :initialize_context
   before_filter :initialize_index, :only => [ :index, :allowed ]
   before_filter :new_user_from_params, :only => [ :new, :create ]
-  before_filter :set_admin_properties, :only => [ :create, :update ]
   filter_access_to :new, :create, :edit, :update, :destroy, :show, :attribute_check => true
 
   # GET /motions/:motion_id/users/allowed
@@ -94,7 +93,7 @@ class UsersController < ApplicationController
   # PUT /users/1
   # PUT /users/1.xml
   def update
-    @user.accessible += User::ADMIN_UPDATABLE
+    @user.accessible = User::ADMIN_UPDATABLE
     respond_to do |format|
       if @user.update_attributes(params[:user])
         flash[:notice] = 'User was successfully updated.'
@@ -134,7 +133,7 @@ class UsersController < ApplicationController
 
   def new_user_from_params
     @user = User.new
-    @user.accessible += User::ADMIN_UPDATABLE
+    @user.accessible = User::ADMIN_UPDATABLE
     @user.attributes = params[:user]
   end
 

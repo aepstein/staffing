@@ -2,7 +2,7 @@ class Motion < ActiveRecord::Base
   include AASM
 
   attr_accessible :period_id, :name, :description, :complete,
-    :referring_motion_id
+    :referring_motion_id, :sponsorships_attributes
   attr_readonly :period_id
 
   acts_as_list :scope => [:period_id, :committee_id]

@@ -119,7 +119,6 @@ class MeetingsController < ApplicationController
 
   def new_meeting_from_params
     @meeting = @committee.meetings.build
-    @meeting.accessible += [ :committee_id, :period_id ]
     @meeting.attributes = params[:meeting]
   end
 

@@ -1,6 +1,7 @@
 class Meeting < ActiveRecord::Base
   attr_accessible :period_id, :committee_id, :audio, :editable_minutes,
-    :published_minutes, :starts_at, :ends_at, :location
+    :published_minutes, :starts_at, :ends_at, :location,
+    :meeting_motions_attributes
   attr_readonly :period_id, :committee_id
 
   belongs_to :committee, :inverse_of => :meetings
