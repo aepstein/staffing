@@ -180,13 +180,13 @@ class Request < ActiveRecord::Base
 
   def to_s; requestable.to_s; end
 
-  protected
-
   def send_reject_notice!
     RequestMailer.reject_notice( self ).deliver
     self.rejection_notice_at = Time.zone.now
     save!
   end
+
+  protected
 
   def rejected_by_authority_must_be_allowed_to_rejected_by_user
     unless rejected_by_authority.blank? || rejected_by_user.blank? ||
