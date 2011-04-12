@@ -11,6 +11,15 @@ class Membership < ActiveRecord::Base
   belongs_to :period, :inverse_of => :memberships
   belongs_to :position, :inverse_of => :memberships
   belongs_to :request, :inverse_of => :memberships
+  belongs_to :renewed_by_membership, :class_name => 'Membership',
+    :inverse_of => :renewed_memberships
+  has_many :renewed_memberships, :class_name => 'Membership',
+    :inverse_of => :renewed_by_membership,
+    :foreign_key => :renewed_by_membership_id, :dependent => :nullify do
+    def assignable
+      Membership.unrenewed.where( :renew_until.gte => proxy_owner.starts_at )
+    end
+  end
   has_many :designees, :inverse_of => :membership, :dependent => :delete_all do
     def populate
       return Array.new unless proxy_owner.position
@@ -70,15 +79,8 @@ class Membership < ActiveRecord::Base
   scope :notifiable, includes(:position).where( :user_id.ne => nil ).merge( Position.unscoped.notifiable )
   scope :renewal_confirmed, lambda { renewable.where( :renewal_confirmed_at.ne => nil ) }
   scope :renewal_unconfirmed, lambda { renewable.where( :renewal_confirmed_at => nil ) }
-  scope :renewed, joins("INNER JOIN memberships AS renewable_memberships ON " +
-        " memberships.user_id = renewable_memberships.user_id AND " +
-        " memberships.position_id = renewable_memberships.position_id AND " +
-        " #{date_add :ends_at, 1.day} = #{date_add 'renewable_memberships.starts_at', 0.days}")
-  scope :unrenewed, joins("LEFT JOIN memberships AS renewable_memberships ON " +
-        " memberships.user_id = renewable_memberships.user_id AND " +
-        " memberships.position_id = renewable_memberships.position_id AND " +
-        " #{date_add :ends_at, 1.day} = #{date_add 'renewable_memberships.starts_at', 0.days}").
-        where( 'renewable_memberships.id IS NULL' )
+  scope :renewed, where( :renewed_by_membership_id.ne => nil )
+  scope :unrenewed, where( :renewed_by_membership_id => nil )
   scope :user_name_like, lambda { |text| joins(:user).merge( User.unscoped.name_like(text) ) }
   scope :enrollments_committee_id_equals, lambda { |committee_id|
     joins('INNER JOIN enrollments ON enrollments.position_id = memberships.position_id').
@@ -96,7 +98,8 @@ class Membership < ActiveRecord::Base
   validates_date :starts_at
   validates_date :ends_at, :on_or_after => :starts_at
   validates_date :renew_until, :after => :ends_at, :allow_blank => true
-  validate :must_be_within_period, :user_must_be_qualified, :concurrent_memberships_must_not_exceed_slots
+  validate :must_be_within_period, :user_must_be_qualified,
+    :concurrent_memberships_must_not_exceed_slots
 
   after_save :claim_request!, :populate_unassigned
   after_destroy :populate_unassigned
@@ -183,11 +186,17 @@ class Membership < ActiveRecord::Base
 
   alias_method_chain :request=, :population
 
-  # Identify users who are interested in the position
+  # Identify users who are interested in the membership
   def users
     User.joins( :requests ).merge(
     Request.unscoped.active.overlap(starts_at, ends_at).with_positions.merge(
     Position.with_users_status.where( :id => position_id ) ) )
+  end
+
+  # Identify requests who are interested in the membership
+  def requests
+    Request.active.overlap(starts_at, ends_at).with_positions.merge(
+    Position.with_users_status.where( :id => position_id ) )
   end
 
   def description

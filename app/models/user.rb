@@ -3,7 +3,8 @@ class User < ActiveRecord::Base
   ADMIN_UPDATABLE = [ :net_id, :admin, :status ]
 
   attr_accessible :first_name, :middle_name, :last_name, :email, :mobile_phone,
-    :work_phone, :home_phone, :work_address, :date_of_birth, :resume
+    :work_phone, :home_phone, :work_address, :date_of_birth, :resume,
+    :renewal_checkpoint
 
   default_scope order( 'users.last_name ASC, users.first_name ASC, users.middle_name ASC' )
 

@@ -5,13 +5,13 @@ You are receiving this notice because you have memberships either ending soon or
 <% if @user.memberships.renewal_unconfirmed.any? %>
 According to our records you have the following unconfirmed renewal preferences.  You are:
 
-<%= render :partial => 'membership', :collection => @user.memberships.renewal_unconfirmed %>
+<%= render :partial => 'membership', :collection => @user.memberships.renewal_unconfirmed.uniq %>
 <% end %>
 
 <% if @user.memberships.renewal_confirmed.any? %>
 Our records also indicate you have confirmed you are:
 
-<%= render :partial => 'membership', :collection => @user.memberships.renewal_confirmed %>
+<%= render :partial => 'membership', :collection => @user.memberships.renewal_confirmed.uniq %>
 <% end %>
 
 Please take a few moments to adjust and confirm your renewal preferences here:

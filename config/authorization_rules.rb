@@ -6,7 +6,7 @@ authorization do
       :sendings ],
       :to => [ :manage, :show, :index ]
     has_permission_on :users, :to => :resume
-    has_permission_on :requests, :to => [ :reject, :unreject ]
+    has_permission_on :requests, :to => [ :reject, :reactivate ]
   end
   role :user do
     has_permission_on [ :authorities, :committees, :enrollments, :meetings,
@@ -65,7 +65,7 @@ privileges do
     includes :create, :update, :destroy
   end
   privilege :reject do
-    includes :unreject, :do_reject
+    includes :reactivate, :do_reject
   end
   privilege :create do
     includes :new

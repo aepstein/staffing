@@ -156,21 +156,6 @@ describe Membership do
     Membership.unrenewable.should include @membership
   end
 
-  it 'should have a renewed scope that fetches only memberships that have a subsequent membership for the same user and position' do
-    subsequent = subsequent_membership(@membership)
-    subsequent.user_id.should eql @membership.user_id
-    subsequent.position_id.should eql @membership.position_id
-    subsequent.starts_at.should eql @membership.ends_at + 1.day
-    Membership.renewed.length.should eql 1
-    Membership.renewed.should include @membership
-  end
-
-  it 'should have a renewed scope that fetches only memberships that have a subsequent membership for the same user and position' do
-    subsequent = subsequent_membership(@membership)
-    Membership.unrenewed.length.should eql 1
-    Membership.unrenewed.should include subsequent
-  end
-
   it 'should have an unrequested scope' do
     requested = Factory(:membership, :request => Factory(:request) )
     Membership.unrequested.size.should eql 1
@@ -228,6 +213,17 @@ describe Membership do
     @membership.save.should be_false
     @membership.renew_until = 'coriander'
     @membership.save.should be_false
+  end
+
+  it 'should have renewed and unrenewed scopes based on renewed_by_membership_id flag' do
+    future = Factory(:future_period, :schedule => @membership.position.schedule)
+    renewed = Factory(:membership, :position => @membership.position,
+      :user => @membership.user, :period => future)
+    @membership.update_attribute :renewed_by_membership_id, renewed.id
+    Membership.renewed.length.should eql 1
+    Membership.renewed.should include @membership
+    Membership.unrenewed.length.should eql 1
+    Membership.unrenewed.should include renewed
   end
 
   def notifiable_scenario(starts_at = nil, ends_at = nil)

@@ -1,5 +1,8 @@
 class Request < ActiveRecord::Base
 
+  UPDATABLE_ATTRIBUTES = [ :starts_at, :ends_at, :new_position,
+    :answers_attributes, :user_attributes ]
+  REJECTABLE_ATTRIBUTES = [ :rejected_by_authority_id, :rejection_comment ]
   POSITIONS_JOIN_SQL = "(requests.requestable_type = 'Position' AND " +
     "requests.requestable_id = positions.id) OR " +
     "(enrollments.position_id = positions.id AND " +
@@ -65,13 +68,15 @@ class Request < ActiveRecord::Base
   scope :overlap, lambda { |starts, ends|
     where( :starts_at.lte => ends, :ends_at.gte => starts )
   }
-  scope :rejected, where( :rejected_at.ne => nil )
+  scope :rejected, lambda { with_status( :rejected ) }
   scope :unrejected, where( :rejected_at => nil )
   scope :staffed, joins( :memberships )
   scope :unstaffed, joins( "LEFT JOIN memberships ON memberships.request_id = requests.id" ).
     where( "memberships.id IS NULL" )
   scope :active, lambda { unexpired.unrejected }
-  scope :reject_notice_pending, lambda { rejected.where( :rejection_notice_at => nil ) }
+  scope :reject_notice_pending, lambda {
+    rejected.where( :rejection_notice_at => nil )
+  }
   # Joins to enrollments to get position_ids for requests where the requestable
   # is a committee
   scope :with_enrollments, lambda {
@@ -93,8 +98,33 @@ class Request < ActiveRecord::Base
       merge( Position.unscoped.with_users_status )
   }
 
-  attr_protected :rejected_at, :rejection_notice_at, :rejection_comment
-  attr_readonly :user_id
+  state_machine :status, :initial => :active do
+    state :active, :closed
+
+    state :rejected do
+      validates :rejected_by_authority, :presence => true
+      validates :rejected_by_user, :presence => true
+      validates :rejection_comment, :presence => true
+      validates_datetime :rejected_at
+    end
+
+    before_transition all - :rejected => :rejected do |request, transition|
+      request.rejected_at = Time.zone.now
+    end
+
+    event :reject do
+      transition :active => :rejected
+    end
+
+    event :close do
+      transition :active => :closed
+    end
+
+    event :reactivate do
+      transition [ :rejected, :closed ] => :active
+    end
+
+  end
 
   acts_as_list :scope => :user_id
 
@@ -158,24 +188,6 @@ class Request < ActiveRecord::Base
       end
       memo
     end
-  end
-
-  def reject(params)
-    unless params.blank?
-      self.rejected_by_authority_id = params[:rejected_by_authority_id]
-      self.rejection_comment = params[:rejection_comment]
-    end
-    self.rejected_at = Time.zone.now
-    save
-  end
-
-  def unreject
-    self.rejected_at = nil
-    save
-  end
-
-  def rejected?
-    rejected_at?
   end
 
   def to_s; requestable.to_s; end

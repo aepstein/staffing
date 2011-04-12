@@ -144,47 +144,40 @@ describe Request do
     r.memberships.should include m
   end
 
-  it  'should have a rejected? method that returns rejected_at? result' do
-    @request.rejected_at.should be_nil
-    @request.rejected?.should be_false
-    @request.rejected_at = Time.zone.now
-    @request.rejected?.should be_true
-  end
-
   it  'should save with valid parameters from administrator' do
     setup_rejection
-    @request.reject(@valid_parameters).should be_true
+    @request.reject.should be_true
   end
 
   it  'should save with valid parameters from authorized user for the authority' do
     setup_rejection
     @request.rejected_by_user = @authorized
-    @request.reject(@valid_parameters).should be_true
+    @request.reject.should be_true
   end
 
   it  'should not save with valid parameters from unauthorized user for the authority' do
     setup_rejection
     @request.rejected_by_user = @unauthorized
-    @request.reject(@valid_parameters).should be_false
+    @request.reject.should be_false
   end
 
   it  'should not save if rejected without a comment' do
     setup_rejection
-    @valid_parameters.delete(:rejection_comment)
-    @request.reject(@valid_parameters).should be_false
+    @request.rejection_comment = nil
+    @request.reject.should be_false
   end
 
   it  'should have an unreject method that removes rejection status' do
     setup_rejection
-    @request.reject(@valid_parameters).should be_true
-    @request.unreject.should be_true
+    @request.reject.should be_true
+    @request.reopen.should be_true
     @request.rejected?.should be_false
   end
 
   it  'should have a send_reject_notice! method which sends a rejection notice and saves' do
     setup_rejection
-    @request.reject(@valid_parameters).should be_true
-    @request.send(:send_reject_notice!)
+    @request.reject.should be_true
+    @request.send :send_reject_notice!
     @request.reload
     @request.rejection_notice_at.should_not be_nil
   end
@@ -192,9 +185,9 @@ describe Request do
   it  'should have a reject_notice_pending scope' do
     Request.reject_notice_pending.length.should eql 0
     setup_rejection
-    @request.reject(@valid_parameters).should be_true
+    @request.reject.should be_true
     Request.reject_notice_pending.length.should eql 1
-    @request.send(:send_reject_notice!)
+    @request.send :send_reject_notice!
     Request.reject_notice_pending.length.should eql 0
   end
 
@@ -208,7 +201,8 @@ describe Request do
     membership = Factory(:membership, :position => enrollment.position, :user => @authorized )
     @unauthorized = Factory(:user)
     @request.rejected_by_user = @admin
-    @valid_parameters = { :rejected_by_authority_id => @authority.id,
+    @request.accessible = Request::REJECTABLE_ATTRIBUTES
+    @request.attributes = { :rejected_by_authority_id => @authority.id,
       :rejection_comment => 'a comment' }
   end
 

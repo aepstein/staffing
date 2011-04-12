@@ -4,7 +4,7 @@ class RequestsController < ApplicationController
   before_filter :initialize_index, :only => [ :index, :expired, :unexpired, :active, :rejected ]
   before_filter :new_request_from_params, :only => [ :new, :create ]
   filter_access_to :new, :create, :edit, :update, :destroy, :show, :reject,
-    :do_reject, :unreject, :attribute_check => true
+    :do_reject, :reactivate, :attribute_check => true
   filter_access_to :index, :renewed, :unrenewed, :expired, :unexpired, :active, :rejected do
     @user ? permitted_to!( :show, @user ) : permitted_to!( :index )
   end
@@ -107,6 +107,7 @@ class RequestsController < ApplicationController
   # PUT /requests/1
   # PUT /requests/1.xml
   def update
+    @request.accessible = Request::UPDATABLE_ATTRIBUTES
     respond_to do |format|
       if @request.update_attributes(params[:request])
         flash[:notice] = 'Request was successfully updated.'
@@ -128,9 +129,11 @@ class RequestsController < ApplicationController
   # PUT /requests/1/do_reject
   # PUT /requests/1/do_reject.xml
   def do_reject
+    @request.accessible = Request::REJECTABLE_ATTRIBUTES
     @request.rejected_by_user = current_user
+    @request.attributes = params[:request]
     respond_to do |format|
-      if @request.reject(params[:request])
+      if @request.reject
         flash[:notice] = 'Request was successfully rejected.'
         format.html { redirect_to @request }
         format.xml  { head :ok }
@@ -141,12 +144,12 @@ class RequestsController < ApplicationController
     end
   end
 
-  # PUT /requests/1/unreject
-  # PUT /requests/1/unreject.xml
-  def unreject
+  # PUT /requests/1/reactivate
+  # PUT /requests/1/reactivate.xml
+  def reactivate
     respond_to do |format|
-      if @request.unreject
-        flash[:notice] = 'Request was successfully unrejected.'
+      if @request.reactivate
+        flash[:notice] = 'Request was successfully reactivated.'
         format.html { redirect_to @request }
         format.xml  { head :ok }
       else
@@ -212,7 +215,9 @@ class RequestsController < ApplicationController
 
   def new_request_from_params
     return redirect_to edit_request_url( @request ) unless @request.nil? || @request.new_record?
-    @request = @requestable.requests.build( params[:request] )
+    @request = @requestable.requests.build
+    @request.accessible = Request::UPDATABLE_ATTRIBUTES
+    @request.attributes = params[:request]
     @request.starts_at ||= @membership.starts_at if @membership
     @request.user ||= ( @membership ? @membership.user : @user )
   end

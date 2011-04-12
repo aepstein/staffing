@@ -88,7 +88,7 @@ Staffing::Application.routes.draw do
   resources :requests, :except => [ :index, :new, :create ] do
     member do
       get :reject
-      put :do_reject, :unreject
+      put :do_reject, :reactivate
     end
     resources :memberships, :only => [ :new, :create, :index ] do
       collection do

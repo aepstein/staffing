@@ -1,6 +1,4 @@
 class Motion < ActiveRecord::Base
-  include AASM
-
   attr_accessible :period_id, :name, :description, :complete,
     :referring_motion_id, :sponsorships_attributes
   attr_readonly :period_id
@@ -85,47 +83,45 @@ class Motion < ActiveRecord::Base
     motion.referring_motion.save! if motion.referee?
   end
 
-  aasm_column :status
-  aasm_initial_state :started
-  aasm_state :started
-  aasm_state :proposed
-  aasm_state :referred
-  aasm_state :merged
-  aasm_state :divided, :before_enter => :do_divide
-  aasm_state :closed
-  aasm_state :adopted
-  aasm_state :implemented
+  state_machine :status, :initial => :started do
 
-  aasm_event :propose do
-    transitions :to => :proposed, :from => :started
-  end
+    before_transition all - :divided => :divided, :do => :do_divide
 
-  aasm_event :adopt do
-    transitions :to => :adopted, :from => :proposed
-  end
+    state :started, :proposed, :referred, :merged, :divided, :closed, :adopted,
+      :implemented
 
-  aasm_event :merge do
-    transitions :to => :merged, :from => :proposed
-  end
+    event :propose do
+      transition :started => :proposed
+    end
 
-  aasm_event :divide do
-    transitions :to => :divided, :from => :proposed
-  end
+    event :adopt do
+      transition :proposed => :adopted
+    end
 
-  aasm_event :refer do
-    transitions :to => :referred, :from => [ :proposed, :adopted ]
-  end
+    event :merge do
+      transition :proposed => :merged
+    end
 
-  aasm_event :implement do
-    transitions :to => :implemented, :from => :adopted
-  end
+    event :divide do
+      transition :proposed => :divided
+    end
 
-  aasm_event :reject do
-    transitions :to => :rejected, :from => [ :proposed, :adopted, :implemented ]
-  end
+    event :refer do
+      transition [ :proposed, :adopted ] => :referred
+    end
 
-  aasm_event :restart do
-    transitions :to => :started, :from => :closed
+    event :implement do
+      transition :adopted => :implemented
+    end
+
+    event :restart do
+      transition :closed => :started
+    end
+
+    event :reject do
+      transition [ :proposed, :adopted, :implemented ] => :rejected
+    end
+
   end
 
   # Motion has been referred from another committee

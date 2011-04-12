@@ -12,7 +12,7 @@ According to our records you have the following unconfirmed renewal preferences.
 </p>
 
 <ul>
-<%= render :partial => 'membership', :collection => @user.memberships.renewal_unconfirmed %>
+<%= render :partial => 'membership', :collection => @user.memberships.renewal_unconfirmed.uniq %>
 </ul>
 <% end %>
 
@@ -22,7 +22,7 @@ Our records also indicate you have confirmed you are:
 </p>
 
 <ul>
-<%= render :partial => 'membership', :collection => @user.memberships.renewal_confirmed %>
+<%= render :partial => 'membership', :collection => @user.memberships.renewal_confirmed.uniq %>
 </ul>
 <% end %>
 

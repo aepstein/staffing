@@ -13,7 +13,7 @@
     <td>
       <% if permitted_to? :reject, request %>
         <% if request.rejected? %>
-          <%= link_to 'Unreject', unreject_request_path( request ), :confirm => 'Are you sure?', :method => :put %>
+          <%= link_to 'Reactivate', reactivate_request_path( request ), :confirm => 'Are you sure?', :method => :put %>
         <% else %>
           <%= link_to 'Reject', reject_request_path( request ) %>
         <% end %>

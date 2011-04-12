@@ -68,7 +68,7 @@ Feature: Manage requests
     Then I should <reject> authorized
     Given I put on the do_reject page for request: "focus"
     Then I should <reject> authorized
-    Given I put on the unreject page for request: "focus"
+    Given I put on the reactivate page for request: "focus"
     Then I should <reject> authorized
     Given I delete on the page for request: "focus"
     Then I should <destroy> authorized
@@ -132,7 +132,7 @@ Feature: Manage requests
       | the membership      | Central Committee   | false         | the committee        | Update | upd |
       | the committee       | Central Committee   | true          | the committee        | Update | upd |
 
-  Scenario: Reject a request and unreject
+  Scenario: Reject a request and reactivate
     Given an authority exists with name: "Primary"
     And a position exists with authority: the authority
     And a request exists with requestable: the position
@@ -147,8 +147,8 @@ Feature: Manage requests
     And I should see "Rejected by user: Mister Administrator"
     And I should see "You are not qualified for the position."
     And I should see "Rejection notice sent at: None sent."
-    Given I put on the unreject page for the request
-    Then I should see "Request was successfully unrejected."
+    Given I put on the reactivate page for the request
+    Then I should see "Request was successfully reactivated."
     And I should not see "Rejected at"
 
   Scenario: Delete request

@@ -35,4 +35,5 @@ Feature: User mailer
       | true      | false | false | past     | is not | has not | Focus Position  | not see  | see         | not see   | see         |
       | true      | false | false | long_ago | is not | has not | Focus Position  | not see  | not see     | not see   | not see     |
       | true      | false | false | future   | is not | has not | Focus Position  | not see  | not see     | not see   | not see     |
+      | false     | false | false | current  | is not | has not | Focus Position  | not see  | not see     | not see   | not see     |
 
