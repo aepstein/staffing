@@ -1,3 +1,15 @@
+Given /^#{capture_model} exists? (before|after) #{capture_model}(?: with #{capture_fields})?$/ do |name, position, parent, attributes|
+  p = model(parent)
+  if position == 'after'
+    a = "starts_at: \"#{(p.ends_at + 1.day).to_s :rfc822}\", "
+    a << "ends_at: \"#{(p.ends_at + 1.year).to_s :rfc822}\""
+  else
+    a = "ends_at: \"#{(p.starts_at - 1.day).to_s :rfc822}\", "
+    a << "starts_at: \"#{(p.starts_at - 1.year).to_s :rfc822}\""
+  end
+  create_model( name, ( attributes.blank? ? a : "#{attributes}, #{a}" ) )
+end
+
 Given(/^#{capture_model} (?:has|have) #{capture_fields}$/) do |name, fields|
   subject = model(name)
   parse_fields(fields).each { |field, value| subject.send( "#{field}=", value ) }
@@ -90,7 +102,7 @@ Then /^I should see the following entries in "(.+)":$/ do |table_id, table|
   table.diff!(tableish("##{table_id} > thead,tbody > tr", 'td,th'))
 end
 
-Given /^an? ([a-z\s]+) email is sent for #{capture_model}$/ do |notice, context|
+Given /^an? ([a-z\s_]+) email is sent for #{capture_model}$/ do |notice, context|
   notice[" "]= "_" if notice[" "]
   "#{model(context).class.to_s}Mailer".constantize.send( notice, model(context) ).deliver
 end

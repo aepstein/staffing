@@ -128,10 +128,26 @@ describe Membership do
     new_designees.first.committee.should eql enrollment_no_designee.committee
   end
 
-  it 'should have a renewable scope that fetches only if the associated position is renewable' do
-    renewable = Factory(:membership, :position => renewable_position)
-    Membership.renewable.length.should eql 1
-    Membership.renewable.should include renewable
+  it 'should have a renewable scope that fetches only if the associated position is renewable and the period is current or immediately before current' do
+    position = Factory(:position, :slots => 1, :renewable => true)
+    current = Factory(:membership, :position => position)
+    current_period = current.period
+    prior_period = Factory(:period, :schedule => current.period.schedule,
+      :starts_at => ( current_period.starts_at - 1.year ),
+      :ends_at => ( current_period.starts_at - 1.day ) )
+    prior = Factory(:membership, :position => position,
+      :period => prior_period )
+    ancient_period = Factory(:period, :schedule => current.period.schedule,
+      :starts_at => ( prior_period.starts_at - 1.year ),
+      :ends_at => ( prior_period.starts_at - 1.day ) )
+    ancient = Factory(:membership, :position => position,
+      :period => ancient_period )
+    future_period = Factory(:future_period, :schedule => ancient_period.schedule)
+    future = Factory(:membership, :position => position, :period => future_period)
+    scope = Membership.renewable
+    scope.should include current
+    scope.should include prior
+    Membership.renewable.uniq.length.should eql 2
   end
 
   it 'should have an unrenewable scope that fetches only if the associated position is renewable' do

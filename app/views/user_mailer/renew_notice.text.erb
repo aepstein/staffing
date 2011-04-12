@@ -3,18 +3,18 @@ Dear <%= @user.first_name %>,
 You are receiving this notice because you have memberships either ending soon or recently ended and your action is required to renew your membership.
 
 <% if @user.memberships.renewal_unconfirmed.any? %>
-You have not confirmed your preferences for the following memberships:
+According to our records you have the following unconfirmed renewal preferences.  You are:
 
 <%= render :partial => 'membership', :collection => @user.memberships.renewal_unconfirmed %>
 <% end %>
 
 <% if @user.memberships.renewal_confirmed.any? %>
-You have confirmed your preferences for the following memberships, although you may wish to adjust further:
+Our records also indicate you have confirmed you are:
 
 <%= render :partial => 'membership', :collection => @user.memberships.renewal_confirmed %>
 <% end %>
 
-Please take a few moments to specify your renewal preferences here:
+Please take a few moments to adjust and confirm your renewal preferences here:
 
 <%= renew_user_memberships_url( @user ) %>
 

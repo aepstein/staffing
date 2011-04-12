@@ -1,6 +1,6 @@
 <% if membership.renew_until? && membership.renew_until > Time.zone.today -%>
- * interested in renewing the membership in <%= membership.description %> that ends on <%= membership.ends_at.to_s :long_ordinal %> until <%= membership.renew_until :long_ordinal %>
+ * interested in renewing your membership in <%= membership.description %> that ends on <%= membership.ends_at.to_s :long_ordinal %> until <%= membership.renew_until.to_s :long_ordinal %>
 <% else -%>
- * not interested in renewing the membership in <%= membership.description %> that ends on <%= membership.ends_at :long_ordinal %>
+ * *not* interested in renewing your membership in <%= membership.description %> that ends on <%= membership.ends_at.to_s :long_ordinal %>
 <% end -%>
 

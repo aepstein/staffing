@@ -6,7 +6,7 @@ class UserMailer < ActionMailer::Base
     mail(
       :to => "#{@user.name} <#{@user.email}>",
       :from => "#{Staffing::Application.app_config['defaults']['authority']['contact_email']}",
-      :subject => "Please Specify Your Membership Renewal Preferences"
+      :subject => "Your Action is Required to Renew Committee Memberships"
     )
   end
 

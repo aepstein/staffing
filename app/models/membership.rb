@@ -44,13 +44,13 @@ class Membership < ActiveRecord::Base
   # To be renewable a membership must have a renewable position and be in either
   # a current period or immediately preceeding a current period
   scope :renewable, lambda {
-    joins( :position, :period ).merge( Position.unscoped.renewable ).
-    where( "(periods.starts_at <= :today AND periods.ends_at >= :today) " +
-           "OR #{date_add( 'periods.ends_at', 1.day )} IN " +
-           "( SELECT starts_at FROM periods AS p " +
-           "WHERE p.starts_at <= :today AND p.ends_at >= :today AND " +
-           "p.schedule_id = positions.schedule_id )",
-           :today => Time.zone.today  ) }
+    assigned.joins( :position, :period ).merge( Position.unscoped.renewable ).
+    joins( "LEFT JOIN periods AS next_periods ON " +
+      "#{date_add( 'periods.ends_at', 1.day )} = next_periods.starts_at" ).
+    where( "(periods.starts_at <= :today AND periods.ends_at >= :today) OR " +
+      "(next_periods.starts_at <= :today AND next_periods.ends_at >= :today)",
+      :today => Time.zone.today )
+  }
   # Unrenewable memberships are associated with unrenewable positions
   scope :unrenewable, lambda { joins(:position).merge( Position.unscoped.unrenewable ) }
   scope :overlap, lambda { |starts, ends| where( :starts_at.lte => ends, :ends_at.gte => starts) }

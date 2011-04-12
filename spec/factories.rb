@@ -169,7 +169,7 @@ end
 
 Factory.define :period do |f|
   f.association :schedule
-  f.starts_at ( Time.zone.today - 1.year )
+  f.starts_at { |p| Time.zone.today - 1.year }
   f.ends_at { |p| p.starts_at + 2.years }
 end
 
@@ -177,12 +177,12 @@ Factory.define :current_period, :parent => :period do |f|
 end
 
 Factory.define :past_period, :parent => :period do |f|
-  f.ends_at Time.zone.today - ( 1.year + 1.day )
+  f.ends_at { |p| Time.zone.today - ( 1.year + 1.day ) }
   f.starts_at { |p| p.ends_at - 1.year }
 end
 
 Factory.define :future_period, :parent => :period do |f|
-  f.starts_at Time.zone.today + ( 1.year + 1.day )
+  f.starts_at { |p| Time.zone.today + ( 1.year + 1.day ) }
   f.ends_at { |p| p.starts_at + 1.years }
 end
 
