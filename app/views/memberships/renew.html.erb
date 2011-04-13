@@ -1,3 +1,13 @@
+<h2>Renewal preferences for <%= @user %>
+
+<p>
+ Use this form to specify your membership renewal preferences for each of your
+ current or recently ended renewable memberships.  If you are not interested in
+ renewal of a particular position, you should leave the date blank for that
+ position.  If you are interested in renewal, you should specify the latest
+ end date to which you are interested to be reappointed to at this time.
+</p>
+
 <%= form_for @user, :url => renew_user_memberships_path(@user) do |form| %>
 <table>
 <thead>
