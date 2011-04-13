@@ -30,6 +30,18 @@ Then /^I should not see authorized$/ do
   Then %{I should see "You are not allowed to perform the requested action."}
 end
 
+When /^I fill in "(\w+)" with #{capture_relative_date}$/ do |field, date|
+  When %{I fill in "#{field}" with "#{relative_date(date).to_s :rfc822}"}
+end
+
+Then /^I should( not)? see #{capture_relative_date}(.*)$/ do |negate, date, suffix|
+  Then %{I should#{negate} see "#{relative_date(date).to_s :rfc822}"#{suffix}}
+end
+
+Then /^the "([^\"]+)" field should( not)? contain #{capture_relative_date}$/ do |field, negate, date|
+  Then %{the "#{field}" field should#{negate} contain "#{relative_date(date).to_s :rfc822}"}
+end
+
 # Adds support for validates_attachment_content_type. Without the mime-type get
 # passed to attach_file() you will get a "Photo file is not one of the allowed
 # error message

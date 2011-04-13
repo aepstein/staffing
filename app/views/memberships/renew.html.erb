@@ -9,6 +9,7 @@
 </p>
 
 <%= form_for @user, :url => renew_user_memberships_path(@user) do |form| %>
+<%= render 'shared/error_messages', :target => form.object %>
 <table>
 <thead>
   <tr>
@@ -18,9 +19,12 @@
   </tr>
 </thead>
 <tbody>
-  <%= form.fields_for :memberships, @user.memberships.unrenewed.uniq do |subform| %>
+  <%= form.fields_for :memberships,
+      @user.memberships.select { |m|
+        @user.memberships.renewable.unrenewed.include? m
+      } do |subform| %>
 
-    <%= table_row_tag do %>
+    <%= table_row_tag( subform.object.errors.empty? ) do %>
       <% subform.object.renewal_confirmed_at = Time.zone.now %>
       <%= subform.hidden_field :renewal_confirmed_at %>
       <td><%= subform.label :renew_until, subform.object.position.to_s %></td>
@@ -29,8 +33,8 @@
     <% end %>
 
     <% if subform.object.errors.any? %>
-      <%= table_row_tag( false ) do %>
-        <td colspan="3"><span style="font-color: #FF0000;"><%= subform.object.errors.full_messages.join ', ' %></style></td>
+      <%= table_row_tag( true ) do %>
+        <td colspan="3"><span style="color: red;"><%= subform.object.errors.full_messages.join ', ' %></style></td>
       <% end %>
     <% end %>
 
