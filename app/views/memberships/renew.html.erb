@@ -1,4 +1,4 @@
-<%= semantic_form_for @user, :url => renew_user_memberships_path(@user) do |form| %>
+<%= form_for @user, :url => renew_user_memberships_path(@user) do |form| %>
 <table>
 <thead>
   <tr>
@@ -9,27 +9,34 @@
 </thead>
 <tbody>
   <%= form.fields_for :memberships, @user.memberships.unrenewed.uniq do |subform| %>
+
     <%= table_row_tag do %>
       <td><%= subform.label :renew_until, subform.object.position.to_s %></td>
       <td><%= subform.object.ends_at.to_formatted_s :rfc822 %></td>
       <td><%= subform.text_field :renew_until, :value => subform.object.renew_until.try( :to_formatted_s, :rfc822 ), :class => 'ui-date-picker' %></td>
     <% end %>
-    <% unless subform.object.errors.empty? do %>
-      <%= table_row_tag false do %>
+
+    <% if subform.object.errors.any? %>
+      <%= table_row_tag( false ) do %>
         <td colspan="3"><span style="font-color: #FF0000;"><%= subform.object.errors.full_messages.join ', ' %></style></td>
       <% end %>
     <% end %>
+
   <% end %>
 </tbody>
 </table>
 
-<%= form.inputs do %>
-  <%= form.input :renewal_checkpoint, :as => :radio, :label => "Notify again?",
-    :collection => { 'Yes' => form.object.renewal_checkpoint, 'No' => Time.zone.now },
-    :hint => 'Do you wish to continue receiving renewal notices about these positions?' %>
-  <% end %>
-<% end %>
+<p>
+  <%= form.label :renewal_checkpoint, 'Notify again?' %>
+  <%= form.select :renewal_checkpoint,
+        [ [ 'Yes', form.object.renewal_checkpoint.try(:to_s, :db) ],
+          [ 'No', Time.zone.now.to_s( :db )] ] %><br/>
+  Yes means you want to continue receiving notices about these renewal preferences.
+  No means you will not receive additional notices regarding these preferences.
+</p>
 
+<p>
 <%= form.submit 'Update renewals' %>
+</p>
 <% end %>
 

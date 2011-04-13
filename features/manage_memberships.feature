@@ -16,6 +16,7 @@ Feature: Manage memberships
     And I log in as user: "popular"
     And I am on the renew memberships page for user: "popular"
     When I fill in "Officer" with "1 Sep 2010"
+    And I select "Yes" from "Notify again?"
     And I press "Update renewals"
     Then I should see "Renewal preferences successfully updated."
 
