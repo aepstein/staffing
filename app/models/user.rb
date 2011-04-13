@@ -4,7 +4,7 @@ class User < ActiveRecord::Base
 
   attr_accessible :first_name, :middle_name, :last_name, :email, :mobile_phone,
     :work_phone, :home_phone, :work_address, :date_of_birth, :resume,
-    :renewal_checkpoint
+    :renewal_checkpoint, :memberships_attributes
 
   default_scope order( 'users.last_name ASC, users.first_name ASC, users.middle_name ASC' )
 

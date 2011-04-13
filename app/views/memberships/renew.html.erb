@@ -21,6 +21,8 @@
   <%= form.fields_for :memberships, @user.memberships.unrenewed.uniq do |subform| %>
 
     <%= table_row_tag do %>
+      <% subform.object.renewal_confirmed_at = Time.zone.now %>
+      <%= subform.hidden_field :renewal_confirmed_at %>
       <td><%= subform.label :renew_until, subform.object.position.to_s %></td>
       <td><%= subform.object.ends_at.to_formatted_s :rfc822 %></td>
       <td><%= subform.text_field :renew_until, :value => subform.object.renew_until.try( :to_formatted_s, :rfc822 ), :class => 'ui-date-picker' %></td>

@@ -11,15 +11,6 @@ Feature: Manage memberships
     And a position: "officer" exists with name: "Officer", schedule: schedule "annual", slots: 4
     And a user: "admin" exists with admin: true
 
-  Scenario: Register renewals of memberships
-    Given a membership exists with position: position "officer", user: user "popular", period: period "2008"
-    And I log in as user: "popular"
-    And I am on the renew memberships page for user: "popular"
-    When I fill in "Officer" with "1 Sep 2010"
-    And I select "Yes" from "Notify again?"
-    And I press "Update renewals"
-    Then I should see "Renewal preferences successfully updated."
-
   Scenario Outline: List search elements for a membership
     Given an authority exists
     And a position exists
@@ -181,4 +172,18 @@ Feature: Manage memberships
       | John Doe 1 | 1 Jun 2008 - 31 May 2009 | 1 Jun 2008 | 31 May 2009 |
       | John Doe 2 | 1 Jun 2008 - 31 May 2009 | 1 Jun 2008 | 31 May 2009 |
       | John Doe 4 | 1 Jun 2008 - 31 May 2009 | 1 Jun 2008 | 31 May 2009 |
+
+  Scenario: Register renewals of memberships
+    Given a membership exists with position: position "officer", user: user "popular", period: period "2008"
+    And I log in as user: "popular"
+    And I am on the renew memberships page for user: "popular"
+    When I fill in "Officer" with "1 Sep 2010"
+    And I select "No" from "Notify again?"
+    And I press "Update renewals"
+    Then I should see "Renewal preferences successfully updated."
+    And the "Officer" field should contain "1 Sep 2010"
+#    And the "Notify again?" field should contain "Yes"
+    And user: "popular"'s renewal_checkpoint should not be nil
+    And the membership's renew_until should not be nil
+    And the membership's renewal_confirmed_at should not be nil
 
