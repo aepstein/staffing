@@ -75,7 +75,9 @@ class Position < ActiveRecord::Base
 
   scope :with_enrollments, joins( "LEFT JOIN enrollments ON enrollments.position_id = positions.id" )
   scope :with_requests, lambda {
-    with_enrollments.joins( "INNER JOIN requests" ).where( Request::POSITIONS_JOIN_SQL )
+    with_enrollments.joins( "INNER JOIN requests INNER JOIN users" ).
+    where("requests.user_id = users.id").
+    where( Request::POSITIONS_JOIN_SQL )
   }
   scope :with_status, lambda { |status|
     where( "(positions.statuses_mask & " +

@@ -3,10 +3,13 @@ class Request < ActiveRecord::Base
   UPDATABLE_ATTRIBUTES = [ :starts_at, :ends_at, :new_position,
     :answers_attributes, :user_attributes ]
   REJECTABLE_ATTRIBUTES = [ :rejected_by_authority_id, :rejection_comment ]
+  # Criteria for identify positions staffable to this request
   POSITIONS_JOIN_SQL = "(requests.requestable_type = 'Position' AND " +
     "requests.requestable_id = positions.id) OR " +
     "(enrollments.position_id = positions.id AND " +
-    "positions.requestable_by_committee = #{connection.quote true})"
+    "positions.requestable_by_committee = #{connection.quote true}) AND " +
+    "( positions.statuses_mask = 0 OR " +
+    "( positions.statuses_mask & users.statuses_mask ) > 0 )"
 
   attr_accessible :starts_at, :ends_at, :new_position, :answers_attributes,
     :user_attributes
@@ -80,22 +83,27 @@ class Request < ActiveRecord::Base
   # Joins to enrollments to get position_ids for requests where the requestable
   # is a committee
   scope :with_enrollments, lambda {
-      joins( "LEFT JOIN enrollments ON " +
-        "requests.requestable_type = 'Committee' AND " +
-        "requests.requestable_id = enrollments.committee_id" )
+    joins( "LEFT JOIN enrollments ON " +
+      "requests.requestable_type = 'Committee' AND " +
+      "requests.requestable_id = enrollments.committee_id" )
   }
   # Joins to requestable tables
-  # * assumes a join with enrollments
+  # * assumes a join with enrollments and users
   scope :with_positions, lambda {
-      with_enrollments.joins( "INNER JOIN positions" ).
-      where( Request::POSITIONS_JOIN_SQL )
+    with_enrollments.joins( "INNER JOIN positions" ).
+    where( Request::POSITIONS_JOIN_SQL )
+  }
+  # Find requests that may be interested in a membership
+  # * must have
+  scope :interested_in, lambda { |membership|
+    with_positions.where( 'positions.id = ? AND requests.ends_at >= ?',
+      membership.position_id, membership.starts_at )
   }
   # Identifies requests an authority may staff
-  # * may be deprecated: we have finer-grained permission controls than this
+  # * TODO: Should this be deprecated?
   scope :authority_id_equals, lambda { |authority_id|
-      with_positions.where( "positions.authority_id = ?", authority_id ).
-      group( 'requests.id' ).
-      merge( Position.unscoped.with_users_status )
+    with_positions.where( "positions.authority_id = ?", authority_id ).
+    group( 'requests.id' )
   }
 
   state_machine :status, :initial => :active do
@@ -215,7 +223,7 @@ class Request < ActiveRecord::Base
 
   def user_status_must_match_position
     return unless requestable && requestable.class == Position
-    unless requestable.statuses.empty? || requestable.statuses.include?(user.status)
+    unless requestable.statuses.empty? || (requestable.statuses & user.statuses).any?
       errors.add :user, "must have a status of #{requestable.statuses.join ' or '}."
     end
   end

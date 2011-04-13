@@ -170,7 +170,7 @@ describe Request do
   it  'should have an unreject method that removes rejection status' do
     setup_rejection
     @request.reject.should be_true
-    @request.reopen.should be_true
+    @request.reactivate.should be_true
     @request.rejected?.should be_false
   end
 
@@ -182,13 +182,69 @@ describe Request do
     @request.rejection_notice_at.should_not be_nil
   end
 
-  it  'should have a reject_notice_pending scope' do
+  it 'should have a reject_notice_pending scope' do
     Request.reject_notice_pending.length.should eql 0
     setup_rejection
     @request.reject.should be_true
     Request.reject_notice_pending.length.should eql 1
     @request.send :send_reject_notice!
     Request.reject_notice_pending.length.should eql 0
+  end
+
+  it 'should have an interested_in that identifies requests staffable to and temporily interested in a membership' do
+    interested_in_scenario :position_statuses_mask => 0, :committee => false,
+      :user_statuses_mask => 0, :request_expired => false,
+      :requestable_by_committee => false, :success => true
+    interested_in_scenario :position_statuses_mask => 1, :committee => true,
+      :user_statuses_mask => 0, :request_expired => false,
+      :requestable_by_committee => true, :success => false
+    interested_in_scenario :position_statuses_mask => 1, :committee => false,
+      :user_statuses_mask => 3, :request_expired => false,
+      :requestable_by_committee => false, :success => true
+    interested_in_scenario :position_statuses_mask => 0, :committee => true,
+      :user_statuses_mask => 0, :request_expired => false,
+      :requestable_by_committee => true, :success => true
+    interested_in_scenario :position_statuses_mask => 0, :committee => true,
+      :user_statuses_mask => 0, :request_expired => false,
+      :requestable_by_committee => false, :success => false
+    interested_in_scenario :position_statuses_mask => 0, :committee => false,
+      :user_statuses_mask => 0, :request_expired => true,
+      :requestable_by_committee => false, :success => false
+  end
+
+  # Accepts attributes to allow testing for a variety of scenarios:
+  # * requestable_by_committee: Is the position requestable by committee?
+  # * position_statuses_mask: The mask of the position associated with the membership
+  # * committee: Whether request should be for committee instead of the position
+  # * user_statuses_mask: The mask of the user making the request
+  # * request_expired: Whether the request coincides with the membership temporily
+  # * success: Whether scope should return the request or not
+  def interested_in_scenario( params )
+    position = Factory(:position, :statuses_mask => params[:position_statuses_mask],
+      :requestable_by_committee => params[:requestable_by_committee] )
+    committee = Factory(:enrollment, :position => position ).committee
+    request = Factory(:request,
+      :user => Factory(:user, :statuses_mask => params[:user_statuses_mask]),
+      :requestable => ( params[:committee] ? committee : position ) )
+    position.reload
+    Factory(:period, :schedule => position.schedule)
+    membership = position.memberships.first
+    membership.position_id.should eql position.id
+    if params[:request_expired]
+      request.ends_at = membership.starts_at - 1.day
+      request.starts_at = request.ends_at - 1.year
+    else
+      request.ends_at = membership.starts_at + 1.year
+      request.starts_at = request.ends_at - 2.years
+    end
+    request.save!
+    scope = Request.interested_in( membership ).uniq
+    if params[:success]
+      scope.length.should eql 1
+      scope.should include request
+    else
+      scope.length.should eql 0
+    end
   end
 
   def setup_rejection
