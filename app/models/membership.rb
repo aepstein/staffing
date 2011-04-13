@@ -60,7 +60,7 @@ class Membership < ActiveRecord::Base
   # To be renewable a membership must have a renewable position and be in either
   # a current period or immediately preceeding a current period
   scope :renewable, lambda {
-    assigned.joins( :position, :period ).merge( Position.unscoped.renewable ).
+    assigned.unrenewed.joins( :position, :period ).merge( Position.unscoped.renewable ).
     joins( "LEFT JOIN periods AS next_periods ON " +
       "#{date_add( 'periods.ends_at', 1.day )} = next_periods.starts_at" ).
     where( "(periods.starts_at <= :today AND periods.ends_at >= :today) OR " +
@@ -84,8 +84,12 @@ class Membership < ActiveRecord::Base
   scope :join_notice_pending, lambda { notifiable.current.where(:join_notice_sent_at => nil) }
   scope :leave_notice_pending, lambda { notifiable.past.where(:leave_notice_sent_at => nil) }
   scope :notifiable, includes(:position).where( :user_id.ne => nil ).merge( Position.unscoped.notifiable )
-  scope :renewal_confirmed, lambda { renewable.where( :renewal_confirmed_at.ne => nil ) }
-  scope :renewal_unconfirmed, lambda { renewable.where( :renewal_confirmed_at => nil ) }
+  scope :renewal_confirmed, lambda {
+    renewable.where( :renewal_confirmed_at.ne => nil )
+  }
+  scope :renewal_unconfirmed, lambda {
+    renewable.where( :renewal_confirmed_at => nil )
+  }
   scope :renewed, where( :renewed_by_membership_id.ne => nil )
   scope :unrenewed, where( :renewed_by_membership_id => nil )
   scope :user_name_like, lambda { |text| joins(:user).merge( User.unscoped.name_like(text) ) }
