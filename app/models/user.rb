@@ -32,6 +32,9 @@ class User < ActiveRecord::Base
     end
   end
 
+  scope :renewable_to, lambda { |membership|
+    joins(:memberships).merge( Membership.unscoped.renewable_to( membership ) )
+  }
   scope :no_renew_notice_since, lambda { |checkpoint|
     t = arel_table
     where( t[:renew_notice_sent_at].eq( nil ).or( t[:renew_notice_sent_at].lt( checkpoint ) ) )

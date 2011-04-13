@@ -15,11 +15,7 @@ class Membership < ActiveRecord::Base
     :inverse_of => :renewed_memberships
   has_many :renewed_memberships, :class_name => 'Membership',
     :inverse_of => :renewed_by_membership,
-    :foreign_key => :renewed_by_membership_id, :dependent => :nullify do
-    def assignable
-      Membership.unrenewed.where( :renew_until.gte => proxy_owner.starts_at )
-    end
-  end
+    :foreign_key => :renewed_by_membership_id, :dependent => :nullify
   has_many :designees, :inverse_of => :membership, :dependent => :delete_all do
     def populate
       return Array.new unless proxy_owner.position
@@ -38,6 +34,17 @@ class Membership < ActiveRecord::Base
     end
   end
 
+  # Memberships that could renewed by assigning the user to this membership
+  # as well
+  scope :renewable_to, lambda { |membership|
+    assigned.unrenewed.joins("LEFT JOIN enrollments ON " +
+      "enrollments.position_id = memberships.position_id").
+    where( "memberships.position_id = ? OR " +
+      "enrollments.committee_id IN (?)",
+       membership.id, membership.position.committee_ids ).
+    where( :renew_until.gte => membership.starts_at ).
+    where( :renew_until.gte => Time.zone.today )
+  }
   scope :ordered, includes( :user, :period ).order(
     "memberships.ends_at DESC, memberships.starts_at DESC, " +
     "users.last_name ASC, users.first_name ASC, users.middle_name ASC"

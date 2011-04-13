@@ -226,6 +226,21 @@ describe Membership do
     Membership.unrenewed.should include renewed
   end
 
+  it 'should have a renewable_to scope that returns memberships that a membership may renew' do
+    past = Factory(:past_period, :schedule => @membership.position.schedule)
+    same_position = Factory(:membership, :position => @membership.position,
+      :period => past, :renew_until => Time.zone.today + 1.week )
+    @membership.update_attribute :user, nil
+    same_committee = Factory(:past_membership, :renew_until => Time.zone.today + 1.week )
+    enrollment = Factory(:enrollment, :position => @membership.position)
+    Factory(:enrollment, :position => same_committee.position, :committee => enrollment.committee)
+    different_position = Factory(:past_membership, :renew_until => Time.zone.today + 1.week)
+    scope = Membership.renewable_to @membership
+    scope.should include same_position
+    scope.should include same_committee
+    scope.uniq.length.should eql 2
+  end
+
   def notifiable_scenario(starts_at = nil, ends_at = nil)
     starts_at ||= Date.today - 1.year
     ends_at ||= starts_at + 2.years
