@@ -1,5 +1,5 @@
 class UserMailer < ActionMailer::Base
-  helper :application
+  helper :application, :user_mailer
 
   def renew_notice(user)
     @user = user

@@ -21,19 +21,21 @@ Feature: User mailer
     Then I should see "Your Action is Required to Renew Committee Memberships" in the email subject
     And I should see the email delivered from "info@example.org"
     And I should see "You are receiving this notice because you have memberships either ending soon or recently ended and your action is required to renew your membership." in the email text part body
-    And I should <interest> " * interested in renewing your membership in <description>" in the email text part body
-    And I should <disinterest> "*not* interested in renewing your membership in <description>" in the email text part body
+    And I should <interest> " * interested in renewing your membership in Focus <description>" in the email text part body
+    And I should <disinterest> "*not* interested in renewing your membership in Focus <description>" in the email text part body
+    And I should <past> "that ended on" in the email text part body
+    And I should <present> "that ends on" in the email text part body
     And I should <confirmed> "Our records also indicate you have confirmed you are:" in the email text part body
     And I should <unconfirmed> "According to our records you have the following unconfirmed renewal preferences.  You are:" in the email text part body
     And I should see "Please contact The Authority <info@example.org> if you have any questions or concerns.  Thank you for your time and your consideration." in the email text part body
     Examples:
-      | renewable | p_req | c_req | period   | renew  | confirm | description     | interest | disinterest | confirmed | unconfirmed |
-      | true      | false | false | current  | is not | has not | Focus Position  | not see  | see         | not see   | see         |
-      | true      | false | true  | current  | is not | has not | Focus Committee | not see  | see         | not see   | see         |
-      | true      | false | false | current  | is     | has not | Focus Position  | see      | not see     | not see   | see         |
-      | true      | false | false | current  | is     | has     | Focus Position  | see      | not see     | see       | not see     |
-      | true      | false | false | past     | is not | has not | Focus Position  | not see  | see         | not see   | see         |
-      | true      | false | false | long_ago | is not | has not | Focus Position  | not see  | not see     | not see   | not see     |
-      | true      | false | false | future   | is not | has not | Focus Position  | not see  | not see     | not see   | not see     |
-      | false     | false | false | current  | is not | has not | Focus Position  | not see  | not see     | not see   | not see     |
+      |renewable|p_req|c_req|period  |renew |confirm|description|interest|disinterest|past   |present|confirmed|unconfirmed|
+      |true     |false|false|current |is not|has not|Position   |not see |see        |not see|see    |not see  |see        |
+      |true     |false|true |current |is not|has not|Committee  |not see |see        |not see|see    |not see  |see        |
+      |true     |false|false|current |is    |has not|Position   |see     |not see    |not see|see    |not see  |see        |
+      |true     |false|false|current |is    |has    |Position   |see     |not see    |not see|see    |see      |not see    |
+      |true     |false|false|past    |is not|has not|Position   |not see |see        |see    |not see|not see  |see        |
+      |true     |false|false|long_ago|is not|has not|Position   |not see |not see    |not see|not see|not see  |not see    |
+      |true     |false|false|future  |is not|has not|Position   |not see |not see    |not see|not see|not see  |not see    |
+      |false    |false|false|current |is not|has not|Position   |not see |not see    |not see|not see|not see  |not see    |
 
