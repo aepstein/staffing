@@ -177,9 +177,9 @@ describe Request do
   it  'should have a send_reject_notice! method which sends a rejection notice and saves' do
     setup_rejection
     @request.reject.should be_true
-    @request.send :send_reject_notice!
+    @request.send_reject_notice!
     @request.reload
-    @request.rejection_notice_at.should_not be_nil
+    @request.reject_notice_at.should_not be_nil
   end
 
   it 'should have a reject_notice_pending scope' do
@@ -187,7 +187,7 @@ describe Request do
     setup_rejection
     @request.reject.should be_true
     Request.reject_notice_pending.length.should eql 1
-    @request.send :send_reject_notice!
+    @request.send_reject_notice!
     Request.reject_notice_pending.length.should eql 0
   end
 

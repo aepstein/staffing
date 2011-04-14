@@ -1,7 +1,10 @@
 class Membership < ActiveRecord::Base
+  include Notifiable
+  notifiable_events :join, :leave
+
   UPDATABLE_ATTRIBUTES = [ :user_name, :user_id, :period_id, :position_id,
-    :request_id, :starts_at, :ends_at, :join_notice_sent_at,
-    :leave_notice_sent_at, :designees_attributes, :designees_attributes ]
+    :request_id, :starts_at, :ends_at, :designees_attributes,
+    :designees_attributes ]
   attr_accessible :renew_until, :renewal_confirmed_at
   attr_readonly :position_id
 
@@ -81,8 +84,8 @@ class Membership < ActiveRecord::Base
     merge( Membership.unscoped.current_or_future.
       overlap( arel_table[:starts_at], arel_table[:ends_at] ).where( :user_id => user_id ) ) ) ) )
   }
-  scope :join_notice_pending, lambda { notifiable.current.where(:join_notice_sent_at => nil) }
-  scope :leave_notice_pending, lambda { notifiable.past.where(:leave_notice_sent_at => nil) }
+  scope :join_notice_pending, lambda { notifiable.current.no_join_notice }
+  scope :leave_notice_pending, lambda { notifiable.past.no_leave_notice }
   scope :notifiable, includes(:position).where( :user_id.ne => nil ).merge( Position.unscoped.notifiable )
   scope :renewal_confirmed, lambda {
     renewable.where( :renewal_confirmed_at.ne => nil )
@@ -112,7 +115,8 @@ class Membership < ActiveRecord::Base
   validate :must_be_within_period, :user_must_be_qualified,
     :concurrent_memberships_must_not_exceed_slots
 
-  after_save :claim_request!, :populate_unassigned
+  before_save :claim_request
+  after_save :populate_unassigned, :close_claimed_request
   after_destroy :populate_unassigned
 
   def self.concurrent_counts( period, position_id )
@@ -207,7 +211,7 @@ class Membership < ActiveRecord::Base
   # Identify requests who are interested in the membership
   def requests
     Request.active.overlap(starts_at, ends_at).with_positions.merge(
-    Position.with_users_status.where( :id => position_id ) )
+    Position.where( :id => position_id ) )
   end
 
   def description
@@ -217,13 +221,6 @@ class Membership < ActiveRecord::Base
   end
 
   def to_s; "#{position} (#{starts_at.to_s :rfc822} - #{ends_at.to_s :rfc822})"; end
-
-  # The notice_type should be (join|leave)
-  def send_notice!(notice_type)
-    MembershipMailer.send( "#{notice_type}_notice", self ).deliver
-    self.send "#{notice_type}_notice_sent_at=", Time.zone.now
-    save!
-  end
 
   protected
 
@@ -251,16 +248,19 @@ class Membership < ActiveRecord::Base
     end
   end
 
-  def claim_request!
-    return if self.request || user.nil?
-    request = nil
-    if position.requestable?
-      request = user.requests.where(:requestable_type => 'Position', :requestable_id => position.id ).first
-    end
-    unless request || position.committee_ids.empty?
-      request = user.requests.where(:requestable_type => 'Committee', :requestable_id.in => position.committee_ids ).first
-    end
-    request.memberships << self unless request.blank?
+  # If this fulfills an active request, assign it to that request
+  def claim_request
+    return if request || user.blank?
+    self.request = user.requests.with_status(:active).interested_in( self ).first
+    true
+  end
+
+  # If associated with a new, active request, close the request
+  def close_claimed_request
+    return unless request_id_changed? && request.active?
+    request.memberships.reset
+    request.close
+    true
   end
 
   def populate_unassigned

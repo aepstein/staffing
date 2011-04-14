@@ -1,4 +1,7 @@
 class Request < ActiveRecord::Base
+  include Notifiable
+  notifiable_events :reject, :close
+
 
   UPDATABLE_ATTRIBUTES = [ :starts_at, :ends_at, :new_position,
     :answers_attributes, :user_attributes ]
@@ -77,9 +80,7 @@ class Request < ActiveRecord::Base
   scope :unstaffed, joins( "LEFT JOIN memberships ON memberships.request_id = requests.id" ).
     where( "memberships.id IS NULL" )
   scope :active, lambda { unexpired.unrejected }
-  scope :reject_notice_pending, lambda {
-    rejected.where( :rejection_notice_at => nil )
-  }
+  scope :reject_notice_pending, lambda { rejected.no_reject_notice }
   # Joins to enrollments to get position_ids for requests where the requestable
   # is a committee
   scope :with_enrollments, lambda {
@@ -118,6 +119,10 @@ class Request < ActiveRecord::Base
 
     before_transition all - :rejected => :rejected do |request, transition|
       request.rejected_at = Time.zone.now
+    end
+
+    before_transition all - :closed => :closed do |request, transition|
+      request.closed_at = Time.zone.now
     end
 
     event :reject do
@@ -199,12 +204,6 @@ class Request < ActiveRecord::Base
   end
 
   def to_s; requestable.to_s; end
-
-  def send_reject_notice!
-    RequestMailer.reject_notice( self ).deliver
-    self.rejection_notice_at = Time.zone.now
-    save!
-  end
 
   protected
 

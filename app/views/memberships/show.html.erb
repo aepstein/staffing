@@ -18,16 +18,16 @@
   <b>Ends at:</b> <%=h @membership.ends_at.to_s(:rfc822) %>
 </p>
 
-<% if @membership.join_notice_sent_at? %>
+<% if @membership.join_notice_at? %>
 <p>
-  <b>Join notice sent at:</b> <%=h @membership.join_notice_sent_at.to_formatted_s( :long_ordinal ) %>
+  <b>Join notice at:</b> <%=h @membership.join_notice_at.to_formatted_s( :long_ordinal ) %>
 </p>
 
 <% end %>
 
-<% if @membership.leave_notice_sent_at? %>
+<% if @membership.leave_notice_at? %>
 <p>
-  <b>Leave notice sent at:</b> <%=h @membership.leave_notice_sent_at.to_formatted_s( :long_ordinal ) %>
+  <b>Leave notice at:</b> <%=h @membership.leave_notice_at.to_formatted_s( :long_ordinal ) %>
 </p>
 
 <% end %>

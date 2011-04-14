@@ -16,7 +16,7 @@
 </p>
 
 <p>
-  <b>Rejection notice sent at:</b> <%=h @request.rejection_notice_at? ? @request.rejection_notice_at.to_formatted_s( :us_ordinal ) : "None sent."%>
+  <b>Reject notice at:</b> <%=h @request.reject_notice_at? ? @request.reject_notice_at.to_s( :us_ordinal ) : "None sent." %>
 </p>
 
 <p>

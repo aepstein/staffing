@@ -125,13 +125,19 @@ describe User do
   end
 
   it 'should have no_renew_notice_since scope' do
-    old = Factory(:user, :renew_notice_sent_at => ( Time.zone.now - 1.week ) )
-    recent = Factory(:user, :renew_notice_sent_at => Time.zone.now )
-    @user.renew_notice_sent_at.should be_nil
+    old = Factory(:user, :renew_notice_at => ( Time.zone.now - 1.week ) )
+    recent = Factory(:user, :renew_notice_at => Time.zone.now )
+    @user.renew_notice_at.should be_nil
     scope = User.no_renew_notice_since( Time.zone.now - 1.day )
     scope.count.should eql 2
     scope.should include @user
     scope.should include old
+  end
+
+  it 'should have a send_renew_notice! method' do
+    @user.renew_notice_at.should be_nil
+    @user.send_renew_notice!
+    @user.renew_notice_at.should_not be_nil
   end
 
   def setup_authority_id_scenario

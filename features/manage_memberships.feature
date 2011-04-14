@@ -137,11 +137,11 @@ Feature: Manage memberships
     And I should not see "Designee for Important Committee"
 
   Scenario:  Show join and leave notice sending information
-    Given a membership exists with join_notice_sent_at: "2010-01-01 06:00:00", leave_notice_sent_at: "2010-01-01 07:00:00"
+    Given a membership exists with join_notice_at: "2010-01-01 06:00:00", leave_notice_at: "2010-01-01 07:00:00"
     And I log in as user: "admin"
     And I am on the page for the membership
-    Then I should see "Join notice sent at: January 1st, 2010 06:00"
-    And I should see "Leave notice sent at: January 1st, 2010 07:00"
+    Then I should see "Join notice at: January 1st, 2010 06:00"
+    And I should see "Leave notice at: January 1st, 2010 07:00"
 
   Scenario: Register a new membership given a request
     Given a period: "2009" exists with schedule: schedule "annual", starts_at: "2009-06-01", ends_at: "2010-05-31"

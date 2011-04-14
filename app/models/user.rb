@@ -1,4 +1,7 @@
 class User < ActiveRecord::Base
+  include Notifiable
+  notifiable_events :renew
+
   STATUSES = %w( staff faculty undergrad grad alumni temporary )
   ADMIN_UPDATABLE = [ :net_id, :admin, :status ]
 
@@ -37,7 +40,7 @@ class User < ActiveRecord::Base
   }
   scope :no_renew_notice_since, lambda { |checkpoint|
     t = arel_table
-    where( t[:renew_notice_sent_at].eq( nil ).or( t[:renew_notice_sent_at].lt( checkpoint ) ) )
+    where( t[:renew_notice_at].eq( nil ).or( t[:renew_notice_at].lt( checkpoint ) ) )
   }
   scope :renewal_unconfirmed, lambda {
     joins( :memberships ).merge( Membership.unscoped.joins( :period ).renewal_unconfirmed )
@@ -176,13 +179,6 @@ class User < ActiveRecord::Base
 
   def statuses
     User::STATUSES.reject { |status| ((statuses_mask || 0) & 2**User::STATUSES.index(status)).zero? }
-  end
-
-  # The notice_type should be (renew)
-  def send_notice!(notice_type)
-    UserMailer.send( "#{notice_type}_notice", self ).deliver
-    self.send "#{notice_type}_notice_sent_at=", Time.zone.now
-    save!
   end
 
   protected

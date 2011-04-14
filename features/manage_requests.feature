@@ -146,7 +146,7 @@ Feature: Manage requests
     And I should see "Rejected by authority: Primary"
     And I should see "Rejected by user: Mister Administrator"
     And I should see "You are not qualified for the position."
-    And I should see "Rejection notice sent at: None sent."
+    And I should see "Reject notice at: None sent."
     Given I put on the reactivate page for the request
     Then I should see "Request was successfully reactivated."
     And I should not see "Rejected at"

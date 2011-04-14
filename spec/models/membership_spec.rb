@@ -163,12 +163,22 @@ describe Membership do
   end
 
   it 'should claim a request for the user and position if the position is requestable' do
-    p_r = Factory(:request, :requestable => Factory(:position, :requestable => true) )
-    c_r = Factory(:request, :requestable => Factory(:committee, :requestable => true) )
-    Factory(:enrollment, :position => p_r.requestable, :committee => c_r.requestable )
-    c_r_p = Factory(:enrollment, :position => Factory(:position, :requestable => false), :committee => c_r.requestable ).position
-    Factory(:membership, :position => p_r.requestable, :user => p_r.user).request.should eql p_r
-    Factory(:membership, :position => c_r_p, :user => c_r.user ).request.should eql c_r
+    nr_position = Factory(:position, :requestable => false, :requestable_by_committee => true)
+    r_position = Factory(:position, :requestable => true)
+    r_c_position = Factory(:position, :requestable_by_committee => true)
+    r_committee = Factory(:committee, :requestable => true)
+    Factory(:enrollment, :position => r_c_position, :committee => r_committee )
+    Factory(:enrollment, :position => nr_position, :committee => r_committee )
+    p_request = Factory(:request, :requestable => r_position)
+    c_request = Factory(:request, :requestable => r_c_position)
+    m = Factory(:membership, :position => r_position, :user => p_request.user)
+    m.request.should eql p_request
+    m.request.closed?.should be_true
+    m = Factory(:membership, :position => r_c_position, :user => c_request.user)
+    m.request.should eql c_request
+    m.request.closed?.should be_true
+    m = Factory(:membership, :position => nr_position, :user => c_request.user)
+    m.request.should be_nil
   end
 
   it 'should have a notifiable scope that returns only memberships with users and notifiable position' do
@@ -182,7 +192,7 @@ describe Membership do
     notifiable_scenario
     Membership.join_notice_pending.length.should eql 1
     Membership.join_notice_pending.should include @focus_membership
-    @focus_membership.join_notice_sent_at = Time.zone.now
+    @focus_membership.join_notice_at = Time.zone.now
     @focus_membership.save!
     Membership.join_notice_pending.length.should eql 0
   end
@@ -191,21 +201,21 @@ describe Membership do
     notifiable_scenario Date.today - 1.year, Date.today - 1.day
     Membership.leave_notice_pending.length.should eql 1
     Membership.leave_notice_pending.should include @focus_membership
-    @focus_membership.leave_notice_sent_at = Time.zone.now
+    @focus_membership.leave_notice_at = Time.zone.now
     @focus_membership.save!
     Membership.leave_notice_pending.length.should eql 0
   end
 
-  it 'should have a send_notice! method that works for join' do
-    @membership.send( :send_notice!, :join )
+  it 'should have a send_join_notice! method' do
+    @membership.send_join_notice!
     @membership.reload
-    @membership.join_notice_sent_at.should_not be_nil
+    @membership.join_notice_at.should_not be_nil
   end
 
-  it 'should have a send_notice! method that works for leave' do
-    @membership.send( :send_notice!, :leave )
+  it 'should have a send_leave_notice! method' do
+    @membership.send_leave_notice!
     @membership.reload
-    @membership.leave_notice_sent_at.should_not be_nil
+    @membership.leave_notice_at.should_not be_nil
   end
 
   it 'should not save with an invalid renew_until value' do

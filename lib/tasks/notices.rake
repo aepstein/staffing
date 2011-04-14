@@ -5,7 +5,7 @@ namespace :notices do
   desc "Send notices for all memberships that have ended"
   task :leave => [ :environment ] do
     Membership.leave_notice_pending.readonly(false).each do |membership|
-      membership.send_notice! :leave
+      membership.send_leave_notice!
       notices_log "Sent leave notice for membership #{membership.id}."
     end
   end
@@ -13,7 +13,7 @@ namespace :notices do
   desc "Send notices for all memberships that have begun"
   task :join => [ :environment ] do
     Membership.join_notice_pending.readonly(false).each do |membership|
-      membership.send_notice! :join
+      membership.send_join_notice!
       notices_log "Sent join notice for membership #{membership.id}."
     end
   end
