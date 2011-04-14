@@ -10,6 +10,15 @@ class RequestMailer < ActionMailer::Base
     )
   end
 
+  def close_notice( request )
+    @request = request
+    mail(
+      :to => "#{request.user.name} <#{request.user.email}>",
+      :from => "#{Staffing::Application.app_config['defaults']['authority']['contact_name']} <#{Staffing::Application.app_config['defaults']['authority']['contact_email']}>",
+      :subject => "Your request for appointment to #{request.requestable} was approved"
+    )
+  end
+
 
 end
 
