@@ -66,7 +66,6 @@ class Request < ActiveRecord::Base
       end
     end
   end
-  has_many :enrollments, :through => :memberships
 
   default_scope includes( :user ).
     order('users.last_name ASC, users.first_name ASC, users.middle_name ASC, position ASC')
@@ -192,6 +191,11 @@ class Request < ActiveRecord::Base
   def authority_ids; authorities.map(&:id); end
 
   attr_accessor :new_position
+
+  def enrollments
+    Enrollment.joins(:memberships).
+      merge(Membership.unscoped.where(:request_id => id) )
+  end
 
   def new_position_options
     user.requests.inject( new_record? ? { 'Last Position' => '' } : {} ) do |memo, request|

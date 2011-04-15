@@ -1,0 +1,35 @@
+<p>
+Dear <%= @request.user.first_name %>,
+</p>
+
+<p>
+This notice is to inform you that your request for appointment to <%= @request.requestable %> has been approved.
+</p>
+
+<% if @request.memberships.any? %>
+<p>
+You have been appointed to the following <%=
+  [ @request.memberships.count, @request.enrollments.count ].max > 1 ? 'positions' : 'position' %>:
+</p>
+
+<ul>
+<%= render :partial => 'membership', :collection => @request.memberships %>
+</ul>
+<% else %>
+<p>
+You have not been appointed to any positions as a result of this request.  This is most likely for reasons communicated to you or by you separately from this notice.
+</p>
+<% end %>
+
+<p>
+If you have additional questions or concerns regarding this notice or your appointment, please contact <%= Staffing::Application.app_config['defaults']['authority']['contact_name'] %> &lt;<%= Staffing::Application.app_config['defaults']['authority']['contact_email'] %>&gt;.
+</p>
+
+<p>
+Best regards,
+</p>
+
+<p>
+<%= Staffing::Application.app_config['defaults']['authority']['contact_name'] %>
+</p>
+
