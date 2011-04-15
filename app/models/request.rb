@@ -66,6 +66,7 @@ class Request < ActiveRecord::Base
       end
     end
   end
+  has_many :enrollments, :through => :memberships
 
   default_scope includes( :user ).
     order('users.last_name ASC, users.first_name ASC, users.middle_name ASC, position ASC')

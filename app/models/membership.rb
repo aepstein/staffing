@@ -16,6 +16,8 @@ class Membership < ActiveRecord::Base
   belongs_to :request, :inverse_of => :memberships
   belongs_to :renewed_by_membership, :class_name => 'Membership',
     :inverse_of => :renewed_memberships
+  has_many :enrollments, :primary_key => :position_id,
+    :foreign_key => :position_id
   has_many :renewed_memberships, :class_name => 'Membership',
     :inverse_of => :renewed_by_membership,
     :foreign_key => :renewed_by_membership_id, :dependent => :nullify
