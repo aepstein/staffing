@@ -15,7 +15,7 @@ module Notifiable
         define_method "send_#{event}_notice!".to_sym do
           "#{self.class}Mailer".constantize.send( "#{event}_notice", self ).deliver
           send "#{event}_notice_at=", Time.zone.now
-          save!
+          save! :validate => false
         end
       end
     end
