@@ -18,7 +18,6 @@ Feature: Manage membership renewals
   Scenario: Invalid entries
     When I fill in "Renewable" with 1 week after today
     And I press "Update renewals"
-    Then show me the page
     Then I should not see "Renewal preferences successfully updated."
     And I should see "Renew until must be after" within "table"
 
