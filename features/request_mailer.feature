@@ -45,7 +45,7 @@ Feature: Request mailer
     And I should see the email delivered from "The Authority <info@example.org>"
     And I should see "Dear Johnny," in the email text part body
     And I should see "This notice is to inform you that your request for appointment to Cool <request> has been approved." in the email text part body
-    And I should see "If you have additional questions or concerns regarding this notice or your appointment, please contact The Authority <info@example.org>." in the email text part body
+    And I should see "Your request is now considered closed.  No further appointments will be made in response to your request unless you explicitly reopen it by updating it online.  If you have additional questions or concerns regarding this notice or your appointment, please contact The Authority <info@example.org>." in the email text part body
     And I should <membership> "You have been appointed to the following position:" in the email text part body
     And I should <enrollment> "You have been appointed to the following positions:" in the email text part body
     And I should <membership> "* Cool position for a term beginning" in the email text part body

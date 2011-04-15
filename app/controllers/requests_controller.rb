@@ -110,6 +110,7 @@ class RequestsController < ApplicationController
     @request.accessible = Request::UPDATABLE_ATTRIBUTES
     respond_to do |format|
       if @request.update_attributes(params[:request])
+        @request.reactivate! unless @request.active?
         flash[:notice] = 'Request was successfully updated.'
         format.html { redirect_to @request }
         format.xml  { head :ok }
