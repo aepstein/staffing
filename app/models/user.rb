@@ -37,12 +37,12 @@ class User < ActiveRecord::Base
   end
 
   scope :interested_in, lambda { |membership|
-    joins(:requests).merge(
+    select('DISTINCT users.*').joins(:requests).merge(
       Request.unscoped.active.interested_in( membership )
     )
   }
   scope :renewable_to, lambda { |membership|
-    joins(:memberships).merge( Membership.unscoped.renewable_to( membership ) )
+    select('DISTINCT users.*').joins(:memberships).merge( Membership.unscoped.renewable_to( membership ) )
   }
   scope :no_renew_notice_since, lambda { |checkpoint|
     t = arel_table

@@ -24,7 +24,7 @@ class Authority < ActiveRecord::Base
 
   def requests
     return Request.where( :id => nil ) if new_record?
-    Request.authority_id_equals( id )
+    Request.joins(:user).authority_id_equals( id )
   end
 
   def effective_contact_name

@@ -238,7 +238,7 @@ describe Request do
       request.starts_at = request.ends_at - 2.years
     end
     request.save!
-    scope = Request.interested_in( membership ).uniq
+    scope = Request.joins(:user).interested_in( membership ).uniq
     if params[:success]
       scope.length.should eql 1
       scope.should include request
