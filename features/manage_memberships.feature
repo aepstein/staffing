@@ -8,7 +8,7 @@ Feature: Manage memberships
     And a user: "unpopular" exists with first_name: "Mister", last_name: "Cellophane", net_id: "cell@example.org"
     And a schedule: "annual" exists with name: "Annual"
     And a period: "2008" exists with schedule: schedule "annual", starts_at: "2008-06-01", ends_at: "2009-05-31"
-    And a position: "officer" exists with name: "Officer", schedule: schedule "annual", slots: 4
+    And a position: "officer" exists with name: "Officer", schedule: schedule "annual", slots: 4, designable: true
     And a user: "admin" exists with admin: true
 
   Scenario Outline: List search elements for a membership

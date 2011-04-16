@@ -21,6 +21,7 @@ class User < ActiveRecord::Base
       Membership.authorized_user_id_equals proxy_owner.id
     end
   end
+  has_many :designees, :inverse_of => :user
   has_many :requests, :inverse_of => :user
   has_many :sponsorships, :inverse_of => :user
   has_many :motions, :through => :sponsorships

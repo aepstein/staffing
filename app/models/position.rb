@@ -1,7 +1,7 @@
 class Position < ActiveRecord::Base
   attr_accessible :authority_id, :quiz_id, :schedule_id, :slots, :name,
     :join_message, :leave_message, :statuses, :requestable, :renewable,
-    :notifiable, :requestable_by_committee, :reject_message
+    :notifiable, :designable, :requestable_by_committee, :reject_message
 
   default_scope order( 'positions.name ASC' )
 
@@ -94,6 +94,7 @@ class Position < ActiveRecord::Base
   scope :renewable, where( :renewable => true )
   scope :unrenewable, where( :renewable => false )
   scope :requestable_by_committee, where( :requestable_by_committee => true )
+  scope :designable, where( :designable => true )
 
   validates_presence_of :name
   validates_uniqueness_of :name

@@ -3,19 +3,19 @@ class Designee < ActiveRecord::Base
   attr_readonly :committee_id
 
   belongs_to :membership, :inverse_of => :designees
-  belongs_to :user
+  belongs_to :user, :inverse_of => :designees
   belongs_to :committee, :inverse_of => :designees
 
-  validates_presence_of :membership
-  validates_presence_of :user
-  validates_presence_of :committee
+  validates :membership, :presence => true
+  validates :user, :presence => true
+  validates :committee, :presence => true
   validates_uniqueness_of :committee_id, :scope => [ :membership_id ]
-  validate :membership_must_have_position_in_committee
+  validate :membership_must_have_designable_position_in_committee
 
-  def membership_must_have_position_in_committee
+  def membership_must_have_designable_position_in_committee
     return unless committee && membership
-    unless committee.position_ids.include? membership.position_id
-      errors.add :committee, "has no positions corresponding to this membership."
+    unless membership.position.designable? && committee.positions.include?( membership.position )
+      errors.add :committee, "has no designable positions corresponding to this membership"
     end
   end
 

@@ -116,6 +116,7 @@ describe Membership do
   end
 
   it 'should have a designees.populate method that creates a designee for each committee corresponding position is enrolled in' do
+    @membership.position.update_attribute :designable, true
     enrollment_existing_designee = Factory(:enrollment, :position => @membership.position)
     enrollment_no_designee = Factory(:enrollment, :position => @membership.position)
     irrelevant_enrollment = Factory(:enrollment)

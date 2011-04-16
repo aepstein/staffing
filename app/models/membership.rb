@@ -23,7 +23,7 @@ class Membership < ActiveRecord::Base
     :foreign_key => :renewed_by_membership_id, :dependent => :nullify
   has_many :designees, :inverse_of => :membership, :dependent => :delete_all do
     def populate
-      return Array.new unless proxy_owner.position
+      return Array.new unless proxy_owner.position && proxy_owner.position.designable?
       proxy_owner.position.committees.inject([]) do |memo, committee|
         unless committee_ids.include? committee.id
           designee = build

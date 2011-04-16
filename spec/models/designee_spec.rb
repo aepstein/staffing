@@ -24,6 +24,11 @@ describe Membership do
     @designee.save.should be_false
   end
 
+  it 'should not save for a non-designable position' do
+    @designee.membership.position.update_attribute( :designable, false )
+    @designee.save.should be_false
+  end
+
   it 'should not save with a duplicate for any membership and committee combination' do
     @duplicate = Factory.build(:designee, :membership => @designee.membership, :committee => @designee.committee)
     @duplicate.save.should be_false

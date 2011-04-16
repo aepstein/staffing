@@ -18,7 +18,11 @@ end
 
 Factory.define :designee do |f|
   f.association :committee
-  f.membership { |d| d.association :membership, :position => d.association(:enrollment, :committee => d.committee ).position }
+  f.membership { |d|
+    d.association :membership, :position => d.association( :enrollment,
+    :position => d.association( :position, :designable => true ),
+    :committee => d.committee ).position
+  }
   f.association :user
 end
 
