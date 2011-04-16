@@ -39,17 +39,25 @@ class Membership < ActiveRecord::Base
     end
   end
 
-  # Memberships that could renewed by assigning the user to this membership
-  # as well
+  # Memberships that could renewed by assigning the user to this membership:
+  # * assigned
+  # * not already renewed
+  # * of the same position or committee
+  # * not overlapping this membership
+  # * interested in renewal to some date after membership starts
+  # * interested in renewal into the present
+  # * allow the same status as this membership position
   scope :renewable_to, lambda { |membership|
-    assigned.unrenewed.joins("LEFT JOIN enrollments ON " +
+    assigned.unrenewed.joins(:position).joins("LEFT JOIN enrollments ON " +
       "enrollments.position_id = memberships.position_id").
     where( "memberships.position_id = ? OR " +
       "enrollments.committee_id IN (?)",
        membership.id, membership.position.committee_ids ).
     no_overlap( membership.starts_at, membership.ends_at ).
     where( :renew_until.gte => membership.starts_at ).
-    where( :renew_until.gte => Time.zone.today )
+    where( :renew_until.gte => Time.zone.today ).
+    where( 'positions.statuses_mask = 0 OR ' +
+      "positions.statuses_mask & #{membership.position.statuses_mask} > 0" )
   }
   scope :ordered, includes( :user, :period ).order(
     "memberships.ends_at DESC, memberships.starts_at DESC, " +

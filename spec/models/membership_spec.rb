@@ -239,6 +239,7 @@ describe Membership do
   end
 
   it 'should have a renewable_to scope that returns memberships that a membership may renew' do
+    # TODO test that status_masks are enforced
     past = Factory(:past_period, :schedule => @membership.position.schedule)
     same_position = Factory(:membership, :position => @membership.position,
       :period => past, :renew_until => Time.zone.today + 1.week )
