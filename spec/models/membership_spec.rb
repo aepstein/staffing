@@ -129,9 +129,10 @@ describe Membership do
     new_designees.first.committee.should eql enrollment_no_designee.committee
   end
 
-  it 'should have a renewable scope that fetches only if the associated position is renewable and the period is current or immediately before current' do
-    position = Factory(:position, :slots => 1, :renewable => true)
+  it 'should have a renewable scope that fetches only if the associated position is renewable, end date is same as period end date, and the period is current or immediately before current' do
+    position = Factory(:position, :slots => 2, :renewable => true)
     current = Factory(:membership, :position => position)
+    current_truncated = Factory(:membership, :position => position, :period => current.period, :ends_at => current.period.ends_at - 1.day)
     current_period = current.period
     prior_period = Factory(:period, :schedule => current.period.schedule,
       :starts_at => ( current_period.starts_at - 1.year ),

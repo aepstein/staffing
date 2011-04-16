@@ -62,12 +62,17 @@ class Membership < ActiveRecord::Base
   scope :future, lambda { where( :starts_at.gt => Time.zone.today ) }
   scope :past, lambda { where( :ends_at.lt => Time.zone.today ) }
   scope :current_or_future, lambda { where( :ends_at.gte => Time.zone.today ) }
-  # To be renewable a membership must have a renewable position and be in either
-  # a current period or immediately preceeding a current period
+  # To be renewable a membership must:
+  # * have a renewable position
+  # * be in either
+  # ** a current period
+  # ** immediately preceeding a current period
+  # * end with the period in which they occur
   scope :renewable, lambda {
     assigned.unrenewed.joins( :position, :period ).merge( Position.unscoped.renewable ).
     joins( "LEFT JOIN periods AS next_periods ON " +
       "#{date_add( 'periods.ends_at', 1.day )} = next_periods.starts_at" ).
+    where( "memberships.ends_at = periods.ends_at" ).
     where( "(periods.starts_at <= :today AND periods.ends_at >= :today) OR " +
       "(next_periods.starts_at <= :today AND next_periods.ends_at >= :today)",
       :today => Time.zone.today )
