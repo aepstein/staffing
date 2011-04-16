@@ -47,6 +47,7 @@ class Membership < ActiveRecord::Base
     where( "memberships.position_id = ? OR " +
       "enrollments.committee_id IN (?)",
        membership.id, membership.position.committee_ids ).
+    no_overlap( membership.starts_at, membership.ends_at ).
     where( :renew_until.gte => membership.starts_at ).
     where( :renew_until.gte => Time.zone.today )
   }
@@ -80,6 +81,10 @@ class Membership < ActiveRecord::Base
   # Unrenewable memberships are associated with unrenewable positions
   scope :unrenewable, lambda { joins(:position).merge( Position.unscoped.unrenewable ) }
   scope :overlap, lambda { |starts, ends| where( :starts_at.lte => ends, :ends_at.gte => starts) }
+  scope :no_overlap, lambda { |starts, ends|
+    t = arel_table
+    where( t[:starts_at].gt( ends ).or( t[:ends_at].lt(starts) ) )
+  }
   scope :pending_renewal_within, lambda { |starts, ends|
     renewable.unrenewed.where( :starts_at.gte => starts, :ends_at.lte => ends)
   }
