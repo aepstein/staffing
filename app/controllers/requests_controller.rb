@@ -176,13 +176,13 @@ class RequestsController < ApplicationController
   def initialize_index
     return if @requests
     if @requestable
-      @requests = @requestable.requests.with_permissions_to( :show )
+      @requests = @requestable.requests.ordered.with_permissions_to( :show )
       @title = "for #{@requestable}"
     elsif @authority
-      @requests = @authority.requests.with_permissions_to( :show )
+      @requests = @authority.requests.ordered.with_permissions_to( :show )
       @title = "for #{@authority}"
     else
-      @requests = @user.requests.with_permissions_to( :show )
+      @requests = @user.requests.ordered.with_permissions_to( :show )
       @title = "for #{@user}"
     end
   end

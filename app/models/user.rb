@@ -36,6 +36,11 @@ class User < ActiveRecord::Base
     end
   end
 
+  scope :interested_in, lambda { |membership|
+    joins(:requests).merge(
+      Request.unscoped.active.interested_in( membership )
+    )
+  }
   scope :renewable_to, lambda { |membership|
     joins(:memberships).merge( Membership.unscoped.renewable_to( membership ) )
   }

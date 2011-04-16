@@ -123,7 +123,8 @@ Feature: Manage memberships
     And I should not see "Leave notice sent at"
     And I should see "Designee for Important Committee: Mister Cellophane"
     When I follow "Edit"
-    When I fill in "User" with "Mister Cellophane (cell@example.org)"
+    Then show me the page
+    And I fill in "User" with "Mister Cellophane (cell@example.org)"
     And I select "1 Jun 2009 - 31 May 2010" from "Period"
     And I fill in "Starts at" with "2009-06-01"
     And I fill in "Ends at" with "2010-01-15"
@@ -148,6 +149,7 @@ Feature: Manage memberships
     And a request: "application" exists with user: user "popular", requestable: position "officer", starts_at: "2009-06-01", ends_at: "2010-05-31"
     And I log in as user: "admin"
     And I am on the new membership page for request: "application"
+    Then show me the page
     And I press "Create"
     Then I should see "Membership was successfully created."
     And I should see "User: Mister Popularity"

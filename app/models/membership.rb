@@ -252,8 +252,8 @@ class Membership < ActiveRecord::Base
 
   # If this fulfills an active request, assign it to that request
   def claim_request
-    return if request || user.blank?
-    self.request = user.requests.with_status(:active).interested_in( self ).first
+    return true if request || user.blank?
+    self.request = user.requests.joins(:user).active.interested_in( self ).first
     true
   end
 

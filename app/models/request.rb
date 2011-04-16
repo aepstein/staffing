@@ -67,7 +67,7 @@ class Request < ActiveRecord::Base
     end
   end
 
-  default_scope includes( :user ).
+  scope :ordered, includes( :user ).
     order('users.last_name ASC, users.first_name ASC, users.middle_name ASC, position ASC')
   scope :unexpired, lambda { where( :ends_at.gt => Time.zone.today ) }
   scope :expired, lambda { where( :ends_at.lte => Time.zone.today ) }
@@ -89,7 +89,7 @@ class Request < ActiveRecord::Base
       "requests.requestable_id = enrollments.committee_id" )
   }
   # Joins to requestable tables
-  # * assumes a join with enrollments and users
+  # * assumes a join with users
   scope :with_positions, lambda {
     with_enrollments.joins( "INNER JOIN positions" ).
     where( Request::POSITIONS_JOIN_SQL )
