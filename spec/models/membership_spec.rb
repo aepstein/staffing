@@ -239,14 +239,19 @@ describe Membership do
   end
 
   it 'should have a renewable_to scope that returns memberships that a membership may renew' do
-    # TODO test that status_masks are enforced
     past = Factory(:past_period, :schedule => @membership.position.schedule)
     same_position = Factory(:membership, :position => @membership.position,
       :period => past, :renew_until => Time.zone.today + 1.week )
+    same_position.user.update_attribute :statuses_mask, 1
     @membership.update_attribute :user, nil
+    @membership.position.update_attribute :statuses_mask, 1
     same_committee = Factory(:past_membership, :renew_until => Time.zone.today + 1.week )
+    same_committee.user.update_attribute :statuses_mask, 1
+    different_mask = Factory(:past_membership, :renew_until => Time.zone.today + 1.week )
+    different_mask.user.update_attribute :statuses_mask, 2
     enrollment = Factory(:enrollment, :position => @membership.position)
     Factory(:enrollment, :position => same_committee.position, :committee => enrollment.committee)
+    Factory(:enrollment, :position => different_mask.position, :committee => enrollment.committee)
     different_position = Factory(:past_membership, :renew_until => Time.zone.today + 1.week)
     scope = Membership.renewable_to @membership
     scope.should include same_position
