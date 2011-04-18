@@ -204,20 +204,15 @@ class Membership < ActiveRecord::Base
   end
 
   def request_id=(new_id)
-    self.request = Request.find(new_id) if new_id && ( request.nil? || request.id != new_id.to_i )
-    write_attribute(:request_id, new_id)
+    write_attribute :request_id, new_id
+    populate_from_request
+    new_id
   end
 
   def request_with_population=(new_request)
-    return if new_request.nil?
-    self.position = new_request.requestable if new_request.requestable.class == Position
-    self.period ||= position.periods.overlaps(new_request.starts_at, new_request.ends_at).last if position
-    if !period.blank? && user.blank?
-      self.starts_at ||= ( period.starts_at > new_request.starts_at ? period.starts_at : new_request.starts_at )
-      self.ends_at ||= ( period.ends_at < new_request.ends_at ? period.ends_at : new_request.ends_at )
-    end
-    self.user = new_request.user
     self.request_without_population = new_request
+    populate_from_request
+    new_request
   end
 
   alias_method_chain :request=, :population
@@ -244,6 +239,17 @@ class Membership < ActiveRecord::Base
   def to_s; "#{position} (#{starts_at.to_s :rfc822} - #{ends_at.to_s :rfc822})"; end
 
   protected
+
+  def populate_from_request
+    return true if request.blank?
+    self.position = request.requestable if request.requestable.class == Position
+    self.period ||= position.periods.overlaps(request.starts_at, request.ends_at).last if position
+    if !period.blank? && user.blank?
+      self.starts_at ||= ( period.starts_at > request.starts_at ? period.starts_at : request.starts_at )
+      self.ends_at ||= ( period.ends_at < request.ends_at ? period.ends_at : request.ends_at )
+    end
+    self.user = request.user
+  end
 
   def user_must_be_qualified
     return unless user && position
@@ -278,7 +284,7 @@ class Membership < ActiveRecord::Base
 
   # If associated with a new, active request, close the request
   def close_claimed_request
-    return unless request_id_changed? && request.active?
+    return true unless request_id_changed? && self.request && request.active?
     request.memberships.reset
     request.close
     true
