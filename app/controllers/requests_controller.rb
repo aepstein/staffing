@@ -227,7 +227,7 @@ class RequestsController < ApplicationController
   end
 
   def index_csv
-    out = CSV::Writer.generate do |csv|
+    out = CSV.generate do |csv|
       csv << %w( net_id, first, last, status, requestable, until )
       @requests.each do |request|
         csv << [ request.user.net_id, request.user.first_name,
