@@ -16,9 +16,12 @@ class RequestsController < ApplicationController
   # GET /user/:user_id/requests
   # GET /user/:user_id/requests.xml
   def index
-    @requests = @requests.paginate( :page => params[:page] )
+    unless params[:format] == 'csv'
+      @requests = @requests.paginate( :page => params[:page] )
+    end
 
     respond_to do |format|
+      format.csv { index_csv }
       format.html { render :action => 'index' } # index.html.erb
       format.xml  { render :xml => @requests }
     end
@@ -221,6 +224,18 @@ class RequestsController < ApplicationController
     @request.user ||= ( @membership ? @membership.user : @user )
     @request.accessible = Request::UPDATABLE_ATTRIBUTES
     @request.attributes = params[:request]
+  end
+
+  def index_csv
+    out = CSV::Writer.generate do |csv|
+      csv << %w( net_id, first, last, status, requestable, until )
+      @requests.each do |request|
+        csv << [ request.user.net_id, request.user.first_name,
+          request.user.last_name, request.user.status,
+          request.requestable, request.ends_at ]
+      end
+    end
+    send_data out, :disposition => "attachment; filename=requests.csv"
   end
 
 end
