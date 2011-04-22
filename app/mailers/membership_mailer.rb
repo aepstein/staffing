@@ -4,7 +4,8 @@ class MembershipMailer < ActionMailer::Base
   def join_notice(membership)
     @membership = membership
     mail(
-      :to => "#{membership.user.name} <#{membership.user.email}>",
+      :to => membership.user.to_email,
+      :cc => membership.watchers.map(&:to_email),
       :from => "#{membership.position.authority.effective_contact_name} <#{membership.position.authority.effective_contact_email}>",
       :subject => "Your appointment to #{membership.description}"
     )
@@ -13,7 +14,8 @@ class MembershipMailer < ActionMailer::Base
   def leave_notice(membership)
     @membership = membership
     mail(
-      :to => "#{membership.user.name} <#{membership.user.email}>",
+      :to => membership.user.to_email,
+      :cc => membership.watchers.map(&:to_email),
       :from => "#{membership.position.authority.effective_contact_name} <#{membership.position.authority.effective_contact_email}>",
       :subject => "Expiration of your appointment to #{membership.description}"
     )

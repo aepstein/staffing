@@ -232,9 +232,12 @@ class Membership < ActiveRecord::Base
 
   # Identify users who should be copied on notices related to this membership
   def watchers
+    return User.unscoped.where(:id => nil) if new_record?
     User.with_enrollments.
-    merge( Membership.overlap( starts_at, ends_at ) ).
-    merge( Enrollment.membership_notices )
+    where( :id.ne => id ).
+    where( 'enrollments.membership_notices = ?', true ).
+    merge( Membership.unscoped.overlap( starts_at, ends_at ) ).
+    select('DISTINCT users.*')
   end
 
   def description

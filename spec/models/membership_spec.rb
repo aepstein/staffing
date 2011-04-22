@@ -271,9 +271,18 @@ describe Membership do
 
   it 'should have a watchers method that returns users with overlapping, concurrent enrollment with membership_notices flag set' do
     position = @membership.position
+    past_period = Factory(:past_period, :schedule => position.schedule)
+    @membership.reload
     enrollment = Factory(:enrollment, :position => position)
     committee = enrollment.committee
-    # TODO
+    watcher_position = Factory(:position, :schedule => position.schedule)
+    Factory(:enrollment, :position => watcher_position, :committee => committee, :membership_notices => true)
+    watcher_membership = Factory(:membership, :position => watcher_position, :period => @membership.period)
+    past_watcher_membership = Factory(:membership, :position => watcher_position, :period => past_period)
+    nonwatcher_position = Factory(:enrollment, :committee => committee).position
+    nonwatcher_membership = Factory(:membership, :position => nonwatcher_position)
+    @membership.watchers.length.should eql 1
+    @membership.watchers.should include watcher_membership.user
   end
 
   def notifiable_scenario(starts_at = nil, ends_at = nil)

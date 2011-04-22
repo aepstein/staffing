@@ -59,7 +59,7 @@ class User < ActiveRecord::Base
   }
   scope :with_enrollments, lambda {
     joins(:memberships).
-    joins("INNER JOINS enrollments " +
+    joins("INNER JOIN enrollments " +
       "ON memberships.position_id = enrollments.position_id")
   }
 
@@ -175,6 +175,10 @@ class User < ActiveRecord::Base
   end
 
   def to_s; name; end
+
+  def to_email
+    "#{name} <#{email}>"
+  end
 
   def status=(status)
     self.statuses=([status])

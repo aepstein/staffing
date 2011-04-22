@@ -4,7 +4,7 @@ class UserMailer < ActionMailer::Base
   def renew_notice(user)
     @user = user
     mail(
-      :to => "#{@user.name} <#{@user.email}>",
+      :to => @user.to_email,
       :from => "#{Staffing::Application.app_config['defaults']['authority']['contact_email']}",
       :subject => "Your Action is Required to Renew Committee Memberships"
     )

@@ -140,6 +140,10 @@ describe User do
     @user.renew_notice_at.should_not be_nil
   end
 
+  it 'should have a to_email method that returns a valid email entry' do
+    @user.to_email.should eql "#{@user.name} <#{@user.email}>"
+  end
+
   def setup_authority_id_scenario
     @authorized = Factory(:position)
     @unauthorized = Factory(:position)

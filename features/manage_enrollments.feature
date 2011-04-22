@@ -36,7 +36,7 @@ Feature: Manage enrollments
       | user    | create  | update  | destroy | show |
       | admin   | see     | see     | see     | see  |
       | regular | not see | not see | not see | see  |
-@wip
+
   Scenario: Register new enrollment
     Given I log in as user: "admin"
     And I am on the new enrollment page for committee: "committee"

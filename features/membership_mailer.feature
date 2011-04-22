@@ -14,10 +14,15 @@ Feature: User mailer
     And a committee: "Third" exists with name: "The Third Committee", requestable: false, join_message: "Welcome to Third Committee.", leave_message: "Farewell to Third Committee."
     And an enrollment exists with position: position "focus", committee: committee "First", votes: 1, title: "Leader"
     And an enrollment exists with position: position "focus", committee: committee "<committee>", votes: 2, title: "Member"
+    And a position: "watcher" exists with name: "Watcher", schedule: the schedule
+    And an enrollment exists with committee: committee "First", position: position "watcher", membership_notices: true
+    And a user: "watcher" exists with email: "watcher@example.com"
+    And a membership exists with user: user "watcher", position: position "watcher", period: the period
     And a membership exists with user: user "focus", position: position "focus", period: the period
     And a join notice email is sent for the membership
     And "david.skorton@example.org" opens the email
     Then I should see "Your appointment to <description>" in the email subject
+    And I should see "John Doe <watcher@example.com>" in the email "cc" header
     And I should see the email delivered from "The Authority <info@example.org>"
     And I should see "Dear David," in the email text part body
     And I should see "This notice is to inform you that you have been assigned a membership in <description>, for a term starting on June 1st, 2008 and ending on May 31st, 2009." in the email body
