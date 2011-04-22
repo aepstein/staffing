@@ -96,7 +96,7 @@ describe Membership do
     assigned.position.memberships.unassigned.first.id.should > assigned.id
   end
 
-  it 'should regenerate assigned memberships when an assigned membership is altered' do
+  it 'should regenerate unassigned memberships when an assigned membership is altered' do
     assigned = setup_membership_with_vacancies
     unassigned = assigned.position.memberships.unassigned.first
     assigned.ends_at -= 1.days
@@ -106,13 +106,23 @@ describe Membership do
     assigned.position.memberships.unassigned.count.should eql 2
   end
 
-  it 'should regenerate assigned memberships when an assigned membership is destroyed' do
+  it 'should regenerate unassigned memberships when an assigned membership is destroyed' do
     assigned = setup_membership_with_vacancies
     assigned.destroy
     assigned.position.memberships.count.should eql 2
     assigned.position.memberships(true).should_not include assigned
     assigned.position.memberships.unassigned.count.should eql 2
     assigned.position.memberships.unassigned.each { |m| m.id.should > assigned.id }
+  end
+
+  it 'should not regenerate unassigned membership when an assigned membership is destroyed if the position is inactive' do
+    assigned = setup_membership_with_vacancies
+    position = assigned.position
+    position.active = false
+    position.save!
+    assigned.destroy
+    position.memberships.reset
+    position.memberships.unassigned.length.should eql 0
   end
 
   it 'should have a designees.populate method that creates a designee for each committee corresponding position is enrolled in' do

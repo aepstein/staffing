@@ -291,13 +291,15 @@ class Membership < ActiveRecord::Base
   end
 
   def populate_unassigned
-    return if user.blank?
-    return unless destroyed? || period_id_changed? || starts_at_changed? || ends_at_changed?
+    return true if user.blank?
+    return true unless destroyed? || period_id_changed? || starts_at_changed? || ends_at_changed?
     # Eliminate unassigned memberships in the new period for this membership
     periods = position.schedule.periods.overlaps( starts_at, ends_at ).to_a
     periods.each do |p|
        position.memberships.unassigned.where( :period_id => p.id ).delete_all
     end
+    # Do not populate unassigned memberships if the position is inactive
+    return true unless position.active?
     # Fill unassigned memberships for current and previous unfilled period
     unless starts_at_changed? || ends_at_changed?
       periods += position.schedule.periods.overlaps( starts_at_was, ends_at_was ).to_a
