@@ -67,6 +67,12 @@ describe Period do
     @period.memberships.unassigned.count.should eql 1
   end
 
+  it 'should not populate unassigned memberships for associated inactive positions' do
+    position = Factory(:position, :active => false)
+    @period = Factory(:period, :schedule => position.schedule)
+    @period.memberships.should be_empty
+  end
+
   it 'should have a to_range method' do
     @period.starts_at = '2010-01-01'
     @period.ends_at = '2011-01-01'

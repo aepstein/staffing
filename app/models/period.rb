@@ -15,7 +15,7 @@ class Period < ActiveRecord::Base
   has_many :meetings, :inverse_of => :period
   has_many :memberships, :inverse_of => :period, :dependent => :destroy do
     def populate_unassigned!
-      proxy_owner.schedule.positions.each do |position|
+      proxy_owner.schedule.positions.active.each do |position|
         position.memberships.populate_unassigned_for_period! proxy_owner
       end
       # Reset so changes are loaded in this collection

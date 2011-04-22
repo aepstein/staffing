@@ -119,6 +119,12 @@ describe Position do
     @position.memberships.should include first
   end
 
+  it 'should delete memberships for an inactivated position' do
+    @position.active = false
+    @position.save!
+    Membership.where( :position_id => @position.id ).should be_empty
+  end
+
   def position_with_period(slots=1)
     period = Factory(:period)
     @position = Factory(:position, :schedule => period.schedule, :slots => slots)

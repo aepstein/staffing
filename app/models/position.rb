@@ -1,7 +1,8 @@
 class Position < ActiveRecord::Base
   attr_accessible :authority_id, :quiz_id, :schedule_id, :slots, :name,
     :join_message, :leave_message, :statuses, :requestable, :renewable,
-    :notifiable, :designable, :requestable_by_committee, :reject_message
+    :notifiable, :designable, :active, :requestable_by_committee,
+    :reject_message
 
   default_scope order( 'positions.name ASC' )
 
@@ -95,6 +96,8 @@ class Position < ActiveRecord::Base
   scope :unrenewable, where( :renewable => false )
   scope :requestable_by_committee, where( :requestable_by_committee => true )
   scope :designable, where( :designable => true )
+  scope :active, where( :active => true )
+  scope :inactive, where( :active.ne => true )
 
   validates_presence_of :name
   validates_uniqueness_of :name
@@ -103,7 +106,7 @@ class Position < ActiveRecord::Base
   validates_presence_of :schedule
   validates_numericality_of :slots, :only_integer => true, :greater_than => 0
 
-  after_create { |r| r.memberships.populate_unassigned! }
+  after_create :populate_slots!
   after_update :repopulate_slots!
 
   def current_emails
@@ -132,16 +135,28 @@ class Position < ActiveRecord::Base
     end
   end
 
+  def inactive?; !active?; end
+
   def to_s; name; end
 
   private
 
+  def populate_slots!
+    memberships.populate_unassigned! if active?
+    true
+  end
+
+  # Delete unassigned memberships if:
+  # * activity status changes
+  # * schedule changes
+  # * number of slots is decreased
+  # Populate new memberships if position is active
   def repopulate_slots!
-    return unless schedule_id_previously_changed? || slots_previously_changed?
-    if schedule_id_previously_changed? || ( slots_previously_changed? && slots_previously_was > slots )
+    return true unless schedule_id_changed? || slots_changed?
+    if active_changed? || schedule_id_changed? || ( slots_changed? && slots_was > slots )
       memberships.unassigned.delete_all
     end
-    memberships.populate_unassigned!
+    populate_slots!
   end
 
 end
