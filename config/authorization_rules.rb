@@ -47,9 +47,6 @@ authorization do
         :ends_at => gte { object.blank? ? Time.zone.today : [ object.starts_at, Time.zone.today ].max }
       } } } }
     end
-    has_permission_on :users, :to => [ :show ] do
-      if_permitted_to :show, :requests
-    end
     has_permission_on :users, :to => [ :profile ]
     has_permission_on :users, :to => [ :edit, :update, :show, :index ] do
       if_attribute :id => is { user.id }

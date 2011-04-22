@@ -230,6 +230,13 @@ class Membership < ActiveRecord::Base
     Position.where( :id => position_id ) )
   end
 
+  # Identify users who should be copied on notices related to this membership
+  def watchers
+    User.with_enrollments.
+    merge( Membership.overlap( starts_at, ends_at ) ).
+    merge( Enrollment.membership_notices )
+  end
+
   def description
     return request.requestable.to_s if request
     return position.requestables.first.to_s unless position.requestables.empty?

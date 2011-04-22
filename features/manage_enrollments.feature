@@ -36,29 +36,33 @@ Feature: Manage enrollments
       | user    | create  | update  | destroy | show |
       | admin   | see     | see     | see     | see  |
       | regular | not see | not see | not see | see  |
-
+@wip
   Scenario: Register new enrollment
     Given I log in as user: "admin"
     And I am on the new enrollment page for committee: "committee"
     When I fill in "Position" with "Member of Committee"
     And I fill in "Title" with "Voting Member"
     And I fill in "Votes" with "1"
+    And choose "enrollment_membership_notices_true"
     And I press "Create"
     Then I should see "Enrollment was successfully created."
     And I should see "Position: Member of Committee"
     And I should see "Committee: Favorite Committee"
     And I should see "Title: Voting Member"
     And I should see "Votes: 1"
+    And I should see "Membership notices? Yes"
     When I follow "Edit"
     And I fill in "Position" with "Ex-Officio Member of Committee"
     And I fill in "Title" with "Non-Voting Member"
     And I fill in "Votes" with "0"
+    And choose "enrollment_membership_notices_false"
     And I press "Update"
     Then I should see "Enrollment was successfully updated."
     And I should see "Position: Ex-Officio Member of Committee"
     And I should see "Committee: Favorite Committee"
     And I should see "Title: Non-Voting Member"
     And I should see "Votes: 0"
+    And I should see "Membership notices? No"
 
   Scenario: Delete enrollment
     Given a position: "position4" exists with name: "position 4"

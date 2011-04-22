@@ -269,6 +269,13 @@ describe Membership do
     scope.uniq.length.should eql 2
   end
 
+  it 'should have a watchers method that returns users with overlapping, concurrent enrollment with membership_notices flag set' do
+    position = @membership.position
+    enrollment = Factory(:enrollment, :position => position)
+    committee = enrollment.committee
+    # TODO
+  end
+
   def notifiable_scenario(starts_at = nil, ends_at = nil)
     starts_at ||= Date.today - 1.year
     ends_at ||= starts_at + 2.years

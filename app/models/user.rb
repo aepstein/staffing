@@ -57,6 +57,11 @@ class User < ActiveRecord::Base
         "users.#{c} LIKE :name"}.join( ' OR ' ), :name => "%#{name}%"
     )
   }
+  scope :with_enrollments, lambda {
+    joins(:memberships).
+    joins("INNER JOINS enrollments " +
+      "ON memberships.position_id = enrollments.position_id")
+  }
 
   search_methods :name_like
 

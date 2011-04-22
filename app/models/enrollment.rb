@@ -1,5 +1,6 @@
 class Enrollment < ActiveRecord::Base
-  attr_accessible :committee_id, :position_name, :position_id, :title, :votes
+  attr_accessible :committee_id, :position_name, :position_id, :title, :votes,
+    :membership_notices
   attr_readonly :committee_id
 
   belongs_to :position, :inverse_of => :enrollments
@@ -15,6 +16,7 @@ class Enrollment < ActiveRecord::Base
   scope :memberships_current, lambda { joins(:memberships) & Membership.current }
   scope :memberships_future, lambda { joins(:memberships) & Membership.future }
   scope :memberships_past, lambda { joins(:memberships) & Membership.past }
+  scope :membership_notices, where( :membership_notices => true )
 
   validates_presence_of :position
   validates_presence_of :committee
