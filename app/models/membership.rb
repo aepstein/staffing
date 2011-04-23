@@ -231,10 +231,16 @@ class Membership < ActiveRecord::Base
   end
 
   # Identify users who should be copied on notices related to this membership
+  # * not this user
+  # * must have membership which:
+  # ** is enrolled in a committee this membership's position is enrolled in
+  # ** overlaps this membership temporally
+  # ** has a membership_notices flag set
   def watchers
-    return User.unscoped.where(:id => nil) if new_record?
+    return User.unscoped.where(:id => nil) if new_record? || enrollments.empty?
     User.with_enrollments.
-    where( :id.ne => id ).
+    where( :id.ne => user_id ).
+    where( 'enrollments.committee_id IN (?)', enrollments.map(&:committee_id) ).
     where( 'enrollments.membership_notices = ?', true ).
     merge( Membership.unscoped.overlap( starts_at, ends_at ) ).
     select('DISTINCT users.*')

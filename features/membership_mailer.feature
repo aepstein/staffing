@@ -61,15 +61,18 @@ Feature: User mailer
 
   Scenario Outline: Copy the watchers for a position
     Given a position: "watcher" exists with schedule: schedule "focus"
-    And an enrollment exists with committee: committee "requestable_committee", position: position "watcher", membership_notices: true
+    And a committee: "other_committee" exists
+    And an enrollment exists with committee: committee "<committee>_committee", position: position "watcher", membership_notices: true
     And a user: "watcher" exists with email: "watcher@example.com"
     And a membership: "watcher" exists with user: user "watcher", period: period "focus", position: position "watcher"
     And a membership: "focus" exists with user: user "focus", period: period "focus", position: position "requestable_position"
     And a <notice> notice email is sent for membership: "focus"
     And "johnny.applicant@example.org" opens the email
-    Then I should see "John Doe <watcher@example.com>" in the email "cc" header
+    Then I should <cc> "John Doe <watcher@example.com>" in the email "cc" header
     Examples:
-      | notice |
-      | join   |
-      | leave  |
+      | committee   | notice | cc      |
+      | requestable | join   | see     |
+      | requestable | leave  | see     |
+      | other       | join   | not see |
+      | other       | leave  | not see |
 

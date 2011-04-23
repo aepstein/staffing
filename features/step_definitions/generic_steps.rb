@@ -132,6 +132,11 @@ Then /^(?:I|they) should not see "([^"]*?)" in the email text part body$/ do |te
   current_email.text_part.body.to_s.should_not include(text)
 end
 
+Then /^(?:I|they) should not see "([^\"]*)" in the email "([^"]*?)" header$/ do |text, name|
+  current_email.should_not have_header(name, text)
+end
+
+
 Then /^(?:|I) should see a field labeled "(.+)"$/ do |text|
   within('form').should contain(text)
 end
