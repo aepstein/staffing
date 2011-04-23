@@ -23,7 +23,7 @@ authorization do
     has_permission_on :motions, :to => :create do
       if_permitted_to :vote, :committee
     end
-    has_permission_on :motions, :to => [ :manage, :show ], :join_by => :and do
+    has_permission_on :motions, :to => [ :manage ], :join_by => :and do
       if_permitted_to :vote, :committee
       if_attribute :status => is { 'started' }, :sponsorships => { :user_id => is { user.id } }
     end
