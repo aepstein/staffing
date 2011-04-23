@@ -3,56 +3,73 @@ Feature: User mailer
   As a reminder and notice driven organization
   I want to send email notices to users regarding their appointment to committees
 
+  Background:
+    Given a user: "focus" exists with first_name: "Johnny", last_name: "Applicant", email: "johnny.applicant@example.org"
+    And an authority: "focus" exists with join_message: "We are very pleased to appoint you.", leave_message: "We are very sad to see you go."
+    And an authority: "other" exists with contact_name: "Some Other Authority"
+    And schedule: "focus" exists
+    And a period: "focus" exists with schedule: the schedule, starts_at: "2008-06-01", ends_at: "2009-05-31"
+    And a position: "requestable_committee" exists with name: "Lame position", join_message: "This position is lame.", leave_message: "This position was lame.", requestable: false, requestable_by_committee: true, authority: the authority, schedule: the schedule, authority: authority "focus"
+    And a position: "requestable_position" exists with name: "Cool position", join_message: "This position is cool.", leave_message: "This position was cool.", requestable: true, requestable_by_committee: false, authority: the authority, schedule: the schedule, authority: authority "focus"
+    And a position: "no_enrollment" exists with name: "Orphan position", requestable: false, requestable_by_committee: false, authority: authority "focus", schedule: the schedule, authority: authority "focus"
+    And a position: "other_authority" exists with name: "Other authority", requestable: false, requestable_by_committee: false, schedule: the schedule, authority: authority "other"
+    And a committee: "requestable_committee" exists with name: "Cool committee", join_message: "This committee is cool.", leave_message: "This committee was cool.", requestable: true
+    And an enrollment exists with committee: the committee, position: position "requestable_committee"
+    And an enrollment exists with committee: the committee, position: position "requestable_position"
+
   Scenario Outline: Send join notice to a user
-    Given a user: "focus" exists with first_name: "David", last_name: "Skorton", email: "david.skorton@example.org"
-    And a schedule exists
-    And a period exists with schedule: the schedule, starts_at: "2008-06-01", ends_at: "2009-05-31"
-    And an authority exists with name: "Board of Trustees", join_message: "Welcome on behalf of the Board.", leave_message: "Farewell on behalf of the Board."
-    And a position: "focus" exists with name: "The Position", requestable: <p_req>, schedule: the schedule, authority: the authority, join_message: "Welcome to the position.", leave_message: "Farewell to the position."
-    And a committee: "First" exists with name: "The First Committee", requestable: <c_req>, join_message: "Welcome to First Committee.", leave_message: "Farewell to First Committee."
-    And a committee: "Second" exists with name: "The Second Committee", requestable: false, join_message: "Welcome to Second Committee.", leave_message: "Farewell to Second Committee."
-    And a committee: "Third" exists with name: "The Third Committee", requestable: false, join_message: "Welcome to Third Committee.", leave_message: "Farewell to Third Committee."
-    And an enrollment exists with position: position "focus", committee: committee "First", votes: 1, title: "Leader"
-    And an enrollment exists with position: position "focus", committee: committee "<committee>", votes: 2, title: "Member"
-    And a position: "watcher" exists with name: "Watcher", schedule: the schedule
-    And an enrollment exists with committee: committee "First", position: position "watcher", membership_notices: true
-    And a user: "watcher" exists with email: "watcher@example.com"
-    And a membership exists with user: user "watcher", position: position "watcher", period: the period
-    And a membership exists with user: user "focus", position: position "focus", period: the period
+    Given a membership exists with position: position "<position>", period: period "focus", user: user "focus"
     And a join notice email is sent for the membership
-    And "david.skorton@example.org" opens the email
+    And "johnny.applicant@example.org" opens the email
     Then I should see "Your appointment to <description>" in the email subject
-    And I should see "John Doe <watcher@example.com>" in the email "cc" header
-    And I should see the email delivered from "The Authority <info@example.org>"
-    And I should see "Dear David," in the email text part body
+    And I should see "Dear Johnny," in the email body
     And I should see "This notice is to inform you that you have been assigned a membership in <description>, for a term starting on June 1st, 2008 and ending on May 31st, 2009." in the email body
-    And I should see "Welcome on behalf of the Board." in the email text part body
-    And I should see "Welcome to the position." in the email text part body
-    And I should see "Welcome to First Committee." in the email text part body
-    And I should see "Welcome to <committee> Committee." in the email text part body
-    And I should not see "Welcome to <not_committee> Committee." in the email text part body
-    And I should see "Leader of The First Committee with 1 vote" in the email text part body
-    And I should see "Member of The <committee> Committee with 2 votes" in the email text part body
-    And I should not see "Member of The <not_committee> Committee with 2 votes" in the email text part body
-    Given a leave notice email is sent for the membership
-    And "david.skorton@example.org" opens the email with subject "Expiration"
-    Then I should see "Expiration of your appointment to <description>" in the email subject
-    And I should see the email delivered from "The Authority <info@example.org>"
-    And I should see "Dear David," in the email text part body
-    And I should see "This notice is to inform you that your membership in <description>, which began on June 1st, 2008, has expired as of May 31st, 2009." in the email text part body
-    And I should see "Farewell on behalf of the Board." in the email text part body
-    And I should see "Farewell to the position." in the email text part body
-    And I should see "Farewell to First Committee." in the email text part body
-    And I should see "Farewell to <committee> Committee." in the email text part body
-    And I should not see "Farewell to <not_committee> Committee." in the email text part body
-    And I should see "Leader of The First Committee" in the email text part body
-    And I should see "Member of The <committee> Committee" in the email text part body
-    And I should not see "Member of The <not_committee> Committee with 2 votes" in the email text part body
+    And I should <authority> "We are very pleased to appoint you." in the email body
+    And I should <committee> "This committee is cool." in the email body
+    And I should <committee> "Concurrent with your appointment to this position, you hold the following committee enrollments:" in the email body
+    And I should <cool> "This position is cool." in the email body
+    And I should <lame> "This position is lame." in the email body
+    And I should see "Best regards," in the email body
+    And I should <authority> "The Authority" in the email body
     Examples:
-      | p_req | c_req | description         | committee | not_committee |
-      | true  | true  | The Position        | Second    | Third         |
-      | true  | false | The Position        | Second    | Third         |
-      | true  | true  | The Position        | Third     | Second        |
-      | false | true  | The First Committee | Second    | Third         |
-      | false | false | The Position        | Second    | Third         |
+      | position              | description     | authority | committee | cool    | lame     |
+      | requestable_position  | Cool position   | see       | see       | see     | not see  |
+      | requestable_committee | Cool committee  | see       | see       | not see | see      |
+      | no_enrollment         | Orphan position | see       | not see   | not see | not see  |
+      | other_authority       | Other authority | not see   | not see   | not see | not see  |
+
+  Scenario Outline: Send leave notice to a user
+    Given a membership exists with position: position "<position>", period: period "focus", user: user "focus"
+    And a leave notice email is sent for the membership
+    And "johnny.applicant@example.org" opens the email
+    Then I should see "Expiration of your appointment to <description>" in the email subject
+    And I should see "Dear Johnny," in the email body
+    And I should see "This notice is to inform you that your membership in <description>, which began on June 1st, 2008, has expired as of May 31st, 2009." in the email body
+    And I should <authority> "We are very sad to see you go." in the email body
+    And I should <committee> "This committee was cool." in the email body
+    And I should <committee> "Concurrent with your membership, your enrollment in the following committees has also expired:" in the email body
+    And I should <cool> "This position was cool." in the email body
+    And I should <lame> "This position was lame." in the email body
+    And I should see "Best regards," in the email body
+    And I should <authority> "The Authority" in the email body
+    Examples:
+      | position              | description     | authority | committee | cool    | lame     |
+      | requestable_position  | Cool position   | see       | see       | see     | not see  |
+      | requestable_committee | Cool committee  | see       | see       | not see | see      |
+      | no_enrollment         | Orphan position | see       | not see   | not see | not see  |
+      | other_authority       | Other authority | not see   | not see   | not see | not see  |
+
+  Scenario Outline: Copy the watchers for a position
+    Given a position: "watcher" exists with schedule: schedule "focus"
+    And an enrollment exists with committee: committee "requestable_committee", position: position "watcher", membership_notices: true
+    And a user: "watcher" exists with email: "watcher@example.com"
+    And a membership: "watcher" exists with user: user "watcher", period: period "focus", position: position "watcher"
+    And a membership: "focus" exists with user: user "focus", period: period "focus", position: position "requestable_position"
+    And a <notice> notice email is sent for membership: "focus"
+    And "johnny.applicant@example.org" opens the email
+    Then I should see "John Doe <watcher@example.com>" in the email "cc" header
+    Examples:
+      | notice |
+      | join   |
+      | leave  |
 

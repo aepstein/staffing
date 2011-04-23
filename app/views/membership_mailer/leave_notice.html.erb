@@ -6,12 +6,12 @@ Dear <%=h @membership.user.first_name %>,
 This notice is to inform you that your membership in <%=h @membership.description %>, which began on <%=h @membership.starts_at.to_formatted_s :long_ordinal %>, has expired as of <%=h @membership.ends_at.to_s :long_ordinal %>.
 </p>
 
-<% if @membership.position.authority.join_message -%>
-<%=markdown @membership.position.authority.join_message %>
+<% if @membership.position.authority.leave_message -%>
+<%=markdown @membership.position.authority.leave_message %>
 
 <% end -%>
-<% if @membership.position.join_message -%>
-<%=markdown @membership.position.join_message %>
+<% if @membership.position.leave_message -%>
+<%=markdown @membership.position.leave_message %>
 
 <% end -%>
 <% if @membership.position.enrollments.length > 0 -%>
@@ -23,8 +23,8 @@ Concurrent with your membership, your enrollment in the following committees has
 <% @membership.position.enrollments.each do |enrollment| -%>
 <li>
 <%= enrollment.title %> of <%= enrollment.committee %> with <%= pluralize enrollment.votes, 'vote' %>
-<% if enrollment.committee.join_message -%>
-<%=markdown enrollment.committee.join_message %>
+<% if enrollment.committee.leave_message -%>
+<%=markdown enrollment.committee.leave_message %>
 <% end -%>
 </li>
 <% end -%>

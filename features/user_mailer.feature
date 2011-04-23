@@ -3,14 +3,16 @@ Feature: User mailer
   As a person potentially interested in renewing membership
   I want to send email notices to users
 
-  Scenario Outline: Send renewal notice to a user
+  Background:
     Given a user exists with first_name: "John", last_name: "Doe", email: "john.doe@example.org"
     And a schedule exists
     And a period: "current" exists with schedule: the schedule
     And a period: "past" exists before period: "current" with schedule: the schedule
     And a period: "long_ago" exists before period: "past" with schedule: the schedule
     And a period: "future" exists after period: "current" with schedule: the schedule
-    And a position exists with name: "Focus Position", renewable: <renewable>, requestable: <p_req>, requestable_by_committee: <c_req>
+
+  Scenario Outline: Send renewal notice to a user
+    Given a position exists with name: "Focus Position", renewable: <renewable>, requestable: <p_req>, requestable_by_committee: <c_req>
     And a committee exists with name: "Focus Committee", requestable: <c_req>
     And an enrollment exists with position: the position, committee: the committee
     And a membership exists with period: period "<period>", position: the position, user: the user

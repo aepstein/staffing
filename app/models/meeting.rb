@@ -26,7 +26,7 @@ class Meeting < ActiveRecord::Base
     :path => ':rails_root/db/uploads/:rails_env/meetings/:id_partition/:attachment/:style.:extension',
     :url => '/system/meetings/:id_partition/:attachment/:style.:extension'
 
-  accepts_nested_attributes_for :meeting_motions, :reject_if => proc { |a| a['motion_name'].blank? && a['_destroy'].blank? }, :allow_destroy => true
+  accepts_nested_attributes_for :meeting_motions, :reject_if => proc { |a| a['motion_name'].blank? }, :allow_destroy => true
 
   validates_presence_of :committee
   validates_presence_of :period

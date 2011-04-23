@@ -47,6 +47,7 @@ end
 # error message
 When /^(?:|I )attach a file of type "([^\"]*)" and (\d+) (bytes?|kilobytes?|megabytes?) to "([^\"]*)"$/ do |type, size, unit, field|
   file = Tempfile.new('resume.pdf')
+  $temporary_files ||= Array.new
   $temporary_files << file
   size.to_i.send( unit.to_sym ).times { file << 'a' }
 #  fixture_file_upload file.path, type

@@ -61,7 +61,7 @@ class Motion < ActiveRecord::Base
   scope :current, lambda { joins(:period) & Period.unscoped.current }
 
   accepts_nested_attributes_for :sponsorships, :allow_destroy => true,
-    :reject_if => proc { |a| a['user_name'].blank? && a['_destroy'].blank? }
+    :reject_if => proc { |a| a['user_name'].blank? }
 
   delegate :periods, :period_ids, :to => :committee
 
