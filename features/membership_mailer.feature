@@ -5,15 +5,15 @@ Feature: User mailer
 
   Background:
     Given a user: "focus" exists with first_name: "Johnny", last_name: "Applicant", email: "johnny.applicant@example.org"
-    And an authority: "focus" exists with join_message: "We are very pleased to appoint you.", leave_message: "We are very sad to see you go."
+    And an authority: "focus" exists with join_message: "We are *very* pleased to appoint you.", leave_message: "We are *very* sad to see you go."
     And an authority: "other" exists with contact_name: "Some Other Authority"
     And schedule: "focus" exists
     And a period: "focus" exists with schedule: the schedule, starts_at: "2008-06-01", ends_at: "2009-05-31"
-    And a position: "requestable_committee" exists with name: "Lame position", join_message: "This position is lame.", leave_message: "This position was lame.", requestable: false, requestable_by_committee: true, authority: the authority, schedule: the schedule, authority: authority "focus"
-    And a position: "requestable_position" exists with name: "Cool position", join_message: "This position is cool.", leave_message: "This position was cool.", requestable: true, requestable_by_committee: false, authority: the authority, schedule: the schedule, authority: authority "focus"
+    And a position: "requestable_committee" exists with name: "Lame position", join_message: "This position is *lame*.", leave_message: "This position was *lame*.", requestable: false, requestable_by_committee: true, authority: the authority, schedule: the schedule, authority: authority "focus"
+    And a position: "requestable_position" exists with name: "Cool position", join_message: "This position is *cool*.", leave_message: "This position was *cool*.", requestable: true, requestable_by_committee: false, authority: the authority, schedule: the schedule, authority: authority "focus"
     And a position: "no_enrollment" exists with name: "Orphan position", requestable: false, requestable_by_committee: false, authority: authority "focus", schedule: the schedule, authority: authority "focus"
     And a position: "other_authority" exists with name: "Other authority", requestable: false, requestable_by_committee: false, schedule: the schedule, authority: authority "other"
-    And a committee: "requestable_committee" exists with name: "Cool committee", join_message: "This committee is cool.", leave_message: "This committee was cool.", requestable: true
+    And a committee: "requestable_committee" exists with name: "Cool committee", join_message: "This committee is *cool*.", leave_message: "This committee was *cool*.", requestable: true
     And an enrollment exists with committee: the committee, position: position "requestable_committee"
     And an enrollment exists with committee: the committee, position: position "requestable_position"
 
@@ -22,15 +22,23 @@ Feature: User mailer
     And a join notice email is sent for the membership
     And "johnny.applicant@example.org" opens the email
     Then I should see "Your appointment to <description>" in the email subject
-    And I should see "Dear Johnny," in the email body
-    And I should see "This notice is to inform you that you have been assigned a membership in <description>, for a term starting on June 1st, 2008 and ending on May 31st, 2009." in the email body
-    And I should <authority> "We are very pleased to appoint you." in the email body
-    And I should <committee> "This committee is cool." in the email body
-    And I should <committee> "Concurrent with your appointment to this position, you hold the following committee enrollments:" in the email body
-    And I should <cool> "This position is cool." in the email body
-    And I should <lame> "This position is lame." in the email body
-    And I should see "Best regards," in the email body
-    And I should <authority> "The Authority" in the email body
+    And I should see "Dear Johnny," in the email text part body
+    And I should see "Dear Johnny," in the email text part body
+    And I should see "This notice is to inform you that you have been assigned a membership in <description>, for a term starting on June 1st, 2008 and ending on May 31st, 2009." in the email text part body
+    And I should see "This notice is to inform you that you have been assigned a membership in <description>, for a term starting on June 1st, 2008 and ending on May 31st, 2009." in the email html part body
+    And I should <authority> "We are *very* pleased to appoint you." in the email text part body
+    And I should <authority> "We are <em>very</em> pleased to appoint you." in the email html part body
+    And I should <committee> "This committee is *cool*." in the email text part body
+    And I should <committee> "This committee is <em>cool</em>." in the email html part body
+    And I should <committee> "Concurrent with your appointment to this position, you hold the following committee enrollments:" in the email text part body
+    And I should <cool> "This position is *cool*." in the email text part body
+    And I should <cool> "This position is <em>cool</em>." in the email html part body
+    And I should <lame> "This position is *lame*." in the email text part body
+    And I should <lame> "This position is <em>lame</em>." in the email html part body
+    And I should see "Best regards," in the email text part body
+    And I should see "Best regards," in the email html part body
+    And I should <authority> "The Authority" in the email text part body
+    And I should <authority> "The Authority" in the email html part body
     Examples:
       | position              | description     | authority | committee | cool    | lame     |
       | requestable_position  | Cool position   | see       | see       | see     | not see  |
@@ -43,15 +51,24 @@ Feature: User mailer
     And a leave notice email is sent for the membership
     And "johnny.applicant@example.org" opens the email
     Then I should see "Expiration of your appointment to <description>" in the email subject
-    And I should see "Dear Johnny," in the email body
-    And I should see "This notice is to inform you that your membership in <description>, which began on June 1st, 2008, has expired as of May 31st, 2009." in the email body
-    And I should <authority> "We are very sad to see you go." in the email body
-    And I should <committee> "This committee was cool." in the email body
-    And I should <committee> "Concurrent with your membership, your enrollment in the following committees has also expired:" in the email body
-    And I should <cool> "This position was cool." in the email body
-    And I should <lame> "This position was lame." in the email body
-    And I should see "Best regards," in the email body
-    And I should <authority> "The Authority" in the email body
+    And I should see "Dear Johnny," in the email text part body
+    And I should see "Dear Johnny," in the email html part body
+    And I should see "This notice is to inform you that your membership in <description>, which began on June 1st, 2008, has expired as of May 31st, 2009." in the email text part body
+    And I should see "This notice is to inform you that your membership in <description>, which began on June 1st, 2008, has expired as of May 31st, 2009." in the email html part body
+    And I should <authority> "We are *very* sad to see you go." in the email text part body
+    And I should <authority> "We are <em>very</em> sad to see you go." in the email html part body
+    And I should <committee> "This committee was *cool*." in the email text part body
+    And I should <committee> "This committee was <em>cool</em>." in the email html part body
+    And I should <committee> "Concurrent with your membership, your enrollment in the following committees has also expired:" in the email text part body
+    And I should <committee> "Concurrent with your membership, your enrollment in the following committees has also expired:" in the email html part body
+    And I should <cool> "This position was *cool*." in the email text part body
+    And I should <cool> "This position was <em>cool</em>." in the email html part body
+    And I should <lame> "This position was *lame*." in the email text part body
+    And I should <lame> "This position was <em>lame</em>." in the email html part body
+    And I should see "Best regards," in the email text part body
+    And I should see "Best regards," in the email html part body
+    And I should <authority> "The Authority" in the email text part body
+    And I should <authority> "The Authority" in the email html part body
     Examples:
       | position              | description     | authority | committee | cool    | lame     |
       | requestable_position  | Cool position   | see       | see       | see     | not see  |
