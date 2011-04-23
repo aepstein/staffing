@@ -133,7 +133,6 @@ class MotionsController < ApplicationController
     @motions = @committee.motions if @committee
     @motions = @user.motions if @user
     @motions = @meeting.motions if @meeting
-    @motions = @motions.includes( :committee => :enrollments )
   end
 
   def new_motion_from_params
