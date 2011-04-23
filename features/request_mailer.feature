@@ -20,11 +20,17 @@ Feature: Request mailer
     Then I should see "Your request for appointment to Cool <what> was declined" in the email subject
     And I should see the email delivered from "The Authority <info@example.org>"
     And I should see "Dear Johnny," in the email text part body
+    And I should see "Dear Johnny," in the email html part body
     And I should see "This notice is to inform you that your request for appointment to Cool <what> has been declined for the following reason(s):" in the email text part body
+    And I should see "This notice is to inform you that your request for appointment to Cool <what> has been declined for the following reason(s):" in the email html part body
+    And I should see "Committee is *full*." in the email text part body
     And I should see "Committee is <em>full</em>." in the email html part body
+    And I should see "<what> is not for *everyone*." in the email text part body
     And I should see "<what> is not for <em>everyone</em>." in the email html part body
+    And I should see "Authority is *very* selective." in the email text part body
     And I should see "Authority is <em>very</em> selective." in the email html part body
     And I should see "The Authority" in the email text part body
+    And I should see "The Authority" in the email html part body
     Examples:
       | what      |
       | position  |
@@ -45,12 +51,19 @@ Feature: Request mailer
     And I should see the email delivered from "The Authority <info@example.org>"
     And I should see "Dear Johnny," in the email text part body
     And I should see "This notice is to inform you that your request for appointment to Cool <request> has been approved." in the email text part body
+    And I should see "This notice is to inform you that your request for appointment to Cool <request> has been approved." in the email html part body
     And I should see "Your request is now considered closed.  No further appointments will be made in response to your request unless you explicitly reopen it by updating it online.  If you have additional questions or concerns regarding this notice or your appointment, please contact The Authority <info@example.org>." in the email text part body
+    And I should see "Your request is now considered closed.  No further appointments will be made in response to your request unless you explicitly reopen it by updating it online.  If you have additional questions or concerns regarding this notice or your appointment, please contact The Authority &lt;info@example.org&gt;." in the email html part body
     And I should <membership> "You have been appointed to the following position:" in the email text part body
+    And I should <membership> "You have been appointed to the following position:" in the email html part body
     And I should <enrollment> "You have been appointed to the following positions:" in the email text part body
+    And I should <enrollment> "You have been appointed to the following positions:" in the email html part body
     And I should <membership> "* Cool position for a term beginning" in the email text part body
+    And I should <membership> "<li>Cool position for a term beginning" in the email html part body
     And I should <enrollment> "* member in Cool committee for a term beginning" in the email text part body
+    And I should <enrollment> "<li>member in Cool committee for a term beginning" in the email html part body
     And I should <empty> "You have not been appointed to any positions as a result of this request.  This is most likely for reasons communicated to you or by you separately from this notice." in the email text part body
+    And I should <empty> "You have not been appointed to any positions as a result of this request.  This is most likely for reasons communicated to you or by you separately from this notice." in the email html part body
     Examples:
       | request   | position              | user  | membership | enrollment | empty   |
       | position  | requestable_position  | focus | see        | not see    | not see |

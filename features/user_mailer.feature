@@ -23,13 +23,21 @@ Feature: User mailer
     Then I should see "Your Action is Required to Renew Committee Memberships" in the email subject
     And I should see the email delivered from "info@example.org"
     And I should see "You are receiving this notice because you have memberships either ending soon or recently ended and your action is required to renew your membership." in the email text part body
+    And I should see "You are receiving this notice because you have memberships either ending soon or recently ended and your action is required to renew your membership." in the email html part body
     And I should <interest> " * interested in renewing your membership in Focus <description>" in the email text part body
+    And I should <interest> "<li>interested in renewing your membership in Focus <description>" in the email html part body
     And I should <disinterest> "*not* interested in renewing your membership in Focus <description>" in the email text part body
+    And I should <disinterest> "<em>not</em> interested in renewing your membership in Focus <description>" in the email html part body
     And I should <past> "that ended on" in the email text part body
+    And I should <past> "that ended on" in the email html part body
     And I should <present> "that ends on" in the email text part body
+    And I should <present> "that ends on" in the email html part body
     And I should <confirmed> "Our records also indicate you have confirmed you are:" in the email text part body
+    And I should <confirmed> "Our records also indicate you have confirmed you are:" in the email html part body
     And I should <unconfirmed> "According to our records you have the following unconfirmed renewal preferences.  You are:" in the email text part body
+    And I should <unconfirmed> "According to our records you have the following unconfirmed renewal preferences.  You are:" in the email html part body
     And I should see "Please contact The Authority <info@example.org> if you have any questions or concerns.  Thank you for your time and your consideration." in the email text part body
+    And I should see "Please contact The Authority <info@example.org> if you have any questions or concerns.  Thank you for your time and your consideration." in the email html part body
     Examples:
       |renewable|p_req|c_req|period  |renew |confirm|description|interest|disinterest|past   |present|confirmed|unconfirmed|
       |true     |false|false|current |is not|has not|Position   |not see |see        |not see|see    |not see  |see        |

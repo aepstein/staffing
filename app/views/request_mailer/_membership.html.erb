@@ -2,8 +2,6 @@
 <%= render :partial => 'enrollment', :collection => membership.enrollments,
   :locals => { :membership => membership } %>
 <% else %>
-<li>
-<%= membership.position %> for a term beginning <%= membership.starts_at.to_s :us_ordinal %> and ending <%= membership.ends_at.to_s :us_ordinal %>
-</li>
+<li><%= membership.position %> for a term beginning <%= membership.starts_at.to_s :us_ordinal %> and ending <%= membership.ends_at.to_s :us_ordinal %></li>
 <% end %>
 
