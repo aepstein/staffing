@@ -125,7 +125,7 @@ class MeetingsController < ApplicationController
   def initialize_index
     @meetings = Meeting.scoped
     @meetings = @meetings.where(:committee_id => @committee.id) if @committee
-    @meetings = @meetings.where(:motion_id => @motion.id) if @motion
+    @meetings = @motion.meetings if @motion
   end
 
   def initialize_context
