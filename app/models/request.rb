@@ -108,13 +108,18 @@ class Request < ActiveRecord::Base
   }
 
   state_machine :status, :initial => :active do
-    state :active, :closed
+    state :active do
+      validate :requestable_must_be_requestable, :user_status_must_match_position
+    end
+
+    state :closed
 
     state :rejected do
       validates :rejected_by_authority, :presence => true
       validates :rejected_by_user, :presence => true
       validates :rejection_comment, :presence => true
       validates_datetime :rejected_at
+      validate :rejected_by_authority_must_be_allowed_to_rejected_by_user
     end
 
     before_transition all - :rejected => :rejected do |request, transition|
@@ -146,11 +151,6 @@ class Request < ActiveRecord::Base
   validates_date :starts_at
   validates_date :ends_at, :after => :starts_at
   validates_uniqueness_of :user_id, :scope => [ :requestable_type, :requestable_id ]
-  validate :user_status_must_match_position, :requestable_must_be_requestable
-  validates_presence_of :rejection_comment, :if => :rejected?
-  validates_presence_of :rejected_by_authority, :if => :rejected?
-  validates_presence_of :rejected_by_user, :if => :rejected?
-  validate :rejected_by_authority_must_be_allowed_to_rejected_by_user, :if => :rejected?
 
   after_save { |request| request.memberships.claim! }
   after_save :insert_at_new_position
