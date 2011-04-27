@@ -79,7 +79,7 @@ class Membership < ActiveRecord::Base
   # ** immediately preceeding a current period
   # * end with the period in which they occur
   scope :renewable, lambda {
-    assigned.unrenewed.joins( :position, :period ).merge( Position.unscoped.renewable ).
+    assigned.unrenewed.joins( :position, :period ).merge( Position.unscoped.active.renewable ).
     joins( "LEFT JOIN periods AS next_periods ON " +
       "#{date_add( 'periods.ends_at', 1.day )} = next_periods.starts_at" ).
     where( "memberships.ends_at = periods.ends_at" ).
