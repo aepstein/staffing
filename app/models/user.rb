@@ -65,16 +65,12 @@ class User < ActiveRecord::Base
 
   search_methods :name_like
 
-  has_attached_file :resume,
-    :path => ':rails_root/db/uploads/:rails_env/users/:attachment/:id_partition/:style/:basename.:extension',
-    :url => ':relative_url_root/users/:id/resume.pdf'
+  mount_uploader :resume, UserResumeUploader, :mount_on => :resume_file_name
 
   acts_as_authentic do |c|
     c.login_field :net_id
   end
 
-  validates_attachment_size :resume, :less_than => 1.megabyte, :if => lambda { |u| u.resume.file? }
-  validates_attachment_content_type :resume, :content_type => [ 'application/pdf' ], :if => lambda { |u| u.resume.file? }
   validates_presence_of :net_id
   validates_uniqueness_of :net_id
   validates_presence_of :first_name
@@ -82,6 +78,11 @@ class User < ActiveRecord::Base
   validates_presence_of :email
   validates_date :date_of_birth, :allow_nil => true, :allow_blank => true
   validates_datetime :renewal_checkpoint
+  validate do |user|
+    if user.resume.present? && user.resume.size > 1.megabyte
+      errors.add :resume, 'file size is large than the permitted 1 megabyte'
+    end
+  end
 
   accepts_nested_attributes_for :memberships
 

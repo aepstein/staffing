@@ -16,15 +16,11 @@ class Meeting < ActiveRecord::Base
     end
   end
 
-  has_attached_file :audio,
-    :path => ':rails_root/db/uploads/:rails_env/meetings/:id_partition/:attachment/:style.:extension',
-    :url => '/system/meetings/:id_partition/:attachment/:style.:extension'
-  has_attached_file :editable_minutes,
-    :path => ':rails_root/db/uploads/:rails_env/meetings/:id_partition/:attachment/:style.:extension',
-    :url => '/system/meetings/:id_partition/:attachment/:style.:extension'
-  has_attached_file :published_minutes,
-    :path => ':rails_root/db/uploads/:rails_env/meetings/:id_partition/:attachment/:style.:extension',
-    :url => '/system/meetings/:id_partition/:attachment/:style.:extension'
+  mount_uploader :audio, MeetingAudioUploader, :mount_on => :audio_file_name
+  mount_uploader :editable_minutes, MeetingEditableMinutesUploader,
+    :mount_on => :editable_minutes_file_name
+  mount_uploader :published_minutes, MeetingPublishableMinutesUploader,
+    :mount_on => :published_minutes_file_name
 
   accepts_nested_attributes_for :meeting_motions, :reject_if => proc { |a| a['motion_name'].blank? }, :allow_destroy => true
 
