@@ -40,7 +40,7 @@ Feature: Manage meetings
       | admin   | see     | see     | see     | see  |
       | regular | not see | not see | not see | see  |
 
-  Scenario: Register new meeting
+  Scenario: Register new meeting and edit
     Given a motion exists with name: "Easy Motion", committee: committee "committee", period: period "past"
     And a motion exists with name: "Difficult Motion", committee: committee "committee", period: period "past"
     And I log in as user: "admin"
@@ -56,11 +56,13 @@ Feature: Manage meetings
     And I should see "Starts at: January 15th, 2010 16:00"
     And I should see "Ends at: January 15th, 2010 18:00"
     And I should see "Location: Green Room"
+    And I should see "Audio? No"
     When I follow "Edit"
     And I fill in "Starts at" with "16 Jan 2010 16:00:00"
     And I fill in "Ends at" with "16 Jan 2010 18:00:00"
     And I fill in "Location" with "Red Room"
     And I fill in "Motion" with "Difficult Motion"
+    And I attach the file "spec/assets/audio.mp3" to "Audio"
     And I press "Update"
     Then I should see "Meeting was successfully updated."
     And I should see "Committee: Favorite Committee"
@@ -68,6 +70,7 @@ Feature: Manage meetings
     And I should see "Ends at: January 16th, 2010 18:00"
     And I should see "Location: Red Room"
     And I should see "Motions: Difficult Motion"
+    And I should see "Audio? Yes"
     When I follow "Edit"
     And I check "Remove motion"
     And I fill in "Motion" with "Easy Motion"
