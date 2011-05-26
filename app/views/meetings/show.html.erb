@@ -23,11 +23,11 @@
 </p>
 
 <p>
-  <b>Editable minutes?</b> <%= @meeting.editable_minutes.file? ? link_to( 'Yes', @meeting.editable_minutes.url ) : 'No'  %>
+  <b>Editable minutes?</b> <%= @meeting.editable_minutes.file? ? link_to( 'Yes', "#{root_path}#{@meeting.editable_minutes.url}" ) : 'No'  %>
 </p>
 
 <p>
-  <b>Published minutes?</b> <%= @meeting.published_minutes.file? ? link_to( 'Yes', @meeting.published_minutes.url ) : 'No'  %>
+  <b>Published minutes?</b> <%= @meeting.published_minutes.file? ? link_to( 'Yes', "#{root_path}#{@meeting.published_minutes.url}" ) : 'No'  %>
 </p>
 
 <p>
