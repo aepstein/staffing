@@ -18,7 +18,7 @@ Feature: Manage meetings
     And I log in as user: "<user>"
     And I am on the page for the meeting
     Then I should <show> authorized
-    And I should <update> "Edit"
+    And I should <update> "Edit |"
     Given I am on the meetings page
     And I am on the meetings page for committee: "committee"
     Then I should <show> "Focus"

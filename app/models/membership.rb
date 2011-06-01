@@ -137,7 +137,7 @@ class Membership < ActiveRecord::Base
     :concurrent_memberships_must_not_exceed_slots
 
   before_save :claim_request
-  after_save :populate_unassigned, :close_claimed_request
+  after_save :populate_unassigned, :close_claimed_request, :claim_renewed_memberships
   after_destroy :populate_unassigned
 
   def self.concurrent_counts( period, position_id )
@@ -296,6 +296,15 @@ class Membership < ActiveRecord::Base
     return true if request || user.blank?
     self.request = user.requests.joins(:user).active.interested_in( self ).first
     true
+  end
+
+  # If this renews an existing membership, mark the membership renew
+  def claim_renewed_memberships
+    return unless user_id_changed?
+    renewed_memberships.clear unless renewed_memberships.empty?
+    unless user.blank?
+      renewed_memberships << user.memberships.renewable_to( self )
+    end
   end
 
   # If associated with a new, active request, close the request

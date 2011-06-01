@@ -249,24 +249,24 @@ describe Membership do
   end
 
   it 'should have a renewable_to scope that returns memberships that a membership may renew' do
-    past = Factory(:past_period, :schedule => @membership.position.schedule)
-    same_position = Factory(:membership, :position => @membership.position,
-      :period => past, :renew_until => Time.zone.today + 1.week )
-    same_position.user.update_attribute :statuses_mask, 1
-    @membership.update_attribute :user, nil
-    @membership.position.update_attribute :statuses_mask, 1
-    same_committee = Factory(:past_membership, :renew_until => Time.zone.today + 1.week )
-    same_committee.user.update_attribute :statuses_mask, 1
-    different_mask = Factory(:past_membership, :renew_until => Time.zone.today + 1.week )
-    different_mask.user.update_attribute :statuses_mask, 2
-    enrollment = Factory(:enrollment, :position => @membership.position)
-    Factory(:enrollment, :position => same_committee.position, :committee => enrollment.committee)
-    Factory(:enrollment, :position => different_mask.position, :committee => enrollment.committee)
-    different_position = Factory(:past_membership, :renew_until => Time.zone.today + 1.week)
+    renewable_to_scenario
     scope = Membership.renewable_to @membership
-    scope.should include same_position
-    scope.should include same_committee
+    scope.should include @same_position
+    scope.should include @same_committee
     scope.uniq.length.should eql 2
+  end
+
+  it 'should claim renewed_memberships which are in renewable_to scope and match user_id' do
+    renewable_to_scenario
+    @same_position.user.should_not eql @same_committee.user
+    @membership.user = @same_position.user
+    @membership.save!
+    @membership.renewed_memberships.length.should eql 1
+    @membership.renewed_memberships.should include @same_position
+    @membership.user = @same_committee.user
+    @membership.save!
+    @membership.renewed_memberships.length.should eql 1
+    @membership.renewed_memberships.should include @same_committee
   end
 
   it 'should have a watchers method that returns users with overlapping, concurrent enrollment with membership_notices flag set' do
@@ -283,6 +283,23 @@ describe Membership do
     nonwatcher_membership = Factory(:membership, :position => nonwatcher_position)
     @membership.watchers.length.should eql 1
     @membership.watchers.should include watcher_membership.user
+  end
+
+  def renewable_to_scenario
+    past = Factory(:past_period, :schedule => @membership.position.schedule)
+    @same_position = Factory(:membership, :position => @membership.position,
+      :period => past, :renew_until => Time.zone.today + 1.week )
+    @same_position.user.update_attribute :statuses_mask, 1
+    @membership.update_attribute :user, nil
+    @membership.position.update_attribute :statuses_mask, 1
+    @same_committee = Factory(:past_membership, :renew_until => Time.zone.today + 1.week )
+    @same_committee.user.update_attribute :statuses_mask, 1
+    different_mask = Factory(:past_membership, :renew_until => Time.zone.today + 1.week )
+    different_mask.user.update_attribute :statuses_mask, 2
+    enrollment = Factory(:enrollment, :position => @membership.position)
+    Factory(:enrollment, :position => @same_committee.position, :committee => enrollment.committee)
+    Factory(:enrollment, :position => different_mask.position, :committee => enrollment.committee)
+    different_position = Factory(:past_membership, :renew_until => Time.zone.today + 1.week)
   end
 
   def notifiable_scenario(starts_at = nil, ends_at = nil)
