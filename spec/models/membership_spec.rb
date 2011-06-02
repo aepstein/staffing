@@ -285,6 +285,16 @@ describe Membership do
     @membership.watchers.should include watcher_membership.user
   end
 
+  it 'should clear membership notices if user is blank' do
+    @membership.update_attribute :join_notice_at, Time.zone.now
+    @membership.update_attribute :leave_notice_at, Time.zone.now
+    @membership.user = nil
+    @membership.save!
+    @membership.user_id.should be_nil
+    @membership.join_notice_at.should be_nil
+    @membership.leave_notice_at.should be_nil
+  end
+
   def renewable_to_scenario
     past = Factory(:past_period, :schedule => @membership.position.schedule)
     @same_position = Factory(:membership, :position => @membership.position,

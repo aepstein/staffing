@@ -4,7 +4,7 @@ Feature: User mailer
   I want to send email notices to users
 
   Background:
-    Given a user exists with first_name: "John", last_name: "Doe", email: "john.doe@example.org"
+    Given a user exists with first_name: "John", last_name: "Doe"
     And a schedule exists
     And a period: "current" exists with schedule: the schedule
     And a period: "past" exists before period: "current" with schedule: the schedule
@@ -19,34 +19,33 @@ Feature: User mailer
     And the membership <renew> interested in renewal
     And the membership <confirm> confirmed renewal preference
     And a renew_notice email is sent for the user
-    And "john.doe@example.org" opens the email
-    Then I should see "Your Action is Required to Renew Committee Memberships" in the email subject
-# TODO make this step pass
-#    And I should see the email delivered from "\"The Authority\" <info@example.org>"
-    And I should see "You are receiving this notice because you have memberships either ending soon or recently ended and your action is required to renew your membership." in the email text part body
-    And I should see "You are receiving this notice because you have memberships either ending soon or recently ended and your action is required to renew your membership." in the email html part body
-    And I should <interest> " * interested in renewing your membership in Focus <description>" in the email text part body
-    And I should <interest> "<li>interested in renewing your membership in Focus <description>" in the email html part body
-    And I should <disinterest> "*not* interested in renewing your membership in Focus <description>" in the email text part body
-    And I should <disinterest> "<em>not</em> interested in renewing your membership in Focus <description>" in the email html part body
-    And I should <past> "that ended on" in the email text part body
-    And I should <past> "that ended on" in the email html part body
-    And I should <present> "that ends on" in the email text part body
-    And I should <present> "that ends on" in the email html part body
-    And I should <confirmed> "Our records also indicate you have confirmed you are:" in the email text part body
-    And I should <confirmed> "Our records also indicate you have confirmed you are:" in the email html part body
-    And I should <unconfirmed> "According to our records you have the following unconfirmed renewal preferences.  You are:" in the email text part body
-    And I should <unconfirmed> "According to our records you have the following unconfirmed renewal preferences.  You are:" in the email html part body
-    And I should see "Please contact The Authority <info@example.org> if you have any questions or concerns.  Thank you for your time and your consideration." in the email text part body
-    And I should see "Please contact The Authority <info@example.org> if you have any questions or concerns.  Thank you for your time and your consideration." in the email html part body
+    Then 1 email should be delivered to the user
+    And the email should have subject: "Your Action is Required to Renew Committee Memberships"
+    And the email should have from: "info@example.org"
+    And the email should contain "You are receiving this notice because you have memberships either ending soon or recently ended and your action is required to renew your membership." in the text part body
+    And the email should contain "You are receiving this notice because you have memberships either ending soon or recently ended and your action is required to renew your membership." in the html part body
+    And the email should <interest> contain " * interested in renewing your membership in Focus <description>" in the text part body
+    And the email should <interest> contain "<li>interested in renewing your membership in Focus <description>" in the html part body
+    And the email should <disinterest> contain "*not* interested in renewing your membership in Focus <description>" in the text part body
+    And the email should <disinterest> contain "<em>not</em> interested in renewing your membership in Focus <description>" in the html part body
+    And the email should <past> contain "that ended on" in the text part body
+    And the email should <past> contain "that ended on" in the html part body
+    And the email should <present> contain "that ends on" in the text part body
+    And the email should <present> contain "that ends on" in the html part body
+    And the email should <confirmed> contain "Our records also indicate you have confirmed you are:" in the text part body
+    And the email should <confirmed> contain "Our records also indicate you have confirmed you are:" in the html part body
+    And the email should <unconfirmed> contain "According to our records you have the following unconfirmed renewal preferences.  You are:" in the text part body
+    And the email should <unconfirmed> contain "According to our records you have the following unconfirmed renewal preferences.  You are:" in the html part body
+    And the email should contain "Please contact The Authority <info@example.org> if you have any questions or concerns.  Thank you for your time and your consideration." in the text part body
+    And the email should contain "Please contact The Authority <info@example.org> if you have any questions or concerns.  Thank you for your time and your consideration." in the html part body
     Examples:
-      |renewable|p_req|c_req|period  |renew |confirm|description|interest|disinterest|past   |present|confirmed|unconfirmed|
-      |true     |false|false|current |is not|has not|Position   |not see |see        |not see|see    |not see  |see        |
-      |true     |false|true |current |is not|has not|Committee  |not see |see        |not see|see    |not see  |see        |
-      |true     |false|false|current |is    |has not|Position   |see     |not see    |not see|see    |not see  |see        |
-      |true     |false|false|current |is    |has    |Position   |see     |not see    |not see|see    |see      |not see    |
-      |true     |false|false|past    |is not|has not|Position   |not see |see        |see    |not see|not see  |see        |
-      |true     |false|false|long_ago|is not|has not|Position   |not see |not see    |not see|not see|not see  |not see    |
-      |true     |false|false|future  |is not|has not|Position   |not see |not see    |not see|not see|not see  |not see    |
-      |false    |false|false|current |is not|has not|Position   |not see |not see    |not see|not see|not see  |not see    |
+      | renewable | p_req | c_req | period   | renew  | confirm | description | interest | disinterest | past | present | confirmed | unconfirmed |
+      | true      | false | false | current  | is not | has not | Position    | not      |             | not  |         | not       |             |
+      | true      | false | true  | current  | is not | has not | Committee   | not      |             | not  |         | not       |             |
+      | true      | false | false | current  | is     | has not | Position    |          | not         | not  |         | not       |             |
+      | true      | false | false | current  | is     | has     | Position    |          | not         | not  |         |           | not         |
+      | true      | false | false | past     | is not | has not | Position    | not      |             |      | not     | not       |             |
+      | true      | false | false | long_ago | is not | has not | Position    | not      | not         | not  | not     | not       | not         |
+      | true      | false | false | future   | is not | has not | Position    | not      | not         | not  | not     | not       | not         |
+      | false     | false | false | current  | is not | has not | Position    | not      | not         | not  | not     | not       | not         |
 

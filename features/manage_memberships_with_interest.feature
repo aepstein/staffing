@@ -17,7 +17,7 @@ Feature: Manage memberships with interest
     And a position: "requestable_committee" exists with requestable: false, requestable_by_committee: true, authority: authority "focus", schedule: the schedule
     And a committee: "requestable_committee" exists with requestable: true
     And an enrollment exists with committee: committee "requestable_committee", position: position "requestable_position"
-
+@wip
   Scenario Outline: See memberships for which user is interested in renewal
     Given a user: "applicant" exists with first_name: "Very", last_name: "Interested"
     And a request exists with user: user "applicant", requestable: <what> "<requested>"

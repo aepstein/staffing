@@ -136,7 +136,7 @@ class Membership < ActiveRecord::Base
   validate :must_be_within_period, :user_must_be_qualified,
     :concurrent_memberships_must_not_exceed_slots
 
-  before_save :claim_request
+  before_save :clear_notices, :claim_request
   after_save :populate_unassigned, :close_claimed_request, :claim_renewed_memberships
   after_destroy :populate_unassigned
 
@@ -291,6 +291,14 @@ class Membership < ActiveRecord::Base
     end
   end
 
+  # If the user is blank, clear the notice fields
+  def clear_notices
+    return true unless user.blank?
+    self.join_notice_at = nil
+    self.leave_notice_at = nil
+    true
+  end
+
   # If this fulfills an active request, assign it to that request
   def claim_request
     return true if request || user.blank?
@@ -300,7 +308,7 @@ class Membership < ActiveRecord::Base
 
   # If this renews an existing membership, mark the membership renew
   def claim_renewed_memberships
-    return unless user_id_changed?
+    return true unless user_id_changed?
     renewed_memberships.clear unless renewed_memberships.empty?
     unless user.blank?
       renewed_memberships << user.memberships.renewable_to( self )

@@ -19,7 +19,7 @@ end
 Given /^(?:|I )(put|post|delete) on (.+)$/ do |method, page_name|
 #  visit path_to(page_name), method.to_sym
   # TODO this only works with the rack driver
-  Capybara.current_session.driver.process method.to_sym, path_to(page_name), {}
+  Capybara.current_session.driver.submit method.to_sym, path_to(page_name), {}
 end
 
 Then /^I should see authorized$/ do
@@ -91,6 +91,10 @@ Given /^the (.+) records? changes?$/ do |type|
   type.constantize.all.each { |o| o.touch }
 end
 
+Given /^#{capture_model} has no (.*)$/ do |owner, association|
+  model(owner).send(association).clear
+end
+
 # set up a many to many association
 Given(/^#{capture_model} is (?:in|one of|amongst) the (\w+) of #{capture_model}$/) do |target, association, owner|
   model(owner).send(association) << model(target)
@@ -120,16 +124,19 @@ Given /^an? ([a-z\s_]+) email is sent for #{capture_model}$/ do |notice, context
   "#{model(context).class.to_s}Mailer".constantize.send( notice, model(context) ).deliver
 end
 
-Then /^(?:I|they) should not see "([^"]*?)" in the email body$/ do |text|
-  current_email.default_part_body.to_s.should_not include(text)
+Then /^#{capture_email} should( not)? +contain "([^"]*?)" in the(?: (text|html|both) parts?)? body$/ do |email_ref, negative, text, part|
+  method = ( negative.blank? ? :should : :should_not )
+  if part.blank?
+    email(email_ref).default_part_body.to_s.send( method, include( text ) )
+  else
+    email(email_ref).text_part.body.to_s.send( method, include( text ) ) if part =~ /^(text|both)$/
+    email(email_ref).html_part.body.to_s.send( method, include( text ) ) if part =~ /^(html|both)$/
+  end
 end
 
-Then /^(?:I|they) should not see "([^"]*?)" in the email html part body$/ do |text|
-  current_email.html_part.body.to_s.should_not include(text)
-end
-
-Then /^(?:I|they) should not see "([^"]*?)" in the email text part body$/ do |text|
-  current_email.text_part.body.to_s.should_not include(text)
+Then(/^#{capture_email} should( not)? +be copied to (.+)$/) do |email_ref, negate, cc|
+  method = ( negate.blank? ? :should_not : :should )
+  email(email_ref, "cc: \"#{email_for(cc)}\"").send(method, be_nil)
 end
 
 Then /^(?:I|they) should not see "([^\"]*)" in the email "([^"]*?)" header$/ do |text, name|

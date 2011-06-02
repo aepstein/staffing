@@ -4,7 +4,7 @@ Feature: Request mailer
   I want to send email notices to users regarding their requests for memberships
 
   Background:
-    Given a user: "focus" exists with first_name: "Johnny", last_name: "Applicant", email: "johnny.applicant@example.org"
+    Given a user: "focus" exists with first_name: "Johnny", last_name: "Applicant"
     And an authority exists with reject_message: "Authority is *very* selective."
     And a position: "requestable_committee" exists with name: "Lame position", reject_message: "position is not for *everyone*.", requestable: false, requestable_by_committee: true, authority: the authority
     And a position: "requestable_position" exists with name: "Cool position", reject_message: "position is not for *everyone*.", requestable: true, requestable_by_committee: false, authority: the authority
@@ -16,21 +16,17 @@ Feature: Request mailer
     And a user: "admin" exists with admin: true
     And user: "admin" rejects the request with authority: the authority, message: "Committee is *full*."
     And a reject notice email is sent for the request
-    And "johnny.applicant@example.org" opens the email
-    Then I should see "Your request for appointment to Cool <what> was declined" in the email subject
-    And I should see the email delivered from "The Authority <info@example.org>"
-    And I should see "Dear Johnny," in the email text part body
-    And I should see "Dear Johnny," in the email html part body
-    And I should see "This notice is to inform you that your request for appointment to Cool <what> has been declined for the following reason(s):" in the email text part body
-    And I should see "This notice is to inform you that your request for appointment to Cool <what> has been declined for the following reason(s):" in the email html part body
-    And I should see "Committee is *full*." in the email text part body
-    And I should see "Committee is <em>full</em>." in the email html part body
-    And I should see "<what> is not for *everyone*." in the email text part body
-    And I should see "<what> is not for <em>everyone</em>." in the email html part body
-    And I should see "Authority is *very* selective." in the email text part body
-    And I should see "Authority is <em>very</em> selective." in the email html part body
-    And I should see "The Authority" in the email text part body
-    And I should see "The Authority" in the email html part body
+    Then 1 email should be delivered to user: "focus"
+    And the email should have subject: "Your request for appointment to Cool <what> was declined", from: "info@example.org"
+    And the email should contain "Dear Johnny," in the both parts body
+    And the email should contain "This notice is to inform you that your request for appointment to Cool <what> has been declined for the following reason(s):" in the both parts body
+    And the email should contain "Committee is *full*." in the text part body
+    And the email should contain "Committee is <em>full</em>." in the html part body
+    And the email should contain "<what> is not for *everyone*." in the text part body
+    And the email should contain "<what> is not for <em>everyone</em>." in the html part body
+    And the email should contain "Authority is *very* selective." in the text part body
+    And the email should contain "Authority is <em>very</em> selective." in the html part body
+    And the email should contain "The Authority" in the both parts body
     Examples:
       | what      |
       | position  |
@@ -46,29 +42,27 @@ Feature: Request mailer
     And an enrollment exists with position: position "other_committee"
     And a membership exists with position: position "<position>", user: user "<user>"
     And a close notice email is sent for the request
-    And "johnny.applicant@example.org" opens the email
-    Then I should see "Your request for appointment to Cool <request> was approved" in the email subject
-    And I should see the email delivered from "The Authority <info@example.org>"
-    And I should see "Dear Johnny," in the email text part body
-    And I should see "This notice is to inform you that your request for appointment to Cool <request> has been approved." in the email text part body
-    And I should see "This notice is to inform you that your request for appointment to Cool <request> has been approved." in the email html part body
-    And I should see "Your request is now considered closed.  No further appointments will be made in response to your request unless you explicitly reopen it by updating it online.  If you have additional questions or concerns regarding this notice or your appointment, please contact The Authority <info@example.org>." in the email text part body
-    And I should see "Your request is now considered closed.  No further appointments will be made in response to your request unless you explicitly reopen it by updating it online.  If you have additional questions or concerns regarding this notice or your appointment, please contact The Authority &lt;info@example.org&gt;." in the email html part body
-    And I should <membership> "You have been appointed to the following position:" in the email text part body
-    And I should <membership> "You have been appointed to the following position:" in the email html part body
-    And I should <enrollment> "You have been appointed to the following positions:" in the email text part body
-    And I should <enrollment> "You have been appointed to the following positions:" in the email html part body
-    And I should <membership> "* Cool position for a term beginning" in the email text part body
-    And I should <membership> "<li>Cool position for a term beginning" in the email html part body
-    And I should <enrollment> "* member in Cool committee for a term beginning" in the email text part body
-    And I should <enrollment> "<li>member in Cool committee for a term beginning" in the email html part body
-    And I should <empty> "You have not been appointed to any positions as a result of this request.  This is most likely for reasons communicated to you or by you separately from this notice." in the email text part body
-    And I should <empty> "You have not been appointed to any positions as a result of this request.  This is most likely for reasons communicated to you or by you separately from this notice." in the email html part body
+    Then 1 email should be delivered to user: "focus"
+    And the email should have subject: "Your request for appointment to Cool <request> was approved", from: "info@example.org"
+    And the email should contain "Dear Johnny," in the both parts body
+    And the email should contain "This notice is to inform you that your request for appointment to Cool <request> has been approved." in the both parts body
+    And the email should contain "Your request is now considered closed.  No further appointments will be made in response to your request unless you explicitly reopen it by updating it online.  If you have additional questions or concerns regarding this notice or your appointment, please contact The Authority <info@example.org>." in the text part body
+    And the email should contain "Your request is now considered closed.  No further appointments will be made in response to your request unless you explicitly reopen it by updating it online.  If you have additional questions or concerns regarding this notice or your appointment, please contact The Authority &lt;info@example.org&gt;." in the html part body
+    And the email should <membership> contain "You have been appointed to the following position:" in the text part body
+    And the email should <membership> contain "You have been appointed to the following position:" in the html part body
+    And the email should <enrollment> contain "You have been appointed to the following positions:" in the text part body
+    And the email should <enrollment> contain "You have been appointed to the following positions:" in the html part body
+    And the email should <membership> contain "* Cool position for a term beginning" in the text part body
+    And the email should <membership> contain "<li>Cool position for a term beginning" in the html part body
+    And the email should <enrollment> contain "* member in Cool committee for a term beginning" in the text part body
+    And the email should <enrollment> contain "<li>member in Cool committee for a term beginning" in the html part body
+    And the email should <empty> contain "You have not been appointed to any positions as a result of this request.  This is most likely for reasons communicated to you or by you separately from this notice." in the text part body
+    And the email should <empty> contain "You have not been appointed to any positions as a result of this request.  This is most likely for reasons communicated to you or by you separately from this notice." in the html part body
     Examples:
-      | request   | position              | user  | membership | enrollment | empty   |
-      | position  | requestable_position  | focus | see        | not see    | not see |
-      | committee | requestable_committee | focus | not see    | see        | not see |
-      | committee | other_committee       | focus | not see    | not see    | see     |
-      | committee | nonrequestable        | focus | not see    | not see    | see     |
-      | position  | requestable_position  | other | not see    | not see    | see     |
+      | request   | position              | user  | membership | enrollment | empty |
+      | position  | requestable_position  | focus |            | not        | not   |
+      | committee | requestable_committee | focus | not        |            | not   |
+      | committee | other_committee       | focus | not        | not        |       |
+      | committee | nonrequestable        | focus | not        | not        |       |
+      | position  | requestable_position  | other | not        | not        |       |
 
