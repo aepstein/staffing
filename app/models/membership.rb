@@ -52,7 +52,7 @@ class Membership < ActiveRecord::Base
       "enrollments.position_id = memberships.position_id").
     where( "memberships.position_id = ? OR " +
       "enrollments.committee_id IN (?)",
-       membership.id, membership.position.committee_ids ).
+       membership.position_id, membership.position.committee_ids ).
     no_overlap( membership.starts_at, membership.ends_at ).
     where( :renew_until.gte => membership.starts_at ).
     where( :renew_until.gte => Time.zone.today )
@@ -311,7 +311,8 @@ class Membership < ActiveRecord::Base
     return true unless user_id_changed?
     renewed_memberships.clear unless renewed_memberships.empty?
     unless user.blank?
-      renewed_memberships << user.memberships.renewable_to( self )
+      renewed_memberships << Membership.where(:user_id => user_id).
+        renewable_to( self ).select( "DISTINCT memberships.*" )
     end
   end
 
