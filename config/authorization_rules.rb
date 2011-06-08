@@ -8,6 +8,9 @@ authorization do
     has_permission_on :users, :to => :resume
     has_permission_on :requests, :to => [ :reject, :reactivate ]
   end
+  role :authority do
+    has_permission_on :users, :to => :show
+  end
   role :user do
     has_permission_on [ :authorities, :committees, :enrollments, :meetings,
       :memberships, :periods, :positions, :qualifications, :schedules ],

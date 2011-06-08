@@ -132,8 +132,11 @@ class User < ActiveRecord::Base
   end
 
   def role_symbols
-    return [:admin,:user] if admin?
-    [:user]
+    return @role_symbols if @role_symbols
+    @role_symbols ||= [:user]
+    @role_symbols << :admin if admin?
+    @role_symbols << :authority if authorities.any?
+    @role_symbols
   end
 
   def name_with_net_id

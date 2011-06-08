@@ -1,6 +1,6 @@
 <h2>Listing positions<%=h @committee ? " for #{@committee}" : "" %></h2>
 
-<%= form_for @search do |form| %>
+<%= form_for @search, :url => request.fullpath do |form| %>
 <p>
   <%= form.label :name_contains, 'Name' %>
   <%= form.text_field :name_contains %>

@@ -1,6 +1,6 @@
 <h2><%= params[:action].titleize %> committees<%= @user ? " for #{h(@user)}" : "" %></h2>
 
-<%= form_for @search, :url => committees_path do |form| %>
+<%= form_for @search, :url => request.fullpath do |form| %>
 <p>
   <%= form.label :name_contains, 'Name' %>
   <%= form.text_field :name_contains %>
