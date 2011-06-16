@@ -49,6 +49,8 @@ class MeetingsController < ApplicationController
   # GET /motions/:motion_id/meetings
   # GET /motions/:motion_id/meetings.xml
   def index
+    @meetings = @meetings.paginate( :page => params[:page] )
+
     respond_to do |format|
       format.html { render :action => 'index' } # index.html.erb
       format.xml  { render :xml => @meetings }
@@ -142,7 +144,7 @@ class MeetingsController < ApplicationController
   end
 
   def setup_breadcrumbs
-    add_breadcrumb 'Committees'
+    add_breadcrumb 'Committees', committees_path
     if @committee
       add_breadcrumb @committee.name, committee_path(@committee)
     end
