@@ -148,7 +148,7 @@ class MotionsController < ApplicationController
   end
 
   def setup_breadcrumbs
-    add_breadcrumb 'Committees'
+    add_breadcrumb 'Committees', committees_path
     if @committee
       add_breadcrumb @committee.name, committee_path(@committee)
     end
