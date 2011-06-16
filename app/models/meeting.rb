@@ -49,6 +49,11 @@ class Meeting < ActiveRecord::Base
     :current
   end
 
+  def to_s
+    return starts_at.to_s :us_ordinal if starts_at?
+    super
+  end
+
   private
 
   def period_must_be_in_committee_schedule
