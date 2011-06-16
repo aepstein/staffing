@@ -19,7 +19,6 @@
     <td><%=h membership.ends_at.to_s :rfc822 %></td>
     <td><%= membership.renew_until ? membership.renew_until.to_s( :rfc822 ) : "" %></td>
     <td><%= link_to 'Show', membership %></td>
-    <td><%= link_to_renewal membership %></td>
     <% if request && membership.user.blank? %>
     <td><%= link_to( 'Assign', edit_membership_path(membership, :request_id => request.id) ) if permitted_to? :edit, membership %></td>
     <% else %>

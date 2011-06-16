@@ -1,5 +1,6 @@
 class AuthoritiesController < ApplicationController
   filter_resource_access
+  before_filter :setup_breadcrumbs
 
   # GET /authorities
   # GET /authorities.xml
@@ -84,5 +85,15 @@ class AuthoritiesController < ApplicationController
       format.xml  { head :ok }
     end
   end
+
+  protected
+
+  def setup_breadcrumbs
+    add_breadcrumb 'Authorities', authorities_path
+    if @authority && @authority.persisted?
+      add_breadcrumb @authority.name, authority_path( @authority )
+    end
+  end
+
 end
 

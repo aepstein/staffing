@@ -1,13 +1,17 @@
 class MembershipsController < ApplicationController
   before_filter :require_user, :initialize_context
+  before_filter :initialize_index, :only => [ :index, :renewed, :unrenewed,
+    :current, :future, :past, :assignable ]
   before_filter :new_membership_from_params, :only => [ :new, :create ]
-  filter_access_to :new, :create, :edit, :update, :destroy, :show, :confirm, :attribute_check => true
+  filter_access_to :new, :create, :edit, :update, :destroy, :show, :confirm,
+    :attribute_check => true
   filter_access_to :assign do
     permitted_to! :edit, @membership
   end
   filter_access_to :index, :current, :past, :future do
     @user ? permitted_to!( :show, @user ) : permitted_to!( :index )
   end
+  before_filter :setup_breadcrumbs
 
   # GET /users/:user_id/memberships/renew
   # PUT /users/:user_id/memberships/renew
@@ -28,7 +32,9 @@ class MembershipsController < ApplicationController
   # GET /users/:user_id/memberships/renewed
   # GET /users/:user_id/memberships/renewed.xml
   def renewed
-    @memberships = @memberships.renewed if @memberships
+    @memberships = @memberships.renewed
+    add_breadcrumb "Renewed",
+      polymorphic_path( [ :renewed, @context, :memberships ] )
     index
   end
 
@@ -37,7 +43,9 @@ class MembershipsController < ApplicationController
   # GET /users/:user_id/memberships/unrenewed
   # GET /users/:user_id/memberships/unrenewed.xml
   def unrenewed
-    @memberships = @memberships.renewable.unrenewed if @memberships
+    @memberships = @memberships.renewable.unrenewed
+    add_breadcrumb "Unrenewed",
+      polymorphic_path( [ :unrenewed, @context, :memberships ] )
     index
   end
 
@@ -52,7 +60,9 @@ class MembershipsController < ApplicationController
   # GET /authorities/:authority_id/memberships/current
   # GET /authorities/:authority_id/memberships/current.xml
   def current
-    @memberships = @memberships.current if @memberships
+    @memberships = @memberships.current
+    add_breadcrumb "Current",
+      polymorphic_path( [ :current, @context, :memberships ] )
     index
   end
 
@@ -67,7 +77,9 @@ class MembershipsController < ApplicationController
   # GET /authorities/:authority_id/memberships/future
   # GET /authorities/:authority_id/memberships/future.xml
   def future
-    @memberships = @memberships.future if @memberships
+    @memberships = @memberships.future
+    add_breadcrumb "Future",
+      polymorphic_path( [ :future, @context, :memberships ] )
     index
   end
 
@@ -82,13 +94,17 @@ class MembershipsController < ApplicationController
   # GET /authorities/:authority_id/memberships/past
   # GET /authorities/:authority_id/memberships/past.xml
   def past
-    @memberships = @memberships.past if @memberships
+    @memberships = @memberships.past
+    add_breadcrumb "Past",
+      polymorphic_path( [ :past, @context, :memberships ] )
     index
   end
 
   # GET /requests/:request_id/memberships/assignable
   def assignable
     @memberships = @request.memberships.assignable
+    add_breadcrumb "Assignable",
+      polymorphic_path( [ :assignable, @context, :memberships ] )
     index
   end
 
@@ -103,7 +119,7 @@ class MembershipsController < ApplicationController
   # GET /authorities/:authority_id/memberships
   # GET /authorities/:authority_id/memberships.xml
   def index
-    @search = @memberships ? @memberships.ordered.search( params[:search] ) : Membership.ordered.with_user.search( params[:search] )
+    @search = @memberships.ordered.search( params[:search] )
     @memberships = @search.paginate( :page => params[:page], :include => [ :request ] )
 
     respond_to do |format|
@@ -193,32 +209,40 @@ class MembershipsController < ApplicationController
   private
 
   def initialize_context
-    if params[:user_id]
-      @user = User.find params[:user_id]
-      @memberships = @user.memberships
-      @context = @user
-    end
-    if params[:request_id]
-      @request = Request.find params[:request_id]
-      @memberships = @request.memberships
-      @context = @request
-    end
-    if params[:position_id]
-      @position = Position.find params[:position_id]
-      @memberships = @position.memberships
-      @context = @position
-    end
-    if params[:committee_id]
-      @committee = Committee.find params[:committee_id]
-      @memberships = @committee.memberships
-      @context = @committee
-    end
-    if params[:authority_id]
-      @authority = Authority.find params[:authority_id]
-      @memberships = @authority.memberships
-      @context = @authority
-    end
     @membership = Membership.find( params[:id], :include => :designees ) if params[:id]
+    @committee = Committee.find params[:committee_id] if params[:committee_id]
+    @user = User.find params[:user_id] if params[:user_id]
+    @position = Position.find params[:position_id] if params[:position_id]
+    @authority = Authority.find params[:authority_id] if params[:authority_id]
+    @request = Request.find params[:request_id] if params[:request_id]
+    if @request
+      @user = @request.user
+    end
+    if @membership && @membership.persisted?
+      @user ||= @membership.user
+      @request ||= @membership.request
+      @position ||= @membership.position
+      @authority ||= @position.authority
+    end
+    @context = @position || @authority || @committee || @user
+  end
+
+  def initialize_index
+    @memberships = @context.memberships
+  end
+
+  def setup_breadcrumbs
+    if @context
+      add_breadcrumb @context.class.arel_table.name.titleize,
+        polymorphic_path( [ @context.class.arel_table.name ] )
+      add_breadcrumb @context, polymorphic_path( [ @context ] )
+    end
+    add_breadcrumb "Memberships", polymorphic_path( [ @context, :memberships ] )
+    if @membership && @membership.persisted?
+      add_breadcrumb @membership.tense.to_s.capitalize,
+        polymorphic_path( [ @membership.tense, @context, :memberships ] )
+      add_breadcrumb @membership, membership_path( @membership )
+    end
   end
 
   def new_membership_from_params

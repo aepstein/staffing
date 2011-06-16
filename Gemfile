@@ -1,5 +1,5 @@
 source 'http://rubygems.org'
-gem 'rails', '3.0.7'
+gem 'rails', '3.0.9'
 gem 'mysql2', '~> 0.2.7'
 gem 'rake', '~> 0.8.7'
 gem 'sqlite3-ruby', :require => 'sqlite3'
@@ -25,6 +25,7 @@ gem 'bluecloth'
 gem 'whenever', :require => false
 gem 'jquery-rails'
 gem 'rails3-jquery-autocomplete'
+gem 'escape_utils'
 group :development, :test do
   gem 'rspec', '>= 2.0'
   gem 'rspec-rails', ">= 2.0"

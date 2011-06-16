@@ -72,6 +72,12 @@
 <p style="color: red"><%= flash[:error] %></p>
 <p style="color: green"><%= flash[:notice] %></p>
 
+<% if breadcrumbs %>
+<p>
+  <%=raw breadcrumbs.map { |txt, path| link_to_unless(path.blank?, h(txt), path) }.join(" &gt; ") %>
+</p>
+<% end %>
+
 <%= yield %>
 
    </div> <!-- id=main -->

@@ -51,6 +51,13 @@ class Period < ActiveRecord::Base
     end
   end
 
+  def tense
+    return nil unless starts_at && ends_at
+    return :past if ends_at < Time.zone.today
+    return :future if starts_at > Time.zone.today
+    :current
+  end
+
   def current?
     return false unless Time.zone.now >= starts_at.to_time && Time.zone.now <= ends_at.to_time
     true

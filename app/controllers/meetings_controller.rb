@@ -2,6 +2,7 @@ class MeetingsController < ApplicationController
   before_filter :initialize_context
   before_filter :new_meeting_from_params, :only => [ :new, :create ]
   before_filter :initialize_index, :only => [ :current, :past, :future, :index ]
+  before_filter :setup_breadcrumbs
   filter_access_to :new, :create, :edit, :update, :destroy, :show
   filter_access_to :index, :current, :past, :future do
     true
@@ -15,6 +16,7 @@ class MeetingsController < ApplicationController
   # GET /motions/:motion_id/meetings/current.xml
   def current
     @meetings = @meetings.current
+    add_breadcrumb 'Current', polymorphic_path([ :current, @context, :meetings ])
     index
   end
 
@@ -26,6 +28,7 @@ class MeetingsController < ApplicationController
   # GET /motions/:motion_id/meetings/past.xml
   def past
     @meetings = @meetings.past
+    add_breadcrumb 'Past', polymorphic_path([ :past, @context, :meetings ])
     index
   end
 
@@ -37,6 +40,7 @@ class MeetingsController < ApplicationController
   # GET /motions/:motion_id/meetings/future.xml
   def future
     @meetings = @meetings.future
+    add_breadcrumb 'Future', polymorphic_path([ :future, @context, :meetings ])
     index
   end
 
@@ -132,6 +136,28 @@ class MeetingsController < ApplicationController
     @meeting = Meeting.find(params[:id]) if params[:id]
     @committee = Committee.find(params[:committee_id]) if params[:committee_id]
     @motion = Motion.find(params[:motion_id]) if params[:motion_id]
+    @committee ||= @meeting.committee if @meeting
+    @committee ||= @motion.committee if @motion
+    @context = @motion || @committee
+  end
+
+  def setup_breadcrumbs
+    add_breadcrumb 'Committees'
+    if @committee
+      add_breadcrumb @committee.name, committee_path(@committee)
+    end
+    if @motion
+      add_breadcrumb 'Motions', committee_motions_path(@committee)
+      add_breadcrumb @motion.tense.to_s.capitalize,
+        polymorphic_path([ @motion.tense, @committee, :motions ])
+      add_breadcrumb @motion.name, motion_path(@motion)
+    end
+    add_breadcrumb 'Meetings', polymorphic_path([ @context, :meetings ])
+    if @meeting && @meeting.persisted?
+      add_breadcrumb @meeting.tense.to_s.capitalize,
+        polymorphic_path([ @meeting.tense, @context, :meetings ])
+      add_breadcrumb @meeting, meeting_path( @meeting )
+    end
   end
 end
 

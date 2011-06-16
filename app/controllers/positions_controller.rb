@@ -1,5 +1,7 @@
 class PositionsController < ApplicationController
   before_filter :require_user, :initialize_context
+  before_filter :new_position_from_params, :only => [ :new, :create ]
+  before_filter :setup_breadcrumbs
   filter_access_to :new, :create, :edit, :update, :destroy, :show, :index
   filter_access_to :requestable do
     permitted_to!( :show, @user )
@@ -32,8 +34,6 @@ class PositionsController < ApplicationController
   # GET /positions/1
   # GET /positions/1.xml
   def show
-    @position = Position.find(params[:id])
-
     respond_to do |format|
       format.html # show.html.erb
       format.xml  { render :xml => @position }
@@ -43,8 +43,6 @@ class PositionsController < ApplicationController
   # GET /positions/new
   # GET /positions/new.xml
   def new
-    @position = Position.new
-
     respond_to do |format|
       format.html # new.html.erb
       format.xml  { render :xml => @position }
@@ -53,14 +51,11 @@ class PositionsController < ApplicationController
 
   # GET /positions/1/edit
   def edit
-    @position = Position.find(params[:id])
   end
 
   # POST /positions
   # POST /positions.xml
   def create
-    @position = Position.new(params[:position])
-
     respond_to do |format|
       if @position.save
         flash[:notice] = 'Position was successfully created.'
@@ -76,8 +71,6 @@ class PositionsController < ApplicationController
   # PUT /positions/1
   # PUT /positions/1.xml
   def update
-    @position = Position.find(params[:id])
-
     respond_to do |format|
       if @position.update_attributes(params[:position])
         flash[:notice] = 'Position was successfully updated.'
@@ -93,7 +86,6 @@ class PositionsController < ApplicationController
   # DELETE /positions/1
   # DELETE /positions/1.xml
   def destroy
-    @position = Position.find(params[:id])
     @position.destroy
 
     respond_to do |format|
@@ -105,8 +97,22 @@ class PositionsController < ApplicationController
   private
 
   def initialize_context
-    @committee = Committee.find(params[:committee_id]) if params[:committee_id]
-    @user = User.find(params[:user_id]) if params[:user_id]
+    @position = Position.find( params[:id] ) if params[:id]
+    @committee = Committee.find( params[:committee_id] ) if params[:committee_id]
+    @user = User.find( params[:user_id] ) if params[:user_id]
+    @context = @committee || @user
+  end
+
+  def new_position_from_params
+    @position = Position.new( params[:position] )
+  end
+
+  def setup_breadcrumbs
+    add_breadcrumb @context, polymorphic_path( @context ) if @context
+    add_breadcrumb "Positions", polymorphic_path( [ @context, :positions ] )
+    if @position && @position.persisted?
+      add_breadcrumb @position, position_path( @position )
+    end
   end
 end
 

@@ -1,7 +1,9 @@
 class ApplicationController < ActionController::Base
+  attr_accessor :breadcrumbs
+
   helper :all
   protect_from_forgery
-  helper_method :current_user, :current_user_session
+  helper_method :current_user, :current_user_session, :breadcrumbs
   before_filter :check_authorization
 
   def permission_denied
@@ -16,7 +18,13 @@ class ApplicationController < ActionController::Base
     net_id
   end
 
+  def add_breadcrumb name, url = ''
+    self.breadcrumbs ||= []
+    self.breadcrumbs << [name, url]
+  end
+
   private
+
   def check_authorization
     Authorization.current_user = current_user
   end

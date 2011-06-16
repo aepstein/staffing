@@ -50,9 +50,7 @@ Staffing::Application.routes.draw do
       end
     end
   end
-  resources :memberships, :except => [ :index, :new, :create ] do
-    resources :requests, :only => [ :new, :create ]
-  end
+  resources :memberships, :except => [ :index, :new, :create ]
   resources :motions, :except => [ :new, :create ] do
     resources :users, :only => [ :index ] do
       collection do

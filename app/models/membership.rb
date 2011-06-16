@@ -252,6 +252,13 @@ class Membership < ActiveRecord::Base
     position.to_s
   end
 
+  def tense
+    return nil unless starts_at && ends_at
+    return :past if ends_at < Time.zone.today
+    return :future if starts_at > Time.zone.today
+    :current
+  end
+
   def to_s; "#{position} (#{starts_at.to_s :rfc822} - #{ends_at.to_s :rfc822})"; end
 
   protected
