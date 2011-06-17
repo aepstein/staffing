@@ -26,7 +26,12 @@ gem 'whenever', :require => false
 gem 'jquery-rails'
 gem 'rails3-jquery-autocomplete'
 gem 'escape_utils'
+gem 'prawn'
+gem 'prawn-svg'
+gem 'prawn-fast-png'
+#gem 'pdfkit', '~> 0.4.6'
 group :development, :test do
+  gem 'thin'
   gem 'rspec', '>= 2.0'
   gem 'rspec-rails', ">= 2.0"
   gem 'cucumber'

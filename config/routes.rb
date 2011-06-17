@@ -99,7 +99,7 @@ Staffing::Application.routes.draw do
   end
   resources :users do
     member do
-      get :resume
+      get :resume, :tent
     end
     resources :committees, :only => [] do
       collection do

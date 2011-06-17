@@ -33,6 +33,18 @@ class UsersController < ApplicationController
     end
   end
 
+  # GET /users/:id/tent.pdf
+  def tent
+    respond_to do |format|
+      format.html { render :layout => 'tent' }
+      format.pdf {
+        report = UserTentReport.new(@user)
+        send_data report.to_pdf, :filename => "#{@user.name :file}-tent.pdf",
+          :type => 'application/pdf', :disposition => 'inline'
+      }
+    end
+  end
+
   # GET /users/1
   # GET /users/1.xml
   def show
