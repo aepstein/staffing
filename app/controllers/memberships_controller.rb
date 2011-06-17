@@ -125,6 +125,8 @@ class MembershipsController < ApplicationController
     respond_to do |format|
       format.html { render :action => 'index' }
       format.csv { csv_index }
+      format.txt { render :text => @search.where(:user_id.ne => nil).all.
+        map(&:user).uniq.map(&:to_email).join(', ') }
       format.xml  { render :xml => @memberships }
     end
   end
