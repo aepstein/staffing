@@ -1,7 +1,7 @@
 source 'http://rubygems.org'
 gem 'rails', '3.0.9'
 gem 'mysql2', '~> 0.2.7'
-gem 'rake', '~> 0.8.7'
+gem 'rake', '~> 0.9.2'
 gem 'sqlite3-ruby', :require => 'sqlite3'
 gem 'capistrano'
 gem 'validates_timeliness', '~> 3.0'
