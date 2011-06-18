@@ -1,22 +1,24 @@
 class UserTentReport < Prawn::Document
-  attr_accessor :user
+  attr_accessor :users
 
-  def initialize(user=nil)
-    self.user = user unless user.nil?
+  def initialize(users=nil)
+    self.users = users unless users.nil?
     super( :page_size => 'LETTER', :page_layout => :landscape )
   end
 
   def to_pdf
+    user = users.shift
     rotate 180, :origin => [720,306] do
       bounding_box [720,306], :width => 720, :height => 234 do
         image "#{::Rails.root}/public/images/layout/tent/logo.png", :height => 72
-        text self.user.name, :size => 48, :align => :center
+        text user.name, :size => 48, :align => :center
       end
     end
     bounding_box [0,234], :width => 720, :height => 234 do
       image "#{::Rails.root}/public/images/layout/tent/logo.png", :height => 72
-      text self.user.name, :size => 48, :align => :center
+      text user.name, :size => 48, :align => :center
     end
+    to_pdf unless users.empty?
     render
   end
 end

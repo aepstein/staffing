@@ -33,12 +33,14 @@ class UsersController < ApplicationController
     end
   end
 
+  # GET /committees/:committee_id/users/tent
   # GET /users/:id/tent.pdf
   def tent
+    @users = User.joins(:memberships).merge( @committee.memberships.current ) if @committee
     respond_to do |format|
       format.html { render :layout => 'tent' }
       format.pdf {
-        report = UserTentReport.new(@user)
+        report = UserTentReport.new(@users || [@user])
         send_data report.to_pdf, :filename => "#{@user.name :file}-tent.pdf",
           :type => 'application/pdf', :disposition => 'inline'
       }
@@ -138,7 +140,8 @@ class UsersController < ApplicationController
     @user = User.find params[:id] if params[:id]
     @membership = Membership.find params[:membership_id] if params[:membership_id]
     @motion = Motion.find params[:motion_id] if params[:motion_id]
-    @context = @membership || @motion
+    @committee = Committee.find params[:committee_id] if params[:committee_id]
+    @context = @membership || @motion || @committee
   end
 
   def setup_breadcrumbs
@@ -157,6 +160,7 @@ class UsersController < ApplicationController
     @users = User.scoped
     @users = @membership.users if @membership
     @users = @motion.users if @motion
+    @users = @committee.users if @committee
   end
 
   def new_user_from_params

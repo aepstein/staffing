@@ -38,6 +38,9 @@ Staffing::Application.routes.draw do
         get :expired, :unexpired, :active, :rejected
       end
     end
+    resources :users, :only => [] do
+      collection :tent
+    end
   end
   resources :enrollments, :except => [ :index, :new, :create ]
   resources :meetings, :except => [ :new, :create ] do
