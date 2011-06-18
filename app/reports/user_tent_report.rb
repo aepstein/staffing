@@ -1,3 +1,7 @@
+# Renders PDF "tent card" for one or more users
+# If printed on card stock and folded down long axis, these card can be used as
+# placards at meetings
+# TODO: Implement logo interface to allow customization of logo used in cards
 class UserTentReport < Prawn::Document
   attr_accessor :users
 
