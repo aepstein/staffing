@@ -18,7 +18,10 @@ class UserTentReport < Prawn::Document
       image "#{::Rails.root}/public/images/layout/tent/logo.png", :height => 72
       text user.name, :size => 48, :align => :center
     end
-    to_pdf unless users.empty?
+    unless users.empty?
+      start_new_page
+      to_pdf
+    end
     render
   end
 end

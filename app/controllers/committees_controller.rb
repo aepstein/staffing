@@ -12,6 +12,13 @@ class CommitteesController < ApplicationController
     index
   end
 
+  # GET /committees/:id/tents.pdf
+  include UserTentReports
+  def tents
+    @users = User.joins(:memberships).merge( @committee.memberships.current )
+    render_user_tent_reports
+  end
+
   # GET /committees
   # GET /committees.xml
   def index

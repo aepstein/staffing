@@ -33,18 +33,10 @@ class UsersController < ApplicationController
     end
   end
 
-  # GET /committees/:committee_id/users/tent
   # GET /users/:id/tent.pdf
+  include UserTentReports
   def tent
-    @users = User.joins(:memberships).merge( @committee.memberships.current ) if @committee
-    respond_to do |format|
-      format.html { render :layout => 'tent' }
-      format.pdf {
-        report = UserTentReport.new(@users || [@user])
-        send_data report.to_pdf, :filename => "#{@user.name :file}-tent.pdf",
-          :type => 'application/pdf', :disposition => 'inline'
-      }
-    end
+    render_user_tent_reports
   end
 
   # GET /users/1
