@@ -1,9 +1,11 @@
 class CommitteesController < ApplicationController
-  before_filter :require_user, :initialize_context, :setup_breadcrumbs
+  before_filter :require_user, :initialize_context
+  before_filter :new_committee_from_params, :only => [ :new, :create ]
   filter_access_to :new, :create, :edit, :update, :destroy, :show, :index
   filter_access_to :requestable do
     permitted_to!( :show, @user )
   end
+  before_filter :setup_breadcrumbs
 
   # GET /users/:user_id/committees/requestable
   # GET /users/:user_id/committees/requestable.xml
@@ -36,8 +38,6 @@ class CommitteesController < ApplicationController
   # GET /committees/1
   # GET /committees/1.xml
   def show
-    @committee = Committee.find(params[:id])
-
     respond_to do |format|
       format.html # show.html.erb
       format.xml  { render :xml => @committee }
@@ -47,8 +47,6 @@ class CommitteesController < ApplicationController
   # GET /committees/new
   # GET /committees/new.xml
   def new
-    @committee = Committee.new
-
     respond_to do |format|
       format.html # new.html.erb
       format.xml  { render :xml => @committee }
@@ -57,14 +55,11 @@ class CommitteesController < ApplicationController
 
   # GET /committees/1/edit
   def edit
-    @committee = Committee.find(params[:id])
   end
 
   # POST /committees
   # POST /committees.xml
   def create
-    @committee = Committee.new(params[:committee])
-
     respond_to do |format|
       if @committee.save
         flash[:notice] = 'Committee was successfully created.'
@@ -80,8 +75,6 @@ class CommitteesController < ApplicationController
   # PUT /committees/1
   # PUT /committees/1.xml
   def update
-    @committee = Committee.find(params[:id])
-
     respond_to do |format|
       if @committee.update_attributes(params[:committee])
         flash[:notice] = 'Committee was successfully updated.'
@@ -97,7 +90,6 @@ class CommitteesController < ApplicationController
   # DELETE /committees/1
   # DELETE /committees/1.xml
   def destroy
-    @committee = Committee.find(params[:id])
     @committee.destroy
 
     respond_to do |format|
@@ -109,7 +101,12 @@ class CommitteesController < ApplicationController
   private
 
   def initialize_context
+    @committee = Committee.find params[:id] if params[:id]
     @user = User.find params[:user_id] if params[:user_id]
+  end
+
+  def new_committee_from_params
+    @committee = Committee.new( params[:committee] )
   end
 
   def setup_breadcrumbs
