@@ -14,7 +14,7 @@ Staffing::Application.routes.draw do
   end
   resources :committees do
     member do
-      get :tents
+      get :tents, :members
     end
     collection do
       get :available

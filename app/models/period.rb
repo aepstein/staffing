@@ -71,7 +71,15 @@ class Period < ActiveRecord::Base
 
   def to_range; starts_at..ends_at; end
 
-  def to_s; "#{starts_at.to_s :rfc822} - #{ends_at.to_s :rfc822}"; end
+  def to_s(style=nil)
+    return super unless starts_at && ends_at
+    case style
+    when :year
+      "#{starts_at.year} - #{ends_at.year}"
+    else
+      "#{starts_at.to_s :rfc822} - #{ends_at.to_s :rfc822}"
+    end
+  end
 
 end
 

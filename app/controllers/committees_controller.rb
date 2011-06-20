@@ -1,7 +1,8 @@
 class CommitteesController < ApplicationController
   before_filter :require_user, :initialize_context
   before_filter :new_committee_from_params, :only => [ :new, :create ]
-  filter_access_to :new, :create, :edit, :update, :destroy, :show, :index
+  filter_access_to :new, :create, :edit, :update, :destroy, :show, :index,
+    :tents, :members, :attribute_check => true
   filter_access_to :requestable do
     permitted_to!( :show, @user )
   end
@@ -20,6 +21,17 @@ class CommitteesController < ApplicationController
     @context = @committee
     @users = User.joins(:memberships).merge( @committee.memberships.current )
     render_user_tent_reports
+  end
+
+  # GET /committees/:id/members.pdf
+  def members
+    respond_to do |format|
+      format.pdf do
+        report = MembershipReport.new(@committee)
+        send_data report.to_pdf, :filename => "#{@committee.name :file}-members.pdf",
+          :type => 'application/pdf', :disposition => 'inline'
+      end
+    end
   end
 
   # GET /committees

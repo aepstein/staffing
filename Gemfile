@@ -27,7 +27,7 @@ gem 'jquery-rails'
 gem 'rails3-jquery-autocomplete'
 gem 'escape_utils'
 gem 'prawn'
-gem 'prawn-svg'
+#gem 'prawn-svg'
 gem 'prawn-fast-png'
 #gem 'pdfkit', '~> 0.4.6'
 group :development, :test do

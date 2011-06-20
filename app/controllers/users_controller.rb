@@ -2,7 +2,7 @@ class UsersController < ApplicationController
   before_filter :require_user, :initialize_context
   before_filter :initialize_index, :only => [ :index, :allowed ]
   before_filter :new_user_from_params, :only => [ :new, :create ]
-  filter_access_to :new, :create, :edit, :update, :destroy, :show,
+  filter_access_to :new, :create, :edit, :update, :destroy, :show, :tent,
     :attribute_check => true
   before_filter :setup_breadcrumbs, :except => [ :profile ]
 
