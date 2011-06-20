@@ -17,6 +17,7 @@ class CommitteesController < ApplicationController
   # GET /committees/:id/tents.pdf
   include UserTentReports
   def tents
+    @context = @committee
     @users = User.joins(:memberships).merge( @committee.memberships.current )
     render_user_tent_reports
   end

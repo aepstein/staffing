@@ -7,7 +7,7 @@ module UserTentReports
         format.pdf do
           if @users
             report = UserTentReport.new(@users)
-            send_data report.to_pdf, :filename => "#{@users.name :file}-tent.pdf",
+            send_data report.to_pdf, :filename => "#{@context.name :file}-tent.pdf",
               :type => 'application/pdf', :disposition => 'inline'
           else
             report = UserTentReport.new([@user])
