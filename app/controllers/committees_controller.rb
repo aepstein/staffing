@@ -2,7 +2,7 @@ class CommitteesController < ApplicationController
   before_filter :require_user, :initialize_context
   before_filter :new_committee_from_params, :only => [ :new, :create ]
   filter_access_to :new, :create, :edit, :update, :destroy, :show, :index,
-    :tents, :members, :attribute_check => true
+    :tents, :members
   filter_access_to :requestable do
     permitted_to!( :show, @user )
   end
