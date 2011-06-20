@@ -125,6 +125,7 @@ class MembershipsController < ApplicationController
     respond_to do |format|
       format.html { render :action => 'index' }
       format.csv { csv_index }
+      format.pdf { pdf_index }
       format.xml  { render :xml => @memberships }
     end
   end
@@ -287,6 +288,12 @@ class MembershipsController < ApplicationController
       end
     end
     send_data csv_string, :disposition => "attachment; filename=memberships.csv"
+  end
+
+  def pdf_index
+    report = MembershipReport.new(@memberships)
+    send_data report.to_pdf, :filename => "memberships.pdf",
+      :type => 'application/pdf', :disposition => 'inline'
   end
 
 end
