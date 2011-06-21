@@ -35,7 +35,7 @@ end
 
 Factory.define :logo do |f|
   f.sequence( :name ) { |n| "Logo #{n}" }
-  f.vector { |logo| File.open "spec/assets/logo.svg" }
+  f.vector { |logo| File.open "#{::Rails.root}/spec/assets/logo.eps" }
 end
 
 Factory.define :membership do |f|

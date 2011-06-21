@@ -4,14 +4,12 @@ class VectorUploader < CarrierWave::Uploader::Base
 
   # Letterhead version should be 1 inch high with 600dpi
   version :tent do
-    resize_to_fit 2550, 600
-    convert 'png'
+    # Density for 600 pixel height
   end
 
   # Letterhead version should be 0.88 inches high with 600dpi
   version :letterhead do
-    resize_to_fit 2244, 528
-    convert 'png'
+    # Density for 528 pixel height
   end
 
   def store_dir
@@ -19,7 +17,7 @@ class VectorUploader < CarrierWave::Uploader::Base
   end
 
   def extension_white_list
-    %w( svg )
+    %w( svg eps )
   end
 
 end
