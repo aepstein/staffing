@@ -2,12 +2,15 @@ class UsersController < ApplicationController
   before_filter :require_user, :initialize_context
   before_filter :initialize_index, :only => [ :index, :allowed ]
   before_filter :new_user_from_params, :only => [ :new, :create ]
-  filter_access_to :new, :create, :edit, :update, :destroy, :show, :attribute_check => true
+  filter_access_to :new, :create, :edit, :update, :destroy, :show, :tent,
+    :attribute_check => true
+  before_filter :setup_breadcrumbs, :except => [ :profile ]
 
   # GET /motions/:motion_id/users/allowed
   # GET /motions/:motion_id/users/allowed
   def allowed
     @users = @users.allowed
+    add_breadcrumb "Allowed", polymorphic_path([ :allowed, @context, :users ])
     index
   end
 
@@ -28,6 +31,12 @@ class UsersController < ApplicationController
       format.json { render :action => 'index' } # index.json.erb
       format.xml  { render :xml => @users }
     end
+  end
+
+  # GET /users/:id/tent.pdf
+  include UserTentReports
+  def tent
+    render_user_tent_reports
   end
 
   # GET /users/1
@@ -123,12 +132,27 @@ class UsersController < ApplicationController
     @user = User.find params[:id] if params[:id]
     @membership = Membership.find params[:membership_id] if params[:membership_id]
     @motion = Motion.find params[:motion_id] if params[:motion_id]
+    @committee = Committee.find params[:committee_id] if params[:committee_id]
+    @context = @membership || @motion || @committee
+  end
+
+  def setup_breadcrumbs
+    if @context
+      add_breadcrumb @context.class.to_s.pluralize,
+        polymorphic_path( [ @context.class.arel_table.name ] )
+      add_breadcrumb @context, polymorphic_path( [ @context ] )
+    end
+    add_breadcrumb 'Users', polymorphic_path( [ @context, :users ] )
+    if @user && @user.persisted?
+      add_breadcrumb @user, user_path( @user )
+    end
   end
 
   def initialize_index
     @users = User.scoped
     @users = @membership.users if @membership
     @users = @motion.users if @motion
+    @users = @committee.users if @committee
   end
 
   def new_user_from_params

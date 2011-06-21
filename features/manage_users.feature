@@ -9,6 +9,12 @@ Feature: Manage users
   Scenario Outline: Test permissions for schedules controller actions
     Given a user: "owner" exists with net_id: "owner", password: "secret", admin: false, first_name: "The", last_name: "Owner"
     And a user: "regular" exists with net_id: "regular", password: "secret", admin: false
+    And a user: "authority" exists
+    And a committee exists
+    And a position exists
+    And an enrollment exists with committee: the committee, position: the position, votes: 1
+    And a membership exists with user: user "authority", position: the position
+    And an authority exists with committee: the committee
     And I log in as user: "<user>"
     And I am on the page for the user: "owner"
     Then I should <show> authorized
@@ -29,10 +35,11 @@ Feature: Manage users
     Given I delete on the page for the user: "owner"
     Then I should <destroy> authorized
     Examples:
-      | user    | create  | update  | destroy | show    |
-      | admin   | see     | see     | see     | see     |
-      | owner   | not see | see     | not see | see     |
-      | regular | not see | not see | not see | not see |
+      | user      | create  | update  | destroy | show    |
+      | admin     | see     | see     | see     | see     |
+      | owner     | not see | see     | not see | see     |
+      | authority | not see | not see | not see | see     |
+      | regular   | not see | not see | not see | not see |
 
   Scenario: List authorities on the user profile page
     Given a user: "owner" exists

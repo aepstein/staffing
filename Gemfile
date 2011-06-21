@@ -1,6 +1,7 @@
 source 'http://rubygems.org'
-gem 'rails', '3.0.7'
-gem 'mysql2'
+gem 'rails', '3.0.9'
+gem 'mysql2', '~> 0.2.7'
+gem 'rake', '~> 0.9.2'
 gem 'sqlite3-ruby', :require => 'sqlite3'
 gem 'capistrano'
 gem 'validates_timeliness', '~> 3.0'
@@ -24,7 +25,11 @@ gem 'bluecloth'
 gem 'whenever', :require => false
 gem 'jquery-rails'
 gem 'rails3-jquery-autocomplete'
+gem 'escape_utils'
+gem 'prawn'
+gem 'prawn-fast-png'
 group :development, :test do
+  gem 'thin'
   gem 'rspec', '>= 2.0'
   gem 'rspec-rails', ">= 2.0"
   gem 'cucumber'

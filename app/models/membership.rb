@@ -52,7 +52,7 @@ class Membership < ActiveRecord::Base
       "enrollments.position_id = memberships.position_id").
     where( "memberships.position_id = ? OR " +
       "enrollments.committee_id IN (?)",
-       membership.id, membership.position.committee_ids ).
+       membership.position_id, membership.position.committee_ids ).
     no_overlap( membership.starts_at, membership.ends_at ).
     where( :renew_until.gte => membership.starts_at ).
     where( :renew_until.gte => Time.zone.today )
@@ -136,8 +136,8 @@ class Membership < ActiveRecord::Base
   validate :must_be_within_period, :user_must_be_qualified,
     :concurrent_memberships_must_not_exceed_slots
 
-  before_save :claim_request
-  after_save :populate_unassigned, :close_claimed_request
+  before_save :clear_notices, :claim_request
+  after_save :populate_unassigned, :close_claimed_request, :claim_renewed_memberships
   after_destroy :populate_unassigned
 
   def self.concurrent_counts( period, position_id )
@@ -252,6 +252,13 @@ class Membership < ActiveRecord::Base
     position.to_s
   end
 
+  def tense
+    return nil unless starts_at && ends_at
+    return :past if ends_at < Time.zone.today
+    return :future if starts_at > Time.zone.today
+    :current
+  end
+
   def to_s; "#{position} (#{starts_at.to_s :rfc822} - #{ends_at.to_s :rfc822})"; end
 
   protected
@@ -291,11 +298,29 @@ class Membership < ActiveRecord::Base
     end
   end
 
+  # If the user is blank, clear the notice fields
+  def clear_notices
+    return true unless user.blank?
+    self.join_notice_at = nil
+    self.leave_notice_at = nil
+    true
+  end
+
   # If this fulfills an active request, assign it to that request
   def claim_request
     return true if request || user.blank?
     self.request = user.requests.joins(:user).active.interested_in( self ).first
     true
+  end
+
+  # If this renews an existing membership, mark the membership renew
+  def claim_renewed_memberships
+    return true unless user_id_changed?
+    renewed_memberships.clear unless renewed_memberships.empty?
+    unless user.blank?
+      renewed_memberships << Membership.where(:user_id => user_id).
+        renewable_to( self ).select( "DISTINCT memberships.*" )
+    end
   end
 
   # If associated with a new, active request, close the request

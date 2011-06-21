@@ -29,6 +29,12 @@ You may review requests and update memberships for the following authorities:
 You have <%= link_to pluralize( current_user.memberships.current.length, 'current membership' ), current_user_memberships_path(current_user) %>, <%= link_to pluralize( current_user.memberships.past.size, 'past membership' ), past_user_memberships_path(current_user) %>, and <%= link_to pluralize( current_user.memberships.future.size, 'future membership' ), future_user_memberships_path(current_user) %>.
 </p>
 
+<% if current_user.memberships.where( :starts_at.lte => Time.zone.today ).count > 0 %>
+<p>
+You can specify your <%= link_to 'renewal preferences', renew_user_memberships_path( current_user ) %>.
+</p>
+<% end %>
+
 <% if current_user.memberships.current.length > 0 %>
 <h4>Current Memberships</h4>
 <%= render :partial => 'memberships/memberships', :object => current_user.memberships.current, :locals => { :user => current_user } %>

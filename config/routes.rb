@@ -13,6 +13,9 @@ Staffing::Application.routes.draw do
     end
   end
   resources :committees do
+    member do
+      get :tents, :members
+    end
     collection do
       get :available
     end
@@ -50,9 +53,7 @@ Staffing::Application.routes.draw do
       end
     end
   end
-  resources :memberships, :except => [ :index, :new, :create ] do
-    resources :requests, :only => [ :new, :create ]
-  end
+  resources :memberships, :except => [ :index, :new, :create ]
   resources :motions, :except => [ :new, :create ] do
     resources :users, :only => [ :index ] do
       collection do
@@ -101,7 +102,7 @@ Staffing::Application.routes.draw do
   end
   resources :users do
     member do
-      get :resume
+      get :resume, :tent
     end
     resources :committees, :only => [] do
       collection do

@@ -1,13 +1,16 @@
 class RequestsController < ApplicationController
-  before_filter :require_user, :initialize_context
-  before_filter :initialize_requestable, :only => [ :index, :expired, :unexpired, :active, :rejected, :new, :create ]
-  before_filter :initialize_index, :only => [ :index, :expired, :unexpired, :active, :rejected ]
+  before_filter :require_user
+  before_filter :initialize_context
+  before_filter :initialize_index, :only => [ :index, :expired, :unexpired,
+    :active, :rejected ]
   before_filter :new_request_from_params, :only => [ :new, :create ]
   filter_access_to :new, :create, :edit, :update, :destroy, :show, :reject,
     :do_reject, :reactivate, :attribute_check => true
-  filter_access_to :index, :renewed, :unrenewed, :expired, :unexpired, :active, :rejected do
+  filter_access_to :index, :renewed, :unrenewed, :expired, :unexpired, :active,
+    :rejected do
     @user ? permitted_to!( :show, @user ) : permitted_to!( :index )
   end
+  before_filter :setup_breadcrumbs
 
   # GET /position/:position_id/requests
   # GET /position/:position_id/requests.xml
@@ -31,28 +34,32 @@ class RequestsController < ApplicationController
   # GET /user/:user_id/requests/active.xml
   def active
     @requests = @requests.active
-    return index
+    add_breadcrumb 'Active', polymorphic_path( [ :active, @context, :requests ] )
+    index
   end
 
   # GET /user/:user_id/requests/rejected
   # GET /user/:user_id/requests/rejected.xml
   def rejected
     @requests = @requests.rejected
-    return index
+    add_breadcrumb 'Rejected', polymorphic_path( [ :rejected, @context, :requests ] )
+    index
   end
 
   # GET /user/:user_id/requests/expired
   # GET /user/:user_id/requests/expired.xml
   def expired
     @requests = @requests.expired
-    return index
+    add_breadcrumb 'Expired', polymorphic_path( [ :expired, @context, :requests ] )
+    index
   end
 
   # GET /user/:user_id/requests/unexpired
   # GET /user/:user_id/requests/unexpired.xml
   def unexpired
     @requests = @requests.unexpired
-    return index
+    add_breadcrumb 'Unexpired', polymorphic_path( [ :unexpired, @context, :requests ] )
+    index
   end
 
   # GET /requests/1
@@ -176,54 +183,47 @@ class RequestsController < ApplicationController
 
   private
 
-  def initialize_index
-    return if @requests
-    if @requestable
-      @requests = @requestable.requests.ordered.with_permissions_to( :show )
-      @title = "for #{@requestable}"
-    elsif @authority
-      @requests = @authority.requests.ordered.with_permissions_to( :show )
-      @title = "for #{@authority}"
-    else
-      @requests = @user.requests.ordered.with_permissions_to( :show )
-      @title = "for #{@user}"
-    end
-  end
-
   def initialize_context
     @request = Request.find( params[:id] ) if params[:id]
+    @requestable = @request.requestable if @request
+    @requestable = Position.find params[:position_id] if params[:position_id]
+    @requestable = Committee.find params[:committee_id] if params[:committee_id]
     @authority = Authority.find( params[:authority_id] ) if params[:authority_id]
     unless @request || @authority
       @user = params[:user_id] ? User.find( params[:user_id] ) : current_user
     end
+    if @requestable
+      @request ||= @requestable.requests.where( :user_id => @user.id ).first
+    end
+    @context = @authority || @requestable || @user
   end
 
-  def initialize_requestable
-    @requestable = Position.find params[:position_id] if params[:position_id]
-    @requestable = Committee.find params[:committee_id] if params[:committee_id]
-    if params[:membership_id]
-      @membership = Membership.find params[:membership_id]
-      @user = @membership.user
-      @request ||= @membership.request
-      @membership.position.requestables.each do |requestable|
-        @request ||= @membership.user.requests.first( :conditions =>
-          { :requestable_type => requestable.class.to_s,
-            :requestable_id => requestable.id } )
-      end
-      @requestable ||= @request.requestable if @request
-      @requestable ||= @membership.position.requestables.first unless @membership.position.requestables.empty?
-    end
-    return unless @requestable
-    @request ||= @requestable.requests.first( :conditions => { :user_id => @user } )
+  def initialize_index
+    @requests = @context.requests.ordered.with_permissions_to( :show )
+    @title = "for #{@context}"
   end
 
   def new_request_from_params
-    return redirect_to edit_request_url( @request ) unless @request.nil? || @request.new_record?
+    if @request && @request.persisted?
+      return redirect_to edit_request_url( @request )
+    end
     @request = @requestable.requests.build
     @request.starts_at ||= @membership.starts_at if @membership
     @request.user ||= ( @membership ? @membership.user : @user )
     @request.accessible = Request::UPDATABLE_ATTRIBUTES
     @request.attributes = params[:request]
+  end
+
+  def setup_breadcrumbs
+    if @context
+      add_breadcrumb @context.class.to_s.pluralize,
+        polymorphic_path( [ @context.class.arel_table.name ] )
+      add_breadcrumb @context, polymorphic_path( [ @context ] )
+    end
+    add_breadcrumb "Requests", polymorphic_path( [ @context, :requests ] )
+    if @request && @request.persisted?
+      add_breadcrumb @request, request_path( @request )
+    end
   end
 
   def index_csv

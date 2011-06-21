@@ -1,0 +1,58 @@
+<html>
+<head>
+<style>
+.name {
+  position: absolute;
+  clear: both;
+  left: 0;
+  right: 0;
+  margin-left: auto;
+  margin-right: auto;
+  padding: 0pt;
+  border: 0pt;
+  display: black;
+  text-align: center;
+  font-size: 54pt;
+  font-family: sans-serif;
+}
+.logo {
+  position: absolute;
+  display: block;
+  margin: 0pt;
+  padding: 0pt;
+  border: 0pt;
+  height: 72pt;
+}
+.front {
+  -webkit-transform: rotate(-180deg);
+}
+p.front {
+  margin-bottom: 0pt;
+  bottom: 5in;
+}
+img.front {
+  bottom: 4in;
+  right: 0in;
+}
+img.back {
+  top: 4in;
+}
+p.back {
+  margin-top: 0pt;
+  top: 5in;
+}
+</style>
+<meta name="pdfkit-orientation" content="Landscape" />
+<meta name="pdfkit-page_size" content="Letter" />
+<meta name="pdfkit-margin_bottom" content="0.5in" />
+<meta name="pdfkit-margin_top" content="0.5in" />
+<meta name="pdfkit-margin_left" content="0.5in" />
+<meta name="pdfkit-margin_right" content="0.5in" />
+</head>
+<body>
+
+<%= yield %>
+
+</body>
+</html>
+

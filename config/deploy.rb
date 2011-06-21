@@ -30,6 +30,7 @@ namespace :deploy do
     run "ln -nfs #{shared_path}/config/database.yml #{release_path}/config/database.yml"
     run "ln -nfs #{shared_path}/uploads #{release_path}/db/uploads"
     run "ln -nfs #{shared_path}/system/production #{release_path}/public/system"
+    run "ln -nfs #{shared_path}/db/fonts #{release_path}/db/fonts"
     #run "ln -nfs #{shared_path}/assets #{release_path}/public/assets"
   end
 

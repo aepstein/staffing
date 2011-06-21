@@ -10,3 +10,4 @@ db/*.sqlite3-journal
 db/*.sql
 db/schema.rb
 db/uploads
+db/fonts/*.ttf

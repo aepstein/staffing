@@ -5,8 +5,13 @@ authorization do
       :questions, :requests, :schedules, :users, :user_renewal_notices,
       :sendings ],
       :to => [ :manage, :show, :index ]
+    has_permission_on :committees, :to => [ :tents, :members ]
+    has_permission_on :users, :to => [ :tent ]
     has_permission_on :users, :to => :resume
     has_permission_on :requests, :to => [ :reject, :reactivate ]
+  end
+  role :authority do
+    has_permission_on :users, :to => :show
   end
   role :user do
     has_permission_on [ :authorities, :committees, :enrollments, :meetings,

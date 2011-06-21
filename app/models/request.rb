@@ -6,13 +6,13 @@ class Request < ActiveRecord::Base
   UPDATABLE_ATTRIBUTES = [ :starts_at, :ends_at, :new_position,
     :answers_attributes, :user_attributes ]
   REJECTABLE_ATTRIBUTES = [ :rejected_by_authority_id, :rejection_comment ]
-  # Criteria for identify positions staffable to this request
-  POSITIONS_JOIN_SQL = "(requests.requestable_type = 'Position' AND " +
+  # Criteria to identify positions staffable to this request
+  POSITIONS_JOIN_SQL = "((requests.requestable_type = 'Position' AND " +
     "requests.requestable_id = positions.id) OR " +
     "(enrollments.position_id = positions.id AND " +
-    "positions.requestable_by_committee = #{connection.quote true}) AND " +
+    "positions.requestable_by_committee = #{connection.quote true})) AND " +
     "( positions.statuses_mask = 0 OR " +
-    "( positions.statuses_mask & users.statuses_mask ) > 0 )"
+    "( ( positions.statuses_mask & users.statuses_mask ) > 0 ) )"
 
   attr_accessible :starts_at, :ends_at, :new_position, :answers_attributes,
     :user_attributes
@@ -91,7 +91,7 @@ class Request < ActiveRecord::Base
   # Joins to requestable tables
   # * assumes a join with users
   scope :with_positions, lambda {
-    with_enrollments.joins( "INNER JOIN positions" ).
+    joins( "INNER JOIN positions" ).with_enrollments.
     where( Request::POSITIONS_JOIN_SQL )
   }
   # Find requests that may be interested in a membership

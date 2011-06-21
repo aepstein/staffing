@@ -4,7 +4,7 @@ Feature: User mailer
   I want to send email notices to users regarding their appointment to committees
 
   Background:
-    Given a user: "focus" exists with first_name: "Johnny", last_name: "Applicant", email: "johnny.applicant@example.org"
+    Given a user: "focus" exists with first_name: "Johnny", last_name: "Applicant"
     And an authority: "focus" exists with join_message: "We are *very* pleased to appoint you.", leave_message: "We are *very* sad to see you go."
     And an authority: "other" exists with contact_name: "Some Other Authority"
     And schedule: "focus" exists
@@ -20,61 +20,53 @@ Feature: User mailer
   Scenario Outline: Send join notice to a user
     Given a membership exists with position: position "<position>", period: period "focus", user: user "focus"
     And a join notice email is sent for the membership
-    And "johnny.applicant@example.org" opens the email
-    Then I should see "Your appointment to <description>" in the email subject
-    And I should see "Dear Johnny," in the email text part body
-    And I should see "Dear Johnny," in the email text part body
-    And I should see "This notice is to inform you that you have been assigned a membership in <description>, for a term starting on June 1st, 2008 and ending on May 31st, 2009." in the email text part body
-    And I should see "This notice is to inform you that you have been assigned a membership in <description>, for a term starting on June 1st, 2008 and ending on May 31st, 2009." in the email html part body
-    And I should <authority> "We are *very* pleased to appoint you." in the email text part body
-    And I should <authority> "We are <em>very</em> pleased to appoint you." in the email html part body
-    And I should <committee> "This committee is *cool*." in the email text part body
-    And I should <committee> "This committee is <em>cool</em>." in the email html part body
-    And I should <committee> "Concurrent with your appointment to this position, you hold the following committee enrollments:" in the email text part body
-    And I should <cool> "This position is *cool*." in the email text part body
-    And I should <cool> "This position is <em>cool</em>." in the email html part body
-    And I should <lame> "This position is *lame*." in the email text part body
-    And I should <lame> "This position is <em>lame</em>." in the email html part body
-    And I should see "Best regards," in the email text part body
-    And I should see "Best regards," in the email html part body
-    And I should <authority> "The Authority" in the email text part body
-    And I should <authority> "The Authority" in the email html part body
+    Then 1 email should be delivered to user: "focus"
+    And the email should have subject: "Your appointment to <description>", from: "info@example.org"
+    And the email should contain "Dear Johnny," in the both parts body
+    And the email should contain "This notice is to inform you that you have been assigned a membership in <description>, for a term starting on June 1st, 2008 and ending on May 31st, 2009." in the both parts body
+    And the email should <authority> contain "We are *very* pleased to appoint you." in the text part body
+    And the email should <authority> contain "We are <em>very</em> pleased to appoint you." in the html part body
+    And the email should <committee> contain "This committee is *cool*." in the text part body
+    And the email should <committee> contain "This committee is <em>cool</em>." in the html part body
+    And the email should <committee> contain "Concurrent with your appointment to this position, you hold the following committee enrollments:" in the text part body
+    And the email should <cool> contain "This position is *cool*." in the text part body
+    And the email should <cool> contain "This position is <em>cool</em>." in the html part body
+    And the email should <lame> contain "This position is *lame*." in the text part body
+    And the email should <lame> contain "This position is <em>lame</em>." in the html part body
+    And the email should contain "Best regards," in the both parts body
+    And the email should <authority> contain "The Authority" in the both parts body
     Examples:
       | position              | description     | authority | committee | cool    | lame     |
-      | requestable_position  | Cool position   | see       | see       | see     | not see  |
-      | requestable_committee | Cool committee  | see       | see       | not see | see      |
-      | no_enrollment         | Orphan position | see       | not see   | not see | not see  |
-      | other_authority       | Other authority | not see   | not see   | not see | not see  |
+      | requestable_position  | Cool position   |           |           |         | not      |
+      | requestable_committee | Cool committee  |           |           | not     |          |
+      | no_enrollment         | Orphan position |           | not       | not     | not      |
+      | other_authority       | Other authority | not       | not       | not     | not      |
 
   Scenario Outline: Send leave notice to a user
     Given a membership exists with position: position "<position>", period: period "focus", user: user "focus"
     And a leave notice email is sent for the membership
-    And "johnny.applicant@example.org" opens the email
-    Then I should see "Expiration of your appointment to <description>" in the email subject
-    And I should see "Dear Johnny," in the email text part body
-    And I should see "Dear Johnny," in the email html part body
-    And I should see "This notice is to inform you that your membership in <description>, which began on June 1st, 2008, has expired as of May 31st, 2009." in the email text part body
-    And I should see "This notice is to inform you that your membership in <description>, which began on June 1st, 2008, has expired as of May 31st, 2009." in the email html part body
-    And I should <authority> "We are *very* sad to see you go." in the email text part body
-    And I should <authority> "We are <em>very</em> sad to see you go." in the email html part body
-    And I should <committee> "This committee was *cool*." in the email text part body
-    And I should <committee> "This committee was <em>cool</em>." in the email html part body
-    And I should <committee> "Concurrent with your membership, your enrollment in the following committees has also expired:" in the email text part body
-    And I should <committee> "Concurrent with your membership, your enrollment in the following committees has also expired:" in the email html part body
-    And I should <cool> "This position was *cool*." in the email text part body
-    And I should <cool> "This position was <em>cool</em>." in the email html part body
-    And I should <lame> "This position was *lame*." in the email text part body
-    And I should <lame> "This position was <em>lame</em>." in the email html part body
-    And I should see "Best regards," in the email text part body
-    And I should see "Best regards," in the email html part body
-    And I should <authority> "The Authority" in the email text part body
-    And I should <authority> "The Authority" in the email html part body
+    Then 1 email should be delivered to user: "focus"
+    And the email should have subject: "Expiration of your appointment to <description>", from: "info@example.org"
+    And the email should contain "Dear Johnny," in the both parts body
+    And the email should contain "This notice is to inform you that your membership in <description>, which began on June 1st, 2008, has expired as of May 31st, 2009." in the both parts body
+    And the email should <authority> contain "We are *very* sad to see you go." in the text part body
+    And the email should <authority> contain "We are <em>very</em> sad to see you go." in the html part body
+    And the email should <committee> contain "This committee was *cool*." in the text part body
+    And the email should <committee> contain "This committee was <em>cool</em>." in the html part body
+    And the email should <committee> contain "Concurrent with your membership, your enrollment in the following committees has also expired:" in the text part body
+    And the email should <committee> contain "Concurrent with your membership, your enrollment in the following committees has also expired:" in the html part body
+    And the email should <cool> contain "This position was *cool*." in the text part body
+    And the email should <cool> contain "This position was <em>cool</em>." in the html part body
+    And the email should <lame> contain "This position was *lame*." in the text part body
+    And the email should <lame> contain "This position was <em>lame</em>." in the html part body
+    And the email should contain "Best regards," in the both parts body
+    And the email should <authority> contain "The Authority" in the both parts body
     Examples:
       | position              | description     | authority | committee | cool    | lame     |
-      | requestable_position  | Cool position   | see       | see       | see     | not see  |
-      | requestable_committee | Cool committee  | see       | see       | not see | see      |
-      | no_enrollment         | Orphan position | see       | not see   | not see | not see  |
-      | other_authority       | Other authority | not see   | not see   | not see | not see  |
+      | requestable_position  | Cool position   |           |           |         | not      |
+      | requestable_committee | Cool committee  |           |           | not     |          |
+      | no_enrollment         | Orphan position |           | not       | not     | not      |
+      | other_authority       | Other authority | not       | not       | not     | not      |
 
   Scenario Outline: Copy the watchers for a position
     Given a position: "watcher" exists with schedule: schedule "focus"
@@ -84,12 +76,12 @@ Feature: User mailer
     And a membership: "watcher" exists with user: user "watcher", period: period "focus", position: position "watcher"
     And a membership: "focus" exists with user: user "focus", period: period "focus", position: position "requestable_position"
     And a <notice> notice email is sent for membership: "focus"
-    And "johnny.applicant@example.org" opens the email
-    Then I should <cc> "John Doe <watcher@example.com>" in the email "cc" header
+    Then 1 email should be delivered to user: "focus"
+    And the email <cc> be copied to user: "watcher"
     Examples:
-      | committee   | notice | cc      |
-      | requestable | join   | see     |
-      | requestable | leave  | see     |
-      | other       | join   | not see |
-      | other       | leave  | not see |
+      | committee   | notice | cc         |
+      | requestable | join   | should     |
+      | requestable | leave  | should     |
+      | other       | join   | should not |
+      | other       | leave  | should not |
 

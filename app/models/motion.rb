@@ -57,8 +57,8 @@ class Motion < ActiveRecord::Base
   end
 
   default_scope order( 'motions.position ASC' )
-  scope :past, lambda { joins(:period) & Period.unscoped.past }
-  scope :current, lambda { joins(:period) & Period.unscoped.current }
+  scope :past, lambda { joins(:period).merge Period.unscoped.past }
+  scope :current, lambda { joins(:period).merge Period.unscoped.current }
 
   accepts_nested_attributes_for :sponsorships, :allow_destroy => true,
     :reject_if => proc { |a| a['user_name'].blank? }
@@ -93,35 +93,33 @@ class Motion < ActiveRecord::Base
     event :propose do
       transition :started => :proposed
     end
-
     event :adopt do
       transition :proposed => :adopted
     end
-
     event :merge do
       transition :proposed => :merged
     end
-
     event :divide do
       transition :proposed => :divided
     end
-
     event :refer do
       transition [ :proposed, :adopted ] => :referred
     end
-
     event :implement do
       transition :adopted => :implemented
     end
-
     event :restart do
       transition :closed => :started
     end
-
     event :reject do
       transition [ :proposed, :adopted, :implemented ] => :rejected
     end
 
+  end
+
+  def tense
+    return nil if period.blank?
+    period.tense
   end
 
   # Motion has been referred from another committee

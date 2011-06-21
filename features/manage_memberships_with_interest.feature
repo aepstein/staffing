@@ -13,28 +13,42 @@ Feature: Manage memberships with interest
     And a schedule exists
     And a period: "current" exists with schedule: the schedule
     And a period: "past" exists before period: "current" with schedule: the schedule
-    And a position: "requestable_position" exists with requestable: true, authority: authority "focus", schedule: the schedule
-    And a position: "requestable_committee" exists with requestable: false, requestable_by_committee: true, authority: authority "focus", schedule: the schedule
+    And a position: "requestable_position" exists with renewable: true, requestable: true, authority: authority "focus", schedule: the schedule
+    And a position: "requestable_committee" exists with renewable: true, requestable: false, requestable_by_committee: true, authority: authority "focus", schedule: the schedule
     And a committee: "requestable_committee" exists with requestable: true
-    And an enrollment exists with committee: committee "requestable_committee", position: position "requestable_position"
+    And an enrollment exists with committee: committee "requestable_committee", position: position "requestable_committee"
 
   Scenario Outline: See memberships for which user is interested in renewal
     Given a user: "applicant" exists with first_name: "Very", last_name: "Interested"
-    And a request exists with user: user "applicant", requestable: <what> "<requested>"
-    And I log in as user: "authority"
-    And a membership: "renewable" exists with position: position "requestable_position", user: user "applicant", period: period "past"
+    And a user: "other" exists
+    And a request exists with user: user "applicant", requestable: <what> "requestable_<what>"
+    And a membership: "renewable" exists with position: position "requestable_<what>", user: user "<incumbent>", period: period "past"
     And membership: "renewable" <renew> interested in renewal
+    And a membership: "current" exists with position: position "requestable_<what>", period: period "current"
+    And membership: "current" has no renewed_memberships
     And the request has status: "<status>"
-    And a membership: "current" exists with position: position "requestable_position", period: period "current"
+    And I log in as user: "authority"
     And I am on the edit page for membership: "current"
-    Then I should <no_renewals> "No candidates" within "#hub-section-first"
-    And I should <no_others> "No candidates" within "#hub-section-others"
-    And I should <renewals> "Very Interested" within "#hub-section-first"
-    And I should <others> "Very Interested" within "#hub-section-others"
+    Then I should <renewals> "Very Interested" within "#hub-section-first"
+    And I should <new> "Very Interested" within "#hub-section-others"
+    And I should <no_renewals> "No candidates" within "#hub-section-first"
+    And I should <no_new> "No candidates" within "#hub-section-others"
     Examples:
-      | what     | requested            | status | renew  | renewals | others  | no_renewals | no_others |
-      | position | requestable_position | active | is     | see      | see     | not see     | not see   |
-      | position | requestable_position | closed | is     | see      | not see | not see     | see       |
-      | position | requestable_position | active | is not | not see  | see     | see         | not see   |
-      | position | requestable_position | closed | is not | not see  | not see | see         | see       |
+      |what     |status|incumbent|renew |renewals|new    |no_renewals|no_new |
+      |position |active|other    |is    |not see |see    |not see    |not see|
+      |position |closed|other    |is    |not see |not see|not see    |see    |
+      |position |active|other    |is not|not see |see    |see        |not see|
+      |position |closed|other    |is not|not see |not see|see        |see    |
+      |position |active|applicant|is    |see     |see    |not see    |not see|
+      |position |closed|applicant|is    |see     |not see|not see    |see    |
+      |position |active|applicant|is not|not see |see    |see        |not see|
+      |position |closed|applicant|is not|not see |not see|see        |see    |
+      |committee|active|other    |is    |not see |see    |not see    |not see|
+      |committee|closed|other    |is    |not see |not see|not see    |see    |
+      |committee|active|other    |is not|not see |see    |see        |not see|
+      |committee|closed|other    |is not|not see |not see|see        |see    |
+      |committee|active|applicant|is    |see     |see    |not see    |not see|
+      |committee|closed|applicant|is    |see     |not see|not see    |see    |
+      |committee|active|applicant|is not|not see |see    |see        |not see|
+      |committee|closed|applicant|is not|not see |not see|see        |see    |
 

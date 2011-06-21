@@ -80,8 +80,7 @@ Feature: Manage requests
       | regular   | not see | see     | not see | not see | not see |
 
   Scenario Outline: Register new request or edit
-    Given I log in as user: "applicant"
-    And a position: "popular" exists with name: "Most Popular Person", schedule: schedule "annual", quiz: quiz "generic", renewable: true, requestable: <p_requestable>, requestable_by_committee: true
+    Given a position: "popular" exists with name: "Most Popular Person", schedule: schedule "annual", quiz: quiz "generic", renewable: true, requestable: <p_requestable>, requestable_by_committee: true
     And a position: "unpopular" exists with name: "Least Popular Person", quiz: quiz "generic", requestable_by_committee: true
     And a position: "misc" exists with name: "Zee Last Position", quiz: quiz "generic", requestable_by_committee: true
     And a membership exists with position: position "popular", user: user "applicant", period: period "2008"
@@ -89,6 +88,7 @@ Feature: Manage requests
     And an enrollment exists with committee: the committee, position: position "popular"
     And a request exists with user: user "applicant", requestable: <existing>
     And a request exists with user: user "applicant", requestable: position "unpopular"
+    And I log in as user: "applicant"
     And I am on the new request page for <requestable>
     When I fill in "Desired Start Date" with "2008-06-01"
     And I fill in "Desired End Date" with "2009-05-31"
@@ -126,11 +126,8 @@ Feature: Manage requests
       | requestable         | name                | p_requestable | existing             | button | sta |
       | the committee       | Central Committee   | true          | position "misc"      | Create | cre |
       | position: "popular" | Most Popular Person | true          | position "misc"      | Create | cre |
-      | the membership      | Most Popular Person | true          | position "misc"      | Create | cre |
-      | the membership      | Central Committee   | false         | position "misc"      | Create | cre |
-      | the membership      | Most Popular Person | true          | position "popular"   | Update | upd |
-      | the membership      | Central Committee   | false         | the committee        | Update | upd |
       | the committee       | Central Committee   | true          | the committee        | Update | upd |
+      | position: "popular" | Most Popular Person | true          | position "popular"   | Update | upd |
 
   Scenario: Reject a request and reactivate
     Given an authority exists with name: "Primary"

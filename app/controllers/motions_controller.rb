@@ -2,12 +2,14 @@ class MotionsController < ApplicationController
   before_filter :initialize_context
   before_filter :initialize_index
   before_filter :new_motion_from_params, :only => [ :new, :create ]
+  before_filter :setup_breadcrumbs
   filter_access_to :new, :create, :edit, :update, :destroy, :show, :attribute_check => true
 
   # GET /meetings/:meeting_id/motions/allowed
   # GET /meetings/:meeting_id/motions/allowed.xml
   def allowed
     @motions = @motions.allowed
+    add_breadcrumb 'Allowed', polymorphic_path([:allowed, @context, :motions])
     index
   end
 
@@ -15,6 +17,7 @@ class MotionsController < ApplicationController
   # GET /committees/:committee_id/motions/past.xml
   def past
     @motions = @motions.past
+    add_breadcrumb 'Past', polymorphic_path([:past, @context, :motions])
     index
   end
 
@@ -22,6 +25,7 @@ class MotionsController < ApplicationController
   # GET /committees/:committee_id/motions/current.xml
   def current
     @motions = @motions.current
+    add_breadcrumb 'Current', polymorphic_path([:current, @context, :motions])
     index
   end
 
@@ -122,10 +126,13 @@ class MotionsController < ApplicationController
   private
 
   def initialize_context
-    @committee = Committee.find(params[:committee_id]) if params[:committee_id]
-    @user = User.find(params[:user_id]) if params[:user_id]
-    @meeting = Meeting.find(params[:meeting_id]) if params[:meeting_id]
     @motion = Motion.find(params[:id]) if params[:id]
+    @meeting = Meeting.find(params[:meeting_id]) if params[:meeting_id]
+    @user = User.find(params[:user_id]) if params[:user_id]
+    @committee = Committee.find(params[:committee_id]) if params[:committee_id]
+    @committee ||= @motion.committee if @motion
+    @committee ||= @meeting.committee if @meeting
+    @context = @user || @meeting || @committee
   end
 
   def initialize_index
@@ -138,6 +145,29 @@ class MotionsController < ApplicationController
   def new_motion_from_params
     @motion = @committee.motions.build( params[:motion] )
     @motion.period ||= @committee.periods.active
+  end
+
+  def setup_breadcrumbs
+    add_breadcrumb 'Committees', committees_path
+    if @committee
+      add_breadcrumb @committee.name, committee_path(@committee)
+    end
+    if @meeting
+      add_breadcrumb 'Meetings',
+        polymorphic_path([ @committee, :meetings ])
+      add_breadcrumb @meeting.tense.to_s.capitalize,
+        polymorphic_path([ @meeting.tense, @committee, :meetings ])
+      add_breadcrumb @meeting,
+        meeting_path( @meeting )
+    end
+    if @user
+      add_breadcrumb 'Users', users_path
+      add_breadcrumb @user.name, user_path( @user )
+    end
+    add_breadcrumb 'Motions', polymorphic_path([ @context, :motions ])
+    if @motion && @motion.persisted?
+      add_breadcrumb @motion, motion_path(@motion)
+    end
   end
 end
 

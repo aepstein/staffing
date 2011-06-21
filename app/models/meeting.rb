@@ -38,6 +38,18 @@ class Meeting < ActiveRecord::Base
   scope :future, lambda { where( :starts_at.gt => (Time.zone.today.to_time + 1.day) ) }
   scope :current, lambda { where( :starts_at.gte => Time.zone.today.to_time, :ends_at.lte => ( Time.zone.today.to_time + 1.day ) ) }
 
+  def tense
+    return nil unless starts_at && ends_at
+    return :past if ends_at < Time.zone.today
+    return :future if starts_at > Time.zone.today
+    :current
+  end
+
+  def to_s
+    return starts_at.to_s :us_ordinal if starts_at?
+    super
+  end
+
   private
 
   def period_must_be_in_committee_schedule
