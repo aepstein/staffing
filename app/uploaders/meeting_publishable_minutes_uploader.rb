@@ -11,9 +11,5 @@ class MeetingPublishableMinutesUploader < CarrierWave::Uploader::Base
     %w( pdf )
   end
 
-  def filename
-    "original.pdf" if original_filename
-  end
-
 end
 

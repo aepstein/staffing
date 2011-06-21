@@ -8,7 +8,10 @@ Spork.each_run do
     if File.directory?(data_directory)
       FileUtils.rm_rf data_directory
     end
-    $temporary_files.each { |file| file.close! }
+    while $temporary_files.any?
+      file = $temporary_files.pop
+      File.unlink file.path if File.exists? file.path
+    end
   end
 end
 

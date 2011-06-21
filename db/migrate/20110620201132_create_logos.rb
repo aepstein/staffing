@@ -2,6 +2,7 @@ class CreateLogos < ActiveRecord::Migration
   def self.up
     create_table :logos do |t|
       t.string :name, :null => false
+      t.string :vector
 
       t.timestamps
     end

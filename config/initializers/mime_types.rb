@@ -5,4 +5,9 @@
 # Mime::Type.register_alias "text/html", :iphone
 
 Mime::Type.register 'application/pdf', :pdf
+Mime::Type.register 'application/x-vnd.oasis.opendocument.text', :odt
+Mime::Type.register 'application/msword', :doc
+Mime::Type.register 'plain/text', :txt
+Mime::Type.register 'audio/mpeg', :mp3
+Mime::Type.register 'application/x-tex', :tex
 

@@ -8,13 +8,8 @@ class MeetingEditableMinutesUploader < CarrierWave::Uploader::Base
   end
 
   def extension_white_list
-    %w( doc odt )
+    %w( doc odt tex txt )
   end
-
-  def filename
-    "original.#{extension}" if original_filename
-  end
-
 
 end
 

@@ -6,9 +6,9 @@
     <%= form.input :starts_at, :as => :datetime_picker %>
     <%= form.input :ends_at, :as => :datetime_picker %>
     <%= form.input :location %>
-    <%= form.input :audio %>
-    <%= form.input :editable_minutes %>
-    <%= form.input :published_minutes %>
+    <%= form.input :audio, :as => :file %>
+    <%= form.input :editable_minutes, :as => :file %>
+    <%= form.input :published_minutes, :as => :file %>
     <%= form.semantic_fields_for :meeting_motions do |subform| %>
       <%= subform.inputs do %>
         <%= render :partial => 'meeting_motions/form', :object => subform %>

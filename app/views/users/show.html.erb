@@ -39,7 +39,7 @@
 </p>
 
 <p>
-  <b>Resume?</b> <%= @user.resume.file? ? link_to( 'Yes', @user.resume.url ) : 'No' %>
+  <b>Resume?</b> <%= @user.resume.blank? ? 'No' : link_to( 'Yes', @user.resume.url ) %>
 </p>
 
 <p>

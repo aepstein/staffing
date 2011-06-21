@@ -33,6 +33,11 @@ Factory.define :enrollment do |f|
   f.votes 1
 end
 
+Factory.define :logo do |f|
+  f.sequence( :name ) { |n| "Logo #{n}" }
+  f.vector { |logo| File.open "spec/assets/logo.svg" }
+end
+
 Factory.define :membership do |f|
   f.association :user
   f.association :position

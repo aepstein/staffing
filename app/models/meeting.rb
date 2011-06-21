@@ -16,11 +16,9 @@ class Meeting < ActiveRecord::Base
     end
   end
 
-  mount_uploader :audio, MeetingAudioUploader, :mount_on => :audio_file_name
-  mount_uploader :editable_minutes, MeetingEditableMinutesUploader,
-    :mount_on => :editable_minutes_file_name
-  mount_uploader :published_minutes, MeetingPublishableMinutesUploader,
-    :mount_on => :published_minutes_file_name
+  mount_uploader :audio, MeetingAudioUploader
+  mount_uploader :editable_minutes, MeetingEditableMinutesUploader
+  mount_uploader :published_minutes, MeetingPublishableMinutesUploader
 
   accepts_nested_attributes_for :meeting_motions, :reject_if => proc { |a| a['motion_name'].blank? }, :allow_destroy => true
 
@@ -45,8 +43,21 @@ class Meeting < ActiveRecord::Base
     :current
   end
 
-  def to_s
-    return starts_at.to_s :us_ordinal if starts_at?
+  def to_s(style=nil)
+    case style
+    when :file
+      if starts_at && committee
+        "#{starts_at.to_s :number}-#{committee.to_s :file}"
+      end
+    when :editable_minutes_file
+      "#{@meeting.to_s :file}-editable_minutes.#{@meeting.editable_minutes.extension}"
+    when :published_minutes_file
+      "#{@meeting.to_s :file}-published_minutes.#{@meeting.published_minutes.extension}"
+    when :audio_file
+      "#{@meeting.to_s :file}-audio.#{@meeting.audio.extension}"
+    else
+      return starts_at.to_s :us_ordinal if starts_at?
+    end
     super
   end
 

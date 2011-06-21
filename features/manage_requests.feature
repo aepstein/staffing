@@ -113,7 +113,7 @@ Feature: Manage requests
     And fill in "Favorite color" with "yellow"
     And fill in "Capital of Assyria" with "Assur"
     And I choose "No"
-    And I attach a file of type "application/pdf" and 1 kilobyte to "Resume"
+    And I attach a file named "resume.pdf" of 1 kilobyte to "Resume"
     And I press "Update"
     Then I should see "Request was successfully updated."
     And I should see "Requestable: <name>"

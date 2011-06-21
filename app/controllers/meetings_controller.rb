@@ -7,6 +7,17 @@ class MeetingsController < ApplicationController
   filter_access_to :index, :current, :past, :future do
     true
   end
+  filter_access_to :editable_minutes, :published_minutes, :audio do
+    permitted_to! :show
+  end
+
+  # GET /meetings/:id/editable_minutes.(doc|odt|tex|txt)
+  def editable_minutes
+    send_file @meeting.editable_minutes.current_path,
+      :filename => @meeting.to_s(:editable_minutes_file),
+      :content_type => @meeting.editable_minutes.content_type,
+      :disposition => 'attachment'
+  end
 
   # GET /meetings/current
   # GET /meetings/current.xml

@@ -104,7 +104,7 @@ Feature: Manage users
     And I fill in "Home phone" with "607-555-4300"
     And I fill in "Work address" with "200 Day Hall"
     And I fill in "Date of birth" with "1982-07-10"
-    And I attach a file of type "application/pdf" and 1 kilobyte to "Resume"
+    And I attach a file named "resume.pdf" of 1 kilobyte to "Resume"
     And I choose "No"
     And I choose "undergrad"
     And I press "Update"

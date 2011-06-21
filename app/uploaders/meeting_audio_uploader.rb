@@ -11,9 +11,5 @@ class MeetingAudioUploader < CarrierWave::Uploader::Base
     %w( mp3 )
   end
 
-  def filename
-    "original.mp3" if original_filename
-  end
-
 end
 

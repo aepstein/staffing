@@ -60,7 +60,7 @@
 <% end %>
 
 <p>
-  <b>Resume?</b> <%= @request.user.resume.file? ? link_to('Yes', @request.user.resume.url) : 'No' %>
+  <b>Resume?</b> <%= @request.user.resume.blank? ? 'No' :  link_to('Yes', @request.user.resume.url) %>
 </p>
 
 <p>

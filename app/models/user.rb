@@ -65,7 +65,7 @@ class User < ActiveRecord::Base
 
   search_methods :name_like
 
-  mount_uploader :resume, UserResumeUploader, :mount_on => :resume_file_name
+  mount_uploader :resume, UserResumeUploader
 
   acts_as_authentic do |c|
     c.login_field :net_id
@@ -78,6 +78,7 @@ class User < ActiveRecord::Base
   validates_presence_of :email
   validates_date :date_of_birth, :allow_nil => true, :allow_blank => true
   validates_datetime :renewal_checkpoint
+  validates_integrity_of :resume
   validate do |user|
     if user.resume.present? && user.resume.size > 1.megabyte
       errors.add :resume, 'file size is large than the permitted 1 megabyte'

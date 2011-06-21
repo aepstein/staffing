@@ -18,6 +18,7 @@ gem 'state_machine'
 gem 'declarative_authorization'
 gem 'will_paginate'
 #gem 'paperclip'
+# Necesssary until next carrierwave release with fix for mount_on
 gem 'carrierwave'
 gem 'blind_date', '~> 1.0.2'
 gem 'daemons'

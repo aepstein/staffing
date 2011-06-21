@@ -7,7 +7,7 @@ describe User do
   end
 
   after(:each) do
-    @temporary_files.each { |file| file.close! }
+    @temporary_files.each { |file| File.unlink file.path }
   end
 
   it "should create a new instance given valid attributes" do
@@ -52,7 +52,7 @@ describe User do
   end
 
   it 'should not save with a resume that is of the wrong type' do
-    file = generate_uploaded_file(1.kilobyte, 'image/png')
+    file = generate_uploaded_file(1.kilobyte, 'image/png', '.png')
     @user.resume = file
     @user.save.should be_false
   end
@@ -152,10 +152,13 @@ describe User do
     @a_committee = Factory(:enrollment, :position => @authorized).committee
   end
 
-  def generate_uploaded_file(size, type)
-    file = Tempfile.new('resume.pdf')
-    @temporary_files << file
+  def generate_uploaded_file(size, type, extension = '.pdf')
+    test_directory = "#{::Rails.root}/tmp/test"
+    FileUtils.mkdir_p( test_directory )
+    file = File.new("#{test_directory}/resume#{extension}", 'w')
     size.times { file << 'a' }
+    file.close
+    @temporary_files << file
     fixture_file_upload file.path, type
   end
 end

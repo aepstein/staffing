@@ -45,14 +45,14 @@ end
 # Adds support for validates_attachment_content_type. Without the mime-type get
 # passed to attach_file() you will get a "Photo file is not one of the allowed
 # error message
-When /^(?:|I )attach a file of type "([^\"]*)" and (\d+) (bytes?|kilobytes?|megabytes?) to "([^\"]*)"$/ do |type, size, unit, field|
-  file = Tempfile.new('resume.pdf')
+When /^(?:|I )attach a file named "([^\"]*)" of (\d+) (bytes?|kilobytes?|megabytes?) to "([^\"]*)"$/ do |name, size, unit, field|
+  temporary_file_path = "#{::Rails.root}/tmp/test"
+  FileUtils.mkdir_p temporary_file_path
+  file = File.new( "#{temporary_file_path}/#{name}", 'w' )
+  size.to_i.send( unit.to_sym ).times { file << 'a' }
+  file.close
   $temporary_files ||= Array.new
   $temporary_files << file
-  size.to_i.send( unit.to_sym ).times { file << 'a' }
-#  fixture_file_upload file.path, type
-
-#  attach_file(field, file.path, type)
   attach_file field, file.path
 end
 

@@ -1,4 +1,4 @@
-class MeetingMotionAttachmentUploader < CarrierWave::Uploader::Base
+class MeetingMotionUploader < CarrierWave::Uploader::Base
   include CarrierWave::Compatibility::Paperclip
 
   storage :file
@@ -11,8 +11,5 @@ class MeetingMotionAttachmentUploader < CarrierWave::Uploader::Base
     %w( doc odt )
   end
 
-  def filename
-    "original.#{extension}" if original_filename
-  end
 end
 

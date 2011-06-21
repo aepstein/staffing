@@ -6,10 +6,8 @@ class MeetingMotion < ActiveRecord::Base
   belongs_to :meeting, :inverse_of => :meeting_motions
   belongs_to :motion, :inverse_of => :meeting_motions
 
-  mount_uploader :introduced_version, MeetingMotionAttachmentUploader,
-    :mount_on => :introduced_version_file_name
-  mount_uploader :final_version, MeetingMotionAttachmentUploader,
-    :mount_on => :final_version_file_name
+  mount_uploader :introduced_version, MeetingMotionUploader
+  mount_uploader :final_version, MeetingMotionUploader
 
   validates_presence_of :meeting
   validates_presence_of :motion
