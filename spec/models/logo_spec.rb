@@ -21,7 +21,7 @@ describe Logo do
   end
 
   it 'should not save without a vector file' do
-    @logo.vector = nil
+    @logo.remove_vector!
     @logo.save.should be_false
   end
 
