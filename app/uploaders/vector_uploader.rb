@@ -5,11 +5,13 @@ class VectorUploader < CarrierWave::Uploader::Base
   # Tent version should be 1 inch high with 600dpi
   version :tent do
     process :vector_to_png => 1.0
+    def filename; substitute_extension super, 'png'; end
   end
 
   # Letterhead version should be 0.88 inches high with 600dpi
   version :letterhead do
     process :vector_to_png => 0.88
+    def filename; substitute_extension super, 'png'; end
   end
 
   # Converts vector graphic to png normalized for height in pixels
@@ -18,15 +20,22 @@ class VectorUploader < CarrierWave::Uploader::Base
     hl_density = (72.0*height_in_inches*600.0)/original.rows.to_f
     wl_density = (72.0*height_in_inches*600.0*4.25)/original.columns.to_f
     density = original.rows.to_f/original.columns.to_f > 4.25 ?  wl_density : hl_density
+    original.destroy!
     image = ::Magick::Image.read(current_path){
       self.density = density.round
       self.transparent_color = '#FFFFFF'
     }.first
     image.write("png:#{self.current_path}")
+    image.destroy!
+  end
+
+  # Replace filename extension with chosen alternative
+  def substitute_extension(filename, extension)
+    filename.chomp(File.extname(filename)) + ".#{extension}"
   end
 
   def store_dir
-    "db/uploads/#{::Rails.env}/logos/vector"
+    "#{::Rails.root}/db/uploads/#{::Rails.env}/#{model.class.arel_table.name}/#{mounted_as}/#{model.id}"
   end
 
   def extension_white_list
