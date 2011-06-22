@@ -1,0 +1,11 @@
+<h2>Editing logo</h2>
+
+<%= semantic_form_for(@logo, :html => { :multipart => true } ) do |f| %>
+  <%= render :partial => 'form', :object => f %>
+<% end %>
+
+<p>
+<%= link_to 'Show', @logo %> |
+<%= link_to 'Back', logos_path %>
+</p>
+

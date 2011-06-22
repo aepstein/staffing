@@ -43,6 +43,7 @@ Staffing::Application.routes.draw do
     end
   end
   resources :enrollments, :except => [ :index, :new, :create ]
+  resources :logos
   resources :meetings, :except => [ :new, :create ] do
     member do
       get :editable_minutes, :published_minutes, :audio

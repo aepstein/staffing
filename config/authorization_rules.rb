@@ -1,9 +1,9 @@
 authorization do
   role :admin do
-    has_permission_on [ :authorities, :committees, :enrollments, :meetings,
-      :memberships, :motions, :periods, :positions, :qualifications, :quizzes,
-      :questions, :requests, :schedules, :users, :user_renewal_notices,
-      :sendings ],
+    has_permission_on [ :authorities, :committees, :enrollments, :logos,
+      :meetings, :memberships, :motions, :periods, :positions, :qualifications,
+      :quizzes, :questions, :requests, :schedules, :users,
+      :user_renewal_notices, :sendings ],
       :to => [ :manage, :show, :index ]
     has_permission_on :committees, :to => [ :tents, :members ]
     has_permission_on :users, :to => [ :tent ]
@@ -14,8 +14,9 @@ authorization do
     has_permission_on :users, :to => :show
   end
   role :user do
-    has_permission_on [ :authorities, :committees, :enrollments, :meetings,
-      :memberships, :periods, :positions, :qualifications, :schedules ],
+    has_permission_on [ :authorities, :committees, :enrollments, :logos,
+      :meetings, :memberships, :periods, :positions, :qualifications,
+      :schedules ],
       :to => [ :show, :index ]
     has_permission_on [ :motions, :requests ], :to => :index
     has_permission_on :committees, :to => :vote do

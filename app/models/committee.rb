@@ -12,6 +12,7 @@ class Committee < ActiveRecord::Base
     :requestable, :public_url, :schedule_id, :reject_message
 
   belongs_to :schedule, :inverse_of => :committees
+  belongs_to :logo, :inverse_of => :committees
   has_many :periods, :through => :schedule do
     def active
       current.first

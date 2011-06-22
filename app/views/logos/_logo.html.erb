@@ -1,0 +1,7 @@
+  <%= table_row_tag do %>
+    <td><%=h logo.name %></td>
+    <td><%= link_to 'Show', logo %></td>
+    <td><%= link_to( 'Edit', edit_logo_path(logo) ) if permitted_to? :edit, logo %></td>
+    <td><%= link_to( 'Destroy', logo, :confirm => 'Are you sure?', :method => :delete ) if permitted_to? :destroy, logo %></td>
+  <% end %>
+
