@@ -7,6 +7,10 @@
 </p>
 
 <p>
+  <b>Logo:</b> <%= @committee.logo ? link_to(@committee.logo) : 'No' %>
+</p>
+
+<p>
   <b>Requestable?</b> <%= @committee.requestable? ? 'Yes' : 'No' %>
 </p>
 

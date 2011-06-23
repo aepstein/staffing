@@ -20,5 +20,7 @@ class Logo < ActiveRecord::Base
     end
   end
 
+  def to_s(style=nil); name(style); end
+
 end
 
