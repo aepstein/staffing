@@ -18,6 +18,12 @@ describe 'VectorUploader' do
     end
   end
 
+  context 'thumb version' do
+    it 'should scale within 100x100 pixels' do
+      @uploader.thumb.should be_no_larger_than( 100, 100 )
+    end
+  end
+
   context 'tent version' do
     it 'should scale to ~1927 pixels by 600 pixels' do
       @uploader.tent.should have_dimensions( 1925, 600 )
