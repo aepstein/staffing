@@ -22,6 +22,9 @@ describe 'VectorUploader' do
     it 'should scale within 100x100 pixels' do
       @uploader.thumb.should be_no_larger_than( 100, 100 )
     end
+    it 'should save with png extension' do
+      File.extname( @uploader.thumb.store_path ).should eql '.png'
+    end
   end
 
   context 'tent version' do
@@ -38,7 +41,7 @@ describe 'VectorUploader' do
       @uploader.letterhead.should have_dimensions( 1697, 528 )
     end
     it 'should save with png extension' do
-      File.extname( @uploader.tent.store_path ).should eql '.png'
+      File.extname( @uploader.letterhead.store_path ).should eql '.png'
     end
   end
 
