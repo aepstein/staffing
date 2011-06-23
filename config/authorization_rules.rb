@@ -1,6 +1,6 @@
 authorization do
   role :admin do
-    has_permission_on [ :authorities, :committees, :enrollments, :logos,
+    has_permission_on [ :authorities, :brands, :committees, :enrollments,
       :meetings, :memberships, :motions, :periods, :positions, :qualifications,
       :quizzes, :questions, :requests, :schedules, :users,
       :user_renewal_notices, :sendings ],
@@ -14,7 +14,7 @@ authorization do
     has_permission_on :users, :to => :show
   end
   role :user do
-    has_permission_on [ :authorities, :committees, :enrollments, :logos,
+    has_permission_on [ :authorities, :brands, :committees, :enrollments,
       :meetings, :memberships, :periods, :positions, :qualifications,
       :schedules ],
       :to => [ :show, :index ]

@@ -27,9 +27,9 @@ Spork.prefork do
     end
     config.after(:all) do
       data_directory = File.expand_path(File.dirname(__FILE__) + "../../db/uploads/#{::Rails.env}")
-      if File.directory?(data_directory)
-        FileUtils.rm_rf data_directory
-      end
+#      if File.directory?(data_directory)
+#        FileUtils.rm_rf data_directory
+#      end
     end
   end
 end

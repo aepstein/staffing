@@ -10,6 +10,11 @@ Factory.define :authority do |f|
   f.sequence(:name) { |n| "Authority #{n}" }
 end
 
+Factory.define :brand do |f|
+  f.sequence( :name ) { |n| "Brand #{n}" }
+  f.logo { |brand| File.open "#{::Rails.root}/spec/assets/logo.eps" }
+end
+
 Factory.define :committee do |f|
   f.sequence(:name) { |n| "Committee #{n}" }
   f.association :schedule
@@ -31,11 +36,6 @@ Factory.define :enrollment do |f|
   f.position { |e| e.association :position, :schedule => e.committee.schedule }
   f.title "member"
   f.votes 1
-end
-
-Factory.define :logo do |f|
-  f.sequence( :name ) { |n| "Logo #{n}" }
-  f.vector { |logo| File.open "#{::Rails.root}/spec/assets/logo.eps" }
 end
 
 Factory.define :membership do |f|

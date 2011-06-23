@@ -8,11 +8,11 @@ class Committee < ActiveRecord::Base
     joins( :positions ).where("(positions.statuses_mask & #{status.nil? ? 0 : 2**User::STATUSES.index(status.to_s)}) > 0 OR positions.statuses_mask = 0")
   }
 
-  attr_accessible :name, :description, :join_message, :leave_message, :logo_id,
+  attr_accessible :name, :description, :join_message, :leave_message, :brand_id,
     :requestable, :public_url, :schedule_id, :reject_message
 
   belongs_to :schedule, :inverse_of => :committees
-  belongs_to :logo, :inverse_of => :committees
+  belongs_to :brand, :inverse_of => :committees
   has_many :periods, :through => :schedule do
     def active
       current.first

@@ -5,7 +5,7 @@ describe 'VectorUploader' do
 
   before do
     VectorUploader.enable_processing = true
-    @uploader = Factory(:logo).vector
+    @uploader = Factory(:brand).logo
   end
 
   after do

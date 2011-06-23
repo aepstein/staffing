@@ -1,0 +1,7 @@
+  <%= table_row_tag do %>
+    <td><%=h brand.name %></td>
+    <td><%= link_to 'Show', brand %></td>
+    <td><%= link_to( 'Edit', edit_brand_path(brand) ) if permitted_to? :edit, brand %></td>
+    <td><%= link_to( 'Destroy', brand, :confirm => 'Are you sure?', :method => :delete ) if permitted_to? :destroy, brand %></td>
+  <% end %>
+

@@ -1,0 +1,11 @@
+<h2>Editing brand</h2>
+
+<%= semantic_form_for(@brand, :html => { :multipart => true } ) do |f| %>
+  <%= render :partial => 'form', :object => f %>
+<% end %>
+
+<p>
+<%= link_to 'Show', @brand %> |
+<%= link_to 'Back', brands_path %>
+</p>
+

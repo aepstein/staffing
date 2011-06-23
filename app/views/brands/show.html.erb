@@ -1,0 +1,12 @@
+<p>
+  <b>Name:</b> <%=h @brand.name %>
+</p>
+
+
+<p>
+<% if permitted_to? :edit, @brand -%>
+<%= link_to 'Edit', edit_brand_path(@brand) %> |
+<% end -%>
+<%= link_to 'Back', brands_path %>
+</p>
+

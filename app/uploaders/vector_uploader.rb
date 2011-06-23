@@ -52,8 +52,14 @@ class VectorUploader < CarrierWave::Uploader::Base
     filename.chomp(File.extname(filename)) + ".#{extension}"
   end
 
+  # Use mounted_as parameter to give file predictable name
+  def filename
+    return nil if super.blank?
+    "#{mounted_as}#{File.extname(super)}"
+  end
+
   def store_dir
-    "#{::Rails.root}/db/uploads/#{::Rails.env}/#{model.class.arel_table.name}/#{mounted_as}/#{model.id}"
+    "#{::Rails.root}/db/uploads/#{::Rails.env}/#{model.class.arel_table.name}/#{model.id}"
   end
 
   def extension_white_list
