@@ -55,7 +55,7 @@ class VectorUploader < CarrierWave::Uploader::Base
 
   # Use mounted_as parameter to give file predictable name
   def filename
-    return nil if super.blank?
+    return "#{mounted_as}" if super.blank?
     "#{mounted_as}#{File.extname(super)}"
   end
 
