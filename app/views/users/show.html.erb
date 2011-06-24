@@ -39,7 +39,7 @@
 </p>
 
 <p>
-  <b>Resume?</b> <%= @user.resume.blank? ? 'No' : link_to( 'Yes', @user.resume.url ) %>
+  <b>Resume?</b> <%= @user.resume.blank? ? 'No' : link_to( 'Yes', resume_user_path(@user, :format => :pdf) ) %>
 </p>
 
 <p>
