@@ -7,7 +7,7 @@
 </p>
 
 <p>
-  <b>Brand:</b> <%= @committee.brand ? link_to(@committee.brand) : 'No' %>
+  <b>Brand:</b> <%= @committee.brand ? link_to(@committee.brand.name, brand_path( @committee.brand )) : 'No' %>
 </p>
 
 <p>

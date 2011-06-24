@@ -6,7 +6,8 @@ class UserTentReport < Prawn::Document
   attr_accessor :users, :brand
 
   def initialize(users=nil,brand=nil)
-    self.users = users unless users.nil?
+    self.users = users unless users.blank?
+    self.brand = brand unless brand.blank?
     super( :page_size => 'LETTER', :page_layout => :landscape )
   end
 
