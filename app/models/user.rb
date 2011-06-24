@@ -201,6 +201,21 @@ class User < ActiveRecord::Base
     User::STATUSES.reject { |status| ((statuses_mask || 0) & 2**User::STATUSES.index(status)).zero? }
   end
 
+  def mobile_phone
+    return super if super.blank?
+    super.to_phone :pretty
+  end
+
+  def home_phone
+    return super if super.blank?
+    super.to_phone :pretty
+  end
+
+  def work_phone
+    return super if super.blank?
+    super.to_phone :pretty
+  end
+
   protected
 
   def memberships_scope(tense = nil)
