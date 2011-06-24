@@ -49,7 +49,7 @@ class VectorUploader < CarrierWave::Uploader::Base
 
   # Replace filename extension with chosen alternative
   def substitute_extension(filename, extension)
-    return nil if super.blank?
+    return nil if filename.blank?
     filename.chomp(File.extname(filename)) + ".#{extension}"
   end
 
