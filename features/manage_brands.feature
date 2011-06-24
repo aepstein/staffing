@@ -37,7 +37,7 @@ Feature: Manage brands
     Given I log in as user: "admin"
     And I am on the new brand page
     When I fill in "Name" with "SA brand"
-    And I attach the file "spec/assets/brand.eps" to "Logo"
+    And I attach the file "spec/assets/logo.eps" to "Logo"
     And I press "Create"
     Then I should see "Brand was successfully created."
     And I should see "Name: SA brand"
