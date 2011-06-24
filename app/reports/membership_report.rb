@@ -74,9 +74,12 @@ class MembershipReport < Prawn::Document
       rows = [ %w( Name NetID Address Phone Title Until ) ]
       rows << [ 'Voting members', '', '', '', '', '' ]
       rows += rowify_memberships voting_memberships
-      section_label_rows = [ 1, rows.length ]
-      rows << [ 'Non-voting members', '', '', '', '', '' ]
-      rows += rowify_memberships nonvoting_memberships
+      section_label_rows = [ 1 ]
+      if nonvoting_memberships.length > 0
+        section_label_rows << rows.length
+        rows << [ 'Non-voting members', '', '', '', '', '' ]
+        rows += rowify_memberships nonvoting_memberships
+      end
       table rows, :header => true, :width => 540 do |table|
         table.row(0).background_color = '000000'
         table.row(0).text_color = 'FFFFFF'
