@@ -83,6 +83,11 @@ class MembershipReport < Prawn::Document
       table rows, :header => true, :width => 540 do |table|
         table.row(0).background_color = '000000'
         table.row(0).text_color = 'FFFFFF'
+        table.cells.padding = 2
+        table.columns(1..(table.column_length - 1)).border_left_width = 0.1
+        table.columns(0..(table.column_length - 2)).border_right_width = 0.1
+        table.rows(0..(table.row_length - 2)).border_bottom_width = 0.1
+        table.rows(1..(table.row_length - 1)).border_top_width = 0.1
         section_label_rows.each do |section_label_row|
           table.row(section_label_row).background_color = 'DDDDDD'
           table.row(section_label_row).borders = [:top, :bottom]
