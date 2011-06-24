@@ -12,7 +12,7 @@ class BrandsController < ApplicationController
   # GET /brands/:id/thumb.png
   def thumb
     respond_to do |format|
-      format.png { send_file @brand.logo.thumb.path, :type => :png,
+      format.png { send_file @brand.logo.thumb.store_path, :type => :png,
         :disposition => 'inline'  }
     end
   end
