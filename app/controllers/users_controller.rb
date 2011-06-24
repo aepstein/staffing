@@ -56,7 +56,7 @@ class UsersController < ApplicationController
           head(:not_found)
         else
           send_file @user.resume.path, :filename => "#{@user.name :file}-resume.pdf",
-            :type => @user.resume.content_type, :disposition => 'inline'
+            :type => :pdf, :disposition => 'inline'
         end
       end
     end
