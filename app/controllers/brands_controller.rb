@@ -3,7 +3,19 @@ class BrandsController < ApplicationController
   before_filter :initialize_index, :only => [ :index ]
   before_filter :new_brand_from_params, :only => [ :new, :create ]
   filter_resource_access
+  filter_access_to :thumb do
+    permitted_to! :show
+  end
   before_filter :setup_breadcrumbs
+
+
+  # GET /brands/:id/thumb.png
+  def thumb
+    respond_to do |format|
+      format.png { send_file @brand.logo.thumb.path, :type => :png,
+        :disposition => 'inline'  }
+    end
+  end
 
   # GET /brands
   # GET /brands.xml

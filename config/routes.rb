@@ -12,7 +12,11 @@ Staffing::Application.routes.draw do
       end
     end
   end
-  resources :brands
+  resources :brands do
+    member do
+      get :thumb
+    end
+  end
   resources :committees do
     member do
       get :tents, :members
