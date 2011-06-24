@@ -52,11 +52,11 @@ class UsersController < ApplicationController
   def resume
     respond_to do |format|
       format.pdf do
-        if @user.resume.file?
+        if @user.resume.blank?
+          head(:not_found)
+        else
           send_file @user.resume.path, :filename => "#{@user.name :file}-resume.pdf",
             :type => @user.resume.content_type, :disposition => 'inline'
-        else
-          head(:not_found)
         end
       end
     end
