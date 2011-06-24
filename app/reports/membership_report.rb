@@ -20,7 +20,12 @@ class MembershipReport < Prawn::Document
   end
 
   def draw_letterhead
-    image "#{::Rails.root}/public/images/layout/tent/logo.png", :height => 72
+    if committee.brand
+      logo = committee.brand.logo.letterhead.store_path
+    else
+      logo = "#{::Rails.root}/public/images/layout/tent/logo.png"
+    end
+    image logo, :height => 72
     font 'Palatino' do
       text_box '109 Day Hall', :size => 11, :at => [360, 720]
       text_box 'Ithaca, NY 14853', :size => 11, :at => [360, 709]
