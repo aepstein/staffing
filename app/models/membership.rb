@@ -259,7 +259,10 @@ class Membership < ActiveRecord::Base
     :current
   end
 
-  def to_s; "#{position} (#{starts_at.to_s :rfc822} - #{ends_at.to_s :rfc822})"; end
+  def to_s
+    return super unless position && starts_at && ends_at
+    "#{position} (#{starts_at.to_s :rfc822} - #{ends_at.to_s :rfc822})"
+  end
 
   protected
 
