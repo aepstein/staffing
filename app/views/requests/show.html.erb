@@ -60,7 +60,7 @@
 <% end %>
 
 <p>
-  <b>Resume?</b> <%= @request.user.resume.blank? ? 'No' :  link_to('Yes', resume_user_path( @request.user, :format => :pdf ) %>
+  <b>Resume?</b> <%= @request.user.resume.blank? ? 'No' :  link_to('Yes', resume_user_path( @request.user, :format => :pdf ) ) %>
 </p>
 
 <p>
