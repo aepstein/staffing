@@ -153,9 +153,6 @@ class MembershipsController < ApplicationController
 
   # GET /memberships/1/edit
   def edit
-    unless @request.blank?
-      @membership.starts_at, @membership.ends_at, @membership.request = nil, nil, @request
-    end
     @membership.designees.populate
     respond_to do |format|
       format.html { render :action => 'edit' }
