@@ -51,6 +51,13 @@ describe Membership do
     @membership.save.should eql false
   end
 
+  it 'should not save with a duplicate user/position/period' do
+    @membership.position.update_attribute :slots, 2
+    duplicate = Factory.build( :membership, :user => @membership.user,
+      :period => @membership.period, :position => @membership.position )
+    duplicate.save.should be_false
+  end
+
   it 'should save with a qualified user' do
     @membership.position.qualifications << Factory(:qualification)
     @membership.user = Factory(:user)
