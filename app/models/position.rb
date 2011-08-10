@@ -31,7 +31,7 @@ class Position < ActiveRecord::Base
         elsif previous_vacancies < point.last
           (point.last - previous_vacancies).times { memo << start_unassigned(point.first, period) }
         elsif previous_vacancies > 0 && previous_vacancies > point.last
-          (previous_vacancies - point.last).times { memo.pop.save! }
+          (previous_vacancies - point.last).times { memo.pop.save! :validate => false }
         end
         memo.each { |membership| membership.ends_at = point.first }
         previous_vacancies = ( point.last > 0 ? point.last : 0 )
@@ -49,7 +49,8 @@ class Position < ActiveRecord::Base
 
     def start_unassigned(starts_at, period)
       membership = build
-      membership.send(:attributes=, { :starts_at => starts_at, :period => period }, false )
+      membership.starts_at = starts_at
+      membership.period = period
       membership
     end
   end
