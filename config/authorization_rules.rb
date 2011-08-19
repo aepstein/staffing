@@ -39,15 +39,18 @@ authorization do
     has_permission_on :requests, :to => [ :manage, :show ] do
       if_attribute :user_id => is { user.id }
     end
-    has_permission_on :requests, :to => [ :show, :reject ] do
+    has_permission_on :requests, :to => [ :show ] do
+      if_attribute :requestable_type => is { 'Position' }, :requestable_id => is_in { user.authorized_position_ids(0) }
+      if_attribute :requestable_type => is { 'Committee' }, :requestable_id => is_in { user.authorized_committee_ids(0) }
+    end
+    has_permission_on :requests, :to => [ :reject ] do
       if_attribute :requestable_type => is { 'Position' }, :requestable_id => is_in { user.authorized_position_ids }
       if_attribute :requestable_type => is { 'Committee' }, :requestable_id => is_in { user.authorized_committee_ids }
     end
     has_permission_on :memberships, :to => [ :manage ] do
-#      if_attribute :position_id => is_in { user.authorized_position_ids }
-      # Note: This only works when applied to a specific membership object, not
-      # adequate for obligation_scope
-      if_attribute :position => { :authority => { :authorized_enrollments => { :memberships => {
+      if_attribute :position => { :authority => { :authorized_enrollments => {
+        :votes => gt { 0 },
+        :memberships => {
         :user_id => is { user.id },
         :starts_at => lte { object.blank? ? Time.zone.today : object.ends_at },
         :ends_at => gte { object.blank? ? Time.zone.today : [ object.starts_at, Time.zone.today ].max }

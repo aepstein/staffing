@@ -89,7 +89,8 @@ class Position < ActiveRecord::Base
   # Limit to positions compatible with users' status
   # * assumes a join with the users table
   scope :with_users_status, where(
-   "positions.statuses_mask = 0 OR ( users.statuses_mask & positions.statuses_mask ) > 0" )
+   "positions.statuses_mask = 0 OR " +
+   "( users.statuses_mask & positions.statuses_mask ) > 0" )
   scope :notifiable, where( :notifiable => true )
   scope :requestable, where( :requestable => true )
   scope :unrequestable, where( :requestable => false )
@@ -100,12 +101,11 @@ class Position < ActiveRecord::Base
   scope :active, where( :active => true )
   scope :inactive, where( :active.ne => true )
 
-  validates_presence_of :name
-  validates_uniqueness_of :name
-  validates_presence_of :authority
-  validates_presence_of :quiz
-  validates_presence_of :schedule
-  validates_numericality_of :slots, :only_integer => true, :greater_than => 0
+  validates :name, :presence => true, :uniqueness => true
+  validates :authority, :presence => true
+  validates :quiz, :presence => true
+  validates :schedule, :presence => true
+  validates :slots, :numericality => { :only_integer => true, :greater_than => 0 }
 
   after_create :populate_slots!
   after_update :repopulate_slots!

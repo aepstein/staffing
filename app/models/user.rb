@@ -90,37 +90,42 @@ class User < ActiveRecord::Base
   before_validation :import_ldap_attributes, :initialize_password, :on => :create
   before_validation { |r| r.renewal_checkpoint ||= Time.zone.now unless r.persisted? }
 
-  def authority_ids( membership_constraints = { } )
-    authorities( membership_constraints ).map(&:id)
+  def authority_ids( votes = 1 )
+    authorities( votes ).map(&:id)
   end
 
   # A users authorities are:
   #  * associated with a committee of which the user is a current or future member
-  def authorities( membership_constraints = { } )
+  def authorities( votes = 1 )
     return [] unless persisted?
-    Authority.scoped &
-    committees(:current_or_future).where( :enrollments => { :votes.gt => 0 } )
+    Authority.scoped.merge(
+      committees(:current_or_future).
+      where( :enrollments => { :votes.gte => votes } )
+    )
   end
 
   # Where necessary, provide for admin to get listing of all authorities
-  def allowed_authorities
+  def allowed_authorities( votes = 1 )
     return Authority.all if role_symbols.include? :admin
-    authorities
+    authorities( votes )
   end
 
-  def authorized_position_ids
-    return [] if authority_ids.empty?
-    Position.where( :authority_id.in => authority_ids ).select('positions.id').map(&:id)
+  def authorized_position_ids(votes = 1)
+    return [] if authority_ids(votes).empty?
+    Position.where( :authority_id.in => authority_ids( votes ) ).
+      select('positions.id').map(&:id)
   end
 
-  def authorized_committee_ids
-    return [] if authority_ids.empty?
-    ( Committee.joins(:positions) & Position.where( :authority_id.in => authority_ids ).
-      select( 'DISTINCT committees.id' ) ).map(&:id)
+  def authorized_committee_ids(votes = 1)
+    return [] if authority_ids(votes).empty?
+    Committee.joins(:positions).merge(
+      Position.where( :authority_id.in => authority_ids( votes ) ) ).
+      select( 'DISTINCT committees.id' ).map(&:id)
   end
 
   def requestable_committees
-    Committee.requestable.select('DISTINCT committees.*').joins(:positions) & Position.requestable_by_committee.with_status( status )
+    Committee.requestable.select('DISTINCT committees.*').joins(:positions).
+    merge( Position.requestable_by_committee.with_status( status ) )
   end
 
   def requestable_positions

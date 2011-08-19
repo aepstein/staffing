@@ -41,15 +41,19 @@ Feature: Manage users
       | authority | not see | not see | not see | see     |
       | regular   | not see | not see | not see | not see |
 
-  Scenario: List authorities on the user profile page
+  Scenario Outline: List authorities on the user profile page
     Given a user: "owner" exists
     And a committee exists
     And position exists
-    And an enrollment exists with position: the position, committee: the committee
+    And an enrollment exists with position: the position, committee: the committee, votes: <votes>
     And a membership exists with user: user "owner", position: the position
     And an authority exists with name: "Important Authority", committee: the committee
     And I log in as user: "owner"
     Then I should see "Important Authority"
+    Examples:
+      | votes |
+      | 0     |
+      | 1     |
 
   Scenario: List unexpired requests on user profile page
     Given a user: "owner" exists

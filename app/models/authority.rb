@@ -19,8 +19,7 @@ class Authority < ActiveRecord::Base
   has_many :quizzes, :through => :positions
   has_many :schedules, :through => :positions
 
-  validates_presence_of :name
-  validates_uniqueness_of :name
+  validates :name, :presence => true, :uniqueness => true
 
   def requests
     return Request.where( :id => nil ) if new_record?

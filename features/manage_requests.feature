@@ -24,6 +24,10 @@ Feature: Manage requests
     And an enrollment exists with position: position "authority", committee: committee "authority"
     And a user: "authority" exists
     And a membership exists with user: user "authority", position: position "authority"
+    And a position: "authority_ro" exists with authority: the authority
+    And an enrollment exists with position: position "authority_ro", committee: committee "authority", votes: 0
+    And a user: "authority_ro" exists
+    And a membership exists with user: user "authority_ro", position: position: "authority_ro"
     And a position: "requestable" exists with authority: the authority
     And a committee: "requestable" exists
     And an enrollment exists with position: position "requestable", committee: committee "requestable"
@@ -73,11 +77,12 @@ Feature: Manage requests
     Given I delete on the page for request: "focus"
     Then I should <destroy> authorized
     Examples:
-      | user      | show    | create  | update  | destroy | reject  |
-      | admin     | see     | see     | see     | see     | see     |
-      | applicant | see     | see     | see     | see     | not see |
-      | authority | see     | see     | not see | not see | see     |
-      | regular   | not see | see     | not see | not see | not see |
+      | user         | show    | create  | update  | destroy | reject  |
+      | admin        | see     | see     | see     | see     | see     |
+      | applicant    | see     | see     | see     | see     | not see |
+      | authority    | see     | see     | not see | not see | see     |
+      | authority_ro | see     | see     | not see | not see | not see |
+      | regular      | not see | see     | not see | not see | not see |
 
   Scenario Outline: Register new request or edit
     Given a position: "popular" exists with name: "Most Popular Person", schedule: schedule "annual", quiz: quiz "generic", renewable: true, requestable: <p_requestable>, requestable_by_committee: true

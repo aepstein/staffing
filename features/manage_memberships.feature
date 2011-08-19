@@ -68,8 +68,12 @@ Feature: Manage memberships
     And a position: "authority" exists with schedule: the schedule
     And an enrollment exists with committee: committee "authority", position: position "authority"
     And an authority: "authority" exists with committee: committee "authority"
-    And a user: "authority" exists with net_id: "authority", password: "secret", admin: false
+    And a user: "authority" exists
     And a membership exists with user: user "authority", position: position "authority", period: the <authority>_period
+    And a position: "authority_ro" exists with schedule: the schedule
+    And an enrollment exists with committee: committee "authority", position: position "authority_ro", votes: 0
+    And a user: "authority_ro" exists
+    And a membership exists with user: user "authority_ro", position: position "authority_ro", period: the <authority>_period
     And a position: "focus" exists with name: "Focus Position", authority: authority "authority", schedule: the schedule
     And a user: "owner" exists with net_id: "owner", password: "secret", admin: false, last_name: "Owner"
     And a membership: "focus" exists with position: position "focus", user: user "owner", period: the <membership>_period
@@ -90,16 +94,22 @@ Feature: Manage memberships
     Given I delete on the page for membership: "focus"
     Then I should <destroy> authorized
     Examples:
-      | authority | membership | user      | create  | update  | destroy | index | show    |
-      | current   | current    | admin     | see     | see     | see     | see   | see     |
-      | current   | current    | authority | see     | see     | see     | see   | see     |
-      | future    | future     | authority | not see | see     | see     | see   | see     |
-      | future    | current    | authority | not see | not see | not see | see   | see     |
-      | current   | future     | authority | see     | not see | not see | see   | see     |
-      | current   | past       | authority | see     | not see | not see | see   | see     |
-      | past      | past       | authority | not see | not see | not see | see   | see     |
-      | current   | current    | owner     | not see | not see | not see | see   | see     |
-      | current   | current    | regular   | not see | not see | not see | see   | see     |
+      | authority | membership | user         | create  | update  | destroy | index | show    |
+      | current   | current    | admin        | see     | see     | see     | see   | see     |
+      | current   | current    | authority    | see     | see     | see     | see   | see     |
+      | future    | future     | authority    | not see | see     | see     | see   | see     |
+      | future    | current    | authority    | not see | not see | not see | see   | see     |
+      | current   | future     | authority    | see     | not see | not see | see   | see     |
+      | current   | past       | authority    | see     | not see | not see | see   | see     |
+      | past      | past       | authority    | not see | not see | not see | see   | see     |
+      | current   | current    | authority_ro | not see | not see | not see | see   | see     |
+      | future    | future     | authority_ro | not see | not see | not see | see   | see     |
+      | future    | current    | authority_ro | not see | not see | not see | see   | see     |
+      | current   | future     | authority_ro | not see | not see | not see | see   | see     |
+      | current   | past       | authority_ro | not see | not see | not see | see   | see     |
+      | past      | past       | authority_ro | not see | not see | not see | see   | see     |
+      | current   | current    | owner        | not see | not see | not see | see   | see     |
+      | current   | current    | regular      | not see | not see | not see | see   | see     |
 
   Scenario: Register new membership given a position or edit
     Given a period: "2009" exists with schedule: schedule "annual", starts_at: "2009-06-01", ends_at: "2010-05-31"
