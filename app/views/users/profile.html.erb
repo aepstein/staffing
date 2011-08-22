@@ -49,7 +49,9 @@ You have the following motions in process:
 
 <%= render :partial => 'motions/motions', :object => current_user.motions.current.in_process %>
 <% else %>
+<p>
 You have no motions in process.
+</p>
 <% end %>
 
 <% if Committee.with_permissions_to(:vote).length > 0 %>
