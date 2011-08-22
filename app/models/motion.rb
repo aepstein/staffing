@@ -20,8 +20,9 @@ class Motion < ActiveRecord::Base
     # Only voting members may be sponsors
     def allowed
       return [] unless proxy_owner.committee && proxy_owner.period_id?
-      User.joins(:memberships) & proxy_owner.committee.memberships.where(
-        'enrollments.votes > 0' ).overlap( proxy_owner.period.starts_at, proxy_owner.period.ends_at )
+      User.joins(:memberships).merge(
+        proxy_owner.committee.memberships.where( 'enrollments.votes > 0' ).
+        overlap( proxy_owner.period.starts_at, proxy_owner.period.ends_at ) )
     end
   end
   has_many :meeting_motions, :dependent => :destroy
@@ -59,6 +60,7 @@ class Motion < ActiveRecord::Base
   default_scope order( 'motions.position ASC' )
   scope :past, lambda { joins(:period).merge Period.unscoped.past }
   scope :current, lambda { joins(:period).merge Period.unscoped.current }
+  scope :in_process, lambda { with_status( :started, :proposed ) }
 
   accepts_nested_attributes_for :sponsorships, :allow_destroy => true,
     :reject_if => proc { |a| a['user_name'].blank? }

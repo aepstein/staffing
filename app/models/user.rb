@@ -165,11 +165,11 @@ class User < ActiveRecord::Base
   end
 
   def enrollments(tense = nil)
-    Enrollment.joins(:memberships) & memberships_scope(tense)
+    Enrollment.joins(:memberships).merge memberships_scope(tense)
   end
 
   def committees(tense = nil)
-    Committee.joins(:enrollments) & Enrollment.unscoped.joins(:memberships) & memberships_scope(tense)
+    Committee.joins(:enrollments).merge( Enrollment.unscoped.joins(:memberships).merge( memberships_scope(tense) ) )
   end
 
   def current_enrollments
