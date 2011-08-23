@@ -20,6 +20,12 @@
 
 <%=markdown @motion.description %>
 
+<p>
+  <b>Content:</b>
+</p>
+
+<%=markdown @motion.content %>
+
 <p><b>Sponsors:</b> <%= @motion.users.map(&:name).join(', ') %> </p>
 
 <p>

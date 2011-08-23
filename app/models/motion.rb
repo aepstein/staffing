@@ -1,5 +1,5 @@
 class Motion < ActiveRecord::Base
-  attr_accessible :period_id, :name, :description, :complete,
+  attr_accessible :period_id, :name, :content, :description, :complete,
     :referring_motion_id, :sponsorships_attributes
   attr_readonly :period_id
 
