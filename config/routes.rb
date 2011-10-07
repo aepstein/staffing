@@ -8,7 +8,7 @@ Staffing::Application.routes.draw do
     end
     resources :requests, :only => [ :index ] do
       collection do
-        get :expired, :unexpired, :active, :rejected
+        get :expired, :unexpired, :active, :inactive, :rejected
       end
     end
   end
@@ -43,7 +43,7 @@ Staffing::Application.routes.draw do
     resources :positions, :only => [ :index ]
     resources :requests, :only => [ :new, :create, :index ] do
       collection do
-        get :expired, :unexpired, :active, :rejected
+        get :expired, :unexpired, :active, :inactive, :rejected
       end
     end
   end
@@ -83,7 +83,7 @@ Staffing::Application.routes.draw do
     end
     resources :requests, :only => [ :new, :create, :index ] do
       collection do
-        get :expired, :unexpired, :active, :rejected
+        get :expired, :unexpired, :active, :inactive, :rejected
       end
     end
   end
@@ -135,7 +135,7 @@ Staffing::Application.routes.draw do
     end
     resources :requests, :only => [ :index, :new, :create ] do
       collection do
-        get :expired, :unexpired, :rejected, :active
+        get :expired, :unexpired, :rejected, :active, :inactive
       end
     end
   end

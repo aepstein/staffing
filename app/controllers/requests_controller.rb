@@ -7,7 +7,7 @@ class RequestsController < ApplicationController
   filter_access_to :new, :create, :edit, :update, :destroy, :show, :reject,
     :do_reject, :reactivate, :attribute_check => true
   filter_access_to :index, :renewed, :unrenewed, :expired, :unexpired, :active,
-    :rejected do
+    :inactive, :rejected do
     @user ? permitted_to!( :show, @user ) : permitted_to!( :index )
   end
   before_filter :setup_breadcrumbs
@@ -34,6 +34,14 @@ class RequestsController < ApplicationController
   # GET /user/:user_id/requests/active.xml
   def active
     @requests = @requests.active
+    add_breadcrumb 'Active', polymorphic_path( [ :active, @context, :requests ] )
+    index
+  end
+
+  # GET /user/:user_id/requests/inactive
+  # GET /user/:user_id/requests/inactive.xml
+  def inactive
+    @requests = @requests.inactive
     add_breadcrumb 'Active', polymorphic_path( [ :active, @context, :requests ] )
     index
   end

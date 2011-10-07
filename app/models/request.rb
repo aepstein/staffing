@@ -80,6 +80,8 @@ class Request < ActiveRecord::Base
   scope :unstaffed, joins( "LEFT JOIN memberships ON memberships.request_id = requests.id" ).
     where( "memberships.id IS NULL" )
   scope :active, lambda { unexpired.with_status(:active) }
+  scope :inactive, lambda { where( "requests.ends_at <= ? OR " +
+    " requests.status != ?", Time.zone.today, 'active' ) }
   scope :reject_notice_pending, lambda { rejected.no_reject_notice }
   # Joins to enrollments to get position_ids for requests where the requestable
   # is a committee
