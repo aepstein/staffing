@@ -2,6 +2,10 @@
   <b>Requestable:</b> <%=h @request.requestable %>
 </p>
 
+<p>
+  <b>Status:</b> <%=raw @request.status %>
+</p>
+
 <% if @request.rejected? %>
 <p>
   <b>Rejected at:</b> <%=h @request.rejected_at.to_formatted_s :us_ordinal %>
