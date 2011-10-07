@@ -42,7 +42,7 @@ class RequestsController < ApplicationController
   # GET /user/:user_id/requests/inactive.xml
   def inactive
     @requests = @requests.inactive
-    add_breadcrumb 'Active', polymorphic_path( [ :active, @context, :requests ] )
+    add_breadcrumb 'Inactive', polymorphic_path( [ :inactive, @context, :requests ] )
     index
   end
 
