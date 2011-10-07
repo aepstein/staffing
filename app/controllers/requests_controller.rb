@@ -2,7 +2,7 @@ class RequestsController < ApplicationController
   before_filter :require_user
   before_filter :initialize_context
   before_filter :initialize_index, :only => [ :index, :expired, :unexpired,
-    :active, :rejected ]
+    :active, :inactive, :rejected ]
   before_filter :new_request_from_params, :only => [ :new, :create ]
   filter_access_to :new, :create, :edit, :update, :destroy, :show, :reject,
     :do_reject, :reactivate, :attribute_check => true
