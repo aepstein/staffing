@@ -262,12 +262,13 @@ class MembershipsController < ApplicationController
   def csv_index
     csv_string = ""
     CSV.generate csv_string do |csv|
-      csv << ['user','netid','email','mobile','position','committee','title','vote','period','starts at','ends at','renew until?']
+      csv << ['first', 'last','netid','email','mobile','position','committee','title','vote','period','starts at','ends at','renew until?']
       @search.all(:include => [ :request ]).each do |membership|
         next unless permitted_to?( :show, membership )
         membership.enrollments.each do |enrollment|
           next if @committee && (enrollment.committee_id != @committee.id)
-          csv << ( [ membership.user_id? ? membership.user.name : '',
+          csv << ( [ membership.user_id? ? membership.user.first_name : '',
+                     membership.user_id? ? membership.user.last_name : '',
                      membership.user_id? ? membership.user.net_id : '',
                      membership.user_id? ? membership.user.email : '',
                      membership.user_id? ? membership.user.mobile_phone : '',
