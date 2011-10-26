@@ -11,7 +11,7 @@ class Answer < ActiveRecord::Base
   validate :question_must_be_allowed
 
   scope :global, lambda { joins(:question).where :questions => { :global.eq => true } }
-  scope :local, lambda { joins(:question).where :questions => { :global.ne => true } }
+  scope :local, lambda { joins(:question).where { questions.global != true } }
 
   def question_must_be_allowed
     return nil unless request

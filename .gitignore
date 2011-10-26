@@ -11,3 +11,4 @@ db/*.sql
 db/schema.rb
 db/uploads
 db/fonts/*.ttf
+.sass-cache/

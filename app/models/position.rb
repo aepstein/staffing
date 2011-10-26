@@ -99,7 +99,7 @@ class Position < ActiveRecord::Base
   scope :requestable_by_committee, where( :requestable_by_committee => true )
   scope :designable, where( :designable => true )
   scope :active, where( :active => true )
-  scope :inactive, where( :active.ne => true )
+  scope :inactive, where { active != true }
 
   validates :name, :presence => true, :uniqueness => true
   validates :authority, :presence => true

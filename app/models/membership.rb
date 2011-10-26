@@ -64,9 +64,9 @@ class Membership < ActiveRecord::Base
     "memberships.ends_at DESC, memberships.starts_at DESC, " +
     "users.last_name ASC, users.first_name ASC, users.middle_name ASC"
   )
-  scope :assigned, where( :user_id.ne => nil )
+  scope :assigned, where { user_id != nil }
   scope :unassigned, where( :user_id => nil )
-  scope :requested, where( :request_id.ne => nil )
+  scope :requested, where { request_id != nil }
   scope :unrequested, where( :request_id => nil )
   scope :current, lambda { where( :starts_at.lte => Time.zone.today, :ends_at.gte => Time.zone.today ) }
   scope :future, lambda { where( :starts_at.gt => Time.zone.today ) }
@@ -107,14 +107,14 @@ class Membership < ActiveRecord::Base
   }
   scope :join_notice_pending, lambda { notifiable.current.no_join_notice }
   scope :leave_notice_pending, lambda { notifiable.past.no_leave_notice }
-  scope :notifiable, includes(:position).where( :user_id.ne => nil ).merge( Position.unscoped.notifiable )
+  scope :notifiable, includes(:position).where { user_id != nil }.merge( Position.unscoped.notifiable )
   scope :renewal_confirmed, lambda {
-    renewable.where( :renewal_confirmed_at.ne => nil )
+    renewable.where { renewal_confirmed_at != nil }
   }
   scope :renewal_unconfirmed, lambda {
     renewable.where( :renewal_confirmed_at => nil )
   }
-  scope :renewed, where( :renewed_by_membership_id.ne => nil )
+  scope :renewed, where { renewed_by_membership_id != nil }
   scope :unrenewed, where( :renewed_by_membership_id => nil )
   scope :user_name_like, lambda { |text| joins(:user).merge( User.unscoped.name_like(text) ) }
   scope :enrollments_committee_id_equals, lambda { |committee_id|
@@ -122,7 +122,8 @@ class Membership < ActiveRecord::Base
     where( [ 'enrollments.committee_id = ?', committee_id ] )
   }
 
-  search_methods :user_name_like
+  #TODO: deprecated by switch to ranscack
+  #search_methods :user_name_like
 
   delegate :enrollments, :to => :position
 
@@ -169,8 +170,8 @@ class Membership < ActiveRecord::Base
     ] }
     memberships = Membership.unscoped.where(:position_id => position_id)
     if period.class == Membership
-      memberships = memberships.where(:user_id.ne => nil) unless period.user.blank?
-      memberships = memberships.where(:id.ne => period.id) if period.persisted?
+      memberships = memberships.where { user_id != nil } unless period.user.blank?
+      memberships = memberships.where { id != my { period.id } } if period.persisted?
     end
     if out.empty? || out.first.first != period.starts_at.to_date
       out.unshift( [ period.starts_at.to_date,
@@ -241,7 +242,7 @@ class Membership < ActiveRecord::Base
   def watchers
     return User.unscoped.where(:id => nil) if new_record? || enrollments.empty?
     User.with_enrollments.
-    where( :id.ne => user_id ).
+    where { id != my { user_id } }.
     where( 'enrollments.committee_id IN (?)', enrollments.map(&:committee_id) ).
     where( 'enrollments.membership_notices = ?', true ).
     merge( Membership.unscoped.overlap( starts_at, ends_at ) ).

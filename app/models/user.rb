@@ -63,7 +63,8 @@ class User < ActiveRecord::Base
       "ON memberships.position_id = enrollments.position_id")
   }
 
-  search_methods :name_like
+  # TODO: deprecated by ransack
+  #search_methods :name_like
 
   mount_uploader :resume, UserResumeUploader
 

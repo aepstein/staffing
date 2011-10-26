@@ -65,7 +65,7 @@ class Period < ActiveRecord::Base
 
   def must_not_conflict_with_other_period
     conflicts = Period.conflict_with(self) if new_record?
-    conflicts ||= Period.conflict_with(self).where(:id.ne => id)
+    conflicts ||= Period.conflict_with(self).where { id != my { id } }
     errors.add :base, "Conflicts with #{conflicts.join(', ')}" unless conflicts.empty?
   end
 
