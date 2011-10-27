@@ -44,6 +44,12 @@ class User < ActiveRecord::Base
       merge( Position.requestable_by_committee.
         with_status( @association.owner.status ) )
     end
+    def authorized(votes = 1)
+      return [] if @association.owner.authorities.authorized(votes).empty?
+      Committee.joins(:positions).merge(
+        Position.where( :authority_id.in => @association.owner.authorities.
+          authorized( votes ).map(&:id) ) ).select( 'DISTINCT committees.*' )
+    end
   end
   has_many :authorities, :through => :committees do
     def prospective
@@ -68,6 +74,11 @@ class User < ActiveRecord::Base
     end
     def requestable
       Position.requestable.with_status( @association.owner.status )
+    end
+    def authorized(votes = 1)
+      return [] if @association.owner.authorities.authorized(votes).empty?
+      Position.where( :authority_id.in => @association.owner.authorities.
+          authorized( votes ).map(&:id) ).select('DISTINCT positions.*')
     end
   end
 
@@ -129,16 +140,17 @@ class User < ActiveRecord::Base
   end
 
   def authorized_position_ids(votes = 1)
-    return [] if authorities.authorized(votes).empty?
-    Position.where( :authority_id.in => authorities.authorized( votes ).map(&:id) ).
-      select('positions.id').map(&:id)
+    message = "authorized_position_ids is deprecated and will be removed.  " +
+      "Use positions.authorized(votes).map(&:id) instead."
+    ActiveSupport::Deprecation.warn( message )
+    positions.authorized(votes).map(&:id)
   end
 
   def authorized_committee_ids(votes = 1)
-    return [] if authorities.authorized(votes).empty?
-    Committee.joins(:positions).merge(
-      Position.where( :authority_id.in => authorities.authorized( votes ).map(&:id) ) ).
-      select( 'DISTINCT committees.id' ).map(&:id)
+    message = "authorized_committee_ids is deprecated and will be removed.  " +
+      "Use committees.authorized(votes).map(&:id) instead."
+    ActiveSupport::Deprecation.warn( message )
+    committees.authorized(votes).map(&:id)
   end
 
   def requestable_committees

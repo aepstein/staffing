@@ -42,6 +42,7 @@ class Membership < ActiveRecord::Base
     end
   end
   has_many :enrollments, through: :position
+  has_many :committees, through: :enrollments
 
   # Memberships that could renewed by assigning the user to this membership:
   # * assigned
@@ -56,7 +57,7 @@ class Membership < ActiveRecord::Base
       "enrollments.position_id = memberships.position_id").
     where( "memberships.position_id = ? OR " +
       "enrollments.committee_id IN (?)",
-       membership.position_id, membership.position.committee_ids ).
+       membership.position_id, membership.committee_ids ).
     no_overlap( membership.starts_at, membership.ends_at ).
     where( :renew_until.gte => membership.starts_at ).
     where( :renew_until.gte => Time.zone.today )
@@ -131,13 +132,13 @@ class Membership < ActiveRecord::Base
 
   accepts_nested_attributes_for :designees, :reject_if => proc { |a| a['user_name'].blank? }, :allow_destroy => true
 
-  validates_presence_of :period
-  validates_presence_of :position
-  validates :user_id,
-    :uniqueness => { :scope => [ :position_id, :period_id ] }
-  validates_date :starts_at
-  validates_date :ends_at, :on_or_after => :starts_at
-  validates_date :renew_until, :after => :ends_at, :allow_blank => true
+  validates :period, presence: true
+  validates :position, presence: true
+  validates :user_id, uniqueness: { scope: [ :position_id, :period_id ] }
+  validates :starts_at, timeliness: { type: :date }
+  validates :ends_at, timeliness: { type: :date, on_or_after: :starts_at }
+  validates :renew_until, timeliness: { type: :date, after: :ends_at,
+    allow_blank: true }
   validate :must_be_within_period, :user_must_be_qualified,
     :concurrent_memberships_must_not_exceed_slots
 
