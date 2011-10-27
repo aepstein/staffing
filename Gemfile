@@ -34,7 +34,7 @@ group :assets do
   gem 'uglifier'
 end
 group :development, :test do
-  gem 'rspec-rails', '~> 2.6.1'
+  gem 'rspec-rails', '~> 2.0'
 end
 group :development do
   gem 'thin'
@@ -45,9 +45,9 @@ group :test do
   gem 'database_cleaner'
   gem 'capybara'
   gem 'spork'
-  gem 'factory_girl', '~> 2.0.0', :require => false
-  gem 'factory_girl_rails', '~> 1.1.0'
-  gem 'pickle', '~> 0.4.8'
+  gem 'factory_girl', '~> 2.0', :require => false
+  gem 'factory_girl_rails', '~> 1.0'
+  gem 'pickle', '~> 0.4'
   gem 'email_spec'
   gem 'launchy'
 end
