@@ -55,12 +55,12 @@ describe Position do
     @position.save!
     period = Factory(:period, :schedule => @position.schedule)
     m = @position.memberships.build
-    m.send( :attributes=, { :period => period, :starts_at => period.starts_at + 2.days,
-      :ends_at => period.ends_at - 2.days, :user => Factory(:user) }, false )
+    m.assign_attributes( { :period => period, :starts_at => period.starts_at + 2.days,
+      :ends_at => period.ends_at - 2.days, :user => Factory(:user) }, as: :admin )
     m.save!
     m = @position.memberships.build
-    m.send( :attributes=, { :period => period, :starts_at => period.starts_at,
-      :ends_at => period.ends_at - 1.days, :user => Factory(:user) }, false )
+    m.assign_attributes( { :period => period, :starts_at => period.starts_at,
+      :ends_at => period.ends_at - 1.days, :user => Factory(:user) }, as: :admin )
     m.save!
     Membership.unassigned.delete_all
     vacancies = @position.memberships.vacancies_for_period(period)

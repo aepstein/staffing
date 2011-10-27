@@ -15,20 +15,20 @@ class Period < ActiveRecord::Base
   has_many :meetings, :inverse_of => :period
   has_many :memberships, :inverse_of => :period, :dependent => :destroy do
     def populate_unassigned!
-      proxy_owner.schedule.positions.active.each do |position|
-        position.memberships.populate_unassigned_for_period! proxy_owner
+      @association.owner.schedule.positions.active.each do |position|
+        position.memberships.populate_unassigned_for_period! @association.owner
       end
       # Reset so changes are loaded in this collection
       reset
     end
     def repopulate_unassigned!
-      where(:starts_at.lt => proxy_owner.starts_at).update_all(
-        "starts_at = #{connection.quote proxy_owner.starts_at}"
+      where(:starts_at.lt => @association.owner.starts_at).update_all(
+        "starts_at = #{connection.quote @association.owner.starts_at}"
       )
-      where(:ends_at.gt => proxy_owner.ends_at).update_all(
-        "ends_at = #{connection.quote proxy_owner.ends_at}"
+      where(:ends_at.gt => @association.owner.ends_at).update_all(
+        "ends_at = #{connection.quote @association.owner.ends_at}"
       )
-      Membership.unassigned.where(:period_id => proxy_owner.id).delete_all
+      Membership.unassigned.where(:period_id => @association.owner.id).delete_all
       # Reset so changes are loaded in this collection
       reset
       populate_unassigned!

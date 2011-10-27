@@ -102,9 +102,8 @@ class UsersController < ApplicationController
   # PUT /users/1
   # PUT /users/1.xml
   def update
-    @user.accessible = User::ADMIN_UPDATABLE
     respond_to do |format|
-      if @user.update_attributes(params[:user])
+      if @user.update_attributes(params[:user], as: role)
         flash[:notice] = 'User was successfully updated.'
         format.html { redirect_to(@user) }
         format.xml  { head :ok }
@@ -157,8 +156,11 @@ class UsersController < ApplicationController
 
   def new_user_from_params
     @user = User.new
-    @user.accessible = User::ADMIN_UPDATABLE
-    @user.attributes = params[:user]
+    @user.assign_attributes params[:user], as: role
+  end
+
+  def role
+    permitted_to?(:manage, @user) ? :admin : :default
   end
 
 end

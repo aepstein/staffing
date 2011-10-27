@@ -125,7 +125,6 @@ class RequestsController < ApplicationController
   # PUT /requests/1
   # PUT /requests/1.xml
   def update
-    @request.accessible = Request::UPDATABLE_ATTRIBUTES
     respond_to do |format|
       if @request.update_attributes(params[:request])
         @request.reactivate! unless @request.active?
@@ -148,9 +147,8 @@ class RequestsController < ApplicationController
   # PUT /requests/1/do_reject
   # PUT /requests/1/do_reject.xml
   def do_reject
-    @request.accessible = Request::REJECTABLE_ATTRIBUTES
     @request.rejected_by_user = current_user
-    @request.attributes = params[:request]
+    @request.assign_attributes params[:request], as: :rejector
     respond_to do |format|
       if @request.reject
         flash[:notice] = 'Request was successfully rejected.'
@@ -218,8 +216,7 @@ class RequestsController < ApplicationController
     @request = @requestable.requests.build
     @request.starts_at ||= @membership.starts_at if @membership
     @request.user ||= ( @membership ? @membership.user : @user )
-    @request.accessible = Request::UPDATABLE_ATTRIBUTES
-    @request.attributes = params[:request]
+    @request.assign_attributes params[:request]
   end
 
   def setup_breadcrumbs

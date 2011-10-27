@@ -4,10 +4,12 @@ class User < ActiveRecord::Base
 
   STATUSES = %w( staff faculty undergrad grad alumni temporary )
   ADMIN_UPDATABLE = [ :net_id, :admin, :status ]
-
-  attr_accessible :first_name, :middle_name, :last_name, :email, :mobile_phone,
+  UPDATABLE = [ :first_name, :middle_name, :last_name, :email, :mobile_phone,
     :work_phone, :home_phone, :work_address, :date_of_birth, :resume,
-    :renewal_checkpoint, :memberships_attributes
+    :renewal_checkpoint, :memberships_attributes ]
+
+  attr_accessible UPDATABLE
+  attr_accessible ADMIN_UPDATABLE, UPDATABLE, as: :admin
 
   default_scope order( 'users.last_name ASC, users.first_name ASC, users.middle_name ASC' )
 
@@ -18,7 +20,37 @@ class User < ActiveRecord::Base
     # authority for the position of the membership which overlaps the membership's
     # duration
     def authorized
-      Membership.authorized_user_id_equals proxy_owner.id
+      Membership.authorized_user_id_equals @association.owner.id
+    end
+  end
+  has_many :enrollments, :through => :memberships do
+    def past; where { memberships.ends_at < Time.zone.today }; end
+    def current
+      where { memberships.starts_at <= Time.zone.today &&
+        memberships.ends_at >= Time.zone.today }
+    end
+    def future; where { memberships.starts_at > Time.zone.today }; end
+  end
+  has_many :committees, :through => :enrollments do
+    def past; where { enrollments.memberships.ends_at < Time.zone.today }; end
+    def current
+      where { enrollments.memberships.starts_at <= Time.zone.today &&
+        enrollments.memberships.ends_at >= Time.zone.today }
+    end
+    def future; where { enrollments.memberships.starts_at > Time.zone.today }; end
+    def prospective; where { enrollments.memberships.ends_at > Time.zone.today }; end
+    def requestable
+      Committee.requestable.select('DISTINCT committees.*').joins(:positions).
+      merge( Position.requestable_by_committee.
+        with_status( @association.owner.status ) )
+    end
+  end
+  has_many :authorities, :through => :committees do
+    def prospective
+      where { committees.enrollments.memberships.ends_at > Time.zone.today }
+    end
+    def authorized( votes = 1 )
+      prospective.where { committees.enrollments.votes >= my { votes } }
     end
   end
   has_many :designees, :inverse_of => :user
@@ -34,6 +66,9 @@ class User < ActiveRecord::Base
         { :d => Time.zone.today }
       )
     end
+    def requestable
+      Position.requestable.with_status( @association.owner.status )
+    end
   end
 
   scope :interested_in, lambda { |membership|
@@ -43,10 +78,6 @@ class User < ActiveRecord::Base
   }
   scope :renewable_to, lambda { |membership|
     select('DISTINCT users.*').joins(:memberships).merge( Membership.unscoped.renewable_to( membership ) )
-  }
-  scope :no_renew_notice_since, lambda { |checkpoint|
-    t = arel_table
-    where( t[:renew_notice_at].eq( nil ).or( t[:renew_notice_at].lt( checkpoint ) ) )
   }
   scope :renewal_unconfirmed, lambda {
     joins( :memberships ).merge( Membership.unscoped.joins( :period ).renewal_unconfirmed )
@@ -91,46 +122,37 @@ class User < ActiveRecord::Base
   before_validation :import_ldap_attributes, :initialize_password, :on => :create
   before_validation { |r| r.renewal_checkpoint ||= Time.zone.now unless r.persisted? }
 
-  def authority_ids( votes = 1 )
-    authorities( votes ).map(&:id)
-  end
-
-  # A users authorities are:
-  #  * associated with a committee of which the user is a current or future member
-  def authorities( votes = 1 )
-    return [] unless persisted?
-    Authority.scoped.merge(
-      committees(:current_or_future).
-      where( :enrollments => { :votes.gte => votes } )
-    )
-  end
-
   # Where necessary, provide for admin to get listing of all authorities
   def allowed_authorities( votes = 1 )
     return Authority.all if role_symbols.include? :admin
-    authorities( votes )
+    authorities.authorized votes
   end
 
   def authorized_position_ids(votes = 1)
-    return [] if authority_ids(votes).empty?
-    Position.where( :authority_id.in => authority_ids( votes ) ).
+    return [] if authorities.authorized(votes).empty?
+    Position.where( :authority_id.in => authorities.authorized( votes ).map(&:id) ).
       select('positions.id').map(&:id)
   end
 
   def authorized_committee_ids(votes = 1)
-    return [] if authority_ids(votes).empty?
+    return [] if authorities.authorized(votes).empty?
     Committee.joins(:positions).merge(
-      Position.where( :authority_id.in => authority_ids( votes ) ) ).
+      Position.where( :authority_id.in => authorities.authorized( votes ).map(&:id) ) ).
       select( 'DISTINCT committees.id' ).map(&:id)
   end
 
   def requestable_committees
-    Committee.requestable.select('DISTINCT committees.*').joins(:positions).
-    merge( Position.requestable_by_committee.with_status( status ) )
+    message = "requestable_committees is deprecated and will be removed.  " +
+      "Use committees.requestable instead."
+    ActiveSupport::Deprecation.warn( message )
+    committees.requestable
   end
 
   def requestable_positions
-    Position.requestable.with_status( status )
+    message = "requestable_positions is deprecated and will be removed.  " +
+      "Use positions.requestable instead."
+    ActiveSupport::Deprecation.warn( message )
+    positions.requestable
   end
 
   def requestables(reload=false)
@@ -163,26 +185,6 @@ class User < ActiveRecord::Base
       "#{first_name} #{last_name}"
     end
     name.squeeze(' ').strip
-  end
-
-  def enrollments(tense = nil)
-    Enrollment.joins(:memberships).merge memberships_scope(tense)
-  end
-
-  def committees(tense = nil)
-    Committee.joins(:enrollments).merge( Enrollment.unscoped.joins(:memberships).merge( memberships_scope(tense) ) )
-  end
-
-  def current_enrollments
-    enrollments :current
-  end
-
-  def past_enrollments
-    enrollments :past
-  end
-
-  def future_enrollments
-    enrollments :future
   end
 
   def to_s; name; end

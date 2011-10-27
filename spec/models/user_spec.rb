@@ -74,12 +74,14 @@ describe User do
     e4 = Factory(:enrollment, :position => m4.position)
     @user.enrollments.length.should eql 3
     @user.enrollments.should include( e1, e2, e3 )
-    @user.current_enrollments.length.should eql 1
-    @user.current_enrollments.should include( e1 )
-    @user.future_enrollments.length.should eql 1
-    @user.future_enrollments.should include( e2 )
-    @user.past_enrollments.length.should eql 1
-    @user.past_enrollments.should include( e3 )
+    @user.enrollments.current.length.should eql 1
+    @user.enrollments.current.should include( e1 )
+    @user.enrollments.future.length.should eql 1
+    @user.enrollments.future.should include( e2 )
+    @user.enrollments.past.length.should eql 1
+    @user.enrollments.past.should include( e3 )
+    @user.enrollments.prospective.length.should eql 2
+    @user.enrollments.prospective.should include( e1, e2 )
   end
 
   it 'should have an authority_ids method that identifies the authorities in which the user is enrolled now or in the future' do
@@ -94,15 +96,16 @@ describe User do
     authorities = { }
     authorities[:no_committee] = Factory(:authority)
     committees.each { |key, committee| authorities[key] = Factory(:authority, :committee => committee) }
-    @user.authority_ids.length.should eql 2
-    @user.authority_ids.should include authorities[:current].id
-    @user.authority_ids.should include authorities[:future].id
-    Factory(:user).authority_ids.should be_empty
+    authorized = @user.authorities.authorized
+    authorized.length.should eql 2
+    authorized.should include authorities[:current]
+    authorized.should include authorities[:future]
+    Factory(:user).authorities.authorized.should be_empty
   end
 
   it 'should return authorized_position_ids based on authority_ids' do
     setup_authority_id_scenario
-    @user.stub!(:authority_ids).and_return([@authorized.authority_id])
+    @user.authorities.stub!(:authorized).and_return([@authorized])
     @user.authorized_position_ids.length.should eql 1
     @user.authorized_position_ids.should include @authorized.id
   end
@@ -114,7 +117,7 @@ describe User do
 
   it 'should return authorized_committee_ids based on authority_ids' do
     setup_authority_id_scenario
-    @user.stub!(:authority_ids).and_return([@authorized.authority_id])
+    @user.authorities.stub!(:authorized).and_return([@authorized])
     @user.authorized_committee_ids.length.should eql 1
     @user.authorized_committee_ids.should include @a_committee.id
   end

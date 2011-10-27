@@ -178,9 +178,8 @@ class MembershipsController < ApplicationController
   # PUT /memberships/1
   # PUT /memberships/1.xml
   def update
-    @membership.accessible = Membership::UPDATABLE_ATTRIBUTES
     respond_to do |format|
-      if @membership.update_attributes(params[:membership])
+      if @membership.update_attributes(params[:membership], :as => :updator)
         flash[:notice] = 'Membership was successfully updated.'
         format.html { redirect_to(@membership) }
         format.xml  { head :ok }
@@ -249,8 +248,7 @@ class MembershipsController < ApplicationController
     else
       @membership = @position.memberships.build
     end
-    @membership.accessible = Membership::UPDATABLE_ATTRIBUTES
-    @membership.attributes = params[:membership] if params[:membership]
+    @membership.assign_attributes params[:membership], as: :updator if params[:membership]
     @membership.period ||= @membership.position.schedule.periods.active
     @membership.period ||= @membership.position.schedule.periods.first
     if @membership.period

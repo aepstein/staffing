@@ -5,17 +5,11 @@ class Enrollment < ActiveRecord::Base
 
   belongs_to :position, :inverse_of => :enrollments
   belongs_to :committee, :inverse_of => :enrollments
-  has_many :memberships, :primary_key => :position_id, :foreign_key => :position_id
+  has_many :memberships, :through => :position
 
   default_scope includes(:committee, :position).
     order( 'committees.name ASC, enrollments.title ASC, positions.name ASC' )
 
-  scope :memberships_user_id_equals, lambda { |user_id|
-     joins(:memberships).merge( Membership.where( :user_id => user_id ) )
-  }
-  scope :memberships_current, lambda { joins(:memberships) & Membership.current }
-  scope :memberships_future, lambda { joins(:memberships) & Membership.future }
-  scope :memberships_past, lambda { joins(:memberships) & Membership.past }
   scope :membership_notices, where( :membership_notices => true )
 
   validates_presence_of :position

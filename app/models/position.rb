@@ -19,11 +19,11 @@ class Position < ActiveRecord::Base
     end
     # Create vacant memberships for all periods
     def populate_unassigned!
-      proxy_owner.periods.each { |p| populate_unassigned_for_period! p }
+      @association.owner.periods.each { |p| populate_unassigned_for_period! p }
     end
     # Create vacant memberships
     def populate_unassigned_for_period!( period )
-      raise ArgumentError, "Period must be in current schedule" unless proxy_owner.schedule.periods.include? period
+      raise ArgumentError, "Period must be in current schedule" unless @association.owner.schedule.periods.include? period
       previous_vacancies = nil
       memberships = vacancies_for_period( period ).inject([]) do |memo, point|
         if previous_vacancies.nil?
@@ -42,7 +42,7 @@ class Position < ActiveRecord::Base
     end
     # Spaces for period
     def vacancies_for_period( period )
-      Membership.concurrent_counts( period, proxy_owner.id ).map { |r| [r.first, ( proxy_owner.slots - r.last )] }
+      Membership.concurrent_counts( period, @association.owner.id ).map { |r| [r.first, ( @association.owner.slots - r.last )] }
     end
 
     private

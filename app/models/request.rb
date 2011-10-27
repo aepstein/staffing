@@ -14,14 +14,14 @@ class Request < ActiveRecord::Base
     "( positions.statuses_mask = 0 OR " +
     "( ( positions.statuses_mask & users.statuses_mask ) > 0 ) )"
 
-  attr_accessible :starts_at, :ends_at, :new_position, :answers_attributes,
-    :user_attributes
+  attr_accessible UPDATABLE_ATTRIBUTES
+  attr_accessible REJECTABLE_ATTRIBUTES, as: :rejector
   attr_readonly :user_id, :requestable_id, :requestable_type
 
   has_many :answers, :inverse_of => :request do
     def populate
       # Generate blank answers for any allowed question not in answer set
-      population = proxy_owner.questions.reject { |q|
+      population = @association.owner.questions.reject { |q|
         populated_question_ids.include? q.id
       }.map do |question|
           answer = build
@@ -29,11 +29,11 @@ class Request < ActiveRecord::Base
           answer
       end
       # Fill in most recent prior answer for each global question populated
-      s = proxy_owner.user.answers.global.where( :question_id.in => population.map { |a| a.question_id }
+      s = @association.owner.user.answers.global.where( :question_id.in => population.map { |a| a.question_id }
       ).where(<<-SQL
         answers.updated_at = ( SELECT MAX(a.updated_at) FROM answers AS a
         INNER JOIN requests AS r ON a.request_id = r.id
-        WHERE a.question_id = answers.question_id AND r.user_id = #{proxy_owner.user_id} )
+        WHERE a.question_id = answers.question_id AND r.user_id = #{@association.owner.user_id} )
       SQL
       )
       s.each do |answer|
@@ -55,13 +55,13 @@ class Request < ActiveRecord::Base
 
   has_many :memberships, :inverse_of => :request, :dependent => :nullify do
     def assignable
-      proxy_owner.requestable.memberships.overlap( proxy_owner.starts_at, proxy_owner.ends_at
-      ).position_with_status( proxy_owner.user.status ).unassigned
+      @association.owner.requestable.memberships.overlap( @association.owner.starts_at, @association.owner.ends_at
+      ).position_with_status( @association.owner.user.status ).unassigned
     end
     def claim!
-      return if proxy_owner.position_ids.empty?
-      proxy_owner.user.memberships.unrequested.where(
-        :position_id.in => proxy_owner.position_ids ).each do |membership|
+      return if @association.owner.position_ids.empty?
+      @association.owner.user.memberships.unrequested.where(
+        :position_id.in => @association.owner.position_ids ).each do |membership|
         self << membership
       end
     end

@@ -2,10 +2,13 @@ class Membership < ActiveRecord::Base
   include Notifiable
   notifiable_events :join, :leave
 
+  RENEWABLE_ATTRIBUTES = [ :renew_until, :renewal_confirmed_at ]
   UPDATABLE_ATTRIBUTES = [ :user_name, :user_id, :period_id, :position_id,
     :request_id, :starts_at, :ends_at, :designees_attributes,
     :designees_attributes ]
-  attr_accessible :renew_until, :renewal_confirmed_at
+  attr_accessible RENEWABLE_ATTRIBUTES, :as => :default
+  attr_accessible RENEWABLE_ATTRIBUTES, UPDATABLE_ATTRIBUTES, :as => :updator
+
   attr_readonly :position_id
 
   include UserNameLookup
@@ -23,8 +26,8 @@ class Membership < ActiveRecord::Base
     :foreign_key => :renewed_by_membership_id, :dependent => :nullify
   has_many :designees, :inverse_of => :membership, :dependent => :delete_all do
     def populate
-      return Array.new unless proxy_owner.position && proxy_owner.position.designable?
-      proxy_owner.position.committees.inject([]) do |memo, committee|
+      return Array.new unless @association.owner.position && @association.owner.position.designable?
+      @association.owner.position.committees.inject([]) do |memo, committee|
         unless committee_ids.include? committee.id
           designee = build
           designee.committee = committee
@@ -38,6 +41,7 @@ class Membership < ActiveRecord::Base
       self.map { |designee| designee.committee_id }.uniq
     end
   end
+  has_many :enrollments, through: :position
 
   # Memberships that could renewed by assigning the user to this membership:
   # * assigned
@@ -124,8 +128,6 @@ class Membership < ActiveRecord::Base
 
   #TODO: deprecated by switch to ranscack
   #search_methods :user_name_like
-
-  delegate :enrollments, :to => :position
 
   accepts_nested_attributes_for :designees, :reject_if => proc { |a| a['user_name'].blank? }, :allow_destroy => true
 

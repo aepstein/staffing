@@ -13,16 +13,16 @@ class Motion < ActiveRecord::Base
     # Build and return a sponsorship if provided user is allowed
     # Otherwise, return nil
     def populate_for( user )
-      build( :user => user ) if proxy_owner.users.allowed.include? user
+      build( :user => user ) if @association.owner.users.allowed.include? user
     end
   end
   has_many :users, :through => :sponsorships do
     # Only voting members may be sponsors
     def allowed
-      return [] unless proxy_owner.committee && proxy_owner.period_id?
+      return [] unless @association.owner.committee && @association.owner.period_id?
       User.joins(:memberships).merge(
-        proxy_owner.committee.memberships.where( 'enrollments.votes > 0' ).
-        overlap( proxy_owner.period.starts_at, proxy_owner.period.ends_at ) )
+        @association.owner.committee.memberships.where( 'enrollments.votes > 0' ).
+        overlap( @association.owner.period.starts_at, @association.owner.period.ends_at ) )
     end
   end
   has_many :meeting_motions, :dependent => :destroy
@@ -31,7 +31,7 @@ class Motion < ActiveRecord::Base
   has_many :merged_motions, :through => :motion_mergers, :source => :merged_motion
   has_many :referred_motions, :inverse_of => :referring_motion, :class_name => 'Motion', :foreign_key => :referring_motion_id, :dependent => :destroy do
     def build_referee( new_committee )
-      new_motion = build( proxy_owner.attributes )
+      new_motion = build( @association.owner.attributes )
       new_motion.committee = new_committee
       new_motion
     end
@@ -39,12 +39,12 @@ class Motion < ActiveRecord::Base
     def build_divided( instances=false )
       instances ||= (empty? ? 2 : 1 )
       new_motions = []
-      new_attributes = proxy_owner.attributes
+      new_attributes = @association.owner.attributes
       %w( committee_id id position created_at updated_at ).each { |attribute| new_attributes.delete attribute }
       instances.times do |i|
-        new_attributes[:name] = "#{proxy_owner.name} (#{proxy_owner.id}-#{i})"
+        new_attributes[:name] = "#{@association.owner.name} (#{@association.owner.id}-#{i})"
         new_motion = build new_attributes
-        new_motion.committee = proxy_owner.committee
+        new_motion.committee = @association.owner.committee
         new_motions << new_motion
       end
       new_motions
