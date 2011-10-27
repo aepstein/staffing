@@ -1,219 +1,221 @@
 require 'factory_girl'
 
-Factory.define :answer do |f|
-  f.association :request
-  f.question { |a| a.association( :question, :quizzes => [ a.request.requestable.quiz ] ) }
-  f.content 'blue'
-end
+FactoryGirl.define do
+  factory :answer do |f|
+    association :request
+    question { |a| a.association( :question, :quizzes => [ a.request.requestable.quiz ] ) }
+    content 'blue'
+  end
 
-Factory.define :authority do |f|
-  f.sequence(:name) { |n| "Authority #{n}" }
-end
+  factory :authority do |f|
+    sequence(:name) { |n| "Authority #{n}" }
+  end
 
-Factory.define :brand do |f|
-  f.sequence( :name ) { |n| "Brand #{n}" }
-  f.logo { |brand| File.open "#{::Rails.root}/spec/assets/logo.eps" }
-end
+  factory :brand do |f|
+    sequence( :name ) { |n| "Brand #{n}" }
+    logo { |brand| File.open "#{::Rails.root}/spec/assets/logo.eps" }
+  end
 
-Factory.define :committee do |f|
-  f.sequence(:name) { |n| "Committee #{n}" }
-  f.association :schedule
-  f.requestable true
-end
+  factory :committee do |f|
+    sequence(:name) { |n| "Committee #{n}" }
+    association :schedule
+    requestable true
+  end
 
-Factory.define :designee do |f|
-  f.association :committee
-  f.membership { |d|
-    d.association :membership, :position => d.association( :enrollment,
-    :position => d.association( :position, :designable => true ),
-    :committee => d.committee ).position
-  }
-  f.association :user
-end
+  factory :designee do |f|
+    association :committee
+    membership { |d|
+      d.association :membership, :position => d.association( :enrollment,
+      :position => d.association( :position, :designable => true ),
+      :committee => d.committee ).position
+    }
+    association :user
+  end
 
-Factory.define :enrollment do |f|
-  f.association :committee
-  f.position { |e| e.association :position, :schedule => e.committee.schedule }
-  f.title "member"
-  f.votes 1
-end
+  factory :enrollment do |f|
+    association :committee
+    position { |e| e.association :position, :schedule => e.committee.schedule }
+    title "member"
+    votes 1
+  end
 
-Factory.define :membership do |f|
-  f.association :user
-  f.association :position
-  f.period do |m|
-    if m.position.schedule.periods.length > 0
-      m.position.schedule.periods.first
-    else
-      m.position.schedule.reload
-      m.association( :period, :schedule => m.position.schedule )
+  factory :membership do |f|
+    association :user
+    association :position
+    period do |m|
+      if m.position.schedule.periods.length > 0
+        m.position.schedule.periods.first
+      else
+        m.position.schedule.reload
+        m.association( :period, :schedule => m.position.schedule )
+      end
+    end
+    starts_at { |m| m.period.starts_at }
+    ends_at { |m| m.period.ends_at }
+
+    factory :current_membership do |f|
+      association :position
+      period { |m| m.association(:current_period, :schedule => m.position.schedule) }
+    end
+
+    factory :future_membership do |f|
+      association :position
+      period { |m| m.association(:future_period, :schedule => m.position.schedule) }
+    end
+
+    factory :past_membership do |f|
+      association :position
+      period { |m| m.association(:past_period, :schedule => m.position.schedule) }
     end
   end
-  f.starts_at { |m| m.period.starts_at }
-  f.ends_at { |m| m.period.ends_at }
-end
 
-Factory.define :current_membership, :parent => :membership do |f|
-  f.association :position
-  f.period { |m| m.association(:current_period, :schedule => m.position.schedule) }
-end
-
-Factory.define :future_membership, :parent => :membership do |f|
-  f.association :position
-  f.period { |m| m.association(:future_period, :schedule => m.position.schedule) }
-end
-
-Factory.define :past_membership, :parent => :membership do |f|
-  f.association :position
-  f.period { |m| m.association(:past_period, :schedule => m.position.schedule) }
-end
-
-Factory.define :motion do |f|
-  f.sequence( :name ) { |n| "Motion #{n}" }
-  f.association :committee
-  f.period do |m|
-    if m.committee.schedule.periods.any?
-      m.committee.schedule.periods.first
-    else
-      m.committee.schedule.periods.reset
-      m.association( :period, :schedule => m.committee.schedule )
+  factory :motion do |f|
+    sequence( :name ) { |n| "Motion #{n}" }
+    association :committee
+    period do |m|
+      if m.committee.schedule.periods.any?
+        m.committee.schedule.periods.first
+      else
+        m.committee.schedule.periods.reset
+        m.association( :period, :schedule => m.committee.schedule )
+      end
     end
   end
-end
 
-Factory.define :motion_merger do |f|
-  f.merged_motion { |m| m.association :motion, :status => 'proposed' }
-  f.motion do |m|
-    m.merged_motion.reload
-    m.association :motion, :committee => m.merged_motion.committee, :period => m.merged_motion.period
+  factory :motion_merger do |f|
+    merged_motion { |m| m.association :motion, :status => 'proposed' }
+    motion do |m|
+      m.merged_motion.reload
+      m.association :motion, :committee => m.merged_motion.committee, :period => m.merged_motion.period
+    end
   end
-end
 
-Factory.define :position do |f|
-  f.sequence(:name) { |n| "Position #{n}" }
-  f.requestable true
-  f.association :authority
-  f.association :schedule
-  f.association :quiz
-  f.slots 1
-end
+  factory :position do |f|
+    sequence(:name) { |n| "Position #{n}" }
+    requestable true
+    association :authority
+    association :schedule
+    association :quiz
+    slots 1
+  end
 
-Factory.define :qualification do |f|
-  f.sequence(:name) { |n| "Qualification #{n}" }
-end
+  factory :qualification do |f|
+    sequence(:name) { |n| "Qualification #{n}" }
+  end
 
-Factory.define :question do |f|
-  f.sequence(:name) { |n| "Question #{n}" }
-  f.content "What is your favorite color?"
-end
+  factory :question do |f|
+    sequence(:name) { |n| "Question #{n}" }
+    content "What is your favorite color?"
+  end
 
-Factory.define :quiz do |f|
-  f.sequence(:name) { |n| "Quiz #{n}" }
-end
+  factory :quiz do |f|
+    sequence(:name) { |n| "Quiz #{n}" }
+  end
 
-Factory.define :request do |f|
-  f.association :user
-  f.requestable { |request| request.association :position }
-  f.starts_at do |request|
-    case request.requestable.class.to_s
-    when 'Position'
-      periods = request.requestable.schedule.periods
-    when 'Committee'
-      if position = request.requestable.positions.first
-        periods = position.schedule.periods
+  factory :request do |f|
+    association :user
+    requestable { |request| request.association :position }
+    starts_at do |request|
+      case request.requestable.class.to_s
+      when 'Position'
+        periods = request.requestable.schedule.periods
+      when 'Committee'
+        if position = request.requestable.positions.first
+          periods = position.schedule.periods
+        else
+          periods = false
+        end
       else
         periods = false
       end
-    else
-      periods = false
+      (periods && periods.last) ? periods.last.starts_at : Time.zone.today
     end
-    (periods && periods.last) ? periods.last.starts_at : Time.zone.today
-  end
-  f.ends_at do |request|
-    case request.requestable.class.to_s
-    when 'Position'
-      periods = request.requestable.schedule.periods
-    when 'Committee'
-      if position = request.requestable.positions.first
-        periods = position.schedule.periods
-      else
+    ends_at do |request|
+      case request.requestable.class.to_s
+      when 'Position'
+        periods = request.requestable.schedule.periods
+      when 'Committee'
+        if position = request.requestable.positions.first
+          periods = position.schedule.periods
+        else
+          periods = false
+        end
+    else
         periods = false
       end
-  else
-      periods = false
+      (periods && periods.first) ? periods.first.ends_at : request.starts_at + 1.year
     end
-    (periods && periods.first) ? periods.first.ends_at : request.starts_at + 1.year
-  end
-end
-
-Factory.define :meeting do |f|
-  f.association :committee
-  f.period do |meeting|
-    if meeting.committee.schedule.periods.empty?
-      meeting.committee.reload
-      meeting.association(:period, :schedule => meeting.committee.schedule)
+    factory :expired_request do |f|
+      starts_at Date.today - 2.years
     end
-    meeting.committee.schedule.periods.first
   end
-  f.starts_at { |m| m.period.starts_at.to_time + 1.hour }
-  f.ends_at { |m| m.starts_at + 1.hour }
-  f.location 'Day Hall'
-end
 
-Factory.define :meeting_motion do |f|
-  f.association :meeting
-  f.motion do |m|
-    m.meeting.reload
-    m.association :motion, :committee => m.meeting.committee
+  factory :meeting do |f|
+    association :committee
+    period do |meeting|
+      if meeting.committee.schedule.periods.empty?
+        meeting.committee.reload
+        meeting.association(:period, :schedule => meeting.committee.schedule)
+      end
+      meeting.committee.schedule.periods.first
+    end
+    starts_at { |m| m.period.starts_at.to_time + 1.hour }
+    ends_at { |m| m.starts_at + 1.hour }
+    location 'Day Hall'
   end
-end
 
-Factory.define :expired_request, :parent => :request do |f|
-  f.starts_at Date.today - 2.years
-end
+  factory :meeting_motion do |f|
+    association :meeting
+    motion do |m|
+      m.meeting.reload
+      m.association :motion, :committee => m.meeting.committee
+    end
+  end
 
-Factory.define :schedule do |f|
-  f.sequence(:name) { |n| "Schedule #{n}" }
-end
+  factory :schedule do |f|
+    sequence(:name) { |n| "Schedule #{n}" }
+  end
 
-Factory.define :period do |f|
-  f.association :schedule
-  f.starts_at { |p| Time.zone.today - 1.year }
-  f.ends_at { |p| p.starts_at + 2.years }
-end
+  factory :period do |f|
+    association :schedule
+    starts_at { |p| Time.zone.today - 1.year }
+    ends_at { |p| p.starts_at + 2.years }
 
-Factory.define :current_period, :parent => :period do |f|
-end
+    factory :current_period do |f|
+    end
 
-Factory.define :past_period, :parent => :period do |f|
-  f.ends_at { |p| Time.zone.today - ( 1.year + 1.day ) }
-  f.starts_at { |p| p.ends_at - 1.year }
-end
+    factory :past_period do |f|
+      ends_at { |p| Time.zone.today - ( 1.year + 1.day ) }
+      starts_at { |p| p.ends_at - 1.year }
+    end
 
-Factory.define :future_period, :parent => :period do |f|
-  f.starts_at { |p| Time.zone.today + ( 1.year + 1.day ) }
-  f.ends_at { |p| p.starts_at + 1.years }
-end
+    factory :future_period do |f|
+      starts_at { |p| Time.zone.today + ( 1.year + 1.day ) }
+      ends_at { |p| p.starts_at + 1.years }
+    end
 
-Factory.define :user do |f|
-  f.first_name "John"
-  f.last_name "Doe"
-  f.sequence(:net_id) { |n| "fake_net_id#{n}" }
-  f.sequence(:email) { |n| "fake_net_id#{n}@example.com" }
-  f.password 'secret'
-  f.password_confirmation { |u| u.password }
-end
+  end
 
-Factory.define :sponsorship do |f|
-  f.association :motion
-  f.user do |s|
-    if s.motion.users.allowed.any?
-      s.motion.users.allowed.first
-    else
-      p = s.association( :position, :schedule => s.motion.committee.schedule )
-      s.association( :enrollment, :committee => s.motion.committee, :position => p )
-      s.motion.reload; p.reload
-      s.association( :membership, :period => s.motion.period, :position => p ).user
+  factory :user do |f|
+    first_name "John"
+    last_name "Doe"
+    sequence(:net_id) { |n| "fake_net_id#{n}" }
+    sequence(:email) { |n| "fake_net_id#{n}@example.com" }
+    password 'secret'
+    password_confirmation { |u| u.password }
+  end
+
+  factory :sponsorship do |f|
+    association :motion
+    user do |s|
+      if s.motion.users.allowed.any?
+        s.motion.users.allowed.first
+      else
+        p = s.association( :position, :schedule => s.motion.committee.schedule )
+        s.association( :enrollment, :committee => s.motion.committee, :position => p )
+        s.motion.reload; p.reload
+        s.association( :membership, :period => s.motion.period, :position => p ).user
+      end
     end
   end
 end
