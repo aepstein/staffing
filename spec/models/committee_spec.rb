@@ -2,7 +2,7 @@ require File.expand_path(File.dirname(__FILE__) + '/../spec_helper')
 
 describe Committee do
   before(:each) do
-    @committee = Factory(:committee)
+    @committee = create(:committee)
   end
 
   it "should create a new instance given valid attributes" do
@@ -15,7 +15,7 @@ describe Committee do
   end
 
   it 'should not save with a duplicate name' do
-    duplicate = Factory(:committee)
+    duplicate = create(:committee)
     duplicate.name = @committee.name
     duplicate.save.should eql false
   end
@@ -26,7 +26,7 @@ describe Committee do
   end
 
   it 'should have current_emails that returns emails of current members and designees' do
-    designee = Factory(:designee)
+    designee = create(:designee)
     emails = designee.committee.current_emails
     emails.length.should eql 2
     emails.should include designee.user.name :email

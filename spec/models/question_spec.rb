@@ -2,7 +2,7 @@ require File.expand_path(File.dirname(__FILE__) + '/../spec_helper')
 
 describe Question do
   before(:each) do
-    @question = Factory(:question)
+    @question = create(:question)
   end
 
   it "should create a new instance given valid attributes" do
@@ -15,7 +15,7 @@ describe Question do
   end
 
   it 'should not save with a duplicate name' do
-    duplicate = Factory.build(:question)
+    duplicate = build(:question)
     duplicate.name = @question.name
     duplicate.save.should be_false
   end

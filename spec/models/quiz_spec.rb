@@ -2,7 +2,7 @@ require File.expand_path(File.dirname(__FILE__) + '/../spec_helper')
 
 describe Quiz do
   before(:each) do
-    @quiz = Factory(:quiz)
+    @quiz = create(:quiz)
   end
 
   it "should create a new instance given valid attributes" do
@@ -15,7 +15,7 @@ describe Quiz do
   end
 
   it 'should not save with a duplicate name' do
-    duplicate = Factory.build(:quiz)
+    duplicate = build(:quiz)
     duplicate.name = @quiz.name
     duplicate.save.should eql false
   end

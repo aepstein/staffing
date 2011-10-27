@@ -2,7 +2,7 @@ require File.expand_path(File.dirname(__FILE__) + '/../spec_helper')
 
 describe Membership do
   before(:each) do
-    @designee = Factory(:designee)
+    @designee = create(:designee)
   end
 
   it 'should save with valid attributes' do
@@ -30,12 +30,12 @@ describe Membership do
   end
 
   it 'should not save with a duplicate for any membership and committee combination' do
-    @duplicate = Factory.build(:designee, :membership => @designee.membership, :committee => @designee.committee)
+    @duplicate = build(:designee, :membership => @designee.membership, :committee => @designee.committee)
     @duplicate.save.should be_false
   end
 
   it 'should not save with a committee if the membership\'s position is not enrolled in that committee' do
-    committee = Factory(:committee)
+    committee = create(:committee)
     committee.positions.should_not include @designee.membership.position
     @designee.committee = committee
     @designee.save.should be_false

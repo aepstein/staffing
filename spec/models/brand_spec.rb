@@ -3,7 +3,7 @@ require 'spec_helper'
 describe Brand do
 
   before(:each) do
-    @brand = Factory(:brand)
+    @brand = create(:brand)
   end
 
   it 'should save with valid attributes' do
@@ -16,7 +16,7 @@ describe Brand do
   end
 
   it 'should not save with a duplicate name' do
-    duplicate = Factory.build(:brand, :name => @brand.name)
+    duplicate = build(:brand, :name => @brand.name)
     duplicate.save.should be_false
   end
 

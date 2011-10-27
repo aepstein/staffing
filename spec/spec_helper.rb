@@ -20,6 +20,7 @@ Spork.prefork do
     config.fixture_path = "#{::Rails.root}/spec/fixtures"
     config.use_transactional_fixtures = true
     config.include ActionDispatch::TestProcess
+    config.include Factory::Syntax::Methods
     config.before(:all) do
       DatabaseCleaner.clean
     end

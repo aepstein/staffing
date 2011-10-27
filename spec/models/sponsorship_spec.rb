@@ -2,7 +2,7 @@ require 'spec_helper'
 
 describe Sponsorship do
   before(:each) do
-    @sponsorship = Factory(:sponsorship)
+    @sponsorship = create(:sponsorship)
   end
 
   it 'should save with valid attributes' do
@@ -20,7 +20,7 @@ describe Sponsorship do
   end
 
   it 'should not save a duplicate for given motion and user' do
-    duplicate = Factory.build( :sponsorship, :motion => @sponsorship.motion,
+    duplicate = build( :sponsorship, :motion => @sponsorship.motion,
       :user => @sponsorship.user )
     duplicate.save.should be_false
   end

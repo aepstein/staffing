@@ -2,7 +2,7 @@ require File.expand_path(File.dirname(__FILE__) + '/../spec_helper')
 
 describe Enrollment do
   before(:each) do
-    @enrollment = Factory(:enrollment)
+    @enrollment = create(:enrollment)
   end
 
   it "should create a new instance given valid attributes" do

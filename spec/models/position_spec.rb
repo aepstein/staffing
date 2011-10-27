@@ -2,7 +2,7 @@ require File.expand_path(File.dirname(__FILE__) + '/../spec_helper')
 
 describe Position do
   before(:each) do
-    @position = Factory(:position)
+    @position = create(:position)
   end
 
   it "should create a new instance given valid attributes" do
@@ -15,7 +15,7 @@ describe Position do
   end
 
   it 'should not save with a duplicate name' do
-    duplicate = Factory.build(:position, :name => @position.name)
+    duplicate = build(:position, :name => @position.name)
     duplicate.save.should be_false
   end
 
@@ -45,7 +45,7 @@ describe Position do
 
   it 'should have a requestable_by_committee scope' do
     @position.requestable_by_committee.should eql false
-    focus = Factory(:position, :requestable_by_committee => true)
+    focus = create(:position, :requestable_by_committee => true)
     Position.requestable_by_committee.length.should eql 1
     Position.requestable_by_committee.should include focus
   end
@@ -53,14 +53,14 @@ describe Position do
   it 'should have a membership.vacancies_for_period' do
     @position.slots = 2
     @position.save!
-    period = Factory(:period, :schedule => @position.schedule)
+    period = create(:period, :schedule => @position.schedule)
     m = @position.memberships.build
     m.assign_attributes( { :period => period, :starts_at => period.starts_at + 2.days,
-      :ends_at => period.ends_at - 2.days, :user => Factory(:user) }, as: :admin )
+      :ends_at => period.ends_at - 2.days, :user => create(:user) }, as: :admin )
     m.save!
     m = @position.memberships.build
     m.assign_attributes( { :period => period, :starts_at => period.starts_at,
-      :ends_at => period.ends_at - 1.days, :user => Factory(:user) }, as: :admin )
+      :ends_at => period.ends_at - 1.days, :user => create(:user) }, as: :admin )
     m.save!
     Membership.unassigned.delete_all
     vacancies = @position.memberships.vacancies_for_period(period)
@@ -111,7 +111,7 @@ describe Position do
   it 'should not delete assigned shifts when period slots are decreased' do
     period = position_with_period(2)
     first = @position.memberships.first
-    first.user = Factory(:user)
+    first.user = create(:user)
     first.save.should eql true
     @position.slots -= 1
     @position.save!
@@ -126,8 +126,8 @@ describe Position do
   end
 
   def position_with_period(slots=1)
-    period = Factory(:period)
-    @position = Factory(:position, :schedule => period.schedule, :slots => slots)
+    period = create(:period)
+    @position = create(:position, :schedule => period.schedule, :slots => slots)
     period
   end
 end

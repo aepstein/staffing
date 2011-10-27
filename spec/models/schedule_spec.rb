@@ -2,7 +2,7 @@ require File.expand_path(File.dirname(__FILE__) + '/../spec_helper')
 
 describe Schedule do
   before(:each) do
-    @schedule = Factory(:schedule)
+    @schedule = create(:schedule)
   end
 
   it "should create a new instance given valid attributes" do
@@ -15,7 +15,7 @@ describe Schedule do
   end
 
   it 'should not save with a duplicate name' do
-    duplicate = Factory.build(:schedule)
+    duplicate = build(:schedule)
     duplicate.name = @schedule.name
     duplicate.save.should eql false
   end

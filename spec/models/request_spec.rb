@@ -2,7 +2,7 @@ require File.expand_path(File.dirname(__FILE__) + '/../spec_helper')
 
 describe Request do
   before(:each) do
-    @request = Factory(:request)
+    @request = create(:request)
   end
 
   it "should create a new instance given valid attributes" do
@@ -35,7 +35,7 @@ describe Request do
   end
 
   it  'should not save a duplicate for certain user and requestable' do
-    duplicate = Factory.build(:request)
+    duplicate = build(:request)
     duplicate.user = @request.user
     duplicate.requestable = @request.requestable
     duplicate.save.should be_false
@@ -49,61 +49,61 @@ describe Request do
   end
 
   it  'should have an questions method that returns only questions in the quiz of requestable if it is a position' do
-    allowed = Factory(:question)
+    allowed = create(:question)
     @request.requestable.quiz.questions << allowed
-    unallowed = Factory(:question)
+    unallowed = create(:question)
     @request.questions.size.should eql 1
     @request.questions.should include allowed
   end
 
   it  'should have an questions method that returns only questions in the quiz of allowed positions of requestable if it is a committee' do
-    user = Factory(:user, :status => 'undergrad')
+    user = create(:user, :status => 'undergrad')
     user.status.should eql 'undergrad'
 
-    allowed = Factory(:question, :name => 'allowed')
-    unallowed = Factory(:question, :name => 'unallowed')
-    other = Factory(:question, :name => 'other')
+    allowed = create(:question, :name => 'allowed')
+    unallowed = create(:question, :name => 'unallowed')
+    other = create(:question, :name => 'other')
 
-    allowed_quiz = Factory(:quiz, :questions => [ allowed ])
-    unallowed_quiz = Factory(:quiz, :questions => [ unallowed ])
-    other_quiz = Factory(:quiz, :questions => [ allowed, unallowed, other ])
+    allowed_quiz = create(:quiz, :questions => [ allowed ])
+    unallowed_quiz = create(:quiz, :questions => [ unallowed ])
+    other_quiz = create(:quiz, :questions => [ allowed, unallowed, other ])
 
-    allowed_position = Factory(:position, :statuses => ['undergrad'], :requestable_by_committee => true, :quiz => allowed_quiz)
-    unallowed_position_status = Factory(:position, :statuses => ['grad'], :requestable_by_committee => true, :quiz => unallowed_quiz)
-    unallowed_position_requestability = Factory(:position, :statuses => ['undergrad'], :quiz => unallowed_quiz)
-    other_position = Factory(:position, :statuses => ['undergrad'], :quiz => other_quiz)
+    allowed_position = create(:position, :statuses => ['undergrad'], :requestable_by_committee => true, :quiz => allowed_quiz)
+    unallowed_position_status = create(:position, :statuses => ['grad'], :requestable_by_committee => true, :quiz => unallowed_quiz)
+    unallowed_position_requestability = create(:position, :statuses => ['undergrad'], :quiz => unallowed_quiz)
+    other_position = create(:position, :statuses => ['undergrad'], :quiz => other_quiz)
 
-    committee = Factory(:committee, :requestable => true)
-    Factory(:enrollment, :committee => committee, :position => allowed_position)
-    Factory(:enrollment, :committee => committee, :position => unallowed_position_status)
-    Factory(:enrollment, :committee => committee, :position => unallowed_position_requestability)
+    committee = create(:committee, :requestable => true)
+    create(:enrollment, :committee => committee, :position => allowed_position)
+    create(:enrollment, :committee => committee, :position => unallowed_position_status)
+    create(:enrollment, :committee => committee, :position => unallowed_position_requestability)
     committee.reload
 
-    request = Factory.build(:request, :requestable => committee, :user => user)
+    request = build(:request, :requestable => committee, :user => user)
     request.questions.length.should eql 1
     request.questions.should include allowed
     @request.questions.length.should eql 0
   end
 
   it  'should have answers.populate that populates answers for questions not yet built' do
-    user = Factory(:user)
+    user = create(:user)
 
-    unanswered_local = Factory(:question, :name => 'unanswered local')
-    unanswered_global = Factory(:question, :name => 'unanswered global', :global => true)
-    answered_local = Factory(:question, :name => 'answered local')
-    answered_global = Factory(:question, :name => 'answered global', :global => true)
-    excluded = Factory(:question, :name => 'excluded')
+    unanswered_local = create(:question, :name => 'unanswered local')
+    unanswered_global = create(:question, :name => 'unanswered global', :global => true)
+    answered_local = create(:question, :name => 'answered local')
+    answered_global = create(:question, :name => 'answered global', :global => true)
+    excluded = create(:question, :name => 'excluded')
     questions = [ unanswered_local, unanswered_global, answered_local, answered_global ]
     answered_questions = [ answered_local, answered_global ]
 
-    short_quiz = Factory(:quiz, :questions => answered_questions)
-    full_quiz = Factory(:quiz, :questions => questions)
+    short_quiz = create(:quiz, :questions => answered_questions)
+    full_quiz = create(:quiz, :questions => questions)
 
     less_recent = generate_answered_request user, short_quiz, 'less recent answer'
     sleep 1
     most_recent = generate_answered_request user, short_quiz, 'most recent answer'
 
-    request = Factory.build(:request, :user => user, :requestable => Factory(:position, :quiz => full_quiz))
+    request = build(:request, :user => user, :requestable => create(:position, :quiz => full_quiz))
     a = request.answers.build
     a.question = unanswered_local
     request.answers.send(:populated_question_ids).size.should eql 1
@@ -125,8 +125,8 @@ describe Request do
   end
 
   it  'should have a expired and unexpired scopes' do
-    older = Factory(:expired_request)
-    old = Factory(:expired_request, :ends_at => Date.today)
+    older = create(:expired_request)
+    old = create(:expired_request, :ends_at => Date.today)
     @request.ends_at.should > Date.today
     Request.expired.length.should eql 2
     Request.expired.should include older
@@ -136,8 +136,8 @@ describe Request do
   end
 
   it  'should claim unrequested memberships that the request could apply to' do
-    m = Factory(:membership)
-    r = Factory.build(:request, :user => m.user)
+    m = create(:membership)
+    r = build(:request, :user => m.user)
     r.stub!(:position_ids).and_return([m.position_id])
     r.save.should be_true
     r.memberships.size.should eql 1
@@ -220,14 +220,14 @@ describe Request do
   # * request_expired: Whether the request coincides with the membership temporily
   # * success: Whether scope should return the request or not
   def interested_in_scenario( params )
-    position = Factory(:position, :statuses_mask => params[:position_statuses_mask],
+    position = create(:position, :statuses_mask => params[:position_statuses_mask],
       :requestable_by_committee => params[:requestable_by_committee] )
-    committee = Factory(:enrollment, :position => position ).committee
-    request = Factory(:request,
-      :user => Factory(:user, :statuses_mask => params[:user_statuses_mask]),
+    committee = create(:enrollment, :position => position ).committee
+    request = create(:request,
+      :user => create(:user, :statuses_mask => params[:user_statuses_mask]),
       :requestable => ( params[:committee] ? committee : position ) )
     position.reload
-    Factory(:period, :schedule => position.schedule)
+    create(:period, :schedule => position.schedule)
     membership = position.memberships.first
     membership.position_id.should eql position.id
     if params[:request_expired]
@@ -248,14 +248,14 @@ describe Request do
   end
 
   def setup_rejection
-    @admin = Factory(:user, :admin => true)
-    @authorized = Factory(:user)
-    enrollment = Factory(:enrollment)
+    @admin = create(:user, :admin => true)
+    @authorized = create(:user)
+    enrollment = create(:enrollment)
     @authority = Authority.find @request.authorities.first.id
     @authority.committee = enrollment.committee
     @authority.save.should be_true
-    membership = Factory(:membership, :position => enrollment.position, :user => @authorized )
-    @unauthorized = Factory(:user)
+    membership = create(:membership, :position => enrollment.position, :user => @authorized )
+    @unauthorized = create(:user)
     @request.rejected_by_user = @admin
     @request.accessible = Request::REJECTABLE_ATTRIBUTES
     @request.attributes = { :rejected_by_authority_id => @authority.id,
@@ -263,7 +263,7 @@ describe Request do
   end
 
   def generate_answered_request(user, quiz, answer)
-    request = Factory.build(:request, :user => user, :requestable => Factory(:position, :quiz => quiz) )
+    request = build(:request, :user => user, :requestable => create(:position, :quiz => quiz) )
     quiz.questions.each do |question|
       a = request.answers.build
       a.content = answer

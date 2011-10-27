@@ -2,7 +2,7 @@ require 'spec_helper'
 
 describe MeetingMotion do
   before(:each) do
-    @meeting_motion = Factory(:meeting_motion)
+    @meeting_motion = create(:meeting_motion)
   end
 
   it 'should save with valid attributes' do
@@ -20,7 +20,7 @@ describe MeetingMotion do
   end
 
   it 'should not save a duplicate motion for a given meeting' do
-    duplicate = Factory.build( :meeting_motion, :meeting => @meeting_motion.meeting, :motion => @meeting_motion.motion )
+    duplicate = build( :meeting_motion, :meeting => @meeting_motion.meeting, :motion => @meeting_motion.motion )
     duplicate.save.should be_false
   end
 

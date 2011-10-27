@@ -2,7 +2,7 @@ require File.expand_path(File.dirname(__FILE__) + '/../spec_helper')
 
 describe User do
   before(:each) do
-    @user = Factory(:user)
+    @user = create(:user)
     @temporary_files = []
   end
 
@@ -19,7 +19,7 @@ describe User do
   end
 
   it 'should not save with a duplicate net_id' do
-    duplicate = Factory.build(:user)
+    duplicate = build(:user)
     duplicate.net_id = @user.net_id
     duplicate.save.should be_false
   end
@@ -64,14 +64,14 @@ describe User do
   end
 
   it 'should have an enrollments method that returns enrollments of a user' do
-    m1 = Factory(:membership, :user => @user)
-    m2 = Factory(:future_membership, :user => @user)
-    m3 = Factory(:past_membership, :user => @user)
-    m4 = Factory(:membership)
-    e1 = Factory(:enrollment, :position => m1.position)
-    e2 = Factory(:enrollment, :position => m2.position)
-    e3 = Factory(:enrollment, :position => m3.position)
-    e4 = Factory(:enrollment, :position => m4.position)
+    m1 = create(:membership, :user => @user)
+    m2 = create(:future_membership, :user => @user)
+    m3 = create(:past_membership, :user => @user)
+    m4 = create(:membership)
+    e1 = create(:enrollment, :position => m1.position)
+    e2 = create(:enrollment, :position => m2.position)
+    e3 = create(:enrollment, :position => m3.position)
+    e4 = create(:enrollment, :position => m4.position)
     @user.enrollments.length.should eql 3
     @user.enrollments.should include( e1, e2, e3 )
     @user.enrollments.current.length.should eql 1
@@ -86,21 +86,21 @@ describe User do
 
   it 'should have an authority_ids method that identifies the authorities in which the user is enrolled now or in the future' do
     memberships = {
-      :current => Factory(:membership, :user => @user),
-      :past => Factory(:past_membership, :user => @user),
-      :future => Factory(:future_membership, :user => @user),
-      :other => Factory(:membership)
+      :current => create(:membership, :user => @user),
+      :past => create(:past_membership, :user => @user),
+      :future => create(:future_membership, :user => @user),
+      :other => create(:membership)
     }
     committees = { }
-    memberships.each { |key, membership| committees[key] = Factory(:enrollment, :position => membership.position).committee }
+    memberships.each { |key, membership| committees[key] = create(:enrollment, :position => membership.position).committee }
     authorities = { }
-    authorities[:no_committee] = Factory(:authority)
-    committees.each { |key, committee| authorities[key] = Factory(:authority, :committee => committee) }
+    authorities[:no_committee] = create(:authority)
+    committees.each { |key, committee| authorities[key] = create(:authority, :committee => committee) }
     authorized = @user.authorities.authorized
     authorized.length.should eql 2
     authorized.should include authorities[:current]
     authorized.should include authorities[:future]
-    Factory(:user).authorities.authorized.should be_empty
+    create(:user).authorities.authorized.should be_empty
   end
 
   it 'should return authorized_position_ids based on authority_ids' do
@@ -112,7 +112,7 @@ describe User do
 
   it 'should return empty authorized_position_ids if authority_ids is empty' do
     setup_authority_id_scenario
-    Factory(:user).authorized_position_ids.should be_empty
+    create(:user).authorized_position_ids.should be_empty
   end
 
   it 'should return authorized_committee_ids based on authority_ids' do
@@ -124,12 +124,12 @@ describe User do
 
   it 'should return empty authorized_committee_ids if authority_ids is empty' do
     setup_authority_id_scenario
-    Factory(:user).authorized_committee_ids.should be_empty
+    create(:user).authorized_committee_ids.should be_empty
   end
 
   it 'should have no_renew_notice_since scope' do
-    old = Factory(:user, :renew_notice_at => ( Time.zone.now - 1.week ) )
-    recent = Factory(:user, :renew_notice_at => Time.zone.now )
+    old = create(:user, :renew_notice_at => ( Time.zone.now - 1.week ) )
+    recent = create(:user, :renew_notice_at => Time.zone.now )
     @user.renew_notice_at.should be_nil
     scope = User.no_renew_notice_since( Time.zone.now - 1.day )
     scope.count.should eql 2
@@ -148,11 +148,11 @@ describe User do
   end
 
   def setup_authority_id_scenario
-    @authorized = Factory(:position)
-    @unauthorized = Factory(:position)
-    @b_committee = Factory(:committee)
-    @u_committee = Factory(:enrollment, :position => @unauthorized).committee
-    @a_committee = Factory(:enrollment, :position => @authorized).committee
+    @authorized = create(:position)
+    @unauthorized = create(:position)
+    @b_committee = create(:committee)
+    @u_committee = create(:enrollment, :position => @unauthorized).committee
+    @a_committee = create(:enrollment, :position => @authorized).committee
   end
 
   def generate_uploaded_file(size, type, extension = '.pdf')

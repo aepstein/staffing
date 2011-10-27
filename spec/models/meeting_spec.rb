@@ -2,11 +2,11 @@ require 'spec_helper'
 
 describe Meeting do
   before(:each) do
-    @meeting = Factory(:meeting)
+    @meeting = create(:meeting)
   end
 
   it "should create a new instance given valid attributes" do
-    Factory(:meeting).id.should_not be_nil
+    create(:meeting).id.should_not be_nil
   end
 
   it 'should not save without a committee' do
@@ -35,7 +35,7 @@ describe Meeting do
   end
 
   it 'should not save with a period from a different schedule than that of committee' do
-    @meeting.period = Factory(:period)
+    @meeting.period = create(:period)
     @meeting.starts_at = @meeting.period.starts_at.to_time + 1.hour
     @meeting.ends_at = @meeting.starts_at + 1.hour
     @meeting.save.should be_false
@@ -81,11 +81,11 @@ describe Meeting do
   end
 
   it 'should have motions.allowed that returns only matching committee and period of meeting' do
-    allowed = Factory(:motion, :committee => @meeting.committee, :period => @meeting.period)
-    same_period = Factory(:motion, :committee => Factory(:committee, :schedule => @meeting.committee.schedule), :period => @meeting.period )
-    new_period = Factory( :period, :schedule => @meeting.period.schedule, :starts_at => ( @meeting.period.ends_at + 1.day ) )
+    allowed = create(:motion, :committee => @meeting.committee, :period => @meeting.period)
+    same_period = create(:motion, :committee => create(:committee, :schedule => @meeting.committee.schedule), :period => @meeting.period )
+    new_period = create( :period, :schedule => @meeting.period.schedule, :starts_at => ( @meeting.period.ends_at + 1.day ) )
     @meeting.reload
-    same_committee = Factory(:motion, :committee => @meeting.committee, :period => new_period )
+    same_committee = create(:motion, :committee => @meeting.committee, :period => new_period )
     same_period.period.should eql @meeting.period
     same_period.committee.should_not eql @meeting.committee
     same_committee.committee.should eql @meeting.committee
@@ -100,8 +100,8 @@ describe Meeting do
     @meeting.starts_at = Time.zone.now
     @meeting.ends_at = Time.zone.now + 1.hour
     @meeting.save!
-    @past = Factory(:meeting, :starts_at => Time.zone.now - 1.week)
-    @future = Factory(:meeting, :starts_at => Time.zone.now + 1.week)
+    @past = create(:meeting, :starts_at => Time.zone.now - 1.week)
+    @future = create(:meeting, :starts_at => Time.zone.now + 1.week)
   end
 end
 
