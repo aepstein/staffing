@@ -103,28 +103,28 @@ describe User do
     create(:user).authorities.authorized.should be_empty
   end
 
-  it 'should return authorized_position_ids based on authority_ids' do
+  it 'should return positions.authorized based on authorities' do
     setup_authority_id_scenario
-    @user.authorities.stub!(:authorized).and_return([@authorized])
-    @user.authorized_position_ids.length.should eql 1
-    @user.authorized_position_ids.should include @authorized.id
+    create(:membership, :user => @user, :position => @authority)
+    @user.positions.authorized.length.should eql 1
+    @user.positions.authorized.should include @authorized
   end
 
-  it 'should return empty authorized_position_ids if authority_ids is empty' do
+  it 'should return empty positions.authorized if authorities is empty' do
     setup_authority_id_scenario
-    create(:user).authorized_position_ids.should be_empty
+    create(:user).positions.authorized.should be_empty
   end
 
-  it 'should return authorized_committee_ids based on authority_ids' do
+  it 'should return committees.authorized based on authorities' do
     setup_authority_id_scenario
-    @user.authorities.stub!(:authorized).and_return([@authorized])
-    @user.authorized_committee_ids.length.should eql 1
-    @user.authorized_committee_ids.should include @a_committee.id
+    create(:membership, :user => @user, :position => @authority)
+    @user.committees.authorized.length.should eql 1
+    @user.committees.authorized.should include @a_committee
   end
 
-  it 'should return empty authorized_committee_ids if authority_ids is empty' do
+  it 'should return empty committees.authorized if authorities is empty' do
     setup_authority_id_scenario
-    create(:user).authorized_committee_ids.should be_empty
+    create(:user).committees.authorized.should be_empty
   end
 
   it 'should have no_renew_notice_since scope' do
@@ -153,6 +153,9 @@ describe User do
     @b_committee = create(:committee)
     @u_committee = create(:enrollment, :position => @unauthorized).committee
     @a_committee = create(:enrollment, :position => @authorized).committee
+    @enrollment = create(:enrollment, :votes => 1)
+    @authorized.authority.update_attribute :committee, @enrollment.committee
+    @authority = @enrollment.position
   end
 
   def generate_uploaded_file(size, type, extension = '.pdf')
