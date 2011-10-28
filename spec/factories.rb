@@ -13,7 +13,7 @@ FactoryGirl.define do
 
   factory :brand do
     sequence( :name ) { |n| "Brand #{n}" }
-    logo { |brand| File.open "#{::Rails.root}/spec/assets/logo.eps" }
+    logo { File.open "#{::Rails.root}/spec/assets/logo.eps" }
   end
 
   factory :committee do
@@ -24,17 +24,17 @@ FactoryGirl.define do
 
   factory :designee do
     association :committee
-    membership { |d|
-      d.association :membership, :position => d.association( :enrollment,
-      :position => d.association( :position, :designable => true ),
-      :committee => d.committee ).position
+    membership {
+      association :membership, :position => association( :enrollment,
+      :position => association( :position, :designable => true ),
+      :committee => committee ).position
     }
     association :user
   end
 
   factory :enrollment do
     association :committee
-    position { |e| e.association :position, :schedule => e.committee.schedule }
+    position { association :position, :schedule => committee.schedule }
     title "member"
     votes 1
   end
@@ -42,51 +42,52 @@ FactoryGirl.define do
   factory :membership do
     association :user
     association :position
-    period do |m|
-      if m.position.schedule.periods.length > 0
-        m.position.schedule.periods.first
+    period do
+      if position.schedule.periods.length > 0
+        position.schedule.periods.first
       else
-        m.position.schedule.reload
-        m.association( :period, :schedule => m.position.schedule )
+        position.schedule.association(:periods).reset
+        association( :period, :schedule => position.schedule )
       end
     end
-    starts_at { |m| m.period.starts_at }
-    ends_at { |m| m.period.ends_at }
+    starts_at { period.starts_at }
+    ends_at { period.ends_at }
 
     factory :current_membership do
       association :position
-      period { |m| m.association(:current_period, :schedule => m.position.schedule) }
+      period { association(:current_period, :schedule => position.schedule) }
     end
 
     factory :future_membership do
       association :position
-      period { |m| m.association(:future_period, :schedule => m.position.schedule) }
+      period { association(:future_period, :schedule => position.schedule) }
     end
 
     factory :past_membership do
       association :position
-      period { |m| m.association(:past_period, :schedule => m.position.schedule) }
+      period { association(:past_period, :schedule => position.schedule) }
     end
   end
 
   factory :motion do
     sequence( :name ) { |n| "Motion #{n}" }
     association :committee
-    period do |m|
-      if m.committee.schedule.periods.any?
-        m.committee.schedule.periods.first
+    period do
+      if committee.schedule.periods.any?
+        committee.schedule.periods.first
       else
-        m.committee.schedule.periods.reset
-        m.association( :period, :schedule => m.committee.schedule )
+        committee.schedule.association(:periods).reset
+        association( :period, :schedule => committee.schedule )
       end
     end
   end
 
   factory :motion_merger do
-    merged_motion { |m| m.association :motion, :status => 'proposed' }
-    motion do |m|
-      m.merged_motion.reload
-      m.association :motion, :committee => m.merged_motion.committee, :period => m.merged_motion.period
+    merged_motion { association :motion, :status => 'proposed' }
+    motion do
+#      merged_motion.reload
+      association :motion, :committee => merged_motion.committee,
+        :period => merged_motion.period
     end
   end
 
@@ -152,23 +153,23 @@ FactoryGirl.define do
 
   factory :meeting do
     association :committee
-    period do |meeting|
-      if meeting.committee.schedule.periods.empty?
-        meeting.committee.reload
-        meeting.association(:period, :schedule => meeting.committee.schedule)
+    period do
+      if committee.schedule.periods.empty?
+        committee.schedule.association(:periods).reset
+        association(:period, :schedule => committee.schedule)
       end
-      meeting.committee.schedule.periods.first
+      committee.schedule.periods.first
     end
-    starts_at { |m| m.period.starts_at.to_time + 1.hour }
-    ends_at { |m| m.starts_at + 1.hour }
+    starts_at { period.starts_at.to_time + 1.hour }
+    ends_at { starts_at + 1.hour }
     location 'Day Hall'
   end
 
   factory :meeting_motion do
     association :meeting
-    motion do |m|
-      m.meeting.reload
-      m.association :motion, :committee => m.meeting.committee
+    motion do
+#      meeting.reload
+      association :motion, :committee => meeting.committee
     end
   end
 
@@ -202,19 +203,20 @@ FactoryGirl.define do
     sequence(:net_id) { |n| "fake_net_id#{n}" }
     sequence(:email) { |n| "fake_net_id#{n}@example.com" }
     password 'secret'
-    password_confirmation { |u| u.password }
+    password_confirmation { password }
   end
 
   factory :sponsorship do
     association :motion
-    user do |s|
-      if s.motion.users.allowed.any?
-        s.motion.users.allowed.first
+    user do
+      if motion.users.allowed.any?
+        motion.users.allowed.first
       else
-        p = s.association( :position, :schedule => s.motion.committee.schedule )
-        s.association( :enrollment, :committee => s.motion.committee, :position => p )
-        s.motion.reload; p.reload
-        s.association( :membership, :period => s.motion.period, :position => p ).user
+        p = association( :position, :schedule => motion.committee.schedule )
+        association( :enrollment, :committee => motion.committee, :position => p )
+#        motion.reload; p.reload
+#        motion.committee.association(:memberships).reset
+        association( :membership, :period => motion.period, :position => p ).user
       end
     end
   end
