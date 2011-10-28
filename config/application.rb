@@ -14,8 +14,8 @@ module Staffing
     config.filter_parameters += [ :password, :password_confirmation ]
     config.time_zone = 'Eastern Time (US & Canada)'
     config.action_mailer.default_url_options = { :host => "assembly.cornell.edu/staffing", :protocol => 'https' }
-    config.action_view.javascript_expansions[:defaults] = %w(jquery jquery-ui jquery-ui-timepicker-addon autocomplete-rails rails)
     config.autoload_paths << "#{Rails.root}/app/reports"
+    config.active_record.identity_map = true
     config.assets.enabled = true
     config.assets.version = '1.0'
 
