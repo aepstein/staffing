@@ -26,7 +26,10 @@ describe Sponsorship do
   end
 
   it 'should not save for user who is not in motion.users.allowed' do
-    @sponsorship.motion.users.stub(:allowed).and_return([])
+#    @sponsorship.motion.users.stub(:allowed).and_return([])
+    users = double("UsersProxy")
+    users.stub(:allowed) { [] }
+    @sponsorship.motion.stub(:users) { users }
     @sponsorship.save.should be_false
   end
 end
