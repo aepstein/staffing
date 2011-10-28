@@ -56,11 +56,13 @@ describe Position do
     period = create(:period, :schedule => @position.schedule)
     m = @position.memberships.build
     m.assign_attributes( { :period => period, :starts_at => period.starts_at + 2.days,
-      :ends_at => period.ends_at - 2.days, :user => create(:user) }, as: :admin )
+      :ends_at => period.ends_at - 2.days, :user => create(:user) },
+      without_protection: true )
     m.save!
     m = @position.memberships.build
     m.assign_attributes( { :period => period, :starts_at => period.starts_at,
-      :ends_at => period.ends_at - 1.days, :user => create(:user) }, as: :admin )
+      :ends_at => period.ends_at - 1.days, :user => create(:user) },
+      without_protection: true )
     m.save!
     Membership.unassigned.delete_all
     vacancies = @position.memberships.vacancies_for_period(period)

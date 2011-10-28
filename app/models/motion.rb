@@ -22,7 +22,9 @@ class Motion < ActiveRecord::Base
       return [] unless @association.owner.committee && @association.owner.period_id?
       User.joins(:memberships).merge(
         @association.owner.committee.memberships.where( 'enrollments.votes > 0' ).
-        overlap( @association.owner.period.starts_at, @association.owner.period.ends_at ) )
+        overlap( @association.owner.period.starts_at,
+        @association.owner.period.ends_at ).except(:order)
+      )
     end
   end
   has_many :meeting_motions, :dependent => :destroy

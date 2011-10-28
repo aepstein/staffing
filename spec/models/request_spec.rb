@@ -257,9 +257,8 @@ describe Request do
     membership = create(:membership, :position => enrollment.position, :user => @authorized )
     @unauthorized = create(:user)
     @request.rejected_by_user = @admin
-    @request.accessible = Request::REJECTABLE_ATTRIBUTES
-    @request.attributes = { :rejected_by_authority_id => @authority.id,
-      :rejection_comment => 'a comment' }
+    @request.assign_attributes( { rejected_by_authority_id: @authority.id,
+      rejection_comment: 'a comment' }, as: :rejector )
   end
 
   def generate_answered_request(user, quiz, answer)
