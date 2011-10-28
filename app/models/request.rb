@@ -148,11 +148,12 @@ class Request < ActiveRecord::Base
 
   acts_as_list :scope => :user_id
 
-  validates_presence_of :requestable
-  validates_presence_of :user
-  validates_date :starts_at
-  validates_date :ends_at, :after => :starts_at
-  validates_uniqueness_of :user_id, :scope => [ :requestable_type, :requestable_id ]
+  validates :requestable, presence: true
+  validates :user, presence: true
+  validates :starts_at, timeliness: { type: :date }
+  validates :ends_at, timeliness: { type: :date, after: :starts_at }
+  validates :user_id, uniqueness: {
+    scope: [ :requestable_type, :requestable_id ] }
 
   after_save { |request| request.memberships.claim! }
   after_save :insert_at_new_position
@@ -217,7 +218,7 @@ class Request < ActiveRecord::Base
 
   def rejected_by_authority_must_be_allowed_to_rejected_by_user
     unless rejected_by_authority.blank? || rejected_by_user.blank? ||
-      rejected_by_user.allowed_authorities.include?( rejected_by_authority )
+      rejected_by_user.authorities.authorized.include?( rejected_by_authority )
       errors.add :rejected_by_authority,
         "is not among the authorities under which #{rejected_by_user} may reject requests"
     end

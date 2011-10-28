@@ -59,6 +59,7 @@ class User < ActiveRecord::Base
       where { committees.enrollments.memberships.ends_at > Time.zone.today }
     end
     def authorized( votes = 1 )
+      return Authority.all if @association.owner.role_symbols.include? :admin
       prospective.where { committees.enrollments.votes >= my { votes } }
     end
   end
@@ -138,7 +139,9 @@ class User < ActiveRecord::Base
 
   # Where necessary, provide for admin to get listing of all authorities
   def allowed_authorities( votes = 1 )
-    return Authority.all if role_symbols.include? :admin
+    message = "allowed_authorities is deprecated and will be removed.  " +
+      "Use authorities.authorized(votes) instead."
+    ActiveSupport::Deprecation.warn( message )
     authorities.authorized votes
   end
 

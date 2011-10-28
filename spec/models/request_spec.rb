@@ -144,51 +144,60 @@ describe Request do
     r.memberships.should include m
   end
 
-  it  'should save with valid parameters from administrator' do
-    setup_rejection
-    @request.reject.should be_true
-  end
+  context 'rejection' do
+    before(:each) do
+      Request.reject_notice_pending.length.should eql 0
+      @admin = create(:user, :admin => true)
+      @authorized = create(:user)
+      enrollment = create(:enrollment)
+      @authority = Authority.find @request.authorities.first.id
+      @authority.committee = enrollment.committee
+      @authority.save.should be_true
+      membership = create(:membership, :position => enrollment.position, :user => @authorized )
+      @unauthorized = create(:user)
+      @request.rejected_by_user = @admin
+      @request.rejected_by_authority = @authority
+      @request.rejection_comment = 'a comment'
+    end
 
-  it  'should save with valid parameters from authorized user for the authority' do
-    setup_rejection
-    @request.rejected_by_user = @authorized
-    @request.reject.should be_true
-  end
+    it  'should save with valid parameters from administrator' do
+      @request.reject!
+    end
 
-  it  'should not save with valid parameters from unauthorized user for the authority' do
-    setup_rejection
-    @request.rejected_by_user = @unauthorized
-    @request.reject.should be_false
-  end
+    it  'should save with valid parameters from authorized user for the authority' do
+      @request.rejected_by_user = @authorized
+      @request.reject!
+    end
 
-  it  'should not save if rejected without a comment' do
-    setup_rejection
-    @request.rejection_comment = nil
-    @request.reject.should be_false
-  end
+    it  'should not save with valid parameters from unauthorized user for the authority' do
+      @request.rejected_by_user = @unauthorized
+      @request.reject.should be_false
+    end
 
-  it  'should have an unreject method that removes rejection status' do
-    setup_rejection
-    @request.reject.should be_true
-    @request.reactivate.should be_true
-    @request.rejected?.should be_false
-  end
+    it  'should not save if rejected without a comment' do
+      @request.rejection_comment = nil
+      @request.reject.should be_false
+    end
 
-  it  'should have a send_reject_notice! method which sends a rejection notice and saves' do
-    setup_rejection
-    @request.reject.should be_true
-    @request.send_reject_notice!
-    @request.reload
-    @request.reject_notice_at.should_not be_nil
-  end
+    it  'should have an unreject method that removes rejection status' do
+      @request.reject!
+      @request.reactivate.should be_true
+      @request.rejected?.should be_false
+    end
 
-  it 'should have a reject_notice_pending scope' do
-    Request.reject_notice_pending.length.should eql 0
-    setup_rejection
-    @request.reject.should be_true
-    Request.reject_notice_pending.length.should eql 1
-    @request.send_reject_notice!
-    Request.reject_notice_pending.length.should eql 0
+    it  'should have a send_reject_notice! method which sends a rejection notice and saves' do
+      @request.reject!
+      @request.send_reject_notice!
+      @request.reload
+      @request.reject_notice_at.should_not be_nil
+    end
+
+    it 'should have a reject_notice_pending scope' do
+      @request.reject!
+      Request.reject_notice_pending.length.should eql 1
+      @request.send_reject_notice!
+      Request.reject_notice_pending.length.should eql 0
+    end
   end
 
   it 'should have an interested_in that identifies requests staffable to and temporily interested in a membership' do
@@ -245,20 +254,6 @@ describe Request do
     else
       scope.length.should eql 0
     end
-  end
-
-  def setup_rejection
-    @admin = create(:user, :admin => true)
-    @authorized = create(:user)
-    enrollment = create(:enrollment)
-    @authority = Authority.find @request.authorities.first.id
-    @authority.committee = enrollment.committee
-    @authority.save.should be_true
-    membership = create(:membership, :position => enrollment.position, :user => @authorized )
-    @unauthorized = create(:user)
-    @request.rejected_by_user = @admin
-    @request.assign_attributes( { rejected_by_authority_id: @authority.id,
-      rejection_comment: 'a comment' }, as: :rejector )
   end
 
   def generate_answered_request(user, quiz, answer)
