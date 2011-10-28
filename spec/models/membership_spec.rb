@@ -177,7 +177,7 @@ describe Membership do
 
   it 'should have an unrequested scope' do
     requested = create(:membership, :request => create(:request) )
-    Membership.unrequested.size.should eql 1
+    Membership.unrequested.where { user_id != nil }.size.should eql 1
     Membership.unrequested.should include @membership
   end
 
@@ -239,8 +239,6 @@ describe Membership do
 
   it 'should not save with an invalid renew_until value' do
     @membership.renew_until = @membership.ends_at
-    @membership.save.should be_false
-    @membership.renew_until = 'coriander'
     @membership.save.should be_false
   end
 

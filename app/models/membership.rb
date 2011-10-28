@@ -319,7 +319,8 @@ class Membership < ActiveRecord::Base
   # If this fulfills an active request, assign it to that request
   def claim_request
     return true if request || user.blank?
-    self.request = user.requests.joins(:user).active.interested_in( self ).first
+    self.request = user.requests.joins(:user).active.interested_in( self ).
+      readonly(false).first
     true
   end
 
@@ -336,7 +337,7 @@ class Membership < ActiveRecord::Base
   # If associated with a new, active request, close the request
   def close_claimed_request
     return true unless request_id_changed? && self.request && request.active?
-    request.memberships.reset
+    request.association(:memberships).reset
     request.close
     true
   end
