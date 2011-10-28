@@ -1,28 +1,28 @@
 require 'factory_girl'
 
 FactoryGirl.define do
-  factory :answer do |f|
+  factory :answer do
     association :request
     question { |a| a.association( :question, :quizzes => [ a.request.requestable.quiz ] ) }
     content 'blue'
   end
 
-  factory :authority do |f|
+  factory :authority do
     sequence(:name) { |n| "Authority #{n}" }
   end
 
-  factory :brand do |f|
+  factory :brand do
     sequence( :name ) { |n| "Brand #{n}" }
     logo { |brand| File.open "#{::Rails.root}/spec/assets/logo.eps" }
   end
 
-  factory :committee do |f|
+  factory :committee do
     sequence(:name) { |n| "Committee #{n}" }
     association :schedule
     requestable true
   end
 
-  factory :designee do |f|
+  factory :designee do
     association :committee
     membership { |d|
       d.association :membership, :position => d.association( :enrollment,
@@ -32,14 +32,14 @@ FactoryGirl.define do
     association :user
   end
 
-  factory :enrollment do |f|
+  factory :enrollment do
     association :committee
     position { |e| e.association :position, :schedule => e.committee.schedule }
     title "member"
     votes 1
   end
 
-  factory :membership do |f|
+  factory :membership do
     association :user
     association :position
     period do |m|
@@ -53,23 +53,23 @@ FactoryGirl.define do
     starts_at { |m| m.period.starts_at }
     ends_at { |m| m.period.ends_at }
 
-    factory :current_membership do |f|
+    factory :current_membership do
       association :position
       period { |m| m.association(:current_period, :schedule => m.position.schedule) }
     end
 
-    factory :future_membership do |f|
+    factory :future_membership do
       association :position
       period { |m| m.association(:future_period, :schedule => m.position.schedule) }
     end
 
-    factory :past_membership do |f|
+    factory :past_membership do
       association :position
       period { |m| m.association(:past_period, :schedule => m.position.schedule) }
     end
   end
 
-  factory :motion do |f|
+  factory :motion do
     sequence( :name ) { |n| "Motion #{n}" }
     association :committee
     period do |m|
@@ -82,7 +82,7 @@ FactoryGirl.define do
     end
   end
 
-  factory :motion_merger do |f|
+  factory :motion_merger do
     merged_motion { |m| m.association :motion, :status => 'proposed' }
     motion do |m|
       m.merged_motion.reload
@@ -90,7 +90,7 @@ FactoryGirl.define do
     end
   end
 
-  factory :position do |f|
+  factory :position do
     sequence(:name) { |n| "Position #{n}" }
     requestable true
     association :authority
@@ -99,20 +99,20 @@ FactoryGirl.define do
     slots 1
   end
 
-  factory :qualification do |f|
+  factory :qualification do
     sequence(:name) { |n| "Qualification #{n}" }
   end
 
-  factory :question do |f|
+  factory :question do
     sequence(:name) { |n| "Question #{n}" }
     content "What is your favorite color?"
   end
 
-  factory :quiz do |f|
+  factory :quiz do
     sequence(:name) { |n| "Quiz #{n}" }
   end
 
-  factory :request do |f|
+  factory :request do
     association :user
     requestable { |request| request.association :position }
     starts_at do |request|
@@ -145,12 +145,12 @@ FactoryGirl.define do
       end
       (periods && periods.first) ? periods.first.ends_at : request.starts_at + 1.year
     end
-    factory :expired_request do |f|
+    factory :expired_request do
       starts_at Date.today - 2.years
     end
   end
 
-  factory :meeting do |f|
+  factory :meeting do
     association :committee
     period do |meeting|
       if meeting.committee.schedule.periods.empty?
@@ -164,7 +164,7 @@ FactoryGirl.define do
     location 'Day Hall'
   end
 
-  factory :meeting_motion do |f|
+  factory :meeting_motion do
     association :meeting
     motion do |m|
       m.meeting.reload
@@ -172,31 +172,31 @@ FactoryGirl.define do
     end
   end
 
-  factory :schedule do |f|
+  factory :schedule do
     sequence(:name) { |n| "Schedule #{n}" }
   end
 
-  factory :period do |f|
+  factory :period do
     association :schedule
-    starts_at { |p| Time.zone.today - 1.year }
-    ends_at { |p| p.starts_at + 2.years }
+    starts_at { Time.zone.today - 1.year }
+    ends_at { starts_at + 2.years }
 
-    factory :current_period do |f|
+    factory :current_period do
     end
 
-    factory :past_period do |f|
-      ends_at { |p| Time.zone.today - ( 1.year + 1.day ) }
-      starts_at { |p| p.ends_at - 1.year }
+    factory :past_period do
+      starts_at { Time.zone.today - 2.years }
+      ends_at { Time.zone.today - ( 1.year + 1.day ) }
     end
 
-    factory :future_period do |f|
-      starts_at { |p| Time.zone.today + ( 1.year + 1.day ) }
-      ends_at { |p| p.starts_at + 1.years }
+    factory :future_period do
+      starts_at { Time.zone.today + ( 1.year + 1.day ) }
+      ends_at { starts_at + 1.years }
     end
 
   end
 
-  factory :user do |f|
+  factory :user do
     first_name "John"
     last_name "Doe"
     sequence(:net_id) { |n| "fake_net_id#{n}" }
@@ -205,7 +205,7 @@ FactoryGirl.define do
     password_confirmation { |u| u.password }
   end
 
-  factory :sponsorship do |f|
+  factory :sponsorship do
     association :motion
     user do |s|
       if s.motion.users.allowed.any?

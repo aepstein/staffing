@@ -26,19 +26,22 @@ class User < ActiveRecord::Base
   has_many :enrollments, :through => :memberships do
     def past; where { memberships.ends_at < Time.zone.today }; end
     def current
-      where { memberships.starts_at <= Time.zone.today &&
-        memberships.ends_at >= Time.zone.today }
+      where { memberships.starts_at <= Time.zone.today }.
+      where { memberships.ends_at >= Time.zone.today }
     end
     def future; where { memberships.starts_at > Time.zone.today }; end
+    def prospective
+      where { memberships.ends_at >= Time.zone.today }
+    end
   end
   has_many :committees, :through => :enrollments do
     def past; where { enrollments.memberships.ends_at < Time.zone.today }; end
     def current
-      where { enrollments.memberships.starts_at <= Time.zone.today &&
-        enrollments.memberships.ends_at >= Time.zone.today }
+      where { enrollments.memberships.starts_at <= Time.zone.today }.
+      where { enrollments.memberships.ends_at >= Time.zone.today }
     end
     def future; where { enrollments.memberships.starts_at > Time.zone.today }; end
-    def prospective; where { enrollments.memberships.ends_at > Time.zone.today }; end
+    def prospective; where { enrollments.memberships.ends_at >= Time.zone.today }; end
     def requestable
       Committee.requestable.select('DISTINCT committees.*').joins(:positions).
       merge( Position.requestable_by_committee.
