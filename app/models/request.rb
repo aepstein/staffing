@@ -166,7 +166,8 @@ class Request < ActiveRecord::Base
     when 'Position'
       Position.where( :id => requestable.id )
     else
-      requestable.positions.with_status( user.status ).where( :requestable_by_committee => true )
+      requestable.positions.except(:order).with_status( user.status ).
+      where( :requestable_by_committee => true )
     end
   end
 

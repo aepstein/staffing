@@ -120,7 +120,7 @@ FactoryGirl.define do
       when 'Position'
         periods = request.requestable.schedule.periods
       when 'Committee'
-        if position = request.requestable.positions.first
+        if position = request.requestable.positions.except(:order).first
           periods = position.schedule.periods
         else
           periods = false
@@ -135,7 +135,7 @@ FactoryGirl.define do
       when 'Position'
         periods = request.requestable.schedule.periods
       when 'Committee'
-        if position = request.requestable.positions.first
+        if position = request.requestable.positions.except(:order).first
           periods = position.schedule.periods
         else
           periods = false
