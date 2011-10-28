@@ -9,12 +9,13 @@ class Designee < ActiveRecord::Base
   validates :membership, :presence => true
   validates :user, :presence => true
   validates :committee, :presence => true
-  validates_uniqueness_of :committee_id, :scope => [ :membership_id ]
+  validates :committee_id, uniqueness: { scope: [ :membership_id ] }
   validate :membership_must_have_designable_position_in_committee
 
   def membership_must_have_designable_position_in_committee
     return unless committee && membership
-    unless membership.position.designable? && committee.positions.include?( membership.position )
+    unless ( membership.position.designable? && committee.positions.
+      except(:order).include?( membership.position ) )
       errors.add :committee, "has no designable positions corresponding to this membership"
     end
   end

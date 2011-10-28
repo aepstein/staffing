@@ -36,7 +36,7 @@ describe Membership do
 
   it 'should not save with a committee if the membership\'s position is not enrolled in that committee' do
     committee = create(:committee)
-    committee.positions.should_not include @designee.membership.position
+    committee.positions.except(:order).should_not include @designee.membership.position
     @designee.committee = committee
     @designee.save.should be_false
   end

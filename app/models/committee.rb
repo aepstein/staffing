@@ -25,20 +25,14 @@ class Committee < ActiveRecord::Base
   has_many :requests, :as => :requestable
   has_many :enrollments, :inverse_of => :committee
   has_many :positions, :through => :enrollments
+  has_many :memberships, :through => :positions
 
-  validates_presence_of :name
-  validates_uniqueness_of :name
-  validates_presence_of :schedule
-
-  def memberships
-    return Membership.where( :id => nil ) if new_record?
-    Membership.joins(
-      'INNER JOIN enrollments ON memberships.position_id = enrollments.position_id'
-    ).where( [ 'enrollments.committee_id = ?', id ] )
-  end
+  validates :name, presence: true, uniqueness: true
+  validates :schedule, presence: true
 
   def current_emails
-    memberships.current.includes(:designees, :user).all.inject([]) { |memo, membership|
+    memberships.current.includes(:designees, :user).except(:order).all.
+    inject([]) { |memo, membership|
       memo << membership.user.name( :email ) if membership.user_id
       membership.designees.each do |designee|
         memo << designee.user.name( :email )
