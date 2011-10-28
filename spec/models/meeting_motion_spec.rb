@@ -25,7 +25,9 @@ describe MeetingMotion do
   end
 
   it 'should not save a motion that is not in meeting.motions.allowed' do
-    @meeting_motion.meeting.motions.stub(:allowed).and_return([])
+    motions = double("MotionsProxy")
+    motions.stub(:allowed) { [] }
+    @meeting_motion.meeting.stub(:motions) { motions }
     @meeting_motion.save.should be_false
   end
 
