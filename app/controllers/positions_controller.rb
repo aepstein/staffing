@@ -10,7 +10,7 @@ class PositionsController < ApplicationController
   # GET /users/:user_id/positions/requestable
   # GET /users/:user_id/positions/requestable.xml
   def requestable
-    @search ||= @user.requestable_positions.search( params[:search] ) if @user
+    @search ||= @user.positions.requestable.search( params[:search] ) if @user
     index
   end
 
