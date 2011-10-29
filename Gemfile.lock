@@ -1,8 +1,9 @@
 GIT
   remote: git://assembly.cornell.edu/git/cornell-assemblies-rails.git
-  revision: 794cf046fd5398ffbf5124212a07c776e2728a84
+  revision: f99c8b958fc63b22cc4c3a198614ddcf9d13c5bf
   specs:
     cornell-assemblies-rails (0.0.1)
+      bcrypt-ruby (~> 3.0.1)
       jquery-rails (~> 1.0.15)
       rails (~> 3.1.1)
       rails3-jquery-autocomplete (~> 1.0.4)
@@ -42,9 +43,7 @@ GEM
     acts_as_list (0.1.4)
     addressable (2.2.6)
     arel (2.2.1)
-    authlogic (3.1.0)
-      activerecord (>= 3.0.7)
-      activerecord (>= 3.0.7)
+    bcrypt-ruby (3.0.1)
     blind_date (1.0.2)
       activerecord (>= 2.3.4)
     bluecloth (2.1.0)
@@ -257,7 +256,6 @@ PLATFORMS
 
 DEPENDENCIES
   acts_as_list
-  authlogic
   blind_date (~> 1.0.2)
   bluecloth
   capistrano
@@ -285,7 +283,7 @@ DEPENDENCIES
   prawn
   prawn-fast-png
   rails (~> 3.1.0)
-  rake (~> 0.9.2)
+  rake (~> 0.9)
   ransack
   rspec-rails (~> 2.0)
   sass-rails (~> 3.1.0)

@@ -1,24 +1,18 @@
 <h1>Login</h1>
 
-<%= form_for @user_session, :url => user_session_path do |f| %>
-  <%= render "shared/error_messages", :target => f.object %>
-
+<%= form_tag user_session_path do %>
   <p>
-  <%= f.label :net_id, 'Net' %><br />
-  <%= f.text_field :net_id %>
+  <%= label_tag :net_id %><br />
+  <%= text_field_tag :net_id, params[:net_id] %>
   </p>
 
   <p>
-  <%= f.label :password %><br />
-  <%= f.password_field :password %>
+  <%= label_tag :password %><br />
+  <%= password_field_tag :password %>
   </p>
 
   <p>
-  <%= f.check_box :remember_me %> <%= f.label :remember_me %>
-  </p>
-
-  <p>
-  <%= f.submit "Login" %>
+  <%= submit_tag "Login" %>
   </p>
 
 <% end %>

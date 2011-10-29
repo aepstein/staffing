@@ -6,36 +6,26 @@ class UserSessionsController < ApplicationController
   LOGOUT_NOTICE = "You logged out successfully."
 
   # GET /login
-  def new
-    if sso_net_id
-      user = User.find_or_create_by_net_id sso_net_id
-      @user_session = UserSession.create( user, true )
-      flash[:notice] = LOGIN_NOTICE
-      redirect_back_or_default root_url
-    else
-      @user_session = UserSession.new
-      respond_to do |format|
-        format.html # show.html.erb
-      end
-    end
-  end
+  def new; end
 
   # POST /user_session
   def create
-    @user_session = UserSession.new(params[:user_session])
-    if ( @user_session.save )
-      flash[:notice] = LOGIN_NOTICE
-      redirect_back_or_default root_url
+    return permission_denied if sso_net_id
+    user = User.find_by_net_id(params[:net_id])
+    if user && user.authenticate(params[:password])
+      session[:user_id] = user.id
+      redirect_to root_url, :notice => LOGIN_NOTICE
     else
-      render :action => :new
+      flash.now.alert = "Invalid net id or password"
+      render "new"
     end
   end
 
   # GET /logout
   def destroy
-    current_user_session.destroy
-    flash[:notice] = LOGOUT_NOTICE
-    redirect_back_or_default login_url
+    return permission_denied if sso_net_id
+    session[:user_id] = nil
+    redirect_to login_url, :notice => LOGOUT_NOTICE
   end
 end
 

@@ -113,12 +113,9 @@ class User < ActiveRecord::Base
 
   mount_uploader :resume, UserResumeUploader
 
-  acts_as_authentic do |c|
-    c.login_field :net_id
-  end
+  is_authenticable
 
-  validates_presence_of :net_id
-  validates_uniqueness_of :net_id
+  validates :net_id, presence: true, uniqueness: true
   validates_presence_of :first_name
   validates_presence_of :last_name
   validates_presence_of :email
@@ -133,7 +130,7 @@ class User < ActiveRecord::Base
 
   accepts_nested_attributes_for :memberships
 
-  before_validation :import_ldap_attributes, :initialize_password, :on => :create
+  before_validation :import_ldap_attributes, :on => :create
   before_validation { |r| r.renewal_checkpoint ||= Time.zone.now unless r.persisted? }
 
   # Where necessary, provide for admin to get listing of all authorities
@@ -246,10 +243,6 @@ class User < ActiveRecord::Base
   def memberships_scope(tense = nil)
     scope = Membership.unscoped.where( :user_id => id )
     tense.blank? ? scope : scope.send( tense )
-  end
-
-  def initialize_password
-    reset_password unless crypted_password?
   end
 
   def ldap_entry=(ldap_entry)

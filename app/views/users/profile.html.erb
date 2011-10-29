@@ -4,7 +4,7 @@
 <%= link_to 'Click here', edit_user_path( current_user ) %> to update your personal and contact information.  If you are not <%=h current_user.name %>, please close the web browser completely and log in using your own credentials.
 </p>
 
-<% if current_user.authorities(0).length > 0 -%>
+<% if current_user.authorities.authorized(0).length > 0 -%>
 <h3>Your Authorities</h3>
 
 <p>
@@ -12,7 +12,7 @@ You may review requests and update memberships for the following authorities:
 </p>
 
 <ul>
-<% current_user.authorities(0).each do |authority| %>
+<% current_user.authorities.authorized(0).each do |authority| %>
 <li>
 <%= link_to h( authority ), authority %>
 (<%= link_to 'active requests', active_authority_requests_path( authority ) %>)
@@ -77,7 +77,7 @@ You have <%= link_to pluralize( current_user.requests.unexpired.length, 'current
 </p>
 
 <p>
-You may browse <%= link_to pluralize( current_user.requestable_committees.count("committees.id", :distinct => true), 'committee' ), requestable_user_committees_path( current_user ) %> and <%= link_to pluralize( current_user.requestable_positions.size, 'position' ), requestable_user_positions_path( current_user ) %> for which you are eligible to request membership.
+You may browse <%= link_to pluralize( current_user.committees.requestable.count("committees.id", :distinct => true), 'committee' ), requestable_user_committees_path( current_user ) %> and <%= link_to pluralize( current_user.positions.requestable.size, 'position' ), requestable_user_positions_path( current_user ) %> for which you are eligible to request membership.
 </p>
 
 <% if current_user.requests.unexpired.length > 0 %>

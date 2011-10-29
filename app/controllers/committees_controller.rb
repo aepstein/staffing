@@ -11,7 +11,7 @@ class CommitteesController < ApplicationController
   # GET /users/:user_id/committees/requestable
   # GET /users/:user_id/committees/requestable.xml
   def requestable
-    @committees = @user.requestable_committees
+    @committees = @user.committees.requestable
     index
   end
 
