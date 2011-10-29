@@ -1,6 +1,6 @@
 GIT
   remote: git://assembly.cornell.edu/git/cornell-assemblies-rails.git
-  revision: 467aec6aa4e5fc4024de71dd12a492ea9bf4d780
+  revision: 794cf046fd5398ffbf5124212a07c776e2728a84
   specs:
     cornell-assemblies-rails (0.0.1)
       jquery-rails (~> 1.0.15)

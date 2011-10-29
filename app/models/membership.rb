@@ -1,5 +1,4 @@
 class Membership < ActiveRecord::Base
-  include Notifiable
   notifiable_events :join, :leave
 
   RENEWABLE_ATTRIBUTES = [ :renew_until, :renewal_confirmed_at ]

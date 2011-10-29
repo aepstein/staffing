@@ -1,5 +1,4 @@
 class Request < ActiveRecord::Base
-  include Notifiable
   notifiable_events :reject, :close
 
 

@@ -1,5 +1,4 @@
 class User < ActiveRecord::Base
-  include Notifiable
   notifiable_events :renew
 
   STATUSES = %w( staff faculty undergrad grad alumni temporary )
