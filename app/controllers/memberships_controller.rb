@@ -120,7 +120,7 @@ class MembershipsController < ApplicationController
   # GET /authorities/:authority_id/memberships.xml
   def index
     @search = @memberships.ordered.search( params[:search] )
-    @memberships = @search.paginate( :page => params[:page], :include => [ :request ] )
+    @memberships = @search.page( params[:page] )
 
     respond_to do |format|
       format.html { render :action => 'index' }

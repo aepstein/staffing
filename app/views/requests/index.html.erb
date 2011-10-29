@@ -1,11 +1,11 @@
 <h2><%= params[:action].titleize %> requests <%= @title %></h2>
 
-<%= will_paginate @requests %>
+<%= paginate @requests %>
 
 <%= render :partial => "requests", :object => @requests,
   :locals => { :requestable => @requestable, :user => (@requestable || @authority ? false : @user) } %>
 
-<%= will_paginate @requests %>
+<%= paginate @requests %>
 
 <hr />
 

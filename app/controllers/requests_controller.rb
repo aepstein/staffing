@@ -20,7 +20,7 @@ class RequestsController < ApplicationController
   # GET /user/:user_id/requests.xml
   def index
     unless params[:format] == 'csv'
-      @requests = @requests.paginate( :page => params[:page] )
+      @requests = @requests.page( params[:page] )
     end
 
     respond_to do |format|

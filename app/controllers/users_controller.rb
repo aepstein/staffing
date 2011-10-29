@@ -24,7 +24,7 @@ class UsersController < ApplicationController
     @search = @users.with_permissions_to(:show).search(
       params[:term] ? { :name_like => params[:term] } : params[:search]
     )
-    @users = @search.paginate(:page => params[:page])
+    @users = @search.page( params[:page] )
 
     respond_to do |format|
       format.html { render :action => 'index' } # index.html.erb

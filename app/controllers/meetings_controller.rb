@@ -60,7 +60,7 @@ class MeetingsController < ApplicationController
   # GET /motions/:motion_id/meetings
   # GET /motions/:motion_id/meetings.xml
   def index
-    @meetings = @meetings.paginate( :page => params[:page] )
+    @meetings = @meetings.page( params[:page] )
 
     respond_to do |format|
       format.html { render :action => 'index' } # index.html.erb

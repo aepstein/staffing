@@ -22,7 +22,7 @@ class PositionsController < ApplicationController
     search = params[:term] ? { :name_contains => params[:term] } : params[:search]
     @search ||= @committee.positions.search( search ) if @committee
     @search ||= Position.search( search )
-    @positions = @search.paginate( :page => params[:page] )
+    @positions = @search.page( params[:page] )
 
     respond_to do |format|
       format.html { render :action => 'index' } # index.html.erb

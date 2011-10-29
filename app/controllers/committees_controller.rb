@@ -39,7 +39,7 @@ class CommitteesController < ApplicationController
   def index
     @committees ||= Committee.scoped
     @search = @committees.search( params[:term] ? { :name_contains => params[:term] } : params[:search] )
-    @committees = @search.paginate( :page => params[:page] )
+    @committees = @search.page( params[:page] )
 
     respond_to do |format|
       format.html { render :action => 'index' }

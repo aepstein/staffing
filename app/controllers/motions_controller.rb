@@ -41,7 +41,7 @@ class MotionsController < ApplicationController
     @search = @motions.with_permissions_to(:show).search(
       params[:term] ? { :name_contains => params[:term] } : params[:search]
     )
-    @motions = @search.paginate(:page => params[:page])
+    @motions = @search.page( params[:page] )
 
     respond_to do |format|
       format.html { render :action => 'index' } # index.html.erb

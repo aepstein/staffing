@@ -12,7 +12,7 @@
     <% else -%>
     <% end -%>
     <% else -%>
-    <td><%= membership.enrollments.committees %></td>
+    <td><%= membership.committees.map(&:to_s).join(', ') %></td>
     <% end -%>
     <td><%=h membership.period %></td>
     <td><%=h membership.starts_at.to_s :rfc822 %></td>
