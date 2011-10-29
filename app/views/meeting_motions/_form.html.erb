@@ -2,7 +2,7 @@
   <li>Motion: <%= form.object.motion.name %></li>
 <% elsif form.object.meeting %>
   <%= form.input :meeting_id, :as => :hidden %>
-  <%= form.autocompleted_input :motion_name, :label => 'Motion',
+  <%= form.input :motion_name, :as => :autocomplete, :label => 'Motion',
     :url => allowed_meeting_motions_path( form.object.meeting, :format => :json ) %>
 <% end %>
 <%= form.input :introduced_version %>

@@ -1,6 +1,6 @@
   <%= render "shared/error_messages", :target => form.object %>
   <%= form.inputs do %>
-  <%= form.autocompleted_input :position_name, :label => 'Position',
+  <%= form.input :position_name, :as => :autocomplete, :label => 'Position',
     :url => positions_path( :format => :json ) %>
   <%= form.input :title %>
   <%= form.input :votes %>

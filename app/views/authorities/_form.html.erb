@@ -1,7 +1,7 @@
   <%= render "shared/error_messages", :target => form.object %>
   <%= form.inputs do %>
   <%= form.input :name %>
-  <%= form.autocompleted_input :committee_name, :label => 'Committee',
+  <%= form.input :committee_name, :as => :autocomplete, :label => 'Committee',
     :url => committees_path( :format => :json ),
     :hint => "Specify the committee, if any, whose members should be able to read " +
     "and comment on requests under this authority." %>
