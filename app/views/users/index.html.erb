@@ -1,6 +1,6 @@
 <h2>Listing users</h2>
 
-<%= semantic_form_for @search do |form| %>
+<%= form_for @search, :url => request.fullpath do |form| %>
 <p>
   <%= form.label :name_cont, 'Name' %>
   <%= form.text_field :name_cont %>

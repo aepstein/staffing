@@ -41,7 +41,17 @@ class Membership < ActiveRecord::Base
       self.map { |designee| designee.committee_id }.uniq
     end
   end
-  has_many :enrollments, through: :position
+  has_many :enrollments, through: :position do
+    def for_committee( committee )
+      where { committee_id == my { committee.id } }
+    end
+    def titles_for_committee( committee )
+      for_committee(committee).map(&:title).join(",")
+    end
+    def votes_for_committee( committee )
+      for_committee(committee).map(&:votes).join(",")
+    end
+  end
   has_many :committees, through: :enrollments
 
   # Memberships that could renewed by assigning the user to this membership:

@@ -2,8 +2,8 @@
 
 <%= form_for @search, :url => request.fullpath do |form| %>
 <p>
-  <%= form.label :name_contains, 'Name' %>
-  <%= form.text_field :name_contains %>
+  <%= form.label :name_cont, 'Name' %>
+  <%= form.text_field :name_cont %>
   <%= form.submit "Search" %>
 </p>
 <% end %>
