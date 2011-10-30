@@ -3,8 +3,8 @@
     <% unless form.object.persisted? %>
       <%= form.input :period, :collection => form.object.committee.schedule.periods %>
     <% end %>
-    <%= form.input :starts_at, :as => :datetime_picker %>
-    <%= form.input :ends_at, :as => :datetime_picker %>
+    <%= form.input :starts_at, :as => :date_time_picker %>
+    <%= form.input :ends_at, :as => :date_time_picker %>
     <%= form.input :location %>
     <%= form.input :audio, :as => :file %>
     <%= form.input :editable_minutes, :as => :file %>
