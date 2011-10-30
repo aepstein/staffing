@@ -24,7 +24,7 @@ class UsersController < ApplicationController
     @q = @users.with_permissions_to(:show).search(
       params[:term] ? { :name_cont => params[:term] } : params[:q]
     )
-    @users = @search.result.page( params[:page] )
+    @users = @q.result.ordered.page( params[:page] )
 
     respond_to do |format|
       format.html { render :action => 'index' } # index.html.erb

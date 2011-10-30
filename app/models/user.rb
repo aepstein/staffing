@@ -7,10 +7,7 @@ class User < ActiveRecord::Base
     :renewal_checkpoint, :memberships_attributes, as: [ :default, :admin ]
   attr_accessible :net_id, :admin, :status, as: :admin
 
-#  attr_accessible [ UPDATABLE ].flatten
-#  attr_accessible [ ADMIN_UPDATABLE, UPDATABLE ].flatten, as: :admin
-
-  default_scope order( 'users.last_name ASC, users.first_name ASC, users.middle_name ASC' )
+  default_scope lambda { ordered }
 
   has_and_belongs_to_many :qualifications
   has_many :memberships, :inverse_of => :user do
@@ -85,6 +82,7 @@ class User < ActiveRecord::Base
     end
   end
 
+  scope :ordered, order { [ last_name, first_name, middle_name ] }
   scope :interested_in, lambda { |membership|
     select('DISTINCT users.*').joins(:requests).merge(
       Request.unscoped.active.interested_in( membership )
