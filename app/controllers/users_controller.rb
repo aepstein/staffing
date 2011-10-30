@@ -22,9 +22,9 @@ class UsersController < ApplicationController
   # GET /users.xml
   def index
     @search = @users.with_permissions_to(:show).search(
-      params[:term] ? { :name_like => params[:term] } : params[:search]
+      params[:term] ? { :name_cont => params[:term] } : params[:search]
     )
-    @users = @search.page( params[:page] )
+    @users = @search.result.page( params[:page] )
 
     respond_to do |format|
       format.html { render :action => 'index' } # index.html.erb

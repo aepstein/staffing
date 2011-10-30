@@ -3,26 +3,26 @@
 <%= form_for @search, :url => request.fullpath do |form| %>
   <% unless @user %>
   <p>
-    <%= form.label :user_name_like,'User' %>
-    <%= form.text_field :user_name_like %>
+    <%= form.label :user_name_cont,'User' %>
+    <%= form.text_field :user_name_cont %>
   </p>
   <% end %>
   <% unless @committee %>
   <p>
-    <%= form.label :position_committees_name_like, 'Committee' %>
-    <%= form.text_field :position_committees_name_like %>
+    <%= form.label :position_committees_name_cont, 'Committee' %>
+    <%= form.text_field :position_committees_name_cont %>
   </p>
   <% end %>
   <% unless @authority %>
   <p>
-    <%= form.label :position_authority_name_like, 'Authority' %>
-    <%= form.text_field :position_authority_name_like %>
+    <%= form.label :position_authority_name_cont, 'Authority' %>
+    <%= form.text_field :position_authority_name_cont %>
   </p>
   <% end %>
   <% unless @position %>
   <p>
-    <%= form.label :position_name_like, 'Position' %>
-    <%= form.text_field :position_name_like %>
+    <%= form.label :position_name_cont, 'Position' %>
+    <%= form.text_field :position_name_cont %>
   </p>
   <% end %>
   <p>

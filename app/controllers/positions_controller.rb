@@ -19,10 +19,10 @@ class PositionsController < ApplicationController
   # GET /committees/:committee_id/positions
   # GET /committees/:committee_id/positions.xml
   def index
-    search = params[:term] ? { :name_contains => params[:term] } : params[:search]
+    search = params[:term] ? { :name_cont => params[:term] } : params[:search]
     @search ||= @committee.positions.search( search ) if @committee
     @search ||= Position.search( search )
-    @positions = @search.page( params[:page] )
+    @positions = @search.result.page( params[:page] )
 
     respond_to do |format|
       format.html { render :action => 'index' } # index.html.erb

@@ -39,9 +39,9 @@ class MotionsController < ApplicationController
   # GET /motions.xml
   def index
     @search = @motions.with_permissions_to(:show).search(
-      params[:term] ? { :name_contains => params[:term] } : params[:search]
+      params[:term] ? { :name_cont => params[:term] } : params[:search]
     )
-    @motions = @search.page( params[:page] )
+    @motions = @search.result.page( params[:page] )
 
     respond_to do |format|
       format.html { render :action => 'index' } # index.html.erb

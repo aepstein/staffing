@@ -121,16 +121,19 @@ class Membership < ActiveRecord::Base
   }
   scope :renewed, where { renewed_by_membership_id != nil }
   scope :unrenewed, where( :renewed_by_membership_id => nil )
-  scope :user_name_like, lambda { |text| joins(:user).merge( User.unscoped.name_like(text) ) }
+  scope :user_name_cont, lambda { |text|
+    where { |t| t.user_id.in( User.unscoped.select { id }.name_cont( text ) ) }
+  }
   scope :enrollments_committee_id_equals, lambda { |committee_id|
     joins('INNER JOIN enrollments ON enrollments.position_id = memberships.position_id').
     where( [ 'enrollments.committee_id = ?', committee_id ] )
   }
 
-  #TODO: deprecated by switch to ranscack
-  #search_methods :user_name_like
+  search_methods :user_name_cont
 
-  accepts_nested_attributes_for :designees, :reject_if => proc { |a| a['user_name'].blank? }, :allow_destroy => true
+  accepts_nested_attributes_for :designees,
+    :reject_if => proc { |a| a['user_name'].blank? },
+    :allow_destroy => true
 
   validates :period, presence: true
   validates :position, presence: true

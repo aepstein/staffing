@@ -96,7 +96,7 @@ class User < ActiveRecord::Base
   scope :renewal_unconfirmed, lambda {
     joins( :memberships ).merge( Membership.unscoped.joins( :period ).renewal_unconfirmed )
   }
-  scope :name_like, lambda { |name|
+  scope :name_cont, lambda { |name|
     where(
       %w( first_name last_name middle_name net_id ).map { |c|
         "users.#{c} LIKE :name"}.join( ' OR ' ), :name => "%#{name}%"
@@ -108,19 +108,31 @@ class User < ActiveRecord::Base
       "ON memberships.position_id = enrollments.position_id")
   }
 
-  # TODO: deprecated by ransack
-  #search_methods :name_like
+  search_methods :name_cont
+  ransacker :name
+  ## TODO: Ideally, the following or similar could substitute for name_cont
+#  ransacker :name, :type => :string do |parent|
+#    Arel::Nodes::InfixOperation.new(' ',
+#      Arel::Nodes::SqlLiteral.new('CONCAT'),
+#      Arel::Nodes::Grouping.new( [
+#        parent.table[:first_name], ' ',
+#        parent.table[:last_name],
+#        parent.table[:net_id]
+#      ] )
+#    )
+#  end
 
   mount_uploader :resume, UserResumeUploader
 
   is_authenticable
 
   validates :net_id, presence: true, uniqueness: true
-  validates_presence_of :first_name
-  validates_presence_of :last_name
-  validates_presence_of :email
-  validates_date :date_of_birth, :allow_nil => true, :allow_blank => true
-  validates_datetime :renewal_checkpoint
+  validates :first_name, presence: true
+  validates :last_name, presence: true
+  validates :email, presence: true
+  validates :date_of_birth, timeliness: { type: :date, allow_nil: true,
+    allow_blank: true }
+  validates :renewal_checkpoint, timeliness: { type: :datetime }
   validates_integrity_of :resume
   validate do |user|
     if user.resume.present? && user.resume.size > 1.megabyte

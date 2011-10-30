@@ -15,7 +15,7 @@ Feature: Manage authority memberships
     And a future_membership exists with user: user "owner", position: position "future"
     And a future_membership exists with user: user "owner", position: position "other"
     And a past_membership exists with user: user "owner", position: position "past"
-@wip
+
   Scenario: List memberships correctly for an authority
     Given I log in as "owner" with password "secret"
     And I am on the memberships page for authority: "focus"
