@@ -4,7 +4,7 @@ class Position < ActiveRecord::Base
     :notifiable, :designable, :active, :requestable_by_committee,
     :reject_message
 
-  default_scope order( 'positions.name ASC' )
+  default_scope lambda { ordered }
 
   belongs_to :authority, :inverse_of => :positions
   belongs_to :quiz, :inverse_of => :positions
@@ -75,6 +75,7 @@ class Position < ActiveRecord::Base
   end
   has_many :committees, :through => :enrollments
 
+  scope :ordered, order { name }
   scope :with_enrollments, joins( "LEFT JOIN enrollments ON enrollments.position_id = positions.id" )
   scope :with_requests, lambda {
     with_enrollments.joins( "INNER JOIN requests INNER JOIN users" ).

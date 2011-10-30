@@ -3,7 +3,7 @@ class Motion < ActiveRecord::Base
     :referring_motion_id, :sponsorships_attributes
   attr_readonly :period_id
 
-  acts_as_list :scope => [:period_id, :committee_id]
+  acts_as_list scope: [ :period_id, :committee_id ]
 
   belongs_to :period, :inverse_of => :motions
   belongs_to :committee, :inverse_of => :motions
@@ -59,7 +59,7 @@ class Motion < ActiveRecord::Base
     end
   end
 
-  default_scope order( 'motions.position ASC' )
+  scope :ordered, order { position }
   scope :past, lambda { joins(:period).merge Period.unscoped.past }
   scope :current, lambda { joins(:period).merge Period.unscoped.current }
   scope :in_process, lambda { with_status( :started, :proposed ) }

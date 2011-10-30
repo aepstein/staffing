@@ -17,7 +17,7 @@ class MembershipsController < ApplicationController
   # PUT /users/:user_id/memberships/renew
   def renew
     unless request.request_method_symbol == :get
-      if @user.update_attributes( params[:user] )
+      if @user.update_attributes( params[:user], as: :default )
         flash[:notice] = 'Renewal preferences successfully updated.'
       end
     end
@@ -119,8 +119,8 @@ class MembershipsController < ApplicationController
   # GET /authorities/:authority_id/memberships
   # GET /authorities/:authority_id/memberships.xml
   def index
-    @search = @memberships.search( params[:search] )
-    @memberships = @search.result.ordered.page( params[:page] )
+    @q = @memberships.search( params[:q] )
+    @memberships = @q.result.ordered.page( params[:page] )
 
     respond_to do |format|
       format.html { render :action => 'index' }

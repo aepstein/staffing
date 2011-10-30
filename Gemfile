@@ -18,7 +18,7 @@ gem 'declarative_authorization'
 gem 'kaminari'
 gem 'carrierwave'
 gem 'blind_date', '~> 1.0.2'
-gem 'acts_as_list'
+gem 'acts_as_list', :git => 'git://github.com/aepstein/acts_as_list.git'
 gem 'daemons'
 gem 'bluecloth'
 gem 'whenever', :require => false

@@ -21,8 +21,8 @@ class UsersController < ApplicationController
   # GET /users
   # GET /users.xml
   def index
-    @search = @users.with_permissions_to(:show).search(
-      params[:term] ? { :name_cont => params[:term] } : params[:search]
+    @q = @users.with_permissions_to(:show).search(
+      params[:term] ? { :name_cont => params[:term] } : params[:q]
     )
     @users = @search.result.page( params[:page] )
 

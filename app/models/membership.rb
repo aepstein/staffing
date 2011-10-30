@@ -1,13 +1,10 @@
 class Membership < ActiveRecord::Base
   notifiable_events :join, :leave
 
-  RENEWABLE_ATTRIBUTES = [ :renew_until, :renewal_confirmed_at ]
-  UPDATABLE_ATTRIBUTES = [ :user_name, :user_id, :period_id, :position_id,
+  attr_accessible :renew_until, :renewal_confirmed_at, as: [ :default, :updator ]
+  attr_accessible :user_name, :user_id, :period_id, :position_id,
     :request_id, :starts_at, :ends_at, :designees_attributes,
-    :designees_attributes ]
-  attr_accessible RENEWABLE_ATTRIBUTES, :as => :default
-  attr_accessible RENEWABLE_ATTRIBUTES, UPDATABLE_ATTRIBUTES, :as => :updator
-
+    :designees_attributes, as: :updator
   attr_readonly :position_id
 
   include UserNameLookup

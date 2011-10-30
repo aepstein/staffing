@@ -1,10 +1,6 @@
 class Request < ActiveRecord::Base
   notifiable_events :reject, :close
 
-
-  UPDATABLE_ATTRIBUTES = [ :starts_at, :ends_at, :new_position,
-    :answers_attributes, :user_attributes ]
-  REJECTABLE_ATTRIBUTES = [ :rejected_by_authority_id, :rejection_comment ]
   # Criteria to identify positions staffable to this request
   POSITIONS_JOIN_SQL = "((requests.requestable_type = 'Position' AND " +
     "requests.requestable_id = positions.id) OR " +
@@ -13,8 +9,9 @@ class Request < ActiveRecord::Base
     "( positions.statuses_mask = 0 OR " +
     "( ( positions.statuses_mask & users.statuses_mask ) > 0 ) )"
 
-  attr_accessible UPDATABLE_ATTRIBUTES
-  attr_accessible REJECTABLE_ATTRIBUTES, as: :rejector
+  attr_accessible :starts_at, :ends_at, :new_position, :answers_attributes,
+    :user_attributes
+  attr_accessible :rejected_by_authority_id, :rejection_comment, as: :rejector
   attr_readonly :user_id, :requestable_id, :requestable_type
 
   has_many :answers, :inverse_of => :request do

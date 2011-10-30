@@ -2,13 +2,13 @@ class User < ActiveRecord::Base
   notifiable_events :renew
 
   STATUSES = %w( staff faculty undergrad grad alumni temporary )
-  ADMIN_UPDATABLE = [ :net_id, :admin, :status ]
-  UPDATABLE = [ :first_name, :middle_name, :last_name, :email, :mobile_phone,
+  attr_accessible :first_name, :middle_name, :last_name, :email, :mobile_phone,
     :work_phone, :home_phone, :work_address, :date_of_birth, :resume,
-    :renewal_checkpoint, :memberships_attributes ]
+    :renewal_checkpoint, :memberships_attributes, as: [ :default, :admin ]
+  attr_accessible :net_id, :admin, :status, as: :admin
 
-  attr_accessible UPDATABLE
-  attr_accessible ADMIN_UPDATABLE, UPDATABLE, as: :admin
+#  attr_accessible [ UPDATABLE ].flatten
+#  attr_accessible [ ADMIN_UPDATABLE, UPDATABLE ].flatten, as: :admin
 
   default_scope order( 'users.last_name ASC, users.first_name ASC, users.middle_name ASC' )
 

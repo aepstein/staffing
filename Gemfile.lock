@@ -8,6 +8,12 @@ GIT
       rails (~> 3.1.1)
       rails3-jquery-autocomplete (~> 1.0.4)
 
+GIT
+  remote: git://github.com/aepstein/acts_as_list.git
+  revision: 4765b2fcf6ee513683b681defcdf0d598cf767ba
+  specs:
+    acts_as_list (0.1.4)
+
 GEM
   remote: http://rubygems.org/
   specs:
@@ -40,7 +46,6 @@ GEM
       activesupport (= 3.1.1)
     activesupport (3.1.1)
       multi_json (~> 1.0)
-    acts_as_list (0.1.4)
     addressable (2.2.6)
     arel (2.2.1)
     bcrypt-ruby (3.0.1)
@@ -187,19 +192,19 @@ GEM
     rdoc (3.11)
       json (~> 1.4)
     rmagick (2.13.1)
-    rspec (2.6.0)
-      rspec-core (~> 2.6.0)
-      rspec-expectations (~> 2.6.0)
-      rspec-mocks (~> 2.6.0)
-    rspec-core (2.6.4)
-    rspec-expectations (2.6.0)
+    rspec (2.7.0)
+      rspec-core (~> 2.7.0)
+      rspec-expectations (~> 2.7.0)
+      rspec-mocks (~> 2.7.0)
+    rspec-core (2.7.1)
+    rspec-expectations (2.7.0)
       diff-lcs (~> 1.1.2)
-    rspec-mocks (2.6.0)
-    rspec-rails (2.6.1)
+    rspec-mocks (2.7.0)
+    rspec-rails (2.7.0)
       actionpack (~> 3.0)
       activesupport (~> 3.0)
       railties (~> 3.0)
-      rspec (~> 2.6.0)
+      rspec (~> 2.7.0)
     rubyzip (0.9.4)
     sass (3.1.10)
     sass-rails (3.1.4)
@@ -208,7 +213,7 @@ GEM
       sass (>= 3.1.4)
       sprockets (~> 2.0.0)
       tilt (~> 1.3.2)
-    selenium-webdriver (2.9.1)
+    selenium-webdriver (2.10.0)
       childprocess (>= 0.2.1)
       ffi (= 1.0.9)
       json_pure
@@ -255,7 +260,7 @@ PLATFORMS
   ruby
 
 DEPENDENCIES
-  acts_as_list
+  acts_as_list!
   blind_date (~> 1.0.2)
   bluecloth
   capistrano
