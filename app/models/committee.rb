@@ -1,6 +1,7 @@
 class Committee < ActiveRecord::Base
-  default_scope order( 'committees.name ASC' )
+  default_scope lambda { ordered }
 
+  scope :ordered, order { name }
   scope :requestable, where( :requestable.eq => true )
   scope :unrequestable, where( :requestable.eq => false )
   scope :group_by_id, group( :id )

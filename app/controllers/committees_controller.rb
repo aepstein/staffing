@@ -38,8 +38,8 @@ class CommitteesController < ApplicationController
   # GET /committees.xml
   def index
     @committees ||= Committee.scoped
-    @search = @committees.search( params[:term] ? { :name_cont => params[:term] } : params[:search] )
-    @committees = @search.result.page( params[:page] )
+    @q = @committees.search( params[:term] ? { :name_cont => params[:term] } : params[:q] )
+    @committees = @q.result.ordered.page( params[:page] )
 
     respond_to do |format|
       format.html { render :action => 'index' }
