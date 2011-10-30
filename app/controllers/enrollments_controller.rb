@@ -11,7 +11,7 @@ class EnrollmentsController < ApplicationController
   # GET /users/:user_id/enrollments/current.xml
   def current
     if @user
-      @enrollments = @user.current_enrollments
+      @enrollments = @user.enrollments.current
       add_breadcrumb 'Current', current_user_enrollments_path(@user)
     end
     index
@@ -21,7 +21,7 @@ class EnrollmentsController < ApplicationController
   # GET /users/:user_id/enrollments/past.xml
   def past
     if @user
-      @enrollments = @user.past_enrollments
+      @enrollments = @user.enrollments.past
       add_breadcrumb 'Past', past_user_enrollments_path(@user)
     end
     index
@@ -31,7 +31,7 @@ class EnrollmentsController < ApplicationController
   # GET /users/:user_id/enrollments/future.xml
   def future
     if @user
-      @enrollments = @user.future_enrollments
+      @enrollments = @user.enrollments.future
       add_breadcrumb 'Future', future_user_enrollments_path(@user)
     end
     index
