@@ -1,3 +1,5 @@
+require 'whenever/capistrano'
+
 set :application, "staffing"
 role :app, "kvm02.assembly.cornell.edu"
 role :web, "kvm02.assembly.cornell.edu"
