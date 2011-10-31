@@ -1,6 +1,3 @@
-# deploy.rb
-require 'bundler/capistrano'
-
 set :application, "staffing"
 role :app, "kvm02.assembly.cornell.edu"
 role :web, "kvm02.assembly.cornell.edu"
@@ -33,12 +30,6 @@ namespace :deploy do
     run "ln -nfs #{shared_path}/db/fonts #{release_path}/db/fonts"
     #run "ln -nfs #{shared_path}/assets #{release_path}/public/assets"
   end
-
-  desc "Sync the public/assets directory."
-  task :assets do
-    #system "rsync -vr --exclude='.DS_Store' public/assets #{user}@#{application}:#{shared_path}/"
-  end
-
 end
 
 after 'deploy:update_code', 'deploy:symlink_shared'
