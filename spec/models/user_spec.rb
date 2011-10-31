@@ -165,7 +165,7 @@ describe User do
     size.times { file << 'a' }
     file.close
     @temporary_files << file
-    fixture_file_upload file.path, type
+    Rack::Test::UploadedFile.new file.path, type
   end
 end
 

@@ -143,42 +143,6 @@ class User < ActiveRecord::Base
   before_validation :import_ldap_attributes, :on => :create
   before_validation { |r| r.renewal_checkpoint ||= Time.zone.now unless r.persisted? }
 
-  # Where necessary, provide for admin to get listing of all authorities
-  def allowed_authorities( votes = 1 )
-    message = "allowed_authorities is deprecated and will be removed.  " +
-      "Use authorities.authorized(votes) instead."
-    ActiveSupport::Deprecation.warn( message )
-    authorities.authorized votes
-  end
-
-  def authorized_position_ids(votes = 1)
-    message = "authorized_position_ids is deprecated and will be removed.  " +
-      "Use positions.authorized(votes).map(&:id) instead."
-    ActiveSupport::Deprecation.warn( message )
-    positions.authorized(votes).map(&:id)
-  end
-
-  def authorized_committee_ids(votes = 1)
-    message = "authorized_committee_ids is deprecated and will be removed.  " +
-      "Use committees.authorized(votes).map(&:id) instead."
-    ActiveSupport::Deprecation.warn( message )
-    committees.authorized(votes).map(&:id)
-  end
-
-  def requestable_committees
-    message = "requestable_committees is deprecated and will be removed.  " +
-      "Use committees.requestable instead."
-    ActiveSupport::Deprecation.warn( message )
-    committees.requestable
-  end
-
-  def requestable_positions
-    message = "requestable_positions is deprecated and will be removed.  " +
-      "Use positions.requestable instead."
-    ActiveSupport::Deprecation.warn( message )
-    positions.requestable
-  end
-
   def requestables(reload=false)
     @requestables = nil if reload
     return @requestables if @requestables
