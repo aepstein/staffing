@@ -101,6 +101,7 @@ GEM
     erubis (2.7.0)
     escape_utils (0.2.4)
     eventmachine (0.12.10)
+    exception_notifier (1.0.0)
     execjs (1.2.9)
       multi_json (~> 1.0)
     factory_girl (2.2.0)
@@ -223,9 +224,6 @@ GEM
       hike (~> 1.2)
       rack (~> 1.0)
       tilt (~> 1.1, != 1.3.0)
-    sqlite3 (1.3.4)
-    sqlite3-ruby (1.3.3)
-      sqlite3 (>= 1.3.3)
     squeel (0.9.3)
       activerecord (~> 3.0)
       activesupport (~> 3.0)
@@ -276,6 +274,7 @@ DEPENDENCIES
   declarative_authorization
   email_spec
   escape_utils
+  exception_notifier
   factory_girl (~> 2.0)
   factory_girl_rails (~> 1.0)
   formtastic
@@ -293,7 +292,6 @@ DEPENDENCIES
   rspec-rails (~> 2.0)
   sass-rails (~> 3.1.0)
   spork
-  sqlite3-ruby
   squeel
   state_machine
   test-unit

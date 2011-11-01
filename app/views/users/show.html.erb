@@ -50,6 +50,16 @@
   <b>Administrator?</b> <%=h @user.admin? ? 'Yes' : 'No' %>
 </p>
 
+<h3>Generate tent card</h3>
+
+<%=form_tag tent_user_path(@user, :format => :pdf), :method => :get do %>
+<p>
+  <b><%=label_tag :brand_id, 'Brand'%></b>
+  <%=select_tag :brand_id, options_from_collection_for_select(Brand.all, :id, :name) %>
+  <%=submit_tag "Download Tent Card" %>
+</p>
+<% end %>
+
 <p>
 <% if permitted_to? :edit, @user -%>
 <%= link_to 'Edit', edit_user_path(@user) %> |

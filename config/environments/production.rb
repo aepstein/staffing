@@ -12,5 +12,9 @@ Staffing::Application.configure do
   config.assets.compile = false
   config.assets.digest = true
   config.filter_parameters += [ :password, :password_confirmation ]
+  config.middleware.use ExceptionNotifier,
+    :email_prefix => "[staffing] ",
+    :sender_address => %{"Assemblies IT Support" <assembly-it@cornell.edu>},
+    :exception_recipients => %w{assembly-it@cornell.edu}
 end
 
