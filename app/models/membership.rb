@@ -69,8 +69,10 @@ class Membership < ActiveRecord::Base
     where( :renew_until.gte => membership.starts_at ).
     where( :renew_until.gte => Time.zone.today )
     return s unless membership.position.statuses_mask > 0
-    s.joins(:user).
-    where( "users.statuses_mask & #{membership.position.statuses_mask} > 0" )
+    s.where { user_id.in(
+      User.unscoped.select { id }.where(
+        "users.statuses_mask & #{membership.position.statuses_mask} > 0"
+      ) ) }
   }
   scope :ordered, includes( :user, :period ).order(
     "memberships.ends_at DESC, memberships.starts_at DESC, " +
