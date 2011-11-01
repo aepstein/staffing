@@ -101,7 +101,8 @@ GEM
     erubis (2.7.0)
     escape_utils (0.2.4)
     eventmachine (0.12.10)
-    exception_notifier (1.0.0)
+    exception_notification (2.5.2)
+      actionmailer (>= 3.0.4)
     execjs (1.2.9)
       multi_json (~> 1.0)
     factory_girl (2.2.0)
@@ -274,7 +275,7 @@ DEPENDENCIES
   declarative_authorization
   email_spec
   escape_utils
-  exception_notifier
+  exception_notification (~> 2.5)
   factory_girl (~> 2.0)
   factory_girl_rails (~> 1.0)
   formtastic
