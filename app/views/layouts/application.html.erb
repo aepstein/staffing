@@ -8,6 +8,8 @@
 	<meta http-equiv="Content-Language" content="en-us" />
 	<link rel="SHORTCUT ICON" href="<%= image_path('favicon.ico') %>" type="image/x-icon" />
 	<%=raw stylesheet_link_tag 'application' %>
+	<!--[if IE 6]><%=raw stylesheet_link_tag 'ie6' %><![endif]-->
+	<!--[if IE 7]><%=raw stylesheet_link_tag 'ie7' %><![endif]-->
 	<%=raw javascript_include_tag 'application' %>
   <%= csrf_meta_tag %>
 </head>
@@ -22,7 +24,7 @@
 
 <div id="cu-identity">
 	<div id="cu-logo">
-		<a id="insignia-link" href="http://www.cornell.edu/"><img src="<%=image_path('layout/unit_signature.gif')%>" alt="Cornell University" width="283" height="76" border="0" /></a>
+		<a id="insignia-link" href="http://www.cornell.edu/"><img src="<%=image_path('cornell-assemblies-rails/layout/unit_signature.gif')%>" alt="Cornell University" width="283" height="76" border="0" /></a>
 		<div id="unit-signature-links">
 			<a id="cornell-link" href="http://www.cornell.edu/">Cornell University</a>
 			<a id="unit-link" href="http://assembly.cornell.edu">Office of the Assemblies</a>

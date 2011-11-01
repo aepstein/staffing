@@ -17,7 +17,7 @@ module Staffing
     config.autoload_paths << "#{Rails.root}/app/reports"
     config.active_record.identity_map = true
     config.assets.enabled = true
-    config.assets.version = '1.0'
+    config.assets.version = '1.1'
 
     def self.app_config
       @@app_config ||= YAML.load(File.read(File.expand_path('../application.yml', __FILE__)))[Rails.env]
