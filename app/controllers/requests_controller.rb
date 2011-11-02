@@ -126,8 +126,8 @@ class RequestsController < ApplicationController
   # PUT /requests/1.xml
   def update
     respond_to do |format|
-      if @request.update_attributes(params[:request])
-        @request.reactivate! unless @request.active?
+      @request.assign_attributes(params[:request])
+      if ( @request.active? && @request.save ) || @request.reactivate
         flash[:notice] = 'Request was successfully updated.'
         format.html { redirect_to @request }
         format.xml  { head :ok }
