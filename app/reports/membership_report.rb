@@ -11,7 +11,7 @@ class MembershipReport < Prawn::Document
 
   def initialize(committee)
     self.committee = committee
-    memberships = committee.memberships.current.includes(:user).
+    memberships = committee.memberships.current.except(:order).includes(:user).
       order('users.last_name ASC, users.first_name ASC')
     self.voting_memberships = memberships.where('enrollments.votes > 0')
     self.nonvoting_memberships = memberships.where('enrollments.votes = 0')
