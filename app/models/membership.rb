@@ -9,18 +9,18 @@ class Membership < ActiveRecord::Base
 
   include UserNameLookup
 
-  belongs_to :user, :inverse_of => :memberships
-  belongs_to :period, :inverse_of => :memberships
-  belongs_to :position, :inverse_of => :memberships
-  belongs_to :request, :inverse_of => :memberships
-  belongs_to :renewed_by_membership, :class_name => 'Membership',
-    :inverse_of => :renewed_memberships
-  has_many :enrollments, :primary_key => :position_id,
-    :foreign_key => :position_id
-  has_many :renewed_memberships, :class_name => 'Membership',
-    :inverse_of => :renewed_by_membership,
-    :foreign_key => :renewed_by_membership_id, :dependent => :nullify
-  has_many :designees, :inverse_of => :membership, :dependent => :delete_all do
+  belongs_to :user, inverse_of: :memberships
+  belongs_to :period, inverse_of: :memberships
+  belongs_to :position, inverse_of: :memberships
+  belongs_to :request, inverse_of: :memberships
+  belongs_to :renewed_by_membership, class_name: 'Membership',
+    inverse_of: :renewed_memberships
+  has_many :enrollments, primary_key: :position_id,
+    foreign_key: :position_id
+  has_many :renewed_memberships, class_name: 'Membership',
+    inverse_of: :renewed_by_membership, foreign_key: :renewed_by_membership_id,
+    dependent: :nullify
+  has_many :designees, inverse_of: :membership, dependent: :delete_all do
     def populate
       return Array.new unless @association.owner.position && @association.owner.position.designable?
       @association.owner.position.committees.except(:order).
@@ -82,10 +82,11 @@ class Membership < ActiveRecord::Base
   scope :unassigned, where( :user_id => nil )
   scope :requested, where { request_id != nil }
   scope :unrequested, where( :request_id => nil )
-  scope :current, lambda { where( :starts_at.lte => Time.zone.today, :ends_at.gte => Time.zone.today ) }
-  scope :future, lambda { where( :starts_at.gt => Time.zone.today ) }
-  scope :past, lambda { where( :ends_at.lt => Time.zone.today ) }
-  scope :current_or_future, lambda { where( :ends_at.gte => Time.zone.today ) }
+  scope :current, lambda { where { ( starts_at <= Time.zone.today ) &
+    ( ends_at >= Time.zone.today ) } }
+  scope :future, lambda { where { starts_at > Time.zone.today } }
+  scope :past, lambda { where { ends_at < Time.zone.today } }
+  scope :current_or_future, lambda { where { ends_at >= Time.zone.today } }
   # To be renewable a membership must:
   # * have a renewable position
   # * be in either
@@ -103,13 +104,14 @@ class Membership < ActiveRecord::Base
   }
   # Unrenewable memberships are associated with unrenewable positions
   scope :unrenewable, lambda { joins(:position).merge( Position.unscoped.unrenewable ) }
-  scope :overlap, lambda { |starts, ends| where( :starts_at.lte => ends, :ends_at.gte => starts) }
+  scope :overlap, lambda { |starts, ends|
+    where { |t| ( t.starts_at <= ends ) & ( t.ends_at >= starts ) } }
   scope :no_overlap, lambda { |starts, ends|
-    t = arel_table
-    where( t[:starts_at].gt( ends ).or( t[:ends_at].lt(starts) ) )
+    where { |t| ( t.starts_at > ends ) | ( t.ends_at < starts ) }
   }
   scope :pending_renewal_within, lambda { |starts, ends|
-    renewable.unrenewed.where( :starts_at.gte => starts, :ends_at.lte => ends)
+    renewable.unrenewed.
+    where { |t| ( t.starts_at >= starts ) & ( t.ends_at <= ends ) }
   }
   scope :authorized_user_id_equals, lambda { |user_id|
     select("DISTINCT #{arel_table.name}.*").joins(:position).
@@ -117,11 +119,13 @@ class Membership < ActiveRecord::Base
     merge( Authority.unscoped.joins(:authorized_enrollments).
     merge( Enrollment.unscoped.joins( :memberships ).
     merge( Membership.unscoped.current_or_future.
-      overlap( arel_table[:starts_at], arel_table[:ends_at] ).where( :user_id => user_id ) ) ) ) )
+      overlap( arel_table[:starts_at], arel_table[:ends_at] ).
+      where( :user_id => user_id ) ) ) ) )
   }
   scope :join_notice_pending, lambda { notifiable.current.no_join_notice }
   scope :leave_notice_pending, lambda { notifiable.past.no_leave_notice }
-  scope :notifiable, includes(:position).where { user_id != nil }.merge( Position.unscoped.notifiable )
+  scope :notifiable, includes(:position).where { user_id != nil }.
+    merge( Position.unscoped.notifiable )
   scope :renewal_confirmed, lambda {
     renewable.where { renewal_confirmed_at != nil }
   }

@@ -3,15 +3,15 @@ class MeetingMotion < ActiveRecord::Base
     :introduced_version, :final_version, :_destroy
   attr_readonly :meeting_id, :motion_id, :motion_name
 
-  belongs_to :meeting, :inverse_of => :meeting_motions
-  belongs_to :motion, :inverse_of => :meeting_motions
+  belongs_to :meeting, inverse_of: :meeting_motions
+  belongs_to :motion, inverse_of: :meeting_motions
 
   mount_uploader :introduced_version, MeetingMotionUploader
   mount_uploader :final_version, MeetingMotionUploader
 
-  validates_presence_of :meeting
-  validates_presence_of :motion
-  validates_uniqueness_of :meeting_id, :scope => [ :motion_id ]
+  validates :meeting, presence: true
+  validates :motion, presence: true
+  validates :meeting_id, uniqueness: { scope: :motion_id }
   validate :motion_must_be_allowed
 
   def motion_name=( name )

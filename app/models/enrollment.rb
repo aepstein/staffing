@@ -3,19 +3,20 @@ class Enrollment < ActiveRecord::Base
     :membership_notices
   attr_readonly :committee_id
 
-  belongs_to :position, :inverse_of => :enrollments
-  belongs_to :committee, :inverse_of => :enrollments
-  has_many :memberships, :through => :position
+  belongs_to :position, inverse_of: :enrollments
+  belongs_to :committee, inverse_of: :enrollments
+  has_many :memberships, through: :position
 
   default_scope includes(:committee, :position).
     order( 'committees.name ASC, enrollments.title ASC, positions.name ASC' )
 
   scope :membership_notices, where( :membership_notices => true )
 
-  validates_presence_of :position
-  validates_presence_of :committee
-  validates_presence_of :title
-  validates_numericality_of :votes, :greater_than_or_equal_to => 0, :only_integer => true
+  validates :position, presence: true
+  validates :committee, presence: true
+  validates :title, presence: true
+  validates :votes, numericality: { greater_than_or_equal_to: 0,
+    only_integer: true }
 
   def position_name; position.name if position; end
 

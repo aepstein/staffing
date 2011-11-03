@@ -2,15 +2,15 @@ class Answer < ActiveRecord::Base
   attr_accessible :question_id, :content
   attr_readonly :question_id
 
-  belongs_to :question, :inverse_of => :answers
-  belongs_to :request, :inverse_of => :answers
+  belongs_to :question, inverse_of: :answers
+  belongs_to :request, inverse_of: :answers
 
-  validates_presence_of :request
-  validates_presence_of :question
-  validates_presence_of :content
+  validates :request, presence: true
+  validates :question, presence: true
+  validates :content, presence: true
   validate :question_must_be_allowed
 
-  scope :global, lambda { joins(:question).where :questions => { :global.eq => true } }
+  scope :global, lambda { joins(:question).where { questions.global == true } }
   scope :local, lambda { joins(:question).where { questions.global != true } }
 
   def question_must_be_allowed

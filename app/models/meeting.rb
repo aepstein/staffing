@@ -4,11 +4,11 @@ class Meeting < ActiveRecord::Base
     :meeting_motions_attributes
   attr_readonly :period_id, :committee_id
 
-  belongs_to :committee, :inverse_of => :meetings
-  belongs_to :period, :inverse_of => :meetings
+  belongs_to :committee, inverse_of: :meetings
+  belongs_to :period, inverse_of: :meetings
 
-  has_many :meeting_motions, :inverse_of => :meeting, :dependent => :destroy
-  has_many :motions, :through => :meeting_motions do
+  has_many :meeting_motions, inverse_of: :meeting, dependent: :destroy
+  has_many :motions, through: :meeting_motions do
     # Allowed motions are in same committee and period as the meeting
     def allowed
       return [] unless @association.owner.committee && @association.owner.period_id?
@@ -20,21 +20,24 @@ class Meeting < ActiveRecord::Base
   mount_uploader :editable_minutes, MeetingEditableMinutesUploader
   mount_uploader :published_minutes, MeetingPublishableMinutesUploader
 
-  accepts_nested_attributes_for :meeting_motions, :reject_if => proc { |a| a['motion_name'].blank? }, :allow_destroy => true
+  accepts_nested_attributes_for :meeting_motions,
+    reject_if: proc { |a| a['motion_name'].blank? },
+    allow_destroy: true
 
-  validates_presence_of :committee
-  validates_presence_of :period
-  validates_presence_of :starts_at
-  validates_presence_of :ends_at
-  validates_presence_of :location
-  validates_datetime :ends_at, :after => :starts_at
+  validates :committee, presence: true
+  validates :period, presence: true
+  validates :starts_at, presence: true
+  validates :ends_at, presence: true, timeliness: { after: :starts_at }
+  validates :location, presence: true
   validate :period_must_be_in_committee_schedule, :must_be_in_period
 
   default_scope order( 'meetings.starts_at DESC' )
 
-  scope :past, lambda { where( :ends_at.lt => Time.zone.today.to_time ) }
-  scope :future, lambda { where( :starts_at.gt => (Time.zone.today.to_time + 1.day) ) }
-  scope :current, lambda { where( :starts_at.gte => Time.zone.today.to_time, :ends_at.lte => ( Time.zone.today.to_time + 1.day ) ) }
+  scope :past, lambda { where { ends_at < Time.zone.today.to_time } }
+  scope :future, lambda { where {
+    starts_at > ( Time.zone.today.to_time + 1.day ) } }
+  scope :current, lambda { where { (starts_at >= Time.zone.today.to_time) &
+    ( ends_at <= ( Time.zone.today.to_time + 1.day ) ) } }
 
   def tense
     return nil unless starts_at && ends_at

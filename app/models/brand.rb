@@ -5,11 +5,10 @@ class Brand < ActiveRecord::Base
 
   mount_uploader :logo, VectorUploader
 
-  has_many :committees, :dependent => :nullify, :inverse_of => :brand
+  has_many :committees, dependent: :nullify, inverse_of: :brand
 
-  validates :name, :presence => true, :uniqueness => true
-  validates :logo, :presence => true
-  validates_integrity_of :logo
+  validates :name, presence: true, uniqueness: true
+  validates :logo, presence: true, integrity: true
 
   def name(style=nil)
     case style

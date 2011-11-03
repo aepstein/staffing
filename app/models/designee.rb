@@ -3,13 +3,13 @@ class Designee < ActiveRecord::Base
     as: [ :default, :updator ]
   attr_readonly :committee_id
 
-  belongs_to :membership, :inverse_of => :designees
-  belongs_to :user, :inverse_of => :designees
-  belongs_to :committee, :inverse_of => :designees
+  belongs_to :membership, inverse_of: :designees
+  belongs_to :user, inverse_of: :designees
+  belongs_to :committee, inverse_of: :designees
 
-  validates :membership, :presence => true
-  validates :user, :presence => true
-  validates :committee, :presence => true
+  validates :membership, presence: true
+  validates :user, presence: true
+  validates :committee, presence: true
   validates :committee_id, uniqueness: { scope: [ :membership_id ] }
   validate :membership_must_have_designable_position_in_committee
 
