@@ -4,12 +4,12 @@ class Sponsorship < ActiveRecord::Base
   attr_accessible :motion_id, :user_id, :user_name, :_destroy
   attr_readonly :motion_id, :user_id, :user_name
 
-  belongs_to :motion, :inverse_of => :sponsorships
-  belongs_to :user, :inverse_of => :sponsorships
+  belongs_to :motion, inverse_of: :sponsorships
+  belongs_to :user, inverse_of: :sponsorships
 
-  validates_presence_of :motion
-  validates_presence_of :user
-  validates_uniqueness_of :motion_id, :scope => [ :user_id ]
+  validates :motion, presence: true
+  validates :user, presence: true
+  validates :motion_id, uniqueness: { scope: :user_id }
   validate :user_must_be_allowed
 
   def to_s; user ? user.to_s : ''; end

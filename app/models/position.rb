@@ -6,12 +6,12 @@ class Position < ActiveRecord::Base
 
   default_scope lambda { ordered }
 
-  belongs_to :authority, :inverse_of => :positions
-  belongs_to :quiz, :inverse_of => :positions
-  belongs_to :schedule, :inverse_of => :positions
+  belongs_to :authority, inverse_of: :positions
+  belongs_to :quiz, inverse_of: :positions
+  belongs_to :schedule, inverse_of: :positions
 
   has_and_belongs_to_many :qualifications
-  has_many :memberships, :inverse_of => :position, :dependent => :destroy do
+  has_many :memberships, inverse_of: :position, dependent: :destroy do
     # Repopulate for a period
     def repopulate_unassigned_for_period!( period )
       unassigned.where( :period_id => period.id ).delete_all
@@ -54,12 +54,12 @@ class Position < ActiveRecord::Base
       membership
     end
   end
-  has_many :requests, :as => :requestable
-  has_many :users, :through => :memberships
-  has_many :periods, :through => :schedule
-  has_many :answers, :through => :requests
-  has_many :authorized_enrollments, :through => :authority
-  has_many :enrollments, :inverse_of => :position, :dependent => :destroy do
+  has_many :requests, as: :requestable
+  has_many :users, through: :memberships
+  has_many :periods, through: :schedule
+  has_many :answers, through: :requests
+  has_many :authorized_enrollments, through: :authority
+  has_many :enrollments, inverse_of: :position, dependent: :destroy do
     def for_committee(committee)
       self.select { |enrollment| enrollment.committee_id == committee.id }
     end
@@ -73,7 +73,7 @@ class Position < ActiveRecord::Base
       for_committee(committee).inject(0) { |sum, e| sum + e.votes }
     end
   end
-  has_many :committees, :through => :enrollments
+  has_many :committees, through: :enrollments
 
   scope :ordered, order { name }
   scope :with_enrollments, joins( "LEFT JOIN enrollments ON enrollments.position_id = positions.id" )

@@ -10,7 +10,7 @@ class User < ActiveRecord::Base
   default_scope lambda { ordered }
 
   has_and_belongs_to_many :qualifications
-  has_many :memberships, :inverse_of => :user do
+  has_many :memberships, inverse_of: :user do
     # Return memberships a user is authorized to review
     # User must have voting membership with future end date in committee of
     # authority for the position of the membership which overlaps the membership's
@@ -19,7 +19,7 @@ class User < ActiveRecord::Base
       Membership.authorized_user_id_equals @association.owner.id
     end
   end
-  has_many :enrollments, :through => :memberships do
+  has_many :enrollments, through: :memberships do
     def past; where { memberships.ends_at < Time.zone.today }; end
     def current
       where { memberships.starts_at <= Time.zone.today }.
@@ -30,7 +30,7 @@ class User < ActiveRecord::Base
       where { memberships.ends_at >= Time.zone.today }
     end
   end
-  has_many :committees, :through => :enrollments do
+  has_many :committees, through: :enrollments do
     def past; where { enrollments.memberships.ends_at < Time.zone.today }; end
     def current
       where { enrollments.memberships.starts_at <= Time.zone.today }.
@@ -50,7 +50,7 @@ class User < ActiveRecord::Base
           authorized( votes ).map(&:id) ) ).select( 'DISTINCT committees.*' )
     end
   end
-  has_many :authorities, :through => :committees do
+  has_many :authorities, through: :committees do
     def prospective
       where { committees.enrollments.memberships.ends_at > Time.zone.today }
     end
@@ -59,13 +59,13 @@ class User < ActiveRecord::Base
       prospective.where { committees.enrollments.votes >= my { votes } }
     end
   end
-  has_many :designees, :inverse_of => :user
-  has_many :requests, :inverse_of => :user
-  has_many :sponsorships, :inverse_of => :user
-  has_many :motions, :through => :sponsorships
-  has_many :answers, :through => :requests
-  has_many :periods, :through => :memberships
-  has_many :positions, :through => :memberships do
+  has_many :designees, inverse_of: :user
+  has_many :requests, inverse_of: :user
+  has_many :sponsorships, inverse_of: :user
+  has_many :motions, through: :sponsorships
+  has_many :answers, through: :requests
+  has_many :periods, through: :memberships
+  has_many :positions, through: :memberships do
     def current
       scoped.where(
         'memberships.starts_at <= :d AND memberships.ends_at >= :d',

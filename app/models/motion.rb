@@ -5,18 +5,19 @@ class Motion < ActiveRecord::Base
 
   acts_as_list scope: [ :period_id, :committee_id ]
 
-  belongs_to :period, :inverse_of => :motions
-  belongs_to :committee, :inverse_of => :motions
-  belongs_to :referring_motion, :inverse_of => :referred_motions, :class_name => 'Motion'
+  belongs_to :period, inverse_of: :motions
+  belongs_to :committee, inverse_of: :motions
+  belongs_to :referring_motion, inverse_of: :referred_motions,
+    class_name: 'Motion'
 
-  has_many :sponsorships, :inverse_of => :motion do
+  has_many :sponsorships, inverse_of: :motion do
     # Build and return a sponsorship if provided user is allowed
     # Otherwise, return nil
     def populate_for( user )
       build( :user => user ) if @association.owner.users.allowed.include? user
     end
   end
-  has_many :users, :through => :sponsorships do
+  has_many :users, through: :sponsorships do
     # Only voting members may be sponsors
     def allowed
       return [] unless @association.owner.committee && @association.owner.period_id?
@@ -27,11 +28,13 @@ class Motion < ActiveRecord::Base
       )
     end
   end
-  has_many :meeting_motions, :dependent => :destroy
-  has_many :meetings, :through => :meeting_motions
-  has_many :motion_mergers, :inverse_of => :motion, :dependent => :destroy
-  has_many :merged_motions, :through => :motion_mergers, :source => :merged_motion
-  has_many :referred_motions, :inverse_of => :referring_motion, :class_name => 'Motion', :foreign_key => :referring_motion_id, :dependent => :destroy do
+  has_many :meeting_motions, dependent: :destroy
+  has_many :meetings, through: :meeting_motions
+  has_many :motion_mergers, inverse_of: :motion, dependent: :destroy
+  has_many :merged_motions, through: :motion_mergers, source: :merged_motion
+  has_many :referred_motions, inverse_of: :referring_motion,
+    class_name: 'Motion', foreign_key: :referring_motion_id,
+    dependent: :destroy do
     def build_referee( new_committee )
       new_motion = build( @association.owner.attributes )
       new_motion.committee = new_committee
@@ -64,16 +67,16 @@ class Motion < ActiveRecord::Base
   scope :current, lambda { joins(:period).merge Period.unscoped.current }
   scope :in_process, lambda { with_status( :started, :proposed ) }
 
-  accepts_nested_attributes_for :sponsorships, :allow_destroy => true,
-    :reject_if => proc { |a| a['user_name'].blank? }
+  accepts_nested_attributes_for :sponsorships, allow_destroy: true,
+    reject_if: proc { |a| a['user_name'].blank? }
 
-  delegate :periods, :period_ids, :to => :committee
+  delegate :periods, :period_ids, to: :committee
 
-  validates_presence_of :name
-  validates_uniqueness_of :name, :scope => [ :period_id, :committee_id ]
-#  validates_uniqueness_of :position, :scope => [ :period_id, :committee_id ]
-  validates_presence_of :period
-  validates_presence_of :committee
+  validates :name, presence: true, uniqueness: {
+    scope: [ :period_id, :committee_id ] }
+  validates :position, uniqueness: { scope: [ :period_id, :committee_id ] }
+  validates :period, presence: true
+  validates :committee, presence: true
   validate :period_must_be_in_committee_schedule
 
 #  before_validation :add_to_list_bottom, :on => :create

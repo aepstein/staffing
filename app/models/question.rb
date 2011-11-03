@@ -7,17 +7,17 @@ class Question < ActiveRecord::Base
 
   attr_accessible :name, :content, :global, :disposition, :quiz_ids
 
-  default_scope order( 'questions.name ASC' )
+  default_scope lambda { ordered }
+  scope :ordered, order { name }
 
   has_and_belongs_to_many :quizzes
-  has_many :answers, :inverse_of => :question
-  has_many :requests, :through => :answers
-  has_many :users, :through => :answers
+  has_many :answers, inverse_of: :question
+  has_many :requests, through: :answers
+  has_many :users, through: :answers
 
-  validates_presence_of :name
-  validates_uniqueness_of :name
-  validates_presence_of :content
-  validates_inclusion_of :disposition, :in => DISPOSITIONS.values
+  validates :name, presence: true, uniqueness: true
+  validates :content, presence: true
+  validates :disposition, inclusion: { in: DISPOSITIONS.values }
 
   def to_s; name; end
 end

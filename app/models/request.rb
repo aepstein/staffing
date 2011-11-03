@@ -14,7 +14,7 @@ class Request < ActiveRecord::Base
   attr_accessible :rejected_by_authority_id, :rejection_comment, as: :rejector
   attr_readonly :user_id, :requestable_id, :requestable_type
 
-  has_many :answers, :inverse_of => :request do
+  has_many :answers, inverse_of: :request do
     def populate
       # Generate blank answers for any allowed question not in answer set
       population = @association.owner.questions.reject { |q|
@@ -25,8 +25,9 @@ class Request < ActiveRecord::Base
           answer
       end
       # Fill in most recent prior answer for each global question populated
-      s = @association.owner.user.answers.global.where( :question_id.in => population.map { |a| a.question_id }
-      ).where(<<-SQL
+      s = @association.owner.user.answers.global.
+      where { |t| t.question_id.in( population.map { |a| a.question_id } ) }.
+      where(<<-SQL
         answers.updated_at = ( SELECT MAX(a.updated_at) FROM answers AS a
         INNER JOIN requests AS r ON a.request_id = r.id
         WHERE a.question_id = answers.question_id AND r.user_id = #{@association.owner.user_id} )
@@ -44,12 +45,12 @@ class Request < ActiveRecord::Base
       self.map { |answer| answer.question_id }
     end
   end
-  belongs_to :requestable, :polymorphic => true
-  belongs_to :user, :inverse_of => :requests
-  belongs_to :rejected_by_authority, :class_name => 'Authority'
-  belongs_to :rejected_by_user, :class_name => 'User'
+  belongs_to :requestable, polymorphic: true
+  belongs_to :user, inverse_of: :requests
+  belongs_to :rejected_by_authority, class_name: 'Authority'
+  belongs_to :rejected_by_user, class_name: 'User'
 
-  has_many :memberships, :inverse_of => :request, :dependent => :nullify do
+  has_many :memberships, inverse_of: :request, dependent: :nullify do
     def assignable
       @association.owner.requestable.memberships.overlap( @association.owner.starts_at, @association.owner.ends_at
       ).position_with_status( @association.owner.user.status ).unassigned
@@ -64,20 +65,21 @@ class Request < ActiveRecord::Base
   end
 
   scope :ordered, includes( :user ).
-    order('users.last_name ASC, users.first_name ASC, users.middle_name ASC, position ASC')
-  scope :unexpired, lambda { where( :ends_at.gt => Time.zone.today ) }
-  scope :expired, lambda { where( :ends_at.lte => Time.zone.today ) }
+    order { [ user.last_name, user.first_name, position ] }
+  scope :unexpired, lambda { where { ends_at > Time.zone.today } }
+  scope :expired, lambda { where { ends_at <= Time.zone.today } }
   scope :overlap, lambda { |starts, ends|
-    where( :starts_at.lte => ends, :ends_at.gte => starts )
+    where { |t| ( t.starts_at <= ends ) & ( t.ends_at >= starts ) }
   }
   scope :rejected, lambda { with_status( :rejected ) }
   scope :unrejected, where( :rejected_at => nil )
   scope :staffed, joins( :memberships )
-  scope :unstaffed, joins( "LEFT JOIN memberships ON memberships.request_id = requests.id" ).
+  scope :unstaffed, joins( "LEFT JOIN memberships ON " +
+    "memberships.request_id = requests.id" ).
     where( "memberships.id IS NULL" )
   scope :active, lambda { unexpired.with_status(:active) }
-  scope :inactive, lambda { where( "requests.ends_at <= ? OR " +
-    " requests.status != ?", Time.zone.today, 'active' ) }
+  scope :inactive, lambda {
+    where { ( ends_at <= Time.zone.today ) | ( status != 'active' ) } }
   scope :reject_notice_pending, lambda { rejected.no_reject_notice }
   # Joins to enrollments to get position_ids for requests where the requestable
   # is a committee
@@ -113,10 +115,10 @@ class Request < ActiveRecord::Base
     state :closed
 
     state :rejected do
-      validates :rejected_by_authority, :presence => true
-      validates :rejected_by_user, :presence => true
-      validates :rejection_comment, :presence => true
-      validates_datetime :rejected_at
+      validates :rejected_by_authority, presence: true
+      validates :rejected_by_user, presence: true
+      validates :rejection_comment, presence: true
+      validates :rejected_at, timeliness: { type: :datetime }
       validate :rejected_by_authority_must_be_allowed_to_rejected_by_user
     end
 

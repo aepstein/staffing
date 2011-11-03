@@ -1,11 +1,11 @@
 class MotionMerger < ActiveRecord::Base
   attr_accessible :merged_motion_id, :motion_id
 
-  belongs_to :merged_motion, :class_name => 'Motion'
-  belongs_to :motion, :inverse_of => :motion_mergers
+  belongs_to :merged_motion, class_name: 'Motion'
+  belongs_to :motion, inverse_of: :motion_mergers
 
-  validates_presence_of :merged_motion
-  validates_presence_of :motion
+  validates :merged_motion, presence: true
+  validates :motion, presence: true
 
   before_create do |merger|
     merger.merged_motion.lock!

@@ -4,16 +4,19 @@ class Period < ActiveRecord::Base
 
   default_scope order( 'periods.starts_at DESC' )
 
-  scope :past, lambda { where( :ends_at.lt => Time.zone.today ) }
-  scope :current, lambda { overlaps(Time.zone.today,Time.zone.today) }
-  scope :overlaps, lambda { |starts, ends|  where(:ends_at.gte => starts, :starts_at.lte => ends) }
-  scope :conflict_with, lambda { |period| overlaps( period.starts_at, period.ends_at ).
+  scope :past, lambda { where { ends_at < Time.zone.today } }
+  scope :current, lambda { overlaps( Time.zone.today, Time.zone.today ) }
+  scope :overlaps, lambda { |starts, ends|
+    where { |t| ( t.ends_at >= starts ) & ( t.starts_at <=  ends ) }
+  }
+  scope :conflict_with, lambda { |period|
+    overlaps( period.starts_at, period.ends_at ).
     where( :schedule_id => period.schedule_id ) }
 
-  belongs_to :schedule, :inverse_of => :periods
-  has_many :motions, :inverse_of => :period
-  has_many :meetings, :inverse_of => :period
-  has_many :memberships, :inverse_of => :period, :dependent => :destroy do
+  belongs_to :schedule, inverse_of: :periods
+  has_many :motions, inverse_of: :period
+  has_many :meetings, inverse_of: :period
+  has_many :memberships, inverse_of: :period, dependent: :destroy do
     def populate_unassigned!
       @association.owner.schedule.positions.active.each do |position|
         position.memberships.populate_unassigned_for_period! @association.owner
@@ -22,10 +25,10 @@ class Period < ActiveRecord::Base
       reset
     end
     def repopulate_unassigned!
-      where(:starts_at.lt => @association.owner.starts_at).update_all(
+      where { |t| t.starts_at < @association.owner.starts_at }.update_all(
         "starts_at = #{connection.quote @association.owner.starts_at}"
       )
-      where(:ends_at.gt => @association.owner.ends_at).update_all(
+      where { |t| t.ends_at > @association.owner.ends_at }.update_all(
         "ends_at = #{connection.quote @association.owner.ends_at}"
       )
       Membership.unassigned.where(:period_id => @association.owner.id).delete_all
@@ -35,9 +38,9 @@ class Period < ActiveRecord::Base
     end
   end
 
-  validates_presence_of :schedule
-  validates_date :starts_at
-  validates_date :ends_at, :after => :starts_at
+  validates :schedule, presence: true
+  validates :starts_at, timeliness: { type: :date }
+  validates :ends_at, timeliness: { type: :date, after: :starts_at }
   validate :must_not_conflict_with_other_period
 
   after_create do |period|
@@ -65,7 +68,7 @@ class Period < ActiveRecord::Base
 
   def must_not_conflict_with_other_period
     conflicts = Period.conflict_with(self) if new_record?
-    conflicts ||= Period.conflict_with(self).where { id != my { id } }
+    conflicts ||= Period.conflict_with(self).where { |t| t.id != id }
     errors.add :base, "Conflicts with #{conflicts.join(', ')}" unless conflicts.empty?
   end
 
