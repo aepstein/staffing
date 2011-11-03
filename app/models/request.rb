@@ -179,7 +179,8 @@ class Request < ActiveRecord::Base
   def questions
     return Question.where(:id => nil) unless quizzes.length > 0
 #    ( Question.joins(:quizzes) & Quiz.where( :id.in => quizzes.map(&:id) ) ).uniq
-    ( Question.joins(:quizzes).where( "quizzes.id IN (?)", quizzes.map(&:id) ) ).uniq
+    ( Question.joins(:quizzes).where( "quizzes.id IN (?)", quizzes.map(&:id) ) ).
+    select( "DISTINCT questions.*" )
   end
 
   def authorities

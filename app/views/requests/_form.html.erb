@@ -11,9 +11,11 @@
       :hint => 'Select the position among your unexpired requests that reflects '+
       'your level of preference for this committee or position.' %>
     <% form.object.answers.each do |answer| %>
-      <%= form.semantic_fields_for :answers, answer do |subform| %>
-        <%= subform.input( :question_id, :as => :hidden ) if subform.object.new_record? %>
-        <%= render_question subform %>
+      <% if form.object.new_record? || form.object.questions.include?( answer.question ) %>
+        <%= form.semantic_fields_for :answers, answer do |subform| %>
+          <%= subform.input( :question_id, :as => :hidden ) if subform.object.new_record? %>
+          <%= render_question subform %>
+        <% end %>
       <% end %>
     <% end %>
     <%= form.semantic_fields_for :user do |subform| %>

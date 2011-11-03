@@ -54,7 +54,10 @@
   <b>Answers:</b>
 </p>
 
-<% @request.answers(:include => [:question]).each do |answer| %>
+<% @request.answers(:include => [:question]).
+   where { |t| t.question_id.in(
+     @request.questions.except(:select).select { id }
+   ) }.each do |answer| %>
   <% if answer.question.disposition == 'boolean' %>
   <%=markdown( answer.question.content + " #{answer.content == 'true' ? 'Yes' : 'No'}" ) %>
   <% else %>
