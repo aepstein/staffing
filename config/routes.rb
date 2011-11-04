@@ -128,7 +128,7 @@ Staffing::Application.routes.draw do
         put :renew
       end
     end
-    resources :positions, :only => [] do
+    resources :positions, :only => [:index] do
       collection do
         get :requestable
       end

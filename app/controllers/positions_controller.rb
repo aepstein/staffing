@@ -3,8 +3,8 @@ class PositionsController < ApplicationController
   before_filter :new_position_from_params, :only => [ :new, :create ]
   before_filter :setup_breadcrumbs
   filter_access_to :new, :create, :edit, :update, :destroy, :show, :index
-  filter_access_to :requestable do
-    permitted_to!( :show, @user )
+  filter_access_to :requestable, :index do
+    permitted_to!( :show, @user ) if @user
   end
 
   # GET /users/:user_id/positions/requestable
