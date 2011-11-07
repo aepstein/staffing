@@ -232,7 +232,7 @@ class RequestsController < ApplicationController
   end
 
   def index_csv
-    out = CSV.generate do |csv|
+    csv_string = CSV.generate do |csv|
       csv << %w( net_id first last status requestable until )
       @requests.all.each do |request|
         csv << [ request.user.net_id, request.user.first_name,
@@ -240,7 +240,7 @@ class RequestsController < ApplicationController
           request.requestable, request.ends_at ]
       end
     end
-    send_data out, :disposition => "attachment; filename=requests.csv"
+    send_data csv_string, :disposition => "attachment; filename=requests.csv"
   end
 
 end
