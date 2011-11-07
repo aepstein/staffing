@@ -261,7 +261,7 @@ class MembershipsController < ApplicationController
     csv_string = ""
     CSV.generate csv_string do |csv|
       csv << ['first', 'last','netid','email','mobile','position','committee','title','vote','period','starts at','ends at','renew until?']
-      @search.result.all(:include => [ :request ]).each do |membership|
+      @q.result.all(:include => [ :request ]).each do |membership|
         next unless permitted_to?( :show, membership )
         membership.enrollments.each do |enrollment|
           next if @committee && (enrollment.committee_id != @committee.id)

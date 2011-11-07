@@ -234,7 +234,7 @@ class RequestsController < ApplicationController
   def index_csv
     out = CSV.generate do |csv|
       csv << %w( net_id first last status requestable until )
-      @requests.each do |request|
+      @requests.all.each do |request|
         csv << [ request.user.net_id, request.user.first_name,
           request.user.last_name, request.user.status,
           request.requestable, request.ends_at ]
