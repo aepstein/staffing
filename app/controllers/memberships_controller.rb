@@ -282,7 +282,8 @@ class MembershipsController < ApplicationController
         end
       end
     end
-    send_data csv_string, :disposition => "attachment; filename=memberships.csv"
+    send_data csv_string, :disposition => "attachment; filename=memberships.csv",
+      :type => :csv
   end
 
 end

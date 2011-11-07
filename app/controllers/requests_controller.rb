@@ -240,7 +240,8 @@ class RequestsController < ApplicationController
           request.requestable, request.ends_at ]
       end
     end
-    send_data csv_string, :disposition => "attachment; filename=requests.csv"
+    send_data csv_string, :disposition => "attachment; filename=requests.csv",
+      :type => :csv
   end
 
 end
