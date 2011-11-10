@@ -19,7 +19,7 @@ class CommitteesController < ApplicationController
   include UserTentReports
   def tents
     @context = @committee
-    @users = User.joins(:memberships).merge( @committee.memberships.current )
+    @users = User.joins(:memberships).merge( @committee.memberships.current.except(:order) )
     render_user_tent_reports
   end
 
