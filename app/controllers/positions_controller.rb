@@ -2,7 +2,7 @@ class PositionsController < ApplicationController
   before_filter :require_user, :initialize_context
   before_filter :new_position_from_params, :only => [ :new, :create ]
   before_filter :setup_breadcrumbs
-  filter_access_to :new, :create, :edit, :update, :destroy, :show, :index
+  filter_access_to :new, :create, :edit, :update, :destroy, :show
   filter_access_to :requestable, :index do
     permitted_to!( :show, @user ) if @user
   end
