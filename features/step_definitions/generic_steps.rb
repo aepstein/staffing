@@ -23,23 +23,23 @@ Given /^(?:|I )(put|post|delete) on (.+)$/ do |method, page_name|
 end
 
 Then /^I should see authorized$/ do
-  Then %{I should not see "You are not allowed to perform the requested action."}
+  step %{I should not see "You are not allowed to perform the requested action."}
 end
 
 Then /^I should not see authorized$/ do
-  Then %{I should see "You are not allowed to perform the requested action."}
+  step %{I should see "You are not allowed to perform the requested action."}
 end
 
 When /^I fill in "(\w+)" with #{capture_relative_date}$/ do |field, date|
-  When %{I fill in "#{field}" with "#{relative_date(date).to_s :rfc822}"}
+  step %{I fill in "#{field}" with "#{relative_date(date).to_s :rfc822}"}
 end
 
 Then /^I should( not)? see #{capture_relative_date}(.*)$/ do |negate, date, suffix|
-  Then %{I should#{negate} see "#{relative_date(date).to_s :rfc822}"#{suffix}}
+  step %{I should#{negate} see "#{relative_date(date).to_s :rfc822}"#{suffix}}
 end
 
 Then /^the "([^\"]+)" field should( not)? contain #{capture_relative_date}$/ do |field, negate, date|
-  Then %{the "#{field}" field should#{negate} contain "#{relative_date(date).to_s :rfc822}"}
+  step %{the "#{field}" field should#{negate} contain "#{relative_date(date).to_s :rfc822}"}
 end
 
 # Adds support for validates_attachment_content_type. Without the mime-type get

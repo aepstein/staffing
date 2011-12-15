@@ -85,10 +85,14 @@ Feature: Manage meetings
     And I should not see "Difficult Motion"
 
   Scenario: Delete meeting
-    Given an meeting: "meeting4" exists with committee: committee "committee", period: period "past", starts_at: "2010-01-01 16:00:00"
-    And an meeting: "meeting3" exists with committee: committee "committee", period: period "past", starts_at: "2010-01-02 16:00:00"
-    And an meeting: "meeting2" exists with committee: committee "committee", period: period "past", starts_at: "2010-01-03 16:00:00"
-    And an meeting: "meeting1" exists with committee: committee "committee", period: period "past", starts_at: "2010-01-04 16:00:00"
+    Given a meeting: "meeting4" exists with committee: committee "committee", period: period "past"
+    And meeting: "meeting4" has starts_at: "2010-01-01 16:00:00", ends_at: "2010-01-01 17:00:00"
+    And meeting: "meeting3" exists with committee: committee "committee", period: period "past"
+    And meeting: "meeting3" has starts_at: "2010-01-02 16:00:00", ends_at: "2010-01-02 17:00:00"
+    And meeting: "meeting2" exists with committee: committee "committee", period: period "past"
+    And meeting: "meeting2" has starts_at: "2010-01-03 16:00:00", ends_at: "2010-01-03 17:00:00"
+    And meeting: "meeting1" exists with committee: committee "committee", period: period "past"
+    And meeting: "meeting1" has starts_at: "2010-01-04 16:00:00", ends_at: "2010-01-04 17:00:00"
     And I log in as user: "admin"
     When I follow "Destroy" for the 3rd meeting for committee: "committee"
     Then I should see the following meetings:

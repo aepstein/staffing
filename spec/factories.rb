@@ -160,7 +160,7 @@ FactoryGirl.define do
       end
       committee.schedule.periods.first
     end
-    starts_at { period.starts_at.to_time + 1.hour }
+    starts_at { period.starts_at + 1.hour }
     ends_at { starts_at + 1.hour }
     location 'Day Hall'
   end
