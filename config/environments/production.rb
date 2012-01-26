@@ -13,7 +13,6 @@ Staffing::Application.configure do
   config.assets.digest = true
   config.filter_parameters += [ :password, :password_confirmation ]
   config.assets.precompile += %w( ie6.css ie7.css )
-  config.force_ssl = true
   config.middleware.use ExceptionNotifier,
     :email_prefix => "[staffing] ",
     :sender_address => %{"Assemblies IT Support" <assembly-it@cornell.edu>},
