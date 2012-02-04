@@ -56,9 +56,7 @@ class Motion < ActiveRecord::Base
     end
 
     def create_divided!( instances=false )
-      with_exclusive_scope do
-        build_divided( instances ).map { |motion| motion.save!; motion }
-      end
+      build_divided( instances ).map { |motion| motion.save!; motion }
     end
   end
 

@@ -1,10 +1,10 @@
 source 'http://rubygems.org'
-gem 'rails', '~>3.1.1'
-gem 'mysql2', '~> 0.2'
-gem 'rake', '~> 0.9'
-gem 'exception_notification', '~> 2.5'
+gem 'rails'
+gem 'mysql2'
+gem 'rake'
+gem 'exception_notification'
 gem 'capistrano'
-gem 'validates_timeliness', '~> 3.0'
+gem 'validates_timeliness'
 gem 'gettext'
 gem 'jquery-rails'
 gem 'squeel'
@@ -23,19 +23,19 @@ gem 'daemons'
 gem 'bluecloth'
 gem 'whenever', :require => false
 gem 'escape_utils'
-gem 'prawn'
+gem 'prawn', '~> 1.0.0rc'
 gem 'prawn-fast-png'
 gem 'cornell-assemblies-rails',
   :git => 'git://assembly.cornell.edu/git/cornell-assemblies-rails.git'
 group :assets do
-  gem 'sass-rails', "  ~> 3.1.0"
-  gem 'coffee-rails', "~> 3.1.0"
+  gem 'sass-rails'
+  gem 'coffee-rails'
   gem 'uglifier'
   gem 'execjs'
   gem 'therubyracer'
 end
 group :development, :test do
-  gem 'rspec-rails', '~> 2.0'
+  gem 'rspec-rails'
 end
 group :development do
   gem 'thin'
@@ -48,7 +48,7 @@ group :test do
   gem 'spork'
   gem 'factory_girl', '~> 2.0', :require => false
   gem 'factory_girl_rails', '~> 1.0'
-  gem 'pickle', '~> 0.4'
+  gem 'pickle'
   gem 'email_spec'
   gem 'launchy'
 end
