@@ -1,5 +1,5 @@
 source 'http://rubygems.org'
-gem 'rails'
+gem 'rails', '~> 3.2'
 gem 'mysql2'
 gem 'rake'
 gem 'exception_notification'
