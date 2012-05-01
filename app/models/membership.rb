@@ -22,7 +22,8 @@ class Membership < ActiveRecord::Base
     dependent: :nullify
   has_many :designees, inverse_of: :membership, dependent: :delete_all do
     def populate
-      return Array.new unless @association.owner.position && @association.owner.position.designable?
+      return Array.new unless ( @association.owner.position &&
+      @association.owner.position.designable? )
       @association.owner.position.committees.except(:order).
       inject([]) do |memo, committee|
         unless committee_ids.include? committee.id
@@ -82,6 +83,8 @@ class Membership < ActiveRecord::Base
   scope :unassigned, where( :user_id => nil )
   scope :requested, where { request_id != nil }
   scope :unrequested, where( :request_id => nil )
+  scope :as_of, lambda { |as_of|
+    where { |t| ( t.starts_at <= as_of ) & ( t.ends_at >= as_of ) } }
   scope :current, lambda { where { ( starts_at <= Time.zone.today ) &
     ( ends_at >= Time.zone.today ) } }
   scope :future, lambda { where { starts_at > Time.zone.today } }

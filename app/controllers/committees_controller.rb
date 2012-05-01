@@ -19,7 +19,8 @@ class CommitteesController < ApplicationController
   include UserTentReports
   def tents
     @context = @committee
-    @users = User.joins(:memberships).merge( @committee.memberships.current.except(:order) )
+    @users = User.joins(:memberships).merge(
+      @committee.memberships.as_of( @as_of ).except(:order) )
     render_user_tent_reports
   end
 
@@ -27,7 +28,7 @@ class CommitteesController < ApplicationController
   def members
     respond_to do |format|
       format.pdf do
-        report = MembershipReport.new(@committee)
+        report = MembershipReport.new( @committee, @as_of )
         send_data report.to_pdf, :filename => "#{@committee.name :file}-members.pdf",
           :type => 'application/pdf', :disposition => 'inline'
       end
@@ -116,6 +117,15 @@ class CommitteesController < ApplicationController
   def initialize_context
     @committee = Committee.find params[:id] if params[:id]
     @user = User.find params[:user_id] if params[:user_id]
+    begin
+      if params[:as_of]
+        return @as_of = Date.parse( params[:as_of] )
+      end
+    rescue ArgumentError
+      flash[:error] = 'Invalid date supplied for report.'
+      return redirect_to @committee
+    end
+    @as_of = Time.zone.today
   end
 
   def new_committee_from_params

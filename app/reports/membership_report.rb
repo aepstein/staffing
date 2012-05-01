@@ -9,10 +9,10 @@ class MembershipReport < Prawn::Document
   LETTERHEAD_CONTACT_OFFSET = 698
   attr_accessor :letterhead_contact_offset
 
-  def initialize(committee)
+  def initialize(committee, as_of)
     self.committee = committee
-    memberships = committee.memberships.current.except(:order).includes(:user).
-      order('users.last_name ASC, users.first_name ASC')
+    memberships = committee.memberships.as_of(as_of).except(:order).
+      includes(:user).order('users.last_name ASC, users.first_name ASC')
     self.voting_memberships = memberships.where('enrollments.votes > 0')
     self.nonvoting_memberships = memberships.where('enrollments.votes = 0')
     include_palatino
