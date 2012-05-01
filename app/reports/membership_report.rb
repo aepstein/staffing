@@ -5,6 +5,7 @@ class MembershipReport < Prawn::Document
   attr_accessor :voting_memberships
   attr_accessor :nonvoting_memberships
   attr_accessor :committee
+  attr_accessor :as_of
 
   LETTERHEAD_CONTACT_OFFSET = 698
   attr_accessor :letterhead_contact_offset
