@@ -11,6 +11,7 @@ class MembershipReport < Prawn::Document
 
   def initialize(committee, as_of)
     self.committee = committee
+    self.as_of = as_of
     memberships = committee.memberships.as_of(as_of).except(:order).
       includes(:user).order('users.last_name ASC, users.first_name ASC')
     self.voting_memberships = memberships.where('enrollments.votes > 0')
@@ -64,8 +65,11 @@ class MembershipReport < Prawn::Document
 
   def to_pdf
     draw_letterhead
-    text "#{committee} Members as of #{Time.zone.today.to_s :long_ordinal}",
-      :align => :center, :size => 16
+    text "#{committee} Members as of #{as_of.to_s :long_ordinal}",
+      align: :center, size: 16
+    if as_of != Time.zone.today
+      text "(generated #{Time.zone.today.to_s :long_ordinal})", align: :center, size: 10
+    end
     font 'Helvetica', :size => 10 do
       rows = [ %w( Name NetID Address Phone Title Until ) ]
       rows << [ 'Voting members', '', '', '', '', '' ]
