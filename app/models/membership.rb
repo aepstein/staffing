@@ -83,6 +83,10 @@ class Membership < ActiveRecord::Base
   scope :unassigned, where( :user_id => nil )
   scope :requested, where { request_id != nil }
   scope :unrequested, where( :request_id => nil )
+  scope :ends_within, lambda { |range|
+    where { ends_at.gte( Time.zone.today - range ) &
+      ends_at.lte( Time.zone.today + range ) }
+  }
   scope :as_of, lambda { |as_of|
     where { |t| ( t.starts_at <= as_of ) & ( t.ends_at >= as_of ) } }
   scope :current, lambda { where { ( starts_at <= Time.zone.today ) &
