@@ -92,7 +92,8 @@ class User < ActiveRecord::Base
     select('DISTINCT users.*').joins(:memberships).merge( Membership.unscoped.renewable_to( membership ) )
   }
   scope :renewal_unconfirmed, lambda {
-    joins( :memberships ).merge( Membership.unscoped.joins( :period ).renewal_unconfirmed )
+    where { id.in( Membership.unscoped.joins( :period ).
+      renewal_unconfirmed.select { user_id } ) }
   }
   scope :name_cont, lambda { |name|
     where(
