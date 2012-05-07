@@ -4,13 +4,17 @@
   <%= render partial: 'form', object: f %>
 <% end %>
 
+<div id="renewal_candidates">
 <h3>Renewal candidates</h3>
 
 <%= render partial: 'candidates', object: User.renewable_to( @membership ) %>
+</div>
 
+<div id="new_candidates">
 <h3>Other applicants</h3>
 
 <%= render partial: 'candidates', object: User.interested_in( @membership ) %>
+</div>
 
 <p>
 <%= link_to 'Show', @membership %> |

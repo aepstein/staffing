@@ -29,10 +29,10 @@ Feature: Manage memberships with interest
     And the request has status: "<status>"
     And I log in as user: "authority"
     And I am on the edit page for membership: "current"
-    Then I should <renewals> "Very Interested" within "#hub-section-first"
-    And I should <new> "Very Interested" within "#hub-section-others"
-    And I should <no_renewals> "No candidates" within "#hub-section-first"
-    And I should <no_new> "No candidates" within "#hub-section-others"
+    Then I should <renewals> "Very Interested" within "#renewal_candidates"
+    And I should <new> "Very Interested" within "#new_candidates"
+    And I should <no_renewals> "No candidates" within "#renewal_candidates"
+    And I should <no_new> "No candidates" within "#new_candidates"
     Examples:
       |what     |status|incumbent|renew |renewals|new    |no_renewals|no_new |
       |position |active|other    |is    |not see |see    |not see    |not see|

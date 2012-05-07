@@ -167,7 +167,7 @@ class User < ActiveRecord::Base
     when :email
       "#{email} #{self.name}"
     when :net_id
-      "#{name} (#{net_id})"
+      "#{self.name} (#{net_id})"
     else
       "#{first_name} #{last_name}"
     end
