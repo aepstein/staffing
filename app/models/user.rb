@@ -158,10 +158,6 @@ class User < ActiveRecord::Base
     @role_symbols
   end
 
-  def name_with_net_id
-    "#{name} (#{net_id})"
-  end
-
   def name(style = nil)
     name = case style
     when :last_first
@@ -170,6 +166,8 @@ class User < ActiveRecord::Base
       self.name.strip.downcase.gsub(/[^a-z]/,'-').squeeze('-')
     when :email
       "#{email} #{self.name}"
+    when :net_id
+      "#{name} (#{net_id})"
     else
       "#{first_name} #{last_name}"
     end
