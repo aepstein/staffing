@@ -97,8 +97,8 @@ class Request < ActiveRecord::Base
   # Find requests that may be interested in a membership
   # * must have
   scope :interested_in, lambda { |membership|
-    with_positions.where( 'positions.id = ? AND requests.ends_at >= ?',
-      membership.position_id, membership.starts_at )
+    overlap( membership.starts_at, membership.ends_at ).with_positions.
+      where { |m| m.positions.id.eq( membership.position_id ) }
   }
   # Identifies requests an authority may staff
   # * TODO: Should this be deprecated?
