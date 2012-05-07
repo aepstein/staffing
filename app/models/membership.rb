@@ -19,7 +19,12 @@ class Membership < ActiveRecord::Base
     foreign_key: :position_id
   has_many :renewed_memberships, class_name: 'Membership',
     inverse_of: :renewed_by_membership, foreign_key: :renewed_by_membership_id,
-    dependent: :nullify
+    dependent: :nullify do
+    def candidates
+      Membership.unscoped.includes(:user).renewable_to( proxy_association.owner ).
+      merge( User.unscoped.ordered )
+    end
+  end
   has_many :designees, inverse_of: :membership, dependent: :delete_all do
     def populate
       return Array.new unless ( @association.owner.position &&
@@ -257,6 +262,13 @@ class Membership < ActiveRecord::Base
   def requests
     Request.active.overlap(starts_at, ends_at).with_positions.merge(
     Position.where( :id => position_id ) )
+  end
+
+  # TODO: should make equivalent to requests method above
+  def interested_requests
+    Request.unscoped.includes(:user).active.interested_in( self ).merge(
+      User.unscoped.ordered
+    )
   end
 
   # Identify users who should be copied on notices related to this membership

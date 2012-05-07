@@ -7,13 +7,13 @@
 <div id="renewal_candidates">
 <h3>Renewal candidates</h3>
 
-<%= render partial: 'candidates', object: User.renewable_to( @membership ) %>
+<%= render partial: 'candidates', object: @membership.renewed_memberships.candidates %>
 </div>
 
 <div id="new_candidates">
 <h3>Other applicants</h3>
 
-<%= render partial: 'candidates', object: User.interested_in( @membership ) %>
+<%= render partial: 'candidates', object: @membership.interested_requests %>
 </div>
 
 <p>
