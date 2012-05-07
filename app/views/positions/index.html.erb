@@ -8,28 +8,14 @@
 </p>
 <% end %>
 
+<p>
 <%= paginate @positions %>
+</p>
 
-<table>
-  <thead>
-  <tr>
-    <th>Name</th>
-    <th>Authority</th>
-    <th>Quiz</th>
-    <th>Schedule</th>
-    <th>Requestable?</th>
-    <th>Renewable?</th>
-    <th>Slots</th>
-  </tr>
-  </thead>
-
-  <tbody>
-  <%= render :partial => 'position', :collection => @positions %>
-  </tbody>
-
-</table>
-
+<%= render partial: "positions", object: @positions %>
+<p>
 <%= paginate @positions %>
+</p>
 
 <hr />
 

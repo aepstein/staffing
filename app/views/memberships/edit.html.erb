@@ -1,29 +1,16 @@
 <h2>Editing membership for <%=h @membership.position %></h2>
 
-<div id="hub-description">
-
 <%= semantic_form_for(@membership) do |f| %>
-  <%= render :partial => 'form', :object => f %>
+  <%= render partial: 'form', object: f %>
 <% end %>
 
-</div>
-
-<div id="hub-sections">
-
-<div class="hub-section" id="hub-section-first">
 <h3>Renewal candidates</h3>
 
-<%= render :partial => 'candidates', :object => User.renewable_to( @membership ) %>
-</div>
+<%= render partial: 'candidates', object: User.renewable_to( @membership ) %>
 
-<div class="hub-section" id="hub-section-others">
 <h3>Other applicants</h3>
 
-<%= render :partial => 'candidates', :object => User.interested_in( @membership ) %>
-</div>
-
-</div>
-
+<%= render partial: 'candidates', object: User.interested_in( @membership ) %>
 
 <p>
 <%= link_to 'Show', @membership %> |

@@ -8,12 +8,16 @@
 </p>
 <% end %>
 
+<p>
 <%= paginate @committees %>
+</p>
 
 <%= render :partial => "committees/committees", :object => @committees,
 :locals => { :user => ( @user ? @user : false ) } %>
 
+<p>
 <%= paginate @committees %>
+</p>
 
 <hr />
 

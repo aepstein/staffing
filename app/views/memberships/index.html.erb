@@ -38,13 +38,17 @@
   </p>
 <% end %>
 
+<p>
 <%= paginate @memberships %>
+</p>
 
 <%= render :partial => 'memberships', :object => @memberships,
   :locals => { :committee => @committee, :user => @user, :position => @position,
   :request => @request } %>
 
+<p>
 <%= paginate @memberships %>
+</p>
 
 <hr />
 
