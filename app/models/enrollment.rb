@@ -7,16 +7,15 @@ class Enrollment < ActiveRecord::Base
   belongs_to :committee, inverse_of: :enrollments
   has_many :memberships, through: :position
 
-  default_scope includes(:committee, :position).
-    order( 'committees.name ASC, enrollments.title ASC, positions.name ASC' )
-
-  scope :membership_notices, where( :membership_notices => true )
+  scope :ordered, includes( :committee, :position ).
+    order { [ committees.name, title, positions.name ] }
+  scope :membership_notices, where( membership_notices: true )
 
   validates :position, presence: true
   validates :committee, presence: true
   validates :title, presence: true
-  validates :votes, numericality: { greater_than_or_equal_to: 0,
-    only_integer: true }
+  validates :votes,
+    numericality: { greater_than_or_equal_to: 0, only_integer: true }
 
   def position_name; position.name if position; end
 

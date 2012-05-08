@@ -44,6 +44,7 @@ class EnrollmentsController < ApplicationController
   def index
     @enrollments ||= @committee.enrollments if @committee
     @enrollments ||= @user.enrollments if @user
+    @enrollments = @enrollments.ordered
 
     respond_to do |format|
       format.html { render :action => 'index' } # index.html.erb
