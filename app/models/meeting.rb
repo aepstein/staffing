@@ -11,8 +11,9 @@ class Meeting < ActiveRecord::Base
   has_many :motions, through: :meeting_motions do
     # Allowed motions are in same committee and period as the meeting
     def allowed
-      return [] unless @association.owner.committee && @association.owner.period_id?
-      @association.owner.committee.motions.where(:period_id => @association.owner.period_id)
+      return [] unless proxy_association.owner.committee && proxy_association.owner.period_id?
+      proxy_association.owner.committee.motions.where(
+        period_id: proxy_association.owner.period_id )
     end
   end
 

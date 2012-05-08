@@ -4,6 +4,8 @@
     :url => positions_path( :format => :json ) %>
   <%= form.input :title %>
   <%= form.input :votes %>
+  <%= form.input :requestable, :as => :radio,
+    :hint => 'Can this committee and position be accessed through the application process?' %>
   <%= form.input :membership_notices, :as => :radio,
     :hint => 'Should enrolled user be copied on notices regarding membership changes?' %>
   <% end %>

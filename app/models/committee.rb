@@ -2,8 +2,6 @@ class Committee < ActiveRecord::Base
   default_scope lambda { ordered }
 
   scope :ordered, order { name }
-  scope :requestable, where( :requestable.eq => true )
-  scope :unrequestable, where( :requestable.eq => false )
   scope :group_by_id, group( :id )
   scope :positions_with_status, lambda { |status|
     joins( :positions ).where( "(positions.statuses_mask & " +
@@ -25,7 +23,7 @@ class Committee < ActiveRecord::Base
   has_many :authorities, inverse_of: :committee
   has_many :meetings, inverse_of: :committee, dependent: :destroy
   has_many :motions, inverse_of: :committee, dependent: :destroy
-  has_many :requests, as: :requestable
+  has_many :requests, inverse_of: :committee
   has_many :enrollments, inverse_of: :committee
   has_many :positions, through: :enrollments
   has_many :memberships, through: :positions

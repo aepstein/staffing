@@ -1,8 +1,7 @@
 class Position < ActiveRecord::Base
   attr_accessible :authority_id, :quiz_id, :schedule_id, :slots, :name,
-    :join_message, :leave_message, :statuses, :requestable, :renewable,
-    :notifiable, :designable, :active, :requestable_by_committee,
-    :reject_message
+    :join_message, :leave_message, :statuses, :renewable, :notifiable,
+    :designable, :active, :reject_message
 
   default_scope lambda { ordered }
 
@@ -93,11 +92,8 @@ class Position < ActiveRecord::Base
    "positions.statuses_mask = 0 OR " +
    "( users.statuses_mask & positions.statuses_mask ) > 0" )
   scope :notifiable, where( :notifiable => true )
-  scope :requestable, where( :requestable => true )
-  scope :unrequestable, where( :requestable => false )
   scope :renewable, where( :renewable => true )
   scope :unrenewable, where( :renewable => false )
-  scope :requestable_by_committee, where( :requestable_by_committee => true )
   scope :designable, where( :designable => true )
   scope :active, where( :active => true )
   scope :inactive, where { active != true }
@@ -113,11 +109,6 @@ class Position < ActiveRecord::Base
 
   def current_emails
     memberships.assigned.current.all(:include => [ :user ]).map { |membership| membership.user.email }
-  end
-
-  def requestables
-    return [self] if requestable?
-    enrollments.map { |enrollment| enrollment.committee }.select { |committee| committee.requestable? }
   end
 
   def statuses=(statuses)

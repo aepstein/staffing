@@ -10,10 +10,6 @@
   <b>Brand:</b> <%= @committee.brand ? link_to(@committee.brand.name, brand_path( @committee.brand )) : 'No' %>
 </p>
 
-<p>
-  <b>Requestable?</b> <%= @committee.requestable? ? 'Yes' : 'No' %>
-</p>
-
 <p><b>Join message:</b></p>
 
 <%=markdown @committee.join_message %>

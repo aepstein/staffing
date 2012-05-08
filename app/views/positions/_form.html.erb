@@ -5,10 +5,6 @@
   <%= form.input :quiz %>
   <%= form.input :schedule %>
   <%= form.input :slots %>
-  <%= form.input :requestable, :as => :radio, :label => 'Requestable?',
-    :hint => 'Can the position be requested directly?' %>
-  <%= form.input :requestable_by_committee, :as => :radio, :label => 'Requestable by committee?',
-    :hint => 'Can the position be staffed via requests for membership in associated committees?' %>
   <%= form.input :renewable, :as => :radio, :label => 'Renewable?',
     :hint => 'Should members receive renewal notices regarding this position?' %>
   <%= form.input :notifiable, :as => :radio, :label => 'Notifiable?',

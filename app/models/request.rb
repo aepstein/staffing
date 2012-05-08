@@ -45,7 +45,7 @@ class Request < ActiveRecord::Base
       self.map { |answer| answer.question_id }
     end
   end
-  belongs_to :requestable, polymorphic: true
+  belongs_to :committee, inverse_of: :requests
   belongs_to :user, inverse_of: :requests
   belongs_to :rejected_by_authority, class_name: 'Authority'
   belongs_to :rejected_by_user, class_name: 'User'

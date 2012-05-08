@@ -27,9 +27,9 @@ class Membership < ActiveRecord::Base
   end
   has_many :designees, inverse_of: :membership, dependent: :delete_all do
     def populate
-      return Array.new unless ( @association.owner.position &&
-      @association.owner.position.designable? )
-      @association.owner.position.committees.except(:order).
+      return Array.new unless ( proxy_association.owner.position &&
+      proxy_association.owner.position.designable? )
+      proxy_association.owner.position.committees.except(:order).
       inject([]) do |memo, committee|
         unless committee_ids.include? committee.id
           designee = build
