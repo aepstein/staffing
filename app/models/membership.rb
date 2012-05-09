@@ -56,6 +56,15 @@ class Membership < ActiveRecord::Base
     end
   end
   has_many :committees, through: :enrollments
+  has_many :requests, through: :position do
+    def overlapping
+      overlap( proxy_association.owner.starts_at, proxy_association.owner.ends_at )
+    end
+    def interested; overlapping.active; end
+  end
+  has_many :users, through: :requests, source: :user do
+    def assignable; User.assignable_to( proxy_association.owner.position ); end
+  end
 
   # Memberships that could renewed by assigning the user to this membership:
   # * assigned
@@ -251,26 +260,6 @@ class Membership < ActiveRecord::Base
 
   alias_method_chain :request=, :population
 
-  # Identify users who are interested in the membership
-  def users
-    User.joins( :requests ).merge(
-    Request.unscoped.active.overlap(starts_at, ends_at).with_positions.merge(
-    Position.with_users_status.where( :id => position_id ) ) )
-  end
-
-  # Identify requests who are interested in the membership
-  def requests
-    Request.active.overlap(starts_at, ends_at).with_positions.merge(
-    Position.where( :id => position_id ) )
-  end
-
-  # TODO: should make equivalent to requests method above
-  def interested_requests
-    Request.unscoped.includes(:user).active.interested_in( self ).merge(
-      User.unscoped.ordered
-    )
-  end
-
   # Identify users who should be copied on notices related to this membership
   # * not this user
   # * must have membership which:
@@ -353,8 +342,7 @@ class Membership < ActiveRecord::Base
   # If this fulfills an active request, assign it to that request
   def claim_request
     return true if request || user.blank?
-    self.request = user.requests.joins(:user).active.interested_in( self ).
-      readonly(false).first
+    self.request = requests.interested.first
     true
   end
 

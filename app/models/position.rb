@@ -53,7 +53,9 @@ class Position < ActiveRecord::Base
       membership
     end
   end
-  has_many :users, through: :memberships
+  has_many :users, through: :memberships do
+    def assignable; User.assignable_to(proxy_association.owner); end
+  end
   has_many :periods, through: :schedule
   has_many :answers, through: :requests
   has_many :authorized_enrollments, through: :authority
@@ -72,25 +74,23 @@ class Position < ActiveRecord::Base
     end
   end
   has_many :committees, through: :enrollments
-  has_many :requests, through: :committees
+  has_many :requestable_enrollments, class_name: 'Enrollment',
+    conditions: { requestable: true }
+  has_many :requestable_committees, through: :requestable_enrollments,
+    source: :committee
+  has_many :requests, include: :user, through: :requestable_committees,
+    conditions: "enrollments.position_id IN " +
+      "(SELECT positions.id FROM positions WHERE ( positions.statuses_mask = 0 OR " +
+      "(positions.statuses_mask & users.statuses_mask) > 0 ) AND " +
+      "(positions.active = #{connection.quote true}) )"
 
   scope :ordered, order { name }
-  scope :with_enrollments, joins( "LEFT JOIN enrollments ON enrollments.position_id = positions.id" )
-  scope :with_requests, lambda {
-    with_enrollments.joins( "INNER JOIN requests INNER JOIN users" ).
-    where("requests.user_id = users.id").
-    where( Request::POSITIONS_JOIN_SQL )
-  }
   scope :with_status, lambda { |status|
     where( "(positions.statuses_mask & " +
       "#{status.nil? ? 0 : 2**User::STATUSES.index(status.to_s)}) " +
       "> 0 OR positions.statuses_mask = 0" )
   }
-  # Limit to positions compatible with users' status
-  # * assumes a join with the users table
-  scope :with_users_status, where(
-   "positions.statuses_mask = 0 OR " +
-   "( users.statuses_mask & positions.statuses_mask ) > 0" )
+  scope :assignable_to, lambda { |user| with_status(user.status).active }
   scope :notifiable, where( :notifiable => true )
   scope :renewable, where( :renewable => true )
   scope :unrenewable, where( :renewable => false )

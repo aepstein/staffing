@@ -3,10 +3,10 @@ class Committee < ActiveRecord::Base
 
   scope :ordered, order { name }
   scope :group_by_id, group( :id )
-  scope :positions_with_status, lambda { |status|
-    joins( :positions ).where( "(positions.statuses_mask & " +
-      "#{status.nil? ? 0 : 2**User::STATUSES.index(status.to_s)}) " +
-      "> 0 OR positions.statuses_mask = 0" )
+  scope :requestable_for_user, lambda { |user|
+    where { |c| c.id.in( Enrollment.unscoped.requestable.select(:committee_id).
+      joins(:position).merge( Position.unscoped.active.with_status(user.status) )
+    ) }
   }
 
   attr_accessible :name, :description, :join_message, :leave_message, :brand_id,
@@ -27,6 +27,10 @@ class Committee < ActiveRecord::Base
   has_many :enrollments, inverse_of: :committee
   has_many :positions, through: :enrollments
   has_many :memberships, through: :positions
+  has_many :requestable_enrollments, class_name: 'Enrollment',
+    conditions: { requestable: true }
+  has_many :requestable_positions, through: :requestable_enrollments,
+    source: :position, conditions: { active: true }
 
   validates :name, presence: true, uniqueness: true
   validates :schedule, presence: true

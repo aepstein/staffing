@@ -10,6 +10,8 @@ class Enrollment < ActiveRecord::Base
   scope :ordered, includes( :committee, :position ).
     order { [ committees.name, title, positions.name ] }
   scope :membership_notices, where( membership_notices: true )
+  scope :requestable, where { requestable.eq(true) }
+  scope :unrequestable, where { requestable.not_eq(true) }
 
   validates :position, presence: true
   validates :committee, presence: true

@@ -16,7 +16,7 @@ class User < ActiveRecord::Base
     # authority for the position of the membership which overlaps the membership's
     # duration
     def authorized
-      Membership.authorized_user_id_equals @association.owner.id
+      Membership.authorized_user_id_equals proxy_association.owner.id
     end
   end
   has_many :enrollments, through: :memberships do
@@ -39,14 +39,12 @@ class User < ActiveRecord::Base
     def future; where { enrollments.memberships.starts_at > Time.zone.today }; end
     def prospective; where { enrollments.memberships.ends_at >= Time.zone.today }; end
     def requestable
-      Committee.requestable.select('DISTINCT committees.*').joins(:positions).
-      merge( Position.requestable_by_committee.
-        with_status( @association.owner.status ) )
+      Committee.requestable_for_user(proxy_association.owner)
     end
     def authorized(votes = 1)
-      return [] if @association.owner.authorities.authorized(votes).empty?
+      return [] if proxy_association.owner.authorities.authorized(votes).empty?
       Committee.joins(:positions).merge(
-        Position.where( :authority_id.in => @association.owner.authorities.
+        Position.where( :authority_id.in => proxy_association.owner.authorities.
           authorized( votes ).map(&:id) ) ).select( 'DISTINCT committees.*' )
     end
   end
@@ -55,7 +53,7 @@ class User < ActiveRecord::Base
       where { committees.enrollments.memberships.ends_at > Time.zone.today }
     end
     def authorized( votes = 1 )
-      return Authority.all if @association.owner.role_symbols.include? :admin
+      return Authority.all if proxy_association.owner.role_symbols.include? :admin
       prospective.where { committees.enrollments.votes >= my { votes } }
     end
   end
@@ -73,20 +71,23 @@ class User < ActiveRecord::Base
       )
     end
     def requestable
-      Position.requestable.with_status( @association.owner.status )
+      Position.assignable_to( user ).
+        where { |p| p.id.in( Enrollment.unscoped.requestable ) }
     end
     def authorized(votes = 1)
-      return [] if @association.owner.authorities.authorized(votes).empty?
-      Position.where( :authority_id.in => @association.owner.authorities.
+      return [] if proxy_association.owner.authorities.authorized(votes).empty?
+      Position.where( :authority_id.in => proxy_association.owner.authorities.
           authorized( votes ).map(&:id) ).select('DISTINCT positions.*')
     end
   end
 
   scope :ordered, order { [ last_name, first_name, middle_name ] }
-  scope :interested_in, lambda { |membership|
-    select('DISTINCT users.*').joins(:requests).merge(
-      Request.unscoped.active.interested_in( membership )
-    )
+  scope :assignable_to, lambda { |position|
+    if position.statuses_mask > 0
+      with_statuses_mask( position.statuses_mask )
+    else
+      scoped
+    end
   }
   scope :renewable_to, lambda { |membership|
     select('DISTINCT users.*').joins(:memberships).merge( Membership.unscoped.renewable_to( membership ) )
@@ -94,6 +95,12 @@ class User < ActiveRecord::Base
   scope :renewal_unconfirmed, lambda {
     where { id.in( Membership.unscoped.joins( :period ).
       renewal_unconfirmed.select { user_id } ) }
+  }
+  scope :with_status, lambda { |status|
+    where( "users.statuses_mask & #{status.nil? ? 0 : 2**User::STATUSES.index(status.to_s)} > 0" )
+  }
+  scope :with_statuses_mask, lambda { |statuses_mask|
+    where( "users.statuses_mask & ? > 0", statuses_mask )
   }
   scope :name_cont, lambda { |name|
     where(

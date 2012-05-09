@@ -1,14 +1,6 @@
 class Request < ActiveRecord::Base
   notifiable_events :reject, :close
 
-  # Criteria to identify positions staffable to this request
-  POSITIONS_JOIN_SQL = "((requests.requestable_type = 'Position' AND " +
-    "requests.requestable_id = positions.id) OR " +
-    "(enrollments.position_id = positions.id AND " +
-    "positions.requestable_by_committee = #{connection.quote true})) AND " +
-    "( positions.statuses_mask = 0 OR " +
-    "( ( positions.statuses_mask & users.statuses_mask ) > 0 ) )"
-
   attr_accessible :starts_at, :ends_at, :new_position, :answers_attributes,
     :user_attributes
   attr_accessible :rejected_by_authority_id, :rejection_comment, as: :rejector
@@ -17,7 +9,7 @@ class Request < ActiveRecord::Base
   has_many :answers, inverse_of: :request do
     def populate
       # Generate blank answers for any allowed question not in answer set
-      population = @association.owner.questions.reject { |q|
+      population = proxy_association.owner.questions.reject { |q|
         populated_question_ids.include? q.id
       }.map do |question|
           answer = build
@@ -25,12 +17,12 @@ class Request < ActiveRecord::Base
           answer
       end
       # Fill in most recent prior answer for each global question populated
-      s = @association.owner.user.answers.global.
+      s = proxy_association.owner.user.answers.global.
       where { |t| t.question_id.in( population.map { |a| a.question_id } ) }.
       where(<<-SQL
         answers.updated_at = ( SELECT MAX(a.updated_at) FROM answers AS a
         INNER JOIN requests AS r ON a.request_id = r.id
-        WHERE a.question_id = answers.question_id AND r.user_id = #{@association.owner.user_id} )
+        WHERE a.question_id = answers.question_id AND r.user_id = #{proxy_association.owner.user_id} )
       SQL
       )
       s.each do |answer|
@@ -45,24 +37,42 @@ class Request < ActiveRecord::Base
       self.map { |answer| answer.question_id }
     end
   end
-  belongs_to :committee, inverse_of: :requests
-  belongs_to :user, inverse_of: :requests
-  belongs_to :rejected_by_authority, class_name: 'Authority'
-  belongs_to :rejected_by_user, class_name: 'User'
-
+  has_many :enrollments, through: :memberships
   has_many :memberships, inverse_of: :request, dependent: :nullify do
-    def assignable
-      @association.owner.requestable.memberships.overlap( @association.owner.starts_at, @association.owner.ends_at
-      ).position_with_status( @association.owner.user.status ).unassigned
+    # Memberships are interested if they
+    # * are assigned to the user associated with the request
+    # * overlap temporally with the request
+    # * are requestable through the committee associated with the request
+    #   and are assignable to the user
+    def interested
+      proxy_association.owner.user.memberships.
+      overlap( proxy_association.owner.starts_at, proxy_association.owner.ends_at ).
+      where { |m| m.position_id.in(
+        proxy_association.owner.requestable_positions.assignable.select { id }
+      ) }
     end
+    # For each of the user's assigned memberships that is not associated with a
+    # request but is associated with a position this request can fulfill
+    # assign the membership to this request.
     def claim!
-      return if @association.owner.position_ids.empty?
-      @association.owner.user.memberships.unrequested.where(
-        :position_id.in => @association.owner.position_ids ).each do |membership|
+      interested.unrequested.each do |membership|
         self << membership
       end
     end
   end
+  has_many :requestable_positions, through: :committee do
+    def assignable
+      assignable_to(proxy_association.owner.user)
+    end
+    def assignable_ids
+      assignable.map(&:id)
+    end
+  end
+
+  belongs_to :committee, inverse_of: :requests
+  belongs_to :user, inverse_of: :requests
+  belongs_to :rejected_by_authority, class_name: 'Authority'
+  belongs_to :rejected_by_user, class_name: 'User'
 
   scope :ordered, includes( :user ).
     order { [ user.last_name, user.first_name, position ] }
@@ -76,30 +86,11 @@ class Request < ActiveRecord::Base
   scope :staffed, joins( :memberships )
   scope :unstaffed, joins( "LEFT JOIN memberships ON " +
     "memberships.request_id = requests.id" ).
-    where( "memberships.id IS NULL" )
+    where { memberships.id.eq( nil ) }
   scope :active, lambda { unexpired.with_status(:active) }
   scope :inactive, lambda {
     where { ( ends_at <= Time.zone.today ) | ( status != 'active' ) } }
   scope :reject_notice_pending, lambda { rejected.no_reject_notice }
-  # Joins to enrollments to get position_ids for requests where the requestable
-  # is a committee
-  scope :with_enrollments, lambda {
-    joins( "LEFT JOIN enrollments ON " +
-      "requests.requestable_type = 'Committee' AND " +
-      "requests.requestable_id = enrollments.committee_id" )
-  }
-  # Joins to requestable tables
-  # * assumes a join with users
-  scope :with_positions, lambda {
-    joins( "INNER JOIN positions" ).with_enrollments.
-    where( Request::POSITIONS_JOIN_SQL )
-  }
-  # Find requests that may be interested in a membership
-  # * must have
-  scope :interested_in, lambda { |membership|
-    overlap( membership.starts_at, membership.ends_at ).with_positions.
-      where { |m| m.positions.id.eq( membership.position_id ) }
-  }
   # Identifies requests an authority may staff
   # * TODO: Should this be deprecated?
   scope :authority_id_equals, lambda { |authority_id|
@@ -146,7 +137,7 @@ class Request < ActiveRecord::Base
 
   acts_as_list :scope => :user_id
 
-  validates :requestable, presence: true
+  validates :committee, presence: true
   validates :user, presence: true
   validates :starts_at, timeliness: { type: :date }
   validates :ends_at, timeliness: { type: :date, after: :starts_at }
@@ -159,46 +150,19 @@ class Request < ActiveRecord::Base
   accepts_nested_attributes_for :answers
   accepts_nested_attributes_for :user
 
-  def positions
-    return Position.where(:id => nil) unless requestable
-    case requestable.class.to_s
-    when 'Position'
-      Position.where( :id => requestable.id )
-    else
-      requestable.positions.except(:order).with_status( user.status ).
-      where( :requestable_by_committee => true )
-    end
-  end
-
-  def position_ids
-    positions.map { |position| position.id }
-  end
-
-  def quizzes
-    positions.map { |position| position.quiz }
-  end
-
   def questions
-    return Question.where(:id => nil) unless quizzes.length > 0
-#    ( Question.joins(:quizzes) & Quiz.where( :id.in => quizzes.map(&:id) ) ).uniq
-    ( Question.joins(:quizzes).where( "quizzes.id IN (?)", quizzes.map(&:id) ) ).
-    select( "DISTINCT questions.*" )
+    Question.joins { quizzes }.uniq.where { |q| q.quizzes.id.in(
+      requestable_positions.assignable.scoped.select { quiz_id } ) }
   end
 
   def authorities
-    return Authority.where(:id => nil) unless positions.length > 0
-#    ( Authority.joins(:positions) & Position.where( :id.in => position_ids ) ).uniq
-    ( Authority.joins(:positions).where( "positions.id IN (?)", position_ids ) ).uniq
+    Authority.joins { positions }.uniq.where { |a| a.positions.id.in(
+      requestable_positions.assignable.select { id } ) }
   end
 
   def authority_ids; authorities.map(&:id); end
 
   attr_accessor :new_position
-
-  def enrollments
-    Enrollment.joins(:memberships).
-      merge(Membership.unscoped.where(:request_id => id) )
-  end
 
   def new_position_options
     user.requests.inject( new_record? ? { 'Last Position' => '' } : {} ) do |memo, request|
@@ -211,7 +175,7 @@ class Request < ActiveRecord::Base
     end
   end
 
-  def to_s; requestable.to_s; end
+  def to_s; committee.to_s; end
 
   protected
 
@@ -220,18 +184,6 @@ class Request < ActiveRecord::Base
       rejected_by_user.authorities.authorized.include?( rejected_by_authority )
       errors.add :rejected_by_authority,
         "is not among the authorities under which #{rejected_by_user} may reject requests"
-    end
-  end
-
-  def requestable_must_be_requestable
-    return unless requestable
-    errors.add :requestable, "is not requestable." unless requestable.requestable?
-  end
-
-  def user_status_must_match_position
-    return unless requestable && requestable.class == Position
-    unless requestable.statuses.empty? || (requestable.statuses & user.statuses).any?
-      errors.add :user, "must have a status of #{requestable.statuses.join ' or '}."
     end
   end
 
