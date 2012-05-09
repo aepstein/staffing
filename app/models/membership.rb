@@ -277,8 +277,8 @@ class Membership < ActiveRecord::Base
   end
 
   def description
-    return request.requestable.to_s if request
-    return position.requestables.first.to_s unless position.requestables.empty?
+    return request.committee.to_s if request
+    return position.requestable_committees.first.to_s if position.requestable_committees.any?
     position.to_s
   end
 

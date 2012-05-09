@@ -3,7 +3,10 @@ require 'factory_girl'
 FactoryGirl.define do
   factory :answer do
     association :request
-    question { |a| a.association( :question, :quizzes => [ a.request.requestable.quiz ] ) }
+    question do |a|
+      a.association( :question,
+        :quizzes => a.request.requestable_positions.assignable.first.quiz )
+    end
     content 'blue'
   end
 
@@ -19,7 +22,6 @@ FactoryGirl.define do
   factory :committee do
     sequence(:name) { |n| "Committee #{n}" }
     association :schedule
-    requestable true
   end
 
   factory :designee do
@@ -37,6 +39,7 @@ FactoryGirl.define do
     position { association :position, :schedule => committee.schedule }
     title "member"
     votes 1
+    requestable false
   end
 
   factory :membership do
@@ -93,7 +96,6 @@ FactoryGirl.define do
 
   factory :position do
     sequence(:name) { |n| "Position #{n}" }
-    requestable true
     association :authority
     association :schedule
     association :quiz
@@ -115,13 +117,10 @@ FactoryGirl.define do
 
   factory :request do
     association :user
-    requestable { |request| request.association :position }
+    committee { |request| request.association :committee }
     starts_at do |request|
-      case request.requestable.class.to_s
-      when 'Position'
-        periods = request.requestable.schedule.periods
-      when 'Committee'
-        if position = request.requestable.positions.except(:order).first
+      if request.committee
+        if position = request.committee.positions.except(:order).first
           periods = position.schedule.periods
         else
           periods = false
@@ -132,16 +131,13 @@ FactoryGirl.define do
       (periods && periods.last) ? periods.last.starts_at : Time.zone.today
     end
     ends_at do |request|
-      case request.requestable.class.to_s
-      when 'Position'
-        periods = request.requestable.schedule.periods
-      when 'Committee'
-        if position = request.requestable.positions.except(:order).first
+      if request.committee
+        if position = request.committee.positions.except(:order).first
           periods = position.schedule.periods
         else
           periods = false
         end
-    else
+      else
         periods = false
       end
       (periods && periods.first) ? periods.first.ends_at : request.starts_at + 1.year

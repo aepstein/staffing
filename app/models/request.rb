@@ -99,11 +99,7 @@ class Request < ActiveRecord::Base
   }
 
   state_machine :status, :initial => :active do
-    state :active do
-      validate :requestable_must_be_requestable, :user_status_must_match_position
-    end
-
-    state :closed
+    state :active, :closed
 
     state :rejected do
       validates :rejected_by_authority, presence: true
