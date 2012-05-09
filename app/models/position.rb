@@ -53,7 +53,6 @@ class Position < ActiveRecord::Base
       membership
     end
   end
-  has_many :requests, as: :requestable
   has_many :users, through: :memberships
   has_many :periods, through: :schedule
   has_many :answers, through: :requests
@@ -73,6 +72,7 @@ class Position < ActiveRecord::Base
     end
   end
   has_many :committees, through: :enrollments
+  has_many :requests, through: :committees
 
   scope :ordered, order { name }
   scope :with_enrollments, joins( "LEFT JOIN enrollments ON enrollments.position_id = positions.id" )
