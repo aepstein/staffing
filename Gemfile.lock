@@ -105,10 +105,10 @@ GEM
       actionmailer (>= 3.0.4)
     execjs (1.3.0)
       multi_json (~> 1.0)
-    factory_girl (2.6.1)
-      activesupport (>= 2.3.9)
-    factory_girl_rails (1.7.0)
-      factory_girl (~> 2.6.0)
+    factory_girl (3.2.0)
+      activesupport (>= 3.0.0)
+    factory_girl_rails (3.2.0)
+      factory_girl (~> 3.2.0)
       railties (>= 3.0.0)
     ffi (1.0.11)
     formtastic (2.1.1)
@@ -138,7 +138,7 @@ GEM
       mime-types (~> 1.16)
       treetop (~> 1.4.8)
     mime-types (1.17.2)
-    multi_json (1.1.0)
+    multi_json (1.3.4)
     mysql2 (0.3.11)
     net-ldap (0.3.1)
     net-scp (1.0.4)
@@ -280,8 +280,8 @@ DEPENDENCIES
   escape_utils
   exception_notification
   execjs
-  factory_girl (~> 2.0)
-  factory_girl_rails (~> 1.0)
+  factory_girl (~> 3.0)
+  factory_girl_rails (~> 3.0)
   formtastic
   gettext
   jquery-rails

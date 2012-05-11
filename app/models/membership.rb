@@ -246,20 +246,6 @@ class Membership < ActiveRecord::Base
     request || position || raise( "No context is possible" )
   end
 
-  def request_id=(new_id)
-    write_attribute :request_id, new_id
-    populate_from_request
-    new_id
-  end
-
-  def request_with_population=(new_request)
-    self.request_without_population = new_request
-    populate_from_request
-    new_request
-  end
-
-  alias_method_chain :request=, :population
-
   # Identify users who should be copied on notices related to this membership
   # * not this user
   # * must have membership which:
@@ -295,17 +281,6 @@ class Membership < ActiveRecord::Base
   end
 
   protected
-
-  def populate_from_request
-    return true if request.blank?
-    self.position = request.requestable if request.requestable.class == Position
-    self.period ||= position.periods.overlaps(request.starts_at, request.ends_at).last if position
-    if !period.blank? && user.blank?
-      self.starts_at ||= ( period.starts_at > request.starts_at ? period.starts_at : request.starts_at )
-      self.ends_at ||= ( period.ends_at < request.ends_at ? period.ends_at : request.ends_at )
-    end
-    self.user = request.user
-  end
 
   def user_must_be_qualified
     return unless user && position

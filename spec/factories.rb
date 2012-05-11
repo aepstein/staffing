@@ -22,6 +22,14 @@ FactoryGirl.define do
   factory :committee do
     sequence(:name) { |n| "Committee #{n}" }
     association :schedule
+
+    factory :requestable_committee do
+      after(:create) do |committee|
+        FactoryGirl.create( :enrollment, committee: committee,
+          position: FactoryGirl.create(:position, schedule: committee.schedule),
+          requestable: true )
+      end
+    end
   end
 
   factory :designee do

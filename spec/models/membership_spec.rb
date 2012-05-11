@@ -65,18 +65,6 @@ describe Membership do
     @membership.save.should eql true
   end
 
-  it 'should populate a membership from a request' do
-    request = create(:request)
-    period = create(:period, :schedule => request.requestable.schedule, :starts_at => request.starts_at, :ends_at => request.ends_at)
-    membership = Membership.new
-    membership.request_id = request.id
-    membership.period.should eql period
-    membership.starts_at.should eql period.starts_at
-    membership.ends_at.should eql period.ends_at
-    membership.user.should eql membership.request.user
-    membership.position.should eql membership.request.requestable
-  end
-
   it 'should detect concurrent assigned memberships and prevent overstaffing' do
     assigned = setup_membership_with_vacancies
     second = create( :membership, :starts_at => assigned.starts_at + 1.days,
@@ -182,21 +170,16 @@ describe Membership do
   end
 
   it 'should claim a request for the user and position if the position is requestable' do
-    nr_position = create(:position, :requestable => false, :requestable_by_committee => true)
-    r_position = create(:position, :requestable => true)
-    r_c_position = create(:position, :requestable_by_committee => true)
-    r_committee = create(:committee, :requestable => true)
-    create(:enrollment, :position => r_c_position, :committee => r_committee )
-    create(:enrollment, :position => nr_position, :committee => r_committee )
-    p_request = create(:request, :requestable => r_position)
-    c_request = create(:request, :requestable => r_c_position)
-    m = create(:membership, :position => r_position, :user => p_request.user)
-    m.request.should eql p_request
-    m.request.closed?.should be_true
-    m = create(:membership, :position => r_c_position, :user => c_request.user)
+    nr_position = create(:position)
+    r_c_position = create(:position)
+    r_committee = create(:committee)
+    create(:enrollment, position: r_c_position, committee: r_committee, requestable: true )
+    create(:enrollment, position: nr_position, committee: r_committee )
+    c_request = create(:request, committee: r_committee)
+    m = create(:membership, position: r_c_position, user: c_request.user)
     m.request.should eql c_request
     m.request.closed?.should be_true
-    m = create(:membership, :position => nr_position, :user => c_request.user)
+    m = create(:membership, position: nr_position, user: c_request.user)
     m.request.should be_nil
   end
 
