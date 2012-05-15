@@ -96,7 +96,7 @@ class Request < ActiveRecord::Base
     state :closed
 
     state :active do
-      validate :must_have_assignable_position, on: :update
+      validate :must_have_assignable_position
     end
 
     state :rejected do

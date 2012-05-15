@@ -58,7 +58,7 @@ describe Request do
     @request.questions.should include allowed
   end
 
-  it  'should have an questions method that returns only questions in the quiz of allowed positions of requestable if it is a committee' do
+  it  'should have an questions method that returns only questions in the quiz of allowed positions of associated committee' do
     user = create(:user, :status => 'undergrad')
     user.status.should eql 'undergrad'
 
@@ -70,18 +70,18 @@ describe Request do
     unallowed_quiz = create(:quiz, :questions => [ unallowed ])
     other_quiz = create(:quiz, :questions => [ allowed, unallowed, other ])
 
-    allowed_position = create(:position, :statuses => ['undergrad'], :requestable_by_committee => true, :quiz => allowed_quiz)
-    unallowed_position_status = create(:position, :statuses => ['grad'], :requestable_by_committee => true, :quiz => unallowed_quiz)
+    allowed_position = create(:position, :statuses => ['undergrad'], :quiz => allowed_quiz)
+    unallowed_position_status = create(:position, :statuses => ['grad'], :quiz => unallowed_quiz)
     unallowed_position_requestability = create(:position, :statuses => ['undergrad'], :quiz => unallowed_quiz)
     other_position = create(:position, :statuses => ['undergrad'], :quiz => other_quiz)
 
     committee = create(:committee, :requestable => true)
-    create(:enrollment, :committee => committee, :position => allowed_position)
-    create(:enrollment, :committee => committee, :position => unallowed_position_status)
-    create(:enrollment, :committee => committee, :position => unallowed_position_requestability)
+    create(:enrollment, committee: committee, position: allowed_position, requestable: true)
+    create(:enrollment, committee: committee, position: unallowed_position_status, requestable: true)
+    create(:enrollment, committee: committee, position: unallowed_position_requestability)
     committee.reload
 
-    request = build(:request, :requestable => committee, :user => user)
+    request = build(:request, :committee => committee, :user => user)
     request.questions.length.should eql 1
     request.questions.should include allowed
     @request.questions.length.should eql 0
@@ -242,7 +242,8 @@ describe Request do
     request.save!
     committee.enrollments.first.update_attribute :requestable, params[:requestable_by_committee]
     position.update_attribute :statuses_mask, params[:position_statuses_mask]
-    scope = Request.joins(:user).interested_in( membership ).uniq
+#    scope = Request.joins(:user).interested_in( membership ).uniq
+    scope = membership.requests.overlapping
     if params[:success]
       scope.length.should eql 1
       scope.should include request

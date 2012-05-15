@@ -36,23 +36,52 @@ describe Authority do
     @authority.effective_contact_name.should eql Staffing::Application.app_config['defaults']['authority']['contact_name']
   end
 
-  it 'should retrieve associated requests correctly' do
-    requests = [ ]
-    requests << create(:request,
-      committee: create(:enrollment, position: create(:position, authority: @authority),
-      requestable: true ).committee )
-    undergrad_committee = create(:enrollment, position: create(:position, authority: @authority,
-    statuses: ['undergrad'] ), requestable: true ).committee
-    requests << create(:request, committee: undergrad_committee,
-      user: create(:user, statuses: ['undergrad']) )
-    create(:request, committee: create(:enrollment, position: create(:position),
-      requestable: true ).committee )
-    requests.last.committee.enrollments.first.update_attribute! :requestable, false
-    create(:enrollment, position: create(:position, statuses: ['grad']), committee: undergrad_committee )
-    create(:request, committee: undergrad_committee, user: create(:user, :statuses => ['grad']) )
-    @authority.requests.length.should eql 2
-    requests.each { |request| @authority.requests.should include request }
-    create(:authority).requests.to_a.should be_empty
+  context "requests" do
+    def position
+      @position ||= create(:position, authority: @authority)
+    end
+
+    def enrollment
+      @enrollment ||= create(:enrollment, position: position, requestable: true)
+    end
+
+    def committee
+      enrollment.committee
+    end
+
+    def request
+      @request ||= create(:request, user: user, committee: committee)
+    end
+
+    def user
+      @user ||= create(:user)
+    end
+
+    it "should retrieve requests that are staffable with no statuses_mask" do
+      @authority.requests.should include request
+    end
+
+    it "should retrieve requests that are staffable with matching statuses_mask" do
+      position.statuses = ['undergrad']
+      position.save!
+      user.status = 'undergrad'
+      user.save!
+      @authority.requests.should include request
+    end
+
+    it "should not retrieve requests that are not requestable" do
+      request
+      enrollment.update_attribute :requestable, false
+      @authority.requests.should be_empty
+    end
+
+    it "should not retrieve requests that do not have status match" do
+      request
+      position.statuses = ['undergrad']
+      position.save!
+      user.status.should_not eql 'undergrad'
+      @authority.requests.should be_empty
+    end
   end
 
 end
