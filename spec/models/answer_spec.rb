@@ -22,8 +22,8 @@ describe Answer do
   it 'should not save with a question that is not allowed for the requested position if a position is requested' do
     disallowed_question = create(:question)
     answer = build(:answer, request: @answer.request, question: disallowed_question)
-    @answer.request.questions.should_not include disallowed_question
-    @answer.save.should be_false
+    answer.request.questions.should_not include disallowed_question
+    answer.save.should be_false
   end
 end
 

@@ -5,6 +5,9 @@ class MoveRequestableToEnrollments < ActiveRecord::Migration
       UPDATE enrollments SET requestable =
       (SELECT requestable_by_committee FROM positions
       WHERE positions.id = enrollments.position_id)
+      WHERE enrollments.committee_id IN
+      (SELECT id FROM committees WHERE committees.requestable =
+      #{connection.quote true})
     SQL
     remove_column :positions, :requestable
     remove_column :positions, :requestable_by_committee

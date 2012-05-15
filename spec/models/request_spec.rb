@@ -45,7 +45,7 @@ describe Request do
     position = @request.requestable_positions.first
     position.statuses = ['undergrad']
     position.save!
-    @request.requestable_positions.reload
+    @request.requestable_positions.proxy_association.reset
     @request.user.statuses.should_not include 'undergrad'
     @request.save.should be_false
   end
@@ -223,7 +223,7 @@ describe Request do
   # * request_expired: Whether the request coincides with the membership temporily
   # * success: Whether scope should return the request or not
   def interested_in_scenario( params )
-    position = create(:position, statuses_mask: params[:position_statuses_mask] )
+    position = create(:position)
     committee = create(:enrollment, position: position, requestable: true ).committee
     request = create(:request,
       user: create(:user, statuses_mask: params[:user_statuses_mask]),
@@ -240,7 +240,8 @@ describe Request do
       request.starts_at = request.ends_at - 2.years
     end
     request.save!
-    committee.enrollments.first.update_attribute! :requestable, params[:requestable_by_committee]
+    committee.enrollments.first.update_attribute :requestable, params[:requestable_by_committee]
+    position.update_attribute :statuses_mask, params[:position_statuses_mask]
     scope = Request.joins(:user).interested_in( membership ).uniq
     if params[:success]
       scope.length.should eql 1
