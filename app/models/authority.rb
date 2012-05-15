@@ -12,6 +12,7 @@ class Authority < ActiveRecord::Base
 
   belongs_to :committee, inverse_of: :authorities
   has_many :positions, inverse_of: :authority
+  has_many :requests, through: :positions
   has_many :enrollments, through: :positions
   has_many :authorized_enrollments, primary_key: :committee_id,
     foreign_key: :committee_id, class_name: 'Enrollment'
@@ -20,11 +21,6 @@ class Authority < ActiveRecord::Base
   has_many :schedules, through: :positions
 
   validates :name, presence: true, uniqueness: true
-
-  def requests
-    return Request.where( :id => nil ) if new_record?
-    Request.joins(:user).authority_id_equals( id )
-  end
 
   def effective_contact_name
     contact_name? ? contact_name : Staffing::Application.app_config['defaults']['authority']['contact_name']

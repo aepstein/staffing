@@ -4,7 +4,7 @@ class Request < ActiveRecord::Base
   attr_accessible :starts_at, :ends_at, :new_position, :answers_attributes,
     :user_attributes
   attr_accessible :rejected_by_authority_id, :rejection_comment, as: :rejector
-  attr_readonly :user_id, :requestable_id, :requestable_type
+  attr_readonly :user_id, :commitee_id
 
   has_many :answers, inverse_of: :request do
     def populate
@@ -91,15 +91,13 @@ class Request < ActiveRecord::Base
   scope :inactive, lambda {
     where { ( ends_at <= Time.zone.today ) | ( status != 'active' ) } }
   scope :reject_notice_pending, lambda { rejected.no_reject_notice }
-  # Identifies requests an authority may staff
-  # * TODO: Should this be deprecated?
-  scope :authority_id_equals, lambda { |authority_id|
-    with_positions.where( "positions.authority_id = ?", authority_id ).
-    group( 'requests.id' )
-  }
 
   state_machine :status, :initial => :active do
-    state :active, :closed
+    state :closed
+
+    state :active do
+      validate :must_have_assignable_position, on: :update
+    end
 
     state :rejected do
       validates :rejected_by_authority, presence: true
@@ -137,8 +135,8 @@ class Request < ActiveRecord::Base
   validates :user, presence: true
   validates :starts_at, timeliness: { type: :date }
   validates :ends_at, timeliness: { type: :date, after: :starts_at }
-  validates :user_id, uniqueness: {
-    scope: [ :requestable_type, :requestable_id ] }
+  validates :user_id, uniqueness: { scope: :committee_id }
+  validate :must_have_assignable_position, on: :create
 
   after_save { |request| request.memberships.claim! }
   after_save :insert_at_new_position
@@ -152,7 +150,7 @@ class Request < ActiveRecord::Base
   end
 
   def authorities
-    Authority.joins { positions }.uniq.where { |a| a.positions.id.in(
+    Authority.joins { positions }.uniq.readonly(false).where { |a| a.positions.id.in(
       requestable_positions.assignable.select { id } ) }
   end
 
@@ -174,6 +172,12 @@ class Request < ActiveRecord::Base
   def to_s; committee.to_s; end
 
   protected
+
+  def must_have_assignable_position
+    if requestable_positions.assignable.empty?
+      errors.add :committee, "is not among committees user may request"
+    end
+  end
 
   def rejected_by_authority_must_be_allowed_to_rejected_by_user
     unless rejected_by_authority.blank? || rejected_by_user.blank? ||

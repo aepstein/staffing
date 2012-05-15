@@ -6,7 +6,7 @@ class RequestMailer < ActionMailer::Base
     mail(
       :to => request.user.to_email,
       :from => "\"#{request.rejected_by_authority.effective_contact_name}\" <#{request.rejected_by_authority.effective_contact_email}>",
-      :subject => "Your request for appointment to #{request.requestable} was declined"
+      :subject => "Your request for appointment to #{request.committee} was declined"
     )
   end
 
@@ -15,7 +15,7 @@ class RequestMailer < ActionMailer::Base
     mail(
       :to => request.user.to_email,
       :from => "\"#{Staffing::Application.app_config['defaults']['authority']['contact_name']}\" <#{Staffing::Application.app_config['defaults']['authority']['contact_email']}>",
-      :subject => "Your request for appointment to #{request.requestable} was approved"
+      :subject => "Your request for appointment to #{request.committee} was approved"
     )
   end
 

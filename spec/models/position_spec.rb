@@ -43,13 +43,6 @@ describe Position do
     @position.save.should be_false
   end
 
-  it 'should have a requestable_by_committee scope' do
-    @position.requestable_by_committee.should eql false
-    focus = create(:position, :requestable_by_committee => true)
-    Position.requestable_by_committee.length.should eql 1
-    Position.requestable_by_committee.should include focus
-  end
-
   it 'should have a membership.vacancies_for_period' do
     @position.slots = 2
     @position.save!

@@ -1,6 +1,6 @@
 Dear <%= @request.user.first_name %>,
 
-This notice is to inform you that your request for appointment to <%= @request.requestable %> has been approved.
+This notice is to inform you that your request for appointment to <%= @request.committee %> has been approved.
 
 <% if @request.memberships.any? %>
 You have been appointed to the following <%=

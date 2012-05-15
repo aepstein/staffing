@@ -24,8 +24,8 @@ describe Request do
     @request.save.should be_false
   end
 
-  it  'should not save without a requestable' do
-    @request.requestable = nil
+  it  'should not save without a committee' do
+    @request.committee = nil
     @request.save.should be_false
   end
 
@@ -34,23 +34,25 @@ describe Request do
     @request.save.should be_false
   end
 
-  it  'should not save a duplicate for certain user and requestable' do
+  it  'should not save a duplicate for certain user and committee' do
     duplicate = build(:request)
     duplicate.user = @request.user
-    duplicate.requestable = @request.requestable
+    duplicate.committee = @request.committee
     duplicate.save.should be_false
   end
 
-  it  'should not save if for a position and the user does not meet status requirements of the position' do
-    @request.requestable.statuses = ['undergrad']
-    @request.requestable.save
-    @request.user.status.should_not eql 'undergrad'
+  it  'should not save if for a committee and the user does not meet status requirements of the requestable positions for that committee' do
+    position = @request.requestable_positions.first
+    position.statuses = ['undergrad']
+    position.save!
+    @request.requestable_positions.reload
+    @request.user.statuses.should_not include 'undergrad'
     @request.save.should be_false
   end
 
   it  'should have an questions method that returns only questions in the quiz of requestable if it is a position' do
     allowed = create(:question)
-    @request.requestable.quiz.questions << allowed
+    @request.requestable_positions.first.quiz.questions << allowed
     unallowed = create(:question)
     @request.questions.size.should eql 1
     @request.questions.should include allowed
@@ -137,8 +139,9 @@ describe Request do
 
   it  'should claim unrequested memberships that the request could apply to' do
     m = create(:membership)
-    r = build(:request, :user => m.user)
-    r.stub!(:position_ids).and_return([m.position_id])
+    r = build(:request, user: m.user)
+    create(:enrollment, requestable: true, position: m.position, committee: r.committee)
+#    r.stub!(:position_ids).and_return([m.position_id])
     r.save.should be_true
     r.memberships.size.should eql 1
     r.memberships.should include m
@@ -147,10 +150,10 @@ describe Request do
   context 'rejection' do
     before(:each) do
       Request.reject_notice_pending.length.should eql 0
-      @admin = create(:user, :admin => true)
+      @admin = create(:user, admin: true)
       @authorized = create(:user)
       enrollment = create(:enrollment)
-      @authority = Authority.find @request.authorities.first.id
+      @authority = @request.authorities.first
       @authority.committee = enrollment.committee
       @authority.save.should be_true
       membership = create(:membership, :position => enrollment.position, :user => @authorized )
@@ -201,23 +204,14 @@ describe Request do
   end
 
   it 'should have an interested_in that identifies requests staffable to and temporily interested in a membership' do
-    interested_in_scenario :position_statuses_mask => 0, :committee => false,
-      :user_statuses_mask => 0, :request_expired => false,
-      :requestable_by_committee => false, :success => true
     interested_in_scenario :position_statuses_mask => 1, :committee => true,
       :user_statuses_mask => 0, :request_expired => false,
       :requestable_by_committee => true, :success => false
-    interested_in_scenario :position_statuses_mask => 1, :committee => false,
-      :user_statuses_mask => 3, :request_expired => false,
-      :requestable_by_committee => false, :success => true
     interested_in_scenario :position_statuses_mask => 0, :committee => true,
       :user_statuses_mask => 0, :request_expired => false,
       :requestable_by_committee => true, :success => true
     interested_in_scenario :position_statuses_mask => 0, :committee => true,
       :user_statuses_mask => 0, :request_expired => false,
-      :requestable_by_committee => false, :success => false
-    interested_in_scenario :position_statuses_mask => 0, :committee => false,
-      :user_statuses_mask => 0, :request_expired => true,
       :requestable_by_committee => false, :success => false
   end
 
@@ -229,14 +223,13 @@ describe Request do
   # * request_expired: Whether the request coincides with the membership temporily
   # * success: Whether scope should return the request or not
   def interested_in_scenario( params )
-    position = create(:position, :statuses_mask => params[:position_statuses_mask],
-      :requestable_by_committee => params[:requestable_by_committee] )
-    committee = create(:enrollment, :position => position ).committee
+    position = create(:position, statuses_mask: params[:position_statuses_mask] )
+    committee = create(:enrollment, position: position, requestable: true ).committee
     request = create(:request,
-      :user => create(:user, :statuses_mask => params[:user_statuses_mask]),
-      :requestable => ( params[:committee] ? committee : position ) )
+      user: create(:user, statuses_mask: params[:user_statuses_mask]),
+      committee: committee )
     position.reload
-    create(:period, :schedule => position.schedule)
+    create(:period, schedule: position.schedule)
     membership = position.memberships.first
     membership.position_id.should eql position.id
     if params[:request_expired]
@@ -247,6 +240,7 @@ describe Request do
       request.starts_at = request.ends_at - 2.years
     end
     request.save!
+    committee.enrollments.first.update_attribute! :requestable, params[:requestable_by_committee]
     scope = Request.joins(:user).interested_in( membership ).uniq
     if params[:success]
       scope.length.should eql 1
@@ -257,7 +251,8 @@ describe Request do
   end
 
   def generate_answered_request(user, quiz, answer)
-    request = build(:request, :user => user, :requestable => create(:position, :quiz => quiz) )
+    request = build(:request, user: user, committee: create(:enrollment,
+      position: create(:position, quiz: quiz)).committee )
     quiz.questions.each do |question|
       a = request.answers.build
       a.content = answer

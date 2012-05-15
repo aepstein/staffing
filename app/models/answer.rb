@@ -8,7 +8,7 @@ class Answer < ActiveRecord::Base
   validates :request, presence: true
   validates :question, presence: true
   validates :content, presence: true
-  validate :question_must_be_allowed
+  validate :question_must_be_allowed, on: :create
 
   scope :global, lambda { joins(:question).where { questions.global == true } }
   scope :local, lambda { joins(:question).where { questions.global != true } }

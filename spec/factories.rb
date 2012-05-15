@@ -5,7 +5,7 @@ FactoryGirl.define do
     association :request
     question do |a|
       a.association( :question,
-        :quizzes => a.request.requestable_positions.assignable.first.quiz )
+        :quizzes => [a.request.requestable_positions.assignable.first.quiz] )
     end
     content 'blue'
   end
@@ -24,7 +24,7 @@ FactoryGirl.define do
     association :schedule
 
     factory :requestable_committee do
-      after(:create) do |committee|
+      after(:create) do |committee, evaluator|
         FactoryGirl.create( :enrollment, committee: committee,
           position: FactoryGirl.create(:position, schedule: committee.schedule),
           requestable: true )
@@ -125,7 +125,7 @@ FactoryGirl.define do
 
   factory :request do
     association :user
-    committee { |request| request.association :committee }
+    committee { |request| request.association :requestable_committee }
     starts_at do |request|
       if request.committee
         if position = request.committee.positions.except(:order).first

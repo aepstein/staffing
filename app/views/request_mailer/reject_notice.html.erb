@@ -3,13 +3,13 @@ Dear <%=h @request.user.first_name %>,
 </p>
 
 <p>
-This notice is to inform you that your request for appointment to <%=h @request.requestable %> has been declined for the following reason(s):
+This notice is to inform you that your request for appointment to <%=h @request.committee %> has been declined for the following reason(s):
 </p>
 
 <%=markdown @request.rejection_comment %>
 
-<% unless @request.requestable.reject_message.blank? -%>
-<%=markdown @request.requestable.reject_message %>
+<% unless @request.committee.reject_message.blank? -%>
+<%=markdown @request.committee.reject_message %>
 
 <% end -%>
 <% unless @request.rejected_by_authority.reject_message.blank? -%>

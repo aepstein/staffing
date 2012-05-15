@@ -38,15 +38,19 @@ describe Authority do
 
   it 'should retrieve associated requests correctly' do
     requests = [ ]
-    requests << create(:request, :requestable => create(:position, :requestable => true, :authority => @authority) )
-    requests << create(:request, :requestable => create(:enrollment, :position => create(:position, :requestable => false, :requestable_by_committee => true, :authority => @authority) ).committee )
-    undergrad_committee = create(:enrollment, :position => create(:position, :requestable => false, :requestable_by_committee => true, :authority => @authority, :statuses => ['undergrad'] ) ).committee
-    requests << create(:request, :requestable => undergrad_committee, :user => create(:user, :statuses => ['undergrad']) )
-    create(:request, :requestable => create(:position, :requestable => true) )
-    create(:request, :requestable => create(:enrollment, :position => create(:position, :requestable => false) ).committee )
-    create(:enrollment, :position => create(:position, :requestable => false, :statuses => ['grad']), :committee => undergrad_committee )
-    create(:request, :requestable => undergrad_committee, :user => create(:user, :statuses => ['grad']) )
-    @authority.requests.length.should eql 3
+    requests << create(:request,
+      committee: create(:enrollment, position: create(:position, authority: @authority),
+      requestable: true ).committee )
+    undergrad_committee = create(:enrollment, position: create(:position, authority: @authority,
+    statuses: ['undergrad'] ), requestable: true ).committee
+    requests << create(:request, committee: undergrad_committee,
+      user: create(:user, statuses: ['undergrad']) )
+    create(:request, committee: create(:enrollment, position: create(:position),
+      requestable: true ).committee )
+    requests.last.committee.enrollments.first.update_attribute! :requestable, false
+    create(:enrollment, position: create(:position, statuses: ['grad']), committee: undergrad_committee )
+    create(:request, committee: undergrad_committee, user: create(:user, :statuses => ['grad']) )
+    @authority.requests.length.should eql 2
     requests.each { |request| @authority.requests.should include request }
     create(:authority).requests.to_a.should be_empty
   end

@@ -1,11 +1,11 @@
 Dear <%= @request.user.first_name %>,
 
-This notice is to inform you that your request for appointment to <%= @request.requestable %> has been declined for the following reason(s):
+This notice is to inform you that your request for appointment to <%= @request.committee %> has been declined for the following reason(s):
 
 <%= @request.rejection_comment %>
 
-<% unless @request.requestable.reject_message.blank? -%>
-<%= @request.requestable.reject_message %>
+<% unless @request.committee.reject_message.blank? -%>
+<%= @request.committee.reject_message %>
 
 <% end -%>
 <% unless @request.rejected_by_authority.reject_message.blank? -%>

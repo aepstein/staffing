@@ -1,4 +1,4 @@
-require File.expand_path(File.dirname(__FILE__) + '/../spec_helper')
+require 'spec_helper'
 
 describe Answer do
   before(:each) do
@@ -21,8 +21,8 @@ describe Answer do
 
   it 'should not save with a question that is not allowed for the requested position if a position is requested' do
     disallowed_question = create(:question)
-    @answer.request.requestable.quiz.questions.should_not include disallowed_question
-    @answer.question = disallowed_question
+    answer = build(:answer, request: @answer.request, question: disallowed_question)
+    @answer.request.questions.should_not include disallowed_question
     @answer.save.should be_false
   end
 end
