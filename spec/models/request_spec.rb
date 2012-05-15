@@ -41,13 +41,14 @@ describe Request do
     duplicate.save.should be_false
   end
 
-  it  'should not save if for a committee and the user does not meet status requirements of the requestable positions for that committee' do
-    position = @request.requestable_positions.first
-    position.statuses = ['undergrad']
+  it 'should not create if for a committee and the user does not meet status requirements of the requestable positions for that committee' do
+    committee = create(:requestable_committee)
+    position = committee.positions.first
+    position.statuses = %w( undergrad )
     position.save!
-    @request.requestable_positions.proxy_association.reset
-    @request.user.statuses.should_not include 'undergrad'
-    @request.save.should be_false
+    request = build(:request, committee: committee)
+    request.user.statuses.should_not include 'undergrad'
+    request.save.should be_false
   end
 
   it  'should have an questions method that returns only questions in the quiz of requestable if it is a position' do
@@ -75,7 +76,7 @@ describe Request do
     unallowed_position_requestability = create(:position, :statuses => ['undergrad'], :quiz => unallowed_quiz)
     other_position = create(:position, :statuses => ['undergrad'], :quiz => other_quiz)
 
-    committee = create(:committee, :requestable => true)
+    committee = create(:committee)
     create(:enrollment, committee: committee, position: allowed_position, requestable: true)
     create(:enrollment, committee: committee, position: unallowed_position_status, requestable: true)
     create(:enrollment, committee: committee, position: unallowed_position_requestability)
@@ -105,7 +106,8 @@ describe Request do
     sleep 1
     most_recent = generate_answered_request user, short_quiz, 'most recent answer'
 
-    request = build(:request, :user => user, :requestable => create(:position, :quiz => full_quiz))
+    request = build(:request, user: user, committee: create(:enrollment,
+      position: create(:position, quiz: full_quiz), requestable: true).committee )
     a = request.answers.build
     a.question = unanswered_local
     request.answers.send(:populated_question_ids).size.should eql 1
@@ -254,7 +256,7 @@ describe Request do
 
   def generate_answered_request(user, quiz, answer)
     request = build(:request, user: user, committee: create(:enrollment,
-      position: create(:position, quiz: quiz)).committee )
+      position: create(:position, quiz: quiz), requestable: true).committee )
     quiz.questions.each do |question|
       a = request.answers.build
       a.content = answer

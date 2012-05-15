@@ -33,9 +33,7 @@ class Request < ActiveRecord::Base
       population
     end
     protected
-    def populated_question_ids
-      self.map { |answer| answer.question_id }
-    end
+    def populated_question_ids; map(&:question_id); end
   end
   has_many :enrollments, through: :memberships
   has_many :memberships, inverse_of: :request, dependent: :nullify do
