@@ -71,7 +71,7 @@ class User < ActiveRecord::Base
       )
     end
     def requestable
-      Position.assignable_to( user ).
+      Position.assignable_to( proxy_association.owner ).
         where { |p| p.id.in( Enrollment.unscoped.requestable ) }
     end
     def authorized(votes = 1)
