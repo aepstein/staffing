@@ -1,6 +1,6 @@
 <% if candidate.is_a? Request %>
 <li><%=link_to candidate.user.name(:net_id), candidate, target: '_blank' %>
-interested in <%= candidate.requestable %> until <%= candidate.ends_at %></li>
+interested in <%= candidate.committee %> until <%= candidate.ends_at %></li>
 <% else %>
 <li><%=link_to candidate.user.name(:net_id), candidate, target: '_blank' %>
 interested in renewal from <%= candidate.position %> until <%= candidate.renew_until %></li>

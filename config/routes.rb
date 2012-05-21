@@ -99,7 +99,7 @@ Staffing::Application.routes.draw do
       get :reject
       put :do_reject, :reactivate
     end
-    resources :memberships, :only => [ :new, :create, :index ] do
+    resources :memberships, :only => [ :index ] do
       collection do
         get :assignable
       end

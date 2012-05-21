@@ -242,12 +242,7 @@ class MembershipsController < ApplicationController
   end
 
   def new_membership_from_params
-    if @request
-      @membership = Membership.new
-      @membership.request = @request
-    else
-      @membership = @position.memberships.build
-    end
+    @membership = @position.memberships.build
     @membership.assign_attributes params[:membership], as: :updator if params[:membership]
     @membership.period ||= @membership.position.schedule.periods.active
     @membership.period ||= @membership.position.schedule.periods.first

@@ -153,18 +153,6 @@ Feature: Manage memberships
     Then I should see "Join notice at: January 1st, 2010 06:00"
     And I should see "Leave notice at: January 1st, 2010 07:00"
 
-  Scenario: Register a new membership given a request
-    Given a period: "2009" exists with schedule: schedule "annual", starts_at: "2009-06-01", ends_at: "2010-05-31"
-    And a request: "application" exists with user: user "popular", requestable: position "officer", starts_at: "2009-06-01", ends_at: "2010-05-31"
-    And I log in as user: "admin"
-    And I am on the new membership page for request: "application"
-    And I press "Create"
-    Then I should see "Membership was successfully created."
-    And I should see "User: Mister Popularity"
-    And I should see "Position: Officer"
-    And I should see "Starts at: 1 Jun 2009"
-    And I should see "Ends at: 31 May 2010"
-
   Scenario: Delete membership
     Given a user: "user1" exists with first_name: "John", last_name: "Doe 1"
     And a user: "user2" exists with first_name: "John", last_name: "Doe 2"
