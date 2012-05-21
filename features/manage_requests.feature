@@ -199,7 +199,7 @@ Feature: Manage requests
     And a user: "applicant2" exists with last_name: "Doe 2", first_name: "John"
     And a user: "applicant3" exists with last_name: "Doe 3", first_name: "John"
     And a user: "applicant4" exists with last_name: "Doe 4", first_name: "John"
-    And a requestable_committee exists with schedule: schedule "annual", quiz: quiz "generic"
+    And a requestable_committee exists with schedule: schedule "annual"
     And a request exists with committee: the committee, user: user "applicant4"
     And a request exists with committee: the committee, user: user "applicant3"
     And a request exists with committee: the committee, user: user "applicant2"
