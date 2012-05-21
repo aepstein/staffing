@@ -7,23 +7,22 @@ Feature: Manage committees
     Given a user: "admin" exists with admin: true
 
   Scenario Outline: Show requestable committees for current user
-    Given a position exists with requestable: <p_req>, requestable_by_committee: <p_req_c>, statuses_mask: <mask>
-    And a committee exists with requestable: <c_req>
-    And an enrollment exists with position: the position, committee: the committee
+    Given a position exists with statuses_mask: <mask>
+    And a committee exists
+    And an enrollment exists with position: the position, committee: the committee, requestable: <requestable>
     And a user exists with statuses_mask: 1
     And I log in as the user
-    Then I should see "You may browse <n_com> and <n_pos> for which you are eligible to request membership."
+    Then I should see "You may browse <number> for which you are eligible to request membership."
     Examples:
-      | p_req | p_req_c | mask | c_req | n_pos       | n_com        |
-      | true  | false   | 0    | false | 1 position  | 0 committees |
-      | false | true    | 0    | false | 0 positions | 0 committees |
-      | false | false   | 0    | false | 0 positions | 0 committees |
-      | false | true    | 0    | true  | 0 positions | 1 committee  |
-      | true  | true    | 0    | true  | 1 position  | 1 committee  |
-      | false | true    | 2    | true  | 0 positions | 0 committees |
-      | true  | false   | 2    | false | 0 positions | 0 committees |
-      | false | true    | 3    | true  | 0 positions | 1 committee  |
-      | true  | false   | 3    | false | 1 position  | 0 committees |
+      | requestable | mask | number       |
+      | true        | 0    | 1 committee  |
+      | false       | 0    | 0 committees |
+      | true        | 1    | 1 committee  |
+      | false       | 1    | 0 committees |
+      | true        | 2    | 0 committees |
+      | false       | 2    | 0 committees |
+      | true        | 3    | 1 committee  |
+      | false       | 3    | 0 committees |
 
   Scenario Outline: Test permissions for committees controller actions
     Given a committee exists with name: "Focus"
