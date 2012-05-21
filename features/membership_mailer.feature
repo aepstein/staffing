@@ -9,13 +9,11 @@ Feature: User mailer
     And an authority: "other" exists with contact_name: "Some Other Authority"
     And schedule: "focus" exists
     And a period: "focus" exists with schedule: the schedule, starts_at: "2008-06-01", ends_at: "2009-05-31"
-    And a position: "requestable_committee" exists with name: "Lame position", join_message: "This position is *lame*.", leave_message: "This position was *lame*.", requestable: false, requestable_by_committee: true, authority: the authority, schedule: the schedule, authority: authority "focus"
-    And a position: "requestable_position" exists with name: "Cool position", join_message: "This position is *cool*.", leave_message: "This position was *cool*.", requestable: true, requestable_by_committee: false, authority: the authority, schedule: the schedule, authority: authority "focus"
-    And a position: "no_enrollment" exists with name: "Orphan position", requestable: false, requestable_by_committee: false, authority: authority "focus", schedule: the schedule, authority: authority "focus"
-    And a position: "other_authority" exists with name: "Other authority", requestable: false, requestable_by_committee: false, schedule: the schedule, authority: authority "other"
-    And a committee: "requestable_committee" exists with name: "Cool committee", join_message: "This committee is *cool*.", leave_message: "This committee was *cool*.", requestable: true
-    And an enrollment exists with committee: the committee, position: position "requestable_committee"
-    And an enrollment exists with committee: the committee, position: position "requestable_position"
+    And a position: "requestable_committee" exists with name: "Lame position", join_message: "This position is *lame*.", leave_message: "This position was *lame*.", authority: the authority, schedule: the schedule, authority: authority "focus"
+    And a position: "no_enrollment" exists with name: "Orphan position", authority: authority "focus", schedule: the schedule, authority: authority "focus"
+    And a position: "other_authority" exists with name: "Other authority", schedule: the schedule, authority: authority "other"
+    And a committee: "requestable_committee" exists with name: "Cool committee", join_message: "This committee is *cool*.", leave_message: "This committee was *cool*."
+    And an enrollment exists with committee: the committee, position: position "requestable_committee", requestable: true
 
   Scenario Outline: Send join notice to a user
     Given a membership exists with position: position "<position>", period: period "focus", user: user "focus"
@@ -37,7 +35,6 @@ Feature: User mailer
     And the email should <authority> contain "The Authority" in the both parts body
     Examples:
       | position              | description     | authority | committee | cool    | lame     |
-      | requestable_position  | Cool position   |           |           |         | not      |
       | requestable_committee | Cool committee  |           |           | not     |          |
       | no_enrollment         | Orphan position |           | not       | not     | not      |
       | other_authority       | Other authority | not       | not       | not     | not      |
@@ -63,7 +60,6 @@ Feature: User mailer
     And the email should <authority> contain "The Authority" in the both parts body
     Examples:
       | position              | description     | authority | committee | cool    | lame     |
-      | requestable_position  | Cool position   |           |           |         | not      |
       | requestable_committee | Cool committee  |           |           | not     |          |
       | no_enrollment         | Orphan position |           | not       | not     | not      |
       | other_authority       | Other authority | not       | not       | not     | not      |
@@ -74,7 +70,7 @@ Feature: User mailer
     And an enrollment exists with committee: committee "<committee>_committee", position: position "watcher", membership_notices: true
     And a user: "watcher" exists with email: "watcher@example.com"
     And a membership: "watcher" exists with user: user "watcher", period: period "focus", position: position "watcher"
-    And a membership: "focus" exists with user: user "focus", period: period "focus", position: position "requestable_position"
+    And a membership: "focus" exists with user: user "focus", period: period "focus", position: position "requestable_committee"
     And a <notice> notice email is sent for membership: "focus"
     Then 1 email should be delivered to user: "focus"
     And the email <cc> be copied to user: "watcher"
