@@ -1,11 +1,11 @@
-<h2>Editing request of <%=h @request.user.name %> for <%=h @request.requestable %></h2>
+<h2>Editing request of <%=h @request.user.name %> for <%=h @request.committee %></h2>
 
-<%= semantic_form_for(@request, :html => { :multipart => true }) do |f| %>
-  <%= render :partial => 'form', :object => f %>
+<%= semantic_form_for(@request, html: { multipart: true }) do |f| %>
+  <%= render partial: 'form', object: f %>
 <% end %>
 
 <p>
 <%= link_to 'Show', @request %> |
-<%= link_to 'Back', polymorphic_path( [@request.requestable, :requests] ) %>
+<%= link_to 'Back', polymorphic_path( [@request.committee, :requests] ) %>
 </p>
 

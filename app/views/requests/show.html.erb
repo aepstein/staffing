@@ -1,5 +1,5 @@
 <p>
-  <b>Requestable:</b> <%=h @request.requestable %>
+  <b>Committee:</b> <%=h @request.committee %>
 </p>
 
 <p>
@@ -75,6 +75,6 @@
 <%= link_to 'Edit', edit_request_path(@request) %> |
 <% end -%>
 <%= link_to 'List Memberships', request_memberships_path(@request) %> |
-<%= link_to 'Back', polymorphic_path( [@request.requestable, :requests] ) %>
+<%= link_to 'Back', polymorphic_path( [@request.committee, :requests] ) %>
 </p>
 

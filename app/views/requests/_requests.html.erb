@@ -1,19 +1,19 @@
-<% user ||= false; requestable ||= false %>
+<% user ||= false; committee ||= false %>
 <table id="requests">
   <thead>
   <tr>
     <% unless user %>
     <th>User</th>
     <% end %>
-    <% unless requestable %>
-    <th>Requestable</th>
+    <% unless committee %>
+    <th>Committee</th>
     <% end %>
     <th>Position</th>
   </tr>
   </thead>
   <tbody>
-  <%= render :partial => 'requests/request', :collection => requests,
-    :locals => { :user => user, :requestable => requestable } %>
+  <%= render partial: 'requests/request', collection: requests,
+    locals: { user: user, committee: committee } %>
   </tbody>
 </table>
 

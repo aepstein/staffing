@@ -182,7 +182,7 @@ class RequestsController < ApplicationController
     @request.destroy
 
     respond_to do |format|
-      format.html { redirect_to polymorphic_url( [ @request.requestable, :requests ] ) }
+      format.html { redirect_to polymorphic_url( [ @request.committee, :requests ] ) }
       format.xml  { head :ok }
     end
   end
@@ -191,17 +191,16 @@ class RequestsController < ApplicationController
 
   def initialize_context
     @request = Request.find( params[:id] ) if params[:id]
-    @requestable = @request.requestable if @request
-    @requestable = Position.find params[:position_id] if params[:position_id]
-    @requestable = Committee.find params[:committee_id] if params[:committee_id]
+    @committee = @request.committee if @request
+    @committee = Committee.find params[:committee_id] if params[:committee_id]
     @authority = Authority.find( params[:authority_id] ) if params[:authority_id]
     unless @request || @authority
       @user = params[:user_id] ? User.find( params[:user_id] ) : current_user
     end
-    if @requestable
-      @request ||= @requestable.requests.where( :user_id => @user.id ).first
+    if @committee
+      @request ||= @committee.requests.where( user_id: @user.id ).first
     end
-    @context = @authority || @requestable || @user
+    @context = @authority || @committee || @user
   end
 
   def initialize_index
@@ -213,7 +212,7 @@ class RequestsController < ApplicationController
     if @request && @request.persisted?
       return redirect_to edit_request_url( @request )
     end
-    @request = @requestable.requests.build
+    @request = @committee.requests.build
     @request.starts_at ||= @membership.starts_at if @membership
     @request.user ||= ( @membership ? @membership.user : @user )
     @request.assign_attributes params[:request]
@@ -233,11 +232,11 @@ class RequestsController < ApplicationController
 
   def index_csv
     csv_string = CSV.generate do |csv|
-      csv << %w( net_id first last status requestable until )
+      csv << %w( net_id first last status committee until )
       @requests.all.each do |request|
         csv << [ request.user.net_id, request.user.first_name,
           request.user.last_name, request.user.status,
-          request.requestable, request.ends_at ]
+          request.committee, request.ends_at ]
       end
     end
     send_data csv_string, :disposition => "attachment; filename=requests.csv",

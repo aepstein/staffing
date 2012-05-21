@@ -1,13 +1,12 @@
-<h2>New request of <%=h @request.user.name %> for <%=h @request.requestable %></h2>
+<h2>New request of <%=h @request.user.name %> for <%=h @request.committee %></h2>
 
-<%= semantic_form_for(@request, :url => polymorphic_path([
-    (@membership ? @membership : @request.requestable), :requests
-  ]),
-  :html => { :multipart => true } ) do |f| %>
+<%= semantic_form_for( @request,
+  url: polymorphic_path([ @request.committee, :requests ]),
+  html: { multipart: true } ) do |f| %>
   <%= render :partial => 'form', :object => f %>
 <% end %>
 
 <p>
-<%= link_to 'Back', polymorphic_path( [@request.requestable, :requests] ) %>
+<%= link_to 'Back', polymorphic_path( [@request.committee, :requests] ) %>
 </p>
 

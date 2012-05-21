@@ -93,7 +93,8 @@ Feature: Manage requests
     And a membership exists with position: position "popular", user: user "applicant", period: period "2008"
     And a committee: "focus" exists with name: "Central Committee"
     And a requestable_committee: "other" exists with name: "Least Popular"
-    And an enrollment exists with committee: the committee, position: position "popular", requestable: true
+    And an enrollment exists with committee: committee "focus", position: position "popular", requestable: true
+    And an enrollment exists with committee: committee "other", requestable: true
     And a request exists with user: user "applicant", committee: committee "<existing>"
     And I log in as user: "applicant"
     And I am on the new request page for the committee: "focus"
@@ -102,7 +103,7 @@ Feature: Manage requests
     And I fill in "Favorite color" with "*bl*ue"
     And I fill in "Capital of Assyria" with "*Da*mascus"
     And I choose "Yes"
-    And I select "Least Popular Person" from "Move to"
+    And I select "<existing_name>" from "Move to"
     And I press "<button>"
     Then I should see "Request was successfully <sta>ated."
     And I should see "Committee: Central Committee"
@@ -130,9 +131,9 @@ Feature: Manage requests
     And I should see "Are you qualified? No"
     And I should see "Resume? Yes"
     Examples:
-      |existing          |button|sta|
-      |committee "other" |Create|cre|
-      |committee "focus" |Update|upd|
+      |existing |existing_name     |button|sta|
+      |other    |Least Popular     |Create|cre|
+      |focus    |Central Committee |Update|upd|
 
   Scenario: Reject a request and reactivate
     Given an authority exists with name: "Primary"

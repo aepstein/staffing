@@ -1,10 +1,10 @@
-<% user ||= false; requestable ||= false %>
+<% user ||= false; committee ||= false %>
   <%= table_row_tag do %>
     <% unless user %>
     <td><%=h request.user.name :last_first %></td>
     <% end %>
-    <% unless requestable %>
-    <td><%=h request.requestable %></td>
+    <% unless committee %>
+    <td><%=h request.committee %></td>
     <% end %>
     <td><%= request.position %></td>
     <td><%= link_to 'Show', request %></td>

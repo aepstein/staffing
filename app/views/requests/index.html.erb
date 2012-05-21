@@ -4,8 +4,8 @@
 <%= paginate @requests %>
 </p>
 
-<%= render :partial => "requests", :object => @requests,
-  :locals => { :requestable => @requestable, :user => (@requestable || @authority ? false : @user) } %>
+<%= render partial: "requests/requests", object: @requests,
+  locals: { committee: @committee, user: (@committee || @authority ? false : @user) } %>
 
 <p>
 <%= paginate @requests %>
