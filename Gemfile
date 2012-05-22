@@ -39,6 +39,7 @@ group :development, :test do
 end
 group :development do
   gem 'thin'
+  gem 'ruby-graphviz', require: 'graphviz'
 end
 group :test do
   gem 'test-unit'

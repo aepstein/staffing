@@ -92,7 +92,7 @@ class Motion < ActiveRecord::Base
 
     before_transition all - :divided => :divided, :do => :do_divide
 
-    state :started, :proposed, :referred, :merged, :divided, :closed, :adopted,
+    state :started, :proposed, :referred, :merged, :divided, :withdrawn, :adopted,
       :implemented
 
     event :propose do
@@ -114,10 +114,13 @@ class Motion < ActiveRecord::Base
       transition :adopted => :implemented
     end
     event :restart do
-      transition :closed => :started
+      transition :withdrawn => :started
     end
     event :reject do
-      transition [ :proposed, :adopted, :implemented ] => :rejected
+      transition [ :proposed, :adopted ] => :rejected
+    end
+    event :withdraw do
+      transition [ :started, :proposed ] => :withdrawn
     end
 
   end
