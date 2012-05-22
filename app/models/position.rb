@@ -77,7 +77,7 @@ class Position < ActiveRecord::Base
   has_many :requestable_enrollments, class_name: 'Enrollment',
     conditions: { requestable: true }
   has_many :requestable_committees, through: :requestable_enrollments,
-    source: :committee
+    source: :committee, conditions: { active: true }
   has_many :requests, include: :user, through: :requestable_committees,
     conditions: "enrollments.position_id IN " +
       "(SELECT positions.id FROM positions WHERE ( positions.statuses_mask = 0 OR " +

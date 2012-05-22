@@ -1,7 +1,8 @@
   <%= render "shared/error_messages", :target => form.object %>
   <%= form.inputs do %>
   <%= form.input :name %>
-  <%= form.input :schedule, :hint => 'On what schedule are sessions of the committee organized?' %>
+  <%= form.input :active, as: :radio, hint: 'Is committee active for staffing and motion purposes?' %>
+  <%= form.input :schedule, hint: 'On what schedule are sessions of the committee organized?' %>
   <%= form.input :brand %>
   <%= form.input :join_message %>
   <%= form.input :leave_message %>

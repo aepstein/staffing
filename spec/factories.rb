@@ -22,6 +22,7 @@ FactoryGirl.define do
   factory :committee do
     sequence(:name) { |n| "Committee #{n}" }
     association :schedule
+    active true
 
     factory :requestable_committee do
       after(:create) do |committee, evaluator|
@@ -108,6 +109,7 @@ FactoryGirl.define do
     association :schedule
     association :quiz
     slots 1
+    active true
   end
 
   factory :qualification do

@@ -169,18 +169,56 @@ describe Membership do
     Membership.unrequested.should include @membership
   end
 
-  it 'should claim a request for the user and position if the position is requestable' do
-    nr_position = create(:position)
-    r_c_position = create(:position)
-    r_committee = create(:committee)
-    create(:enrollment, position: r_c_position, committee: r_committee, requestable: true )
-    create(:enrollment, position: nr_position, committee: r_committee )
-    c_request = create(:request, committee: r_committee)
-    m = create(:membership, position: r_c_position, user: c_request.user)
-    m.request.should eql c_request
-    m.request.closed?.should be_true
-    m = create(:membership, position: nr_position, user: c_request.user)
-    m.request.should be_nil
+  context "claim request" do
+    def committee
+      @committee ||= enrollment.committee
+    end
+
+    def position
+      @position ||= enrollment.position
+    end
+
+    def enrollment
+      @enrollment ||= create(:enrollment, requestable: true)
+    end
+
+    def request
+      @request ||= create(:request, committee: committee)
+    end
+
+    def membership
+      @membership_local ||= create(:membership, position: position, user: request.user)
+    end
+
+    before(:each) do
+      request
+    end
+
+    it "should claim a matching request" do
+      membership.request.should eql request
+    end
+
+    it "should not claim a request for an inactive committee" do
+      committee.update_attribute :active, false
+      membership.request.should be_nil
+    end
+
+    it "should not claim a request for a non-matching status position" do
+      position.update_attribute :statuses_mask, 2
+      ( position.statuses_mask & request.user.statuses_mask ).should eql 0
+      membership.request.should be_nil
+    end
+
+    it "should not claim a request for an inactive position" do
+      position.update_attribute :active, false
+      membership.request.should be_nil
+    end
+
+    it "should not claim a request for non-requestable enrollment" do
+      enrollment.update_attribute :requestable, false
+      membership.request.should be_nil
+    end
+
   end
 
   it 'should have a notifiable scope that returns only memberships with users and notifiable position' do

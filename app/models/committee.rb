@@ -4,13 +4,15 @@ class Committee < ActiveRecord::Base
   scope :ordered, order { name }
   scope :group_by_id, group( :id )
   scope :requestable_for_user, lambda { |user|
-    where { |c| c.id.in( Enrollment.unscoped.requestable.select(:committee_id).
+    active.where { |c| c.id.in( Enrollment.unscoped.requestable.select(:committee_id).
       joins(:position).merge( Position.unscoped.active.with_status(user.status) )
     ) }
   }
+  scope :active, where { active.eq( true ) }
+  scope :inactive, where { active.not_eq( true ) }
 
   attr_accessible :name, :description, :join_message, :leave_message, :brand_id,
-    :requestable, :public_url, :schedule_id, :reject_message
+    :requestable, :public_url, :schedule_id, :reject_message, :active
 
   belongs_to :schedule, inverse_of: :committees
   belongs_to :brand, inverse_of: :committees
