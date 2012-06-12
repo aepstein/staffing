@@ -301,6 +301,7 @@ class Membership < ActiveRecord::Base
 
   def concurrent_memberships_must_not_exceed_slots
     return unless starts_at && ends_at && position
+    return unless starts_at_changed? || ends_at_changed?
     unless position.slots > max_concurrent_count
       errors.add :position, "lacks free slots for the specified time period"
     end
