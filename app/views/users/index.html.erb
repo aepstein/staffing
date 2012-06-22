@@ -41,5 +41,8 @@
 <% if permitted_to? :create, :users %>
 <%= link_to 'New user', new_user_path %>
 <% end %>
+<% if permitted_to? :manage, :users %>
+<%= link_to 'Import empl_ids', import_empl_id_users_path %>
+<% end %>
 </p>
 

@@ -38,6 +38,8 @@ Feature: Manage committees
     Then I should <update> authorized
     Given I am on the page for the committee
     Then I should <show> authorized
+# TODO implement test to find this section
+#    And I should <create> "Download Empl Id Directory"
     And I should <update> "Edit"
     Given I am on the committees page
     Then I should <show> "Focus"
@@ -114,4 +116,20 @@ Feature: Manage committees
       |committee 1|
       |committee 2|
       |committee 4|
+
+# TODO make this test work
+#  Scenario Outline: Reports (verify they compile)
+#    Given a brand exists
+#    And committee exists with brand: the brand
+#    And a position exists
+#    And an enrollment exists with committee: the committee, position: the position
+#    And a membership exists with position: the position
+#    And I log in as user: "admin"
+#    And I am on the page for the committee
+#    And I press "Download <what>"
+#    Examples:
+#      | what                 |
+#      | Tent Cards           |
+#      | Membership Directory |
+#      | Empl Id Directory    |
 

@@ -2,6 +2,7 @@
 class MembershipReport < Prawn::Document
   include CustomFonts
 
+  attr_accessor :memberships
   attr_accessor :voting_memberships
   attr_accessor :nonvoting_memberships
   attr_accessor :committee
@@ -13,10 +14,10 @@ class MembershipReport < Prawn::Document
   def initialize(committee, as_of)
     self.committee = committee
     self.as_of = as_of
-    memberships = committee.memberships.as_of(as_of).except(:order).
+    self.memberships ||= committee.memberships.as_of(as_of).except(:order).
       includes(:user).order('users.last_name ASC, users.first_name ASC')
-    self.voting_memberships = memberships.where('enrollments.votes > 0')
-    self.nonvoting_memberships = memberships.where('enrollments.votes = 0')
+    self.voting_memberships ||= memberships.where('enrollments.votes > 0')
+    self.nonvoting_memberships ||= memberships.where('enrollments.votes = 0')
     include_palatino
     super( :page_size => 'LETTER' )
   end

@@ -19,7 +19,7 @@ Staffing::Application.routes.draw do
   end
   resources :committees do
     member do
-      get :tents, :members
+      get :tents, :members, :empl_ids
     end
     collection do
       get :available
@@ -111,6 +111,10 @@ Staffing::Application.routes.draw do
   resources :users do
     member do
       get :resume, :tent
+    end
+    collection do
+      get :import_empl_id
+      put :do_import_empl_id
     end
     resources :committees, :only => [] do
       collection do

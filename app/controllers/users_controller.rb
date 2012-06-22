@@ -1,10 +1,34 @@
 class UsersController < ApplicationController
   before_filter :require_user, :initialize_context
-  before_filter :initialize_index, :only => [ :index, :allowed ]
-  before_filter :new_user_from_params, :only => [ :new, :create ]
+  before_filter :initialize_index, only: [ :index, :allowed ]
+  before_filter :new_user_from_params, only: [ :new, :create ]
   filter_access_to :new, :create, :edit, :update, :destroy, :show, :tent,
-    :attribute_check => true
-  before_filter :setup_breadcrumbs, :except => [ :profile ]
+    attribute_check: true
+  filter_access_to :import_empl_id, :do_import_empl_id do
+    permitted_to! :manage, :users
+  end
+  before_filter :setup_breadcrumbs, except: [ :profile ]
+
+  # GET /users/import_empl_id
+  def import_empl_id; end
+
+  # PUT /users/do_import_empl_id
+  def do_import_empl_id
+    respond_to do |format|
+      import_results = 0
+      # Add from form field
+      unless params[:users].blank?
+        import_results += User.import_empl_id_from_csv_string( params[:users] )
+      end
+      # Add from file
+      unless params[:users_file].is_a?( String ) || params[:users_file].blank?
+        import_results += User.import_empl_id_from_csv_file( params[:users_file] )
+      end
+      flash[:notice] = "Processed empl_ids."
+      format.html { redirect_to import_empl_id_users_url }
+      format.xml { head :ok }
+    end
+  end
 
   # GET /motions/:motion_id/users/allowed
   # GET /motions/:motion_id/users/allowed

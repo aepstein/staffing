@@ -35,6 +35,17 @@ class CommitteesController < ApplicationController
     end
   end
 
+  # GET /committees/:id/emplids.pdf
+  def emplids
+    respond_to do |format|
+      format.pdf do
+        report = EmplIdReport.new( @committee, @as_of )
+        send_data report.to_pdf, :filename => "#{@committee.name :file}-emplids.pdf",
+          :type => 'application/pdf', :disposition => 'inline'
+      end
+    end
+  end
+
   # GET /committees
   # GET /committees.xml
   def index

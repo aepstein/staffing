@@ -46,6 +46,18 @@
 </p>
 <% end %>
 
+<% if permitted_to? :manage, :users %>
+  <%=form_tag empl_ids_committee_path(@committee, :format => :pdf), :method => :get do %>
+  <p>
+    <b><%=label_tag :as_of, 'As of' %></b>
+    <%=text_field_tag :as_of,
+      ( params[:as_of].blank? ? Time.zone.now.strftime( '%Y-%m-%d' ) : params[:as_of] ),
+      class: 'ui-date-picker' %>
+    <%=submit_tag "Download Empl Id Directory" %>
+  </p>
+  <% end %>
+<% end %>
+
 <p>
 <% if permitted_to? :edit, @committee -%>
 <%= link_to 'Edit', edit_committee_path(@committee) %> |

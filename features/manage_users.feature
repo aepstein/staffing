@@ -115,6 +115,7 @@ Feature: Manage users
     And I fill in "Middle name" with "Nobody"
     And I fill in "Last name" with "Doe"
     And I fill in "Net" with "fake"
+    And I fill in "Empl" with "123456"
     And I fill in "Email" with "jd@example.com"
     And I fill in "Mobile phone" with "607-555-1212"
     And I fill in "Work phone" with "607-555-1234"
@@ -128,6 +129,7 @@ Feature: Manage users
     And I should see "Middle name: Nobody"
     And I should see "Last name: Doe"
     And I should see "Net id: fake"
+    And I should see "Empl id: 123456"
     And I should see "Email: jd@example.com"
     And I should see "Mobile phone: (607) 555-1212"
     And I should see "Work phone: (607) 555-1234"
@@ -142,6 +144,7 @@ Feature: Manage users
     And I fill in "Middle name" with "Beta"
     And I fill in "Last name" with "Gamma"
     And I fill in "Net" with "also_fake"
+    And I fill in "Empl" with "100000"
     And I fill in "Email" with "jd2@example.com"
     And I fill in "Mobile phone" with "607-555-1200"
     And I fill in "Work phone" with "607-555-1200"
@@ -157,6 +160,7 @@ Feature: Manage users
     And I should see "Middle name: Beta"
     And I should see "Last name: Gamma"
     And I should see "Net id: also_fake"
+    And I should see "Empl id: 100000"
     And I should see "Email: jd2@example.com"
     And I should see "Mobile phone: (607) 555-1200"
     And I should see "Work phone: (607) 555-1200"
@@ -186,4 +190,26 @@ Feature: Manage users
       |Doe 1, John |
       |Doe 2, John |
       |Doe 4, John |
+
+  Scenario: Set user empl_ids in bulk (from csv text)
+    Given a user exists with net_id: "jd1"
+    And I log in as user: "admin"
+    And I am on the users page
+    And I follow "Import empl_ids"
+    And I fill in "users" with "jd1,123456"
+    And I press "Import empl_ids"
+    Then I should see "Processed empl_ids."
+    Given I am on the page for the user
+    Then I should see "Empl id: 123456"
+
+  Scenario: Set user empl_ids in bulk (from csv file)
+    Given a user exists with net_id: "jd1"
+    And I log in as user: "admin"
+    And I am on the users page
+    And I follow "Import empl_ids"
+    And I attach the file "spec/assets/empl_ids.csv" to "users_file"
+    And I press "Import empl_ids"
+    Then I should see "Processed empl_ids."
+    Given I am on the page for the user
+    Then I should see "Empl id: 123456"
 

@@ -24,6 +24,13 @@ describe User do
     duplicate.save.should be_false
   end
 
+  it "should not save with duplicate empl_id" do
+    @user.update_attribute :empl_id, 10000
+    duplicate = build(:user)
+    duplicate.empl_id = @user.empl_id
+    duplicate.save.should be_false
+  end
+
   it 'should not save without a first name' do
     @user.first_name = nil
     @user.save.should be_false
@@ -145,6 +152,15 @@ describe User do
 
   it 'should have a to_email method that returns a valid email entry' do
     @user.to_email.should eql "#{@user.name} <#{@user.email}>"
+  end
+
+  it "should import empl_id from csv string" do
+    @user.empl_id.should be_nil
+    str = "\"#{@user.net_id}\",10000
+\"o#{@user.net_id}\",10001"
+    User.import_empl_id_from_csv_string( str ).should eql 1
+    @user.reload
+    @user.empl_id.should eql 10000
   end
 
   def setup_authority_id_scenario

@@ -5,7 +5,7 @@ class User < ActiveRecord::Base
   attr_accessible :first_name, :middle_name, :last_name, :email, :mobile_phone,
     :work_phone, :home_phone, :work_address, :date_of_birth, :resume,
     :renewal_checkpoint, :memberships_attributes, as: [ :default, :admin ]
-  attr_accessible :net_id, :admin, :status, as: :admin
+  attr_accessible :net_id, :empl_id, :admin, :status, as: :admin
 
   default_scope lambda { ordered }
 
@@ -139,6 +139,7 @@ class User < ActiveRecord::Base
   validates :date_of_birth, timeliness: { type: :date, allow_nil: true,
     allow_blank: true }
   validates :renewal_checkpoint, timeliness: { type: :datetime }
+  validates :empl_id, uniqueness: { allow_blank: true }
   validates_integrity_of :resume
   validate do |user|
     if user.resume.present? && user.resume.size > 1.megabyte
@@ -150,6 +151,29 @@ class User < ActiveRecord::Base
 
   before_validation :import_ldap_attributes, :on => :create
   before_validation { |r| r.renewal_checkpoint ||= Time.zone.now unless r.persisted? }
+
+  def self.import_empl_id_from_csv_string( string )
+    import_empl_id_from_csv( CSV.parse(string) )
+  end
+
+  def self.import_empl_id_from_csv_file( file )
+    import_empl_id_from_csv( CSV.parse(file.read) )
+  end
+
+  def self.import_empl_id_from_csv(values)
+    # TODO
+    # For every 1000 entries, prepare & execute update statement
+    values.select! { |row| row.length == 2 }
+    return 0 if values.empty?
+    count = 0
+    while ( focus = values.slice!(0,1000) ).any? do
+      focus.map! { |row| "WHEN #{connection.quote row.first} " +
+        "THEN #{connection.quote row.last.to_i}" }
+      count += User.unscoped.update_all("empl_id = (CASE net_id #{focus.join ' '} " +
+        "ELSE empl_id END)")
+    end
+    count
+  end
 
   def requestables(reload=false)
     @requestables = nil if reload
