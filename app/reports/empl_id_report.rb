@@ -4,7 +4,7 @@ class EmplIdReport < MembershipReport
   def initialize(committee, as_of)
     self.memberships = committee.memberships.as_of(as_of).except(:order).
       includes(:user).order('users.last_name ASC, users.first_name ASC').
-      where( user_id.not_eq( nil ) )
+      where { user_id.not_eq( nil ) }
     super( committee, as_of )
   end
 
@@ -33,12 +33,6 @@ class EmplIdReport < MembershipReport
         table.columns(0..(table.column_length - 2)).border_right_width = 0.1
         table.rows(0..(table.row_length - 2)).border_bottom_width = 0.1
         table.rows(1..(table.row_length - 1)).border_top_width = 0.1
-        section_label_rows.each do |section_label_row|
-          table.row(section_label_row).background_color = 'DDDDDD'
-          table.row(section_label_row).borders = [:top, :bottom]
-          table.row(section_label_row).column(0).borders = [ :top, :bottom, :left ]
-          table.row(section_label_row).column(5).borders = [ :top, :bottom, :right ]
-        end
       end
     end
     render
