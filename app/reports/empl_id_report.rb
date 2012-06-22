@@ -25,6 +25,7 @@ class EmplIdReport < MembershipReport
     end
     font 'Helvetica', :size => 10 do
       rows = [ %w( Name EmplID Until ) ]
+      rows += rowify_memberships memberships
       table rows, :header => true, :width => 540 do |table|
         table.row(0).background_color = '000000'
         table.row(0).text_color = 'FFFFFF'
