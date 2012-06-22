@@ -29,19 +29,19 @@ class CommitteesController < ApplicationController
     respond_to do |format|
       format.pdf do
         report = MembershipReport.new( @committee, @as_of )
-        send_data report.to_pdf, :filename => "#{@committee.name :file}-members.pdf",
-          :type => 'application/pdf', :disposition => 'inline'
+        send_data report.to_pdf, filename: "#{@committee.name :file}-members.pdf",
+          type: 'application/pdf', disposition: 'inline'
       end
     end
   end
 
   # GET /committees/:id/emplids.pdf
-  def emplids
+  def empl_ids
     respond_to do |format|
       format.pdf do
         report = EmplIdReport.new( @committee, @as_of )
-        send_data report.to_pdf, :filename => "#{@committee.name :file}-emplids.pdf",
-          :type => 'application/pdf', :disposition => 'inline'
+        send_data report.to_pdf, filename: "#{@committee.name :file}-empl_ids.pdf",
+          type: 'application/pdf', disposition: 'inline'
       end
     end
   end
