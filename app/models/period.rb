@@ -2,36 +2,43 @@ class Period < ActiveRecord::Base
   attr_accessible :schedule_id, :starts_at, :ends_at
   attr_readonly :schedule_id
 
-  default_scope order( 'periods.starts_at DESC' )
+  default_scope order { periods.starts_at }
 
   scope :past, lambda { where { ends_at < Time.zone.today } }
   scope :current, lambda { overlaps( Time.zone.today, Time.zone.today ) }
+  scope :recent, lambda {
+    joins( "LEFT JOIN `periods` AS `next_periods` ON " +
+      "#{date_add( 'periods.ends_at', 1.day )} = `next_periods`.`starts_at`" ).
+    where { (starts_at.lte( Time.zone.today ) & ends_at.gte( Time.zone.today )
+      ) | (next_periods.starts_at.lte( Time.zone.today ) &
+      next_periods.ends_at.gte( Time.zone.today )) }
+  }
   scope :overlaps, lambda { |starts, ends|
     where { |t| ( t.ends_at >= starts ) & ( t.starts_at <=  ends ) }
   }
   scope :conflict_with, lambda { |period|
     overlaps( period.starts_at, period.ends_at ).
-    where( :schedule_id => period.schedule_id ) }
+    where( schedule_id: period.schedule_id ) }
 
   belongs_to :schedule, inverse_of: :periods
   has_many :motions, inverse_of: :period
   has_many :meetings, inverse_of: :period
   has_many :memberships, inverse_of: :period, dependent: :destroy do
     def populate_unassigned!
-      @association.owner.schedule.positions.active.each do |position|
-        position.memberships.populate_unassigned_for_period! @association.owner
+      proxy_association.owner.schedule.positions.active.each do |position|
+        position.memberships.populate_unassigned_for_period! proxy_association.owner
       end
       # Reset so changes are loaded in this collection
       reset
     end
     def repopulate_unassigned!
-      where { |t| t.starts_at < @association.owner.starts_at }.update_all(
-        "starts_at = #{connection.quote @association.owner.starts_at}"
+      where { |t| t.starts_at < proxy_association.owner.starts_at }.update_all(
+        "starts_at = #{connection.quote proxy_association.owner.starts_at}"
       )
-      where { |t| t.ends_at > @association.owner.ends_at }.update_all(
-        "ends_at = #{connection.quote @association.owner.ends_at}"
+      where { |t| t.ends_at > proxy_association.owner.ends_at }.update_all(
+        "ends_at = #{connection.quote proxy_association.owner.ends_at}"
       )
-      Membership.unassigned.where(:period_id => @association.owner.id).delete_all
+      Membership.unassigned.where(:period_id => proxy_association.owner.id).delete_all
       # Reset so changes are loaded in this collection
       reset
       populate_unassigned!

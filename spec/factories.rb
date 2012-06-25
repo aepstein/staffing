@@ -110,6 +110,9 @@ FactoryGirl.define do
     association :quiz
     slots 1
     active true
+    factory :renewable_position do
+      renewable true
+    end
   end
 
   factory :qualification do

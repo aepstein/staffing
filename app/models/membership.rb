@@ -66,33 +66,36 @@ class Membership < ActiveRecord::Base
     def assignable; User.assignable_to( proxy_association.owner.position ); end
   end
 
-  # Memberships that could renewed by assigning the user to this membership:
+  # Memberships that could be renewed by assigning the user to this membership:
   # * assigned
-  # * not already renewed
-  # * of the same position or committee
-  # * not overlapping this membership
-  # * interested in renewal to some date after membership starts
-  # * interested in renewal into the present
-  # * user must meet status requirements of the position, if applicable
+  # * unrenewed
+  # * renewable
+  # * same position or committee
+  # interested in renewal to date after this membership starts,
+  # * if position.statuses_mask > 0, having user.statuses_mask & position.
+  #   statuses_mask > 0
   scope :renewable_to, lambda { |membership|
-    s = assigned.unrenewed.joins("LEFT JOIN enrollments ON " +
-      "enrollments.position_id = memberships.position_id").
-    where( "memberships.position_id = ? OR " +
-      "enrollments.committee_id IN (?)",
-       membership.position_id, membership.committee_ids ).
+#    s = assigned.unrenewed.joins("LEFT JOIN enrollments ON " +
+#      "enrollments.position_id = memberships.position_id").
+#    where( "memberships.position_id = ? OR " +
+#      "enrollments.committee_id IN (?)",
+#       membership.position_id, membership.committee_ids ).
+    s = assigned.unrenewed.renewable.
     no_overlap( membership.starts_at, membership.ends_at ).
-    where( :renew_until.gte => membership.starts_at ).
-    where( :renew_until.gte => Time.zone.today )
+    where { renew_until.gte( membership.starts_at ) &
+      renew_until.gte( Time.zone.today ) }.
+    joins { position.enrollments.outer }.
+    where { memberships.position_id.eq( membership.position_id ) |
+      enrollments.committee_id.in( membership.committee_ids ) }
     return s unless membership.position.statuses_mask > 0
     s.where { user_id.in(
       User.unscoped.select { id }.where(
         "users.statuses_mask & #{membership.position.statuses_mask} > 0"
       ) ) }
   }
-  scope :ordered, includes( :user, :period ).order(
-    "memberships.ends_at DESC, memberships.starts_at DESC, " +
-    "users.last_name ASC, users.first_name ASC, users.middle_name ASC"
-  )
+  scope :ordered, joins { [ user, period ] }.
+    order { [ ends_at.desc, starts_at.desc, users.last_name, users.first_name,
+    users.middle_name ] }
   scope :assigned, where { user_id != nil }
   scope :unassigned, where( :user_id => nil )
   scope :requested, where { request_id != nil }
@@ -109,19 +112,14 @@ class Membership < ActiveRecord::Base
   scope :past, lambda { where { ends_at < Time.zone.today } }
   scope :current_or_future, lambda { where { ends_at >= Time.zone.today } }
   # To be renewable a membership must:
-  # * have a renewable position
-  # * be in either
-  # ** a current period
-  # ** immediately preceeding a current period
-  # * end with the period in which they occur
+  # * be assigned and not yet renewed
+  # * be associated with an active, renewable position
+  # * end with period that is a recent period
   scope :renewable, lambda {
-    assigned.unrenewed.joins( :position, :period ).merge( Position.unscoped.active.renewable ).
-    joins( "LEFT JOIN periods AS next_periods ON " +
-      "#{date_add( 'periods.ends_at', 1.day )} = next_periods.starts_at" ).
-    where( "memberships.ends_at = periods.ends_at" ).
-    where( "(periods.starts_at <= :today AND periods.ends_at >= :today) OR " +
-      "(next_periods.starts_at <= :today AND next_periods.ends_at >= :today)",
-      :today => Time.zone.today )
+    assigned.unrenewed.
+    where { position_id.in( Position.unscoped.active.renewable.select { id } ) &
+      period_id.in( Period.unscoped.recent.
+        where { ends_at.eq memberships.ends_at }.select { id } ) }
   }
   # Unrenewable memberships are associated with unrenewable positions
   scope :unrenewable, lambda { joins(:position).merge( Position.unscoped.unrenewable ) }
