@@ -73,7 +73,117 @@ describe Membership do
 
   end
 
+  context 'ends_within scope' do
+
+    let(:membership) { create :membership, starts_at: Time.zone.today - 2.days,
+      ends_at: Time.zone.today + 2.days }
+
+    it "should include/exclude qualifying membership" do
+      Membership.ends_within(1.week).should include membership
+      Membership.ends_within(1.day).should_not include membership
+    end
+
+  end
+
+  context 'temporal scopes' do
+
+    let(:past) { create(:past_membership) }
+    let(:current) { create(:current_membership) }
+    let(:future) { create(:future_membership) }
+
+    it "past should return only past" do
+      Membership.past.should include past
+      Membership.past.should_not include current, future
+    end
+
+    it "current should include only current" do
+      Membership.current.should include current
+      Membership.current.should_not include past, future
+    end
+
+    it "future should include only future" do
+      Membership.future.should include future
+      Membership.future.should_not include current, past
+    end
+
+    it "current_or_future should include current and future only" do
+      Membership.current_or_future.should include current, future
+      Membership.current_or_future.should_not include past
+    end
+
+    it "as_of today should include only current" do
+      Membership.as_of(Time.zone.today).should include current
+      Membership.as_of(Time.zone.today).should_not include past, future
+    end
+
+    it "overlap(current.ends_at, future.starts_at) should include current, future only" do
+      Membership.overlap(current.ends_at,future.starts_at).should include current, future
+      Membership.overlap(current.ends_at,future.starts_at).should_not include past
+    end
+
+    it "no_overlap(current.ends_at, future.starts_at) should include past only" do
+      Membership.no_overlap(current.ends_at,future.starts_at).should include past
+      Membership.no_overlap(current.ends_at,future.starts_at).should_not include current, future
+    end
+  end
+
+  context "renew_until scope" do
+    let(:membership) { create :membership, ends_at: Time.zone.today + 1.day,
+      renew_until: Time.zone.today + 1.week }
+
+    it "should include qualifying membership" do
+      Membership.renew_until( Time.zone.today ).should include membership
+      Membership.renew_until( Time.zone.today + 1.month ).should_not include membership
+    end
+
+    it "should be called with Time.zone.today by renew_active" do
+      Membership.should_receive( :renew_until ).with( Time.zone.today )
+      Membership.renew_active
+    end
+  end
+
+  context 'assigned/unassigned scope' do
+
+    let(:membership) { create :membership }
+
+    it "should include/exclude qualifying membership" do
+      Membership.assigned.should include membership
+      Membership.unassigned.should_not include membership
+    end
+
+    it "should exclude/include membership without user" do
+      membership.user = nil; membership.save!
+      Membership.assigned.should_not include membership
+      Membership.unassigned.should include membership
+    end
+
+  end
+
+  context 'requested/unrequested scope' do
+
+    let(:request) { create :request }
+    let(:membership) { create :membership,
+      position: request.committee.positions.first,
+      user: request.user, request: request }
+
+    it "should include/exclude qualifying membership" do
+      Membership.requested.should include membership
+      Membership.unrequested.should_not include membership
+    end
+
+    it "should exclude/include membership without request" do
+      membership.request = nil; membership.save!
+      Membership.requested.should_not include membership
+      Membership.unrequested.should include membership
+    end
+
+  end
+
   context 'vacancies' do
+
+    let(:membership) {
+      create :membership, position: create( :position, slots: 2 )
+    }
 
     it "should start with one assigned and one vacant membership" do
       membership.position.memberships.assigned.count.should eql 1
@@ -130,21 +240,7 @@ describe Membership do
       position.memberships.unassigned.length.should eql 0
     end
 
-    let(:membership) {
-#      period = create(:period, schedule: create(:schedule) )
-#      position = create(:position, schedule: period.schedule, slots: 2)
-#      m = position.memberships.build
-#      m.user = create(:user)
-#      m.period = period
-#      m.starts_at = period.starts_at
-#      m.ends_at = period.ends_at
-#      m.save!
-#      m
-      create :membership, position: create( :position, slots: 2 )
-    }
-
   end
-
 
   it 'should have a designees.populate method that creates a designee for each committee corresponding position is enrolled in' do
     membership.save!
@@ -162,38 +258,12 @@ describe Membership do
     new_designees.first.committee.should eql enrollment_no_designee.committee
   end
 
-  it 'should have an unrequested scope' do
-    membership.save!
-    requested = create(:membership, :request => create(:request) )
-    Membership.unrequested.where { user_id != nil }.size.should eql 1
-    Membership.unrequested.should include membership
-  end
-
   context "claim request" do
     let( :committee ) { enrollment.committee }
     let( :position ) { enrollment.position }
     let( :enrollment ) { create :enrollment, requestable: true }
     let( :request ) { create :request, committee: committee }
     let( :membership ) { create :membership, position: position, user: request.user }
-#    def committee
-#      @committee ||= enrollment.committee
-#    end
-
-#    def position
-#      @position ||= enrollment.position
-#    end
-
-#    def enrollment
-#      @enrollment ||= create(:enrollment, requestable: true)
-#    end
-
-#    def request
-#      @request ||= create(:request, committee: committee)
-#    end
-
-#    def membership
-#      membership_local ||= create(:membership, position: position, user: request.user)
-#    end
 
     before(:each) { request }
 
@@ -251,6 +321,31 @@ describe Membership do
       Membership.leave_notice_pending.length.should eql 0
     end
 
+    it 'should clear membership notices if user is blank' do
+      membership.save!
+      membership.update_attribute :join_notice_at, Time.zone.now
+      membership.update_attribute :leave_notice_at, Time.zone.now
+      membership.user = nil
+      membership.save!
+      membership.user_id.should be_nil
+      membership.join_notice_at.should be_nil
+      membership.leave_notice_at.should be_nil
+    end
+
+    it 'should have a send_join_notice! method' do
+      membership.save!
+      membership.send_join_notice!
+      membership.reload
+      membership.join_notice_at.should_not be_nil
+    end
+
+    it 'should have a send_leave_notice! method' do
+      membership.save!
+      membership.send_leave_notice!
+      membership.reload
+      membership.leave_notice_at.should_not be_nil
+    end
+
     def notifiable_scenario(starts_at = nil, ends_at = nil)
       starts_at ||= Date.today - 1.year
       ends_at ||= starts_at + 2.years
@@ -263,189 +358,205 @@ describe Membership do
 
   end
 
-  context 'renewable scopes' do
+  context 'renewable/unrenewable scope' do
 
-    it 'should have renewed and unrenewed scopes based on renewed_by_membership_id flag' do
-      future = create(:future_period, :schedule => membership.position.schedule)
-      renewed = create(:membership, :position => membership.position,
-        :user => membership.user, :period => future)
-      membership.update_attribute :renewed_by_membership_id, renewed.id
-      Membership.renewed.length.should eql 1
-      Membership.renewed.should include membership
-      Membership.unrenewed.length.should eql 1
-      Membership.unrenewed.should include renewed
+    let(:membership) { create :membership, position: create( :position,
+      renewable: true ) }
+
+    it "should include/exclude qualifying membership" do
+      Membership.renewable.should include membership
+      Membership.unrenewable.should_not include membership
     end
 
-    it 'should have a renewable_to scope that returns memberships that a membership may renew' do
-      renewable_to_scenario
-      scope = Membership.renewable_to membership
-      scope.should include @same_position
-      scope.should include @same_committee
-      scope.uniq.length.should eql 2
-    end
-
-    it 'should claim renewed_memberships which are in renewable_to scope and match user_id' do
-      renewable_to_scenario
-      @same_position.user.should_not eql @same_committee.user
-      membership.user = @same_position.user
-      membership.save!
-      membership.renewed_memberships.length.should eql 1
-      membership.renewed_memberships.should include @same_position
-      membership.user = @same_committee.user
-      membership.save!
-      membership.renewed_memberships.length.should eql 1
-      membership.renewed_memberships.should include @same_committee
-    end
-
-    it 'should have a renewable scope that fetches only if the associated position is renewable, end date is same as period end date, and the period is current or immediately before current' do
-      position = create(:position, :slots => 2, :renewable => true)
-      current = create(:membership, :position => position)
-      current_truncated = create(:membership, :position => position, :period => current.period, :ends_at => current.period.ends_at - 1.day)
-      current_period = current.period
-      prior_period = create(:period, :schedule => current.period.schedule,
-        :starts_at => ( current_period.starts_at - 1.year ),
-        :ends_at => ( current_period.starts_at - 1.day ) )
-      prior = create(:membership, :position => position,
-        :period => prior_period )
-      ancient_period = create(:period, :schedule => current.period.schedule,
-        :starts_at => ( prior_period.starts_at - 1.year ),
-        :ends_at => ( prior_period.starts_at - 1.day ) )
-      ancient = create(:membership, :position => position,
-        :period => ancient_period )
-      future_period = create(:future_period, :schedule => ancient_period.schedule)
-      future = create(:membership, :position => position, :period => future_period)
-      scope = Membership.renewable
-      scope.should include current
-      scope.should include prior
-      Membership.renewable.uniq.length.should eql 2
-    end
-
-    it 'should have an unrenewable scope that fetches only if the associated position is renewable' do
-      membership.save!
-      renewable = create(:membership, position: create(:renewable_position) )
-      Membership.unrenewable.length.should eql 1
+    it "should exclude/include an inactive position" do
+      membership.position.update_attribute :active, false
+      Membership.renewable.should_not include membership
       Membership.unrenewable.should include membership
     end
 
-    def renewable_to_scenario
-      membership.save!
-      membership.position.update_attribute :renewable, true
-      past = create(:past_period, schedule: membership.position.schedule)
-      @same_position = create(:membership, position: membership.position,
-        period: past, renew_until: Time.zone.today + 1.week )
-      @same_position.user.update_attribute :statuses_mask, 1
-      membership.update_attribute :user, nil
-      membership.position.update_attribute :statuses_mask, 1
-      @same_committee = create(:past_membership, renew_until: Time.zone.today + 1.week )
-      @same_committee.user.update_attribute :statuses_mask, 1
-      different_mask = create(:past_membership, renew_until: Time.zone.today + 1.week )
-      different_mask.user.update_attribute :statuses_mask, 2
-      enrollment = create(:enrollment, position: membership.position)
-      create(:enrollment, position: @same_committee.position, committee: enrollment.committee)
-      create(:enrollment, position: different_mask.position, committee: enrollment.committee)
-      different_position = create(:past_membership, renew_until: Time.zone.today + 1.week)
+    it "should exclude/include non-renewable position membership" do
+      membership.position.update_attribute :renewable, false
+      Membership.renewable.should_not include membership
+      Membership.unrenewable.should include membership
     end
+
+  end
+
+  context "watchers" do
+    let(:committee) { create :committee }
+    let(:membership) { create :membership,
+      position: create( :enrollment, committee: committee ).position }
+    let(:watcher_membership) { create( :membership, position: create( :enrollment,
+      committee: committee, membership_notices: true ).position ) }
+    let(:watcher) { watcher_membership.user }
+
+    it "should return qualifying watchers" do
+      membership.watchers.should include watcher
+    end
+
+    it "should not include non-watcher peers" do
+      watcher_membership.position.enrollments.first.update_attribute :membership_notices, false
+      membership.watchers.should_not include watcher
+    end
+
+    it "should not include watchers from other committees" do
+      watcher_membership.destroy
+      watcher = create( :membership, position: create( :enrollment,
+        membership_notices: true ).position ).user
+      membership.watchers.should be_empty
+    end
+
+    it "should not include temporally non-overlapping watchers" do
+      membership.ends_at -= 1.month
+      membership.save!
+      watcher_membership.starts_at = membership.ends_at + 1.day
+      watcher_membership.save!
+      membership.watchers.should_not include watcher
+    end
+  end
+
+  context 'renewal/renewable' do
+
+    let( :membership ) { create :membership,
+      position: create( :renewable_position ) }
+    let( :past_period ) { create :period, schedule: membership.position.schedule,
+      starts_at: membership.starts_at - 1.years,
+      ends_at: membership.starts_at - 1.day
+    }
+    let( :ancient_period ) { create :period, schedule: membership.position.schedule,
+      starts_at: past_period.starts_at - 1.year,
+      ends_at: past_period.starts_at - 1.day }
+    let( :future_period ) { create :period,
+      schedule: membership.position.schedule,
+      starts_at: membership.ends_at + 1.day }
 
     context 'renewable scope' do
 
-      it "should include qualifying membership" do
-        Membership.renewable.should include membership
+      let( :future_membership ) { create :membership, user: membership.user,
+        position: membership.position, period: future_period }
+      let( :ancient_membership ) { create( :membership, user: membership.user,
+          position: membership.position, period: ancient_period ) }
+      let( :past_membership ) { create( :membership, user: membership.user,
+        position: membership.position, period: past_period ) }
+
+      it "should include a conforming membership" do
+        Membership.renewal_candidate.should include membership
       end
 
-      it "should exclude non-renewable position membership" do
+      it "should not include a non-renewable membership" do
         membership.position.update_attribute :renewable, false
-        Membership.renewable.should_not include membership
+        Membership.unrenewable.should include membership
+        Membership.renewal_candidate.should_not include membership
       end
 
-      it "should exclude membership that does not end with period" do
-        membership.ends_at -= 1.day
+      it "should not include an unassigned membership" do
+        membership.user = nil; membership.save!
+        Membership.unassigned.should include membership
+        Membership.renewal_candidate.should_not include membership
+      end
+
+      it "should not include a renewed membership" do
+        membership.update_attribute :renewed_by_membership_id, future_membership.id
+        Membership.renewed.should include membership
+        Membership.renewal_candidate.should_not include membership
+      end
+
+      it "should not include an abridged membership" do
+        membership.ends_at -= 1.month
         membership.save!
-        Membership.renewable.should_not include membership
+        Membership.abridged.should include membership
+        Membership.renewal_candidate.should_not include membership
       end
 
-      it "should exclude a membership that is renewed" do
-        current_membership = create( :membership, user: membership.user,
-          period: current_period, position: membership.position )
-        membership.update_attribute :renewed_by_membership_id, current_membership.id
-        Membership.renewable.should_not include membership
+      it "should not include a future membership" do
+        Membership.future.should include future_membership
+        Membership.recent.should_not include future_membership
+        Membership.renewal_candidate.should_not include future_membership
       end
 
-      it "should exclude a membership that is unassigned" do
-        membership.update_attribute :user_id, nil
-        Membership.renewable.should_not include membership
+      it "should include a past membership" do
+        Membership.past.should include past_membership
+        Membership.recent.should include past_membership
+        Membership.renewal_candidate.should include past_membership
+      end
+
+      it "should not include an ancient membership" do
+        Membership.past.should include ancient_membership
+        Membership.recent.should_not include ancient_membership
+        Membership.renewal_candidate.should_not include ancient_membership
       end
 
     end
 
-#    context 'renewable_to scope' do
+    context 'renewable_to scope' do
+       let( :period ) { create :period, starts_at: Time.zone.today - 1.year,
+         ends_at: Time.zone.today + 1.month }
+       let( :membership ) { create :membership, position: create( :position,
+         renewable: true, schedule: period.schedule ),
+         renew_until: period.ends_at + 1.year }
+       let( :future_membership ) { future_period.memberships.
+         where { |m| m.position_id.eq( membership.position_id ) }.first }
 
-#      let(:target) { current_period.memberships.
-#        where { position_id.eq( membership.position_id ) }.first }
+      it "should include a conforming membership" do
+        Membership.renewable_to(future_membership).should include membership
+      end
 
-#      it "should include qualifying membership" do
-#        Membership.renewable_to( target ).should include membership
-#        membership.position.statuses_mask.should eql 0
-#      end
+      xit "should include a conforming membership (with same committees)" do
 
-#      it "should exclude if renew_until before today" do
-#        membership.update_attribute( :renew_until, ( Time.zone.today - 1.day ) )
-#        Membership.renewable_to( target ).should eql 0
-#      end
+      end
 
+      xit "should include a conforming membership (with matching status)" do
+
+      end
+
+      xit "should not include a membership that has a past renew_until" do
+
+      end
+
+      xit "should not include a membership that has a non-overlapping renew_until" do
+
+      end
+
+      xit "should not include a membership that overlaps" do
+
+      end
+
+      xit "should not include a membership with different position (no committees)" do
+
+      end
+
+      xit "should not include a membership without committee of subject" do
+
+      end
+
+      xit "should not include a membership with committees not in subject" do
+
+      end
+
+      xit "should not include a membership belonging to a user of non-matching status" do
+
+      end
+
+    end
+
+  end
+
+#  context 'renewable scopes' do
+
+#    it 'should claim renewed_memberships which are in renewable_to scope and match user_id' do
+#      renewable_to_scenario
+#      @same_position.user.should_not eql @same_committee.user
+#      membership.user = @same_position.user
+#      membership.save!
+#      membership.renewed_memberships.length.should eql 1
+#      membership.renewed_memberships.should include @same_position
+#      membership.user = @same_committee.user
+#      membership.save!
+#      membership.renewed_memberships.length.should eql 1
+#      membership.renewed_memberships.should include @same_committee
 #    end
 
-
-    let( :membership ) { create( :past_membership,
-      position: create( :renewable_position ),
-      renew_until: Time.zone.today + 1.year ) }
-    let( :current_period ) { create( :period,
-      schedule: renewable_membership.position.schedule,
-      starts_at: renewable_membership.ends_at + 1.day,
-      ends_at: Time.zone.today + 1.year ) }
-
-  end
-
-  it 'should have a send_join_notice! method' do
-    membership.save!
-    membership.send_join_notice!
-    membership.reload
-    membership.join_notice_at.should_not be_nil
-  end
-
-  it 'should have a send_leave_notice! method' do
-    membership.save!
-    membership.send_leave_notice!
-    membership.reload
-    membership.leave_notice_at.should_not be_nil
-  end
-
-  it 'should have a watchers method that returns users with overlapping, concurrent enrollment with membership_notices flag set' do
-    membership.save!
-    position = membership.position
-    past_period = create(:past_period, :schedule => position.schedule)
-    membership.reload
-    enrollment = create(:enrollment, :position => position)
-    committee = enrollment.committee
-    watcher_position = create(:position, :schedule => position.schedule)
-    create(:enrollment, :position => watcher_position, :committee => committee, :membership_notices => true)
-    watcher_membership = create(:membership, :position => watcher_position, :period => membership.period)
-    past_watcher_membership = create(:membership, :position => watcher_position, :period => past_period)
-    nonwatcher_position = create(:enrollment, :committee => committee).position
-    nonwatcher_membership = create(:membership, :position => nonwatcher_position)
-    membership.watchers.length.should eql 1
-    membership.watchers.should include watcher_membership.user
-  end
-
-  it 'should clear membership notices if user is blank' do
-    membership.save!
-    membership.update_attribute :join_notice_at, Time.zone.now
-    membership.update_attribute :leave_notice_at, Time.zone.now
-    membership.user = nil
-    membership.save!
-    membership.user_id.should be_nil
-    membership.join_notice_at.should be_nil
-    membership.leave_notice_at.should be_nil
-  end
+#  end
 
 end
 

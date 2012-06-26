@@ -26,7 +26,10 @@ class Committee < ActiveRecord::Base
   has_many :meetings, inverse_of: :committee, dependent: :destroy
   has_many :motions, inverse_of: :committee, dependent: :destroy
   has_many :requests, inverse_of: :committee
-  has_many :enrollments, inverse_of: :committee
+  has_many :enrollments, inverse_of: :committee, dependent: :destroy
+  has_many :watcher_enrollments, conditions: { membership_notices: true },
+    class_name: 'Enrollment'
+  has_many :watchers, through: :watcher_enrollments, source: :users
   has_many :positions, through: :enrollments
   has_many :memberships, through: :positions
   has_many :requestable_enrollments, class_name: 'Enrollment',

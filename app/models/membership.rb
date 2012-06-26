@@ -65,6 +65,12 @@ class Membership < ActiveRecord::Base
   has_many :users, through: :requests, source: :user do
     def assignable; User.assignable_to( proxy_association.owner.position ); end
   end
+  has_many :watcher_users, through: :committees, source: :watchers, uniq: true do
+    def overlapping
+      merge( Membership.unscoped.overlap proxy_association.owner.starts_at,
+        proxy_association.owner.ends_at )
+    end
+  end
 
   # Memberships that could be renewed by assigning the user to this membership:
   # * assigned
@@ -75,18 +81,9 @@ class Membership < ActiveRecord::Base
   # * if position.statuses_mask > 0, having user.statuses_mask & position.
   #   statuses_mask > 0
   scope :renewable_to, lambda { |membership|
-#    s = assigned.unrenewed.joins("LEFT JOIN enrollments ON " +
-#      "enrollments.position_id = memberships.position_id").
-#    where( "memberships.position_id = ? OR " +
-#      "enrollments.committee_id IN (?)",
-#       membership.position_id, membership.committee_ids ).
-    s = assigned.unrenewed.renewable.
-    no_overlap( membership.starts_at, membership.ends_at ).
-    where { renew_until.gte( membership.starts_at ) &
-      renew_until.gte( Time.zone.today ) }.
-    joins { position.enrollments.outer }.
-    where { memberships.position_id.eq( membership.position_id ) |
-      enrollments.committee_id.in( membership.committee_ids ) }
+    s = renewal_candidate.no_overlap( membership.starts_at, membership.ends_at ).
+    renew_until( membership.starts_at ).renew_active.
+    equivalent_committees_with( membership.position )
     return s unless membership.position.statuses_mask > 0
     s.where { user_id.in(
       User.unscoped.select { id }.where(
@@ -96,7 +93,7 @@ class Membership < ActiveRecord::Base
   scope :ordered, joins { [ user, period ] }.
     order { [ ends_at.desc, starts_at.desc, users.last_name, users.first_name,
     users.middle_name ] }
-  scope :assigned, where { user_id != nil }
+  scope :assigned, where { user_id.not_eq( nil ) }
   scope :unassigned, where( :user_id => nil )
   scope :requested, where { request_id != nil }
   scope :unrequested, where( :request_id => nil )
@@ -104,29 +101,32 @@ class Membership < ActiveRecord::Base
     where { ends_at.gte( Time.zone.today - range ) &
       ends_at.lte( Time.zone.today + range ) }
   }
-  scope :as_of, lambda { |as_of|
-    where { |t| ( t.starts_at <= as_of ) & ( t.ends_at >= as_of ) } }
   scope :current, lambda { where { ( starts_at <= Time.zone.today ) &
     ( ends_at >= Time.zone.today ) } }
   scope :future, lambda { where { starts_at > Time.zone.today } }
   scope :past, lambda { where { ends_at < Time.zone.today } }
+  scope :recent, lambda { where { period_id.in( Period.unscoped.recent.select { id } ) } }
   scope :current_or_future, lambda { where { ends_at >= Time.zone.today } }
-  # To be renewable a membership must:
-  # * be assigned and not yet renewed
-  # * be associated with an active, renewable position
-  # * end with period that is a recent period
-  scope :renewable, lambda {
-    assigned.unrenewed.
-    where { position_id.in( Position.unscoped.active.renewable.select { id } ) &
-      period_id.in( Period.unscoped.recent.
-        where { ends_at.eq memberships.ends_at }.select { id } ) }
-  }
-  # Unrenewable memberships are associated with unrenewable positions
-  scope :unrenewable, lambda { joins(:position).merge( Position.unscoped.unrenewable ) }
+  scope :renewal_candidate, lambda { renewable.assigned.unrenewed.unabridged.recent }
+  scope :renewable, lambda { where { position_id.
+    in( Position.unscoped.active.renewable.select { id } ) } }
+  scope :unrenewable, lambda { where { position_id.
+    not_in( Position.unscoped.active.renewable.select { id } ) } }
+  scope :abridged, lambda { joins { period }.
+    where { ends_at.lt( periods.ends_at ) } }
+  scope :unabridged, lambda { joins { period }.
+    where { ends_at.eq( periods.ends_at ) } }
+  scope :as_of, lambda { |as_of| overlap( as_of, as_of ) }
   scope :overlap, lambda { |starts, ends|
     where { |t| ( t.starts_at <= ends ) & ( t.ends_at >= starts ) } }
   scope :no_overlap, lambda { |starts, ends|
     where { |t| ( t.starts_at > ends ) | ( t.ends_at < starts ) }
+  }
+  scope :renew_until, lambda { |date| where { renew_until.gte( date ) } }
+  scope :renew_active, lambda { renew_until Time.zone.today }
+  scope :equivalent_committees_with, lambda { |position|
+    where { position_id.in( Position.unscoped.
+      equivalent_committees_with( position ).select { id } ) }
   }
   scope :pending_renewal_within, lambda { |starts, ends|
     renewable.unrenewed.
@@ -245,20 +245,7 @@ class Membership < ActiveRecord::Base
   end
 
   # Identify users who should be copied on notices related to this membership
-  # * not this user
-  # * must have membership which:
-  # ** is enrolled in a committee this membership's position is enrolled in
-  # ** overlaps this membership temporally
-  # ** has a membership_notices flag set
-  def watchers
-    return User.unscoped.where(:id => nil) if new_record? || enrollments.empty?
-    User.with_enrollments.
-    where { id != my { user_id } }.
-    where( 'enrollments.committee_id IN (?)', enrollments.map(&:committee_id) ).
-    where( 'enrollments.membership_notices = ?', true ).
-    merge( Membership.unscoped.overlap( starts_at, ends_at ) ).
-    select('DISTINCT users.*')
-  end
+  def watchers; watcher_users.overlapping; end
 
   def description
     return request.committee.to_s if request

@@ -6,6 +6,7 @@ class Enrollment < ActiveRecord::Base
   belongs_to :position, inverse_of: :enrollments
   belongs_to :committee, inverse_of: :enrollments
   has_many :memberships, through: :position
+  has_many :users, through: :memberships
 
   scope :ordered, includes( :committee, :position ).
     order { [ committees.name, title, positions.name ] }

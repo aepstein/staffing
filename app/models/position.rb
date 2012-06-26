@@ -97,6 +97,19 @@ class Position < ActiveRecord::Base
   scope :designable, where( :designable => true )
   scope :active, where( :active => true )
   scope :inactive, where { active != true }
+  # Other positions that are enrolled in exactly the same committees as this
+  # * presume same position means same committees
+  # * presume different position means different committees if other position has no commmittees
+  # * otherwise, must have all the committees the other position has and no committees
+  #   other position does not have
+  scope :equivalent_committees_with, lambda { |position|
+    where( "positions.id = :id OR (:length > 0 AND " +
+    "(SELECT COUNT( DISTINCT committee_id ) FROM enrollments WHERE " +
+    "committee_id IN (:ids) AND position_id = positions.id) = :length AND " +
+    "(SELECT COUNT( committee_id ) FROM enrollments WHERE " +
+    "committee_id NOT IN (:ids) AND position_id = positions.id) = 0)",
+    { id: position.id, ids: position.committee_ids, length: position.committees.length } )
+  }
 
   validates :name, :presence => true, :uniqueness => true
   validates :authority, :presence => true
