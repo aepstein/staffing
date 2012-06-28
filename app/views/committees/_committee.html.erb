@@ -7,6 +7,6 @@
     <% end -%>
     <td><%= link_to 'Show', committee %></td>
     <td><%= link_to( 'Edit', edit_committee_path(committee) ) if permitted_to? :edit, committee %></td>
-    <td><%= link_to( 'Destroy', committee, :confirm => 'Are you sure?', :method => :delete ) if permitted_to? :destroy, committee %></td>
+    <td><%= link_to( 'Destroy', committee, data: { confirm: 'Are you sure?' }, method: :delete ) if permitted_to? :destroy, committee %></td>
   <% end %>
 

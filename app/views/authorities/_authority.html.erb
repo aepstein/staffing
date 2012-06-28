@@ -2,6 +2,6 @@
     <td><%=h authority.name %></td>
     <td><%= link_to 'Show', authority %></td>
     <td><%= link_to( 'Edit', edit_authority_path(authority) ) if permitted_to? :edit, authority %></td>
-    <td><%= link_to( 'Destroy', authority, :confirm => 'Are you sure?', :method => :delete ) if permitted_to? :destroy, authority %></td>
+    <td><%= link_to( 'Destroy', authority, data: { confirm: 'Are you sure?' }, method: :delete ) if permitted_to? :destroy, authority %></td>
   <% end %>
 

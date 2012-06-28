@@ -2,6 +2,6 @@
     <td><%=h quiz.name %></td>
     <td><%= link_to 'Show', quiz %></td>
     <td><%= link_to( 'Edit', edit_quiz_path(quiz) ) if permitted_to? :edit, quiz %></td>
-    <td><%= link_to( 'Destroy', quiz, :confirm => 'Are you sure?', :method => :delete ) if permitted_to? :destroy, quiz %></td>
+    <td><%= link_to( 'Destroy', quiz, data: { confirm: 'Are you sure?' }, method: :delete ) if permitted_to? :destroy, quiz %></td>
   <% end %>
 

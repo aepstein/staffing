@@ -7,6 +7,6 @@
     <td><%= meeting.location %></td>
     <td><%= link_to 'Show', meeting %></td>
     <td><%= link_to( 'Edit', edit_meeting_path(meeting) ) if permitted_to? :edit, meeting %></td>
-    <td><%= link_to( 'Destroy', meeting, :confirm => 'Are you sure?', :method => :delete ) if permitted_to? :destroy, meeting %></td>
+    <td><%= link_to( 'Destroy', meeting, data: { confirm: 'Are you sure?' }, method: :delete ) if permitted_to? :destroy, meeting %></td>
   <% end %>
 

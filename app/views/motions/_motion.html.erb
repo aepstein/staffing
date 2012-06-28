@@ -12,6 +12,6 @@
     <td><%= motion.status %></td>
     <td><%= link_to 'Show', motion %></td>
     <td><%= link_to( 'Edit', edit_motion_path(motion) ) if permitted_to? :edit, motion %></td>
-    <td><%= link_to( 'Destroy', motion, :confirm => 'Are you sure?', :method => :delete ) if permitted_to? :destroy, motion %></td>
+    <td><%= link_to( 'Destroy', motion, data: { confirm: 'Are you sure?' }, method: :delete ) if permitted_to? :destroy, motion %></td>
   <% end %>
 

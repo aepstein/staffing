@@ -24,6 +24,6 @@
     <% else %>
     <td><%= link_to( 'Edit', edit_membership_path(membership) ) if permitted_to? :edit, membership %></td>
     <% end %>
-    <td><%= link_to( 'Destroy', membership, :confirm => 'Are you sure?', :method => :delete ) if permitted_to? :destroy, membership %></td>
+    <td><%= link_to( 'Destroy', membership, data: { confirm: 'Are you sure?' }, method: :delete ) if permitted_to? :destroy, membership %></td>
   <% end %>
 
