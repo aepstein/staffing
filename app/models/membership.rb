@@ -169,7 +169,7 @@ class Membership < ActiveRecord::Base
 
   validates :period, presence: true
   validates :position, presence: true
-  validates :user_id, uniqueness: { scope: [ :position_id, :period_id ] }
+  validates :user_id, uniqueness: { scope: [ :position_id, :period_id ], allow_blank: true }
   validates :starts_at, timeliness: { type: :date }
   validates :ends_at, timeliness: { type: :date, on_or_after: :starts_at }
   validates :renew_until, timeliness: { type: :date, after: :ends_at,
