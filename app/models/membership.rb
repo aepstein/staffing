@@ -312,8 +312,8 @@ class Membership < ActiveRecord::Base
     return true unless user_id_changed?
     renewed_memberships.clear unless renewed_memberships.empty?
     unless user.blank?
-      renewed_memberships << Membership.where(:user_id => user_id).
-        renewable_to( self ).select( "DISTINCT memberships.*" )
+      renewed_memberships << Membership.where( user_id: user_id ).
+        renewable_to( self ).readonly(false)
     end
   end
 
