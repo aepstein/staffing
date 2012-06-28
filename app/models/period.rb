@@ -29,7 +29,7 @@ class Period < ActiveRecord::Base
         position.memberships.populate_unassigned_for_period! proxy_association.owner
       end
       # Reset so changes are loaded in this collection
-      reset
+      proxy_association.reset
     end
     def repopulate_unassigned!
       where { |t| t.starts_at < proxy_association.owner.starts_at }.update_all(
@@ -38,9 +38,7 @@ class Period < ActiveRecord::Base
       where { |t| t.ends_at > proxy_association.owner.ends_at }.update_all(
         "ends_at = #{connection.quote proxy_association.owner.ends_at}"
       )
-      Membership.unassigned.where(:period_id => proxy_association.owner.id).delete_all
-      # Reset so changes are loaded in this collection
-      reset
+      Membership.unassigned.where(period_id: proxy_association.owner.id).delete_all
       populate_unassigned!
     end
   end
@@ -51,12 +49,10 @@ class Period < ActiveRecord::Base
   validate :must_not_conflict_with_other_period
 
   after_create do |period|
-    period.reload
     period.memberships.populate_unassigned!
   end
   after_update do |period|
     if period.starts_at_changed? || period.ends_at_changed?
-      period.reload
       period.memberships.repopulate_unassigned!
     end
   end

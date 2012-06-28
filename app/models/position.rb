@@ -18,11 +18,13 @@ class Position < ActiveRecord::Base
     end
     # Create vacant memberships for all periods
     def populate_unassigned!
-      @association.owner.periods.each { |p| populate_unassigned_for_period! p }
+      proxy_association.owner.periods.each { |p| populate_unassigned_for_period! p }
     end
     # Create vacant memberships
     def populate_unassigned_for_period!( period )
-      raise ArgumentError, "Period must be in current schedule" unless @association.owner.schedule.periods.include? period
+      unless proxy_association.owner.schedule.periods.include? period
+        raise ArgumentError, "Period must be in current schedule"
+      end
       previous_vacancies = nil
       memberships = vacancies_for_period( period ).inject([]) do |memo, point|
         if previous_vacancies.nil?
@@ -30,18 +32,19 @@ class Position < ActiveRecord::Base
         elsif previous_vacancies < point.last
           (point.last - previous_vacancies).times { memo << start_unassigned(point.first, period) }
         elsif previous_vacancies > 0 && previous_vacancies > point.last
-          (previous_vacancies - point.last).times { memo.pop.save! :validate => false }
+          (previous_vacancies - point.last).times { memo.pop.save! validate: false }
         end
         memo.each { |membership| membership.ends_at = point.first }
         previous_vacancies = ( point.last > 0 ? point.last : 0 )
         memo
       end
       # Save without validation -- method should produce valid memberships
-      memberships.each { |membership| membership.save! :validate => false }
+      memberships.each { |membership| membership.save! validate: false }
     end
     # Spaces for period
     def vacancies_for_period( period )
-      Membership.concurrent_counts( period, @association.owner.id ).map { |r| [r.first, ( @association.owner.slots - r.last )] }
+      Membership.concurrent_counts( period, proxy_association.owner.id ).
+        map { |r| [r.first, ( proxy_association.owner.slots - r.last )] }
     end
 
     private
