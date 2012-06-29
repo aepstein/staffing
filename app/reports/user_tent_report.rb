@@ -17,6 +17,7 @@ class UserTentReport < Prawn::Document
     rotate 180, origin: [720,306] do
       bounding_box [720,306], width: 720, height: 234 do
         image logo, height: 72
+        move_down 9
         text user[0], size: 48, align: :center, style: :bold
         unless user[1].blank?
           text user[1], size: 36, align: :center, style: :italic
@@ -25,6 +26,7 @@ class UserTentReport < Prawn::Document
     end
     bounding_box [0,234], width: 720, height: 234 do
       image logo, height: 72
+      move_down 9
       text user[0], size: 48, align: :center, style: :bold
       unless user[1].blank?
         text user[1], size: 36, align: :center, style: :italic
