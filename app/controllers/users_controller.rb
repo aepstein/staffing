@@ -60,6 +60,8 @@ class UsersController < ApplicationController
   # GET /users/:id/tent.pdf
   include UserTentReports
   def tent
+    @context = @user
+    @tents = [ [ @user.name, params[:title] ] ]
     render_user_tent_reports
   end
 

@@ -31,7 +31,18 @@ class Committee < ActiveRecord::Base
     class_name: 'Enrollment'
   has_many :watchers, through: :watcher_enrollments, source: :users
   has_many :positions, through: :enrollments
-  has_many :memberships, through: :positions
+  has_many :memberships, through: :positions do
+    def tents(date)
+      out = as_of(date).assigned.includes { [ user, enrollments ] }.except(:order).
+      merge( User.unscoped.ordered ).order { enrollments.title }.
+      inject({}) do |memo, membership|
+        memo[membership.user] ||= []
+        memo[membership.user] += membership.enrollments.map(&:title)
+        memo
+      end
+      out.map { |user, titles| [ user.name, titles.uniq.join(', ') ] }
+    end
+  end
   has_many :requestable_enrollments, class_name: 'Enrollment',
     conditions: { requestable: true }
   has_many :requestable_positions, through: :requestable_enrollments,

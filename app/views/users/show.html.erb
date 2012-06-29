@@ -58,8 +58,10 @@
 
 <%=form_tag tent_user_path(@user, :format => :pdf), :method => :get do %>
 <p>
-  <b><%=label_tag :brand_id, 'Brand'%></b>
-  <%=select_tag :brand_id, options_from_collection_for_select(Brand.all, :id, :name) %>
+  <b><%=label_tag :brand_id, 'Brand' %></b>
+  <%=select_tag :brand_id, options_from_collection_for_select(Brand.all, :id, :name) %><br/>
+  <b><%=label_tag :title, 'Title' %></b>
+  <%=text_field_tag :title %>
   <%=submit_tag "Download Tent Card" %>
 </p>
 <% end %>

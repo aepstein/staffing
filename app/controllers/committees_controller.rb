@@ -18,9 +18,8 @@ class CommitteesController < ApplicationController
   # GET /committees/:id/tents.pdf
   include UserTentReports
   def tents
-    @context = @committee
-    @users = User.joins(:memberships).merge(
-      @committee.memberships.as_of( @as_of ).except(:order) )
+#    @context = @committee
+    @tents = @committee.memberships.tents @as_of
     render_user_tent_reports
   end
 

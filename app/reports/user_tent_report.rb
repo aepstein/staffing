@@ -8,21 +8,27 @@ class UserTentReport < Prawn::Document
   def initialize(users=nil,brand=nil)
     self.users = users unless users.blank?
     self.brand = brand || Brand.first
-    super( :page_size => 'LETTER', :page_layout => :landscape )
+    super( page_size: 'LETTER', page_layout: :landscape )
   end
 
   def to_pdf
     user = users.shift
     logo = brand.logo.tent.store_path
-    rotate 180, :origin => [720,306] do
-      bounding_box [720,306], :width => 720, :height => 234 do
-        image logo, :height => 72
-        text user.name, :size => 48, :align => :center
+    rotate 180, origin: [720,306] do
+      bounding_box [720,306], width: 720, height: 234 do
+        image logo, height: 72
+        text user[0], size: 56, align: :center
+        unless user[1].blank?
+          text user[1], size: 36, align: :center, style: :italic
+        end
       end
     end
-    bounding_box [0,234], :width => 720, :height => 234 do
-      image logo, :height => 72
-      text user.name, :size => 48, :align => :center
+    bounding_box [0,234], width: 720, height: 234 do
+      image logo, height: 72
+      text user[0], size: 56, align: :center
+      unless user[1].blank?
+        text user[1], size: 36, align: :center, style: :italic
+      end
     end
     unless users.empty?
       start_new_page
