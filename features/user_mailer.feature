@@ -39,13 +39,13 @@ Feature: User mailer
     And the email should contain "Please contact The Authority <info@example.org> if you have any questions or concerns.  Thank you for your time and your consideration." in the text part body
     And the email should contain "Please contact The Authority <info@example.org> if you have any questions or concerns.  Thank you for your time and your consideration." in the html part body
     Examples:
-      | renewable | req   | period   | renew  | confirm | description | interest | disinterest | past | present | confirmed | unconfirmed |
-      | true      | false | current  | is not | has not | Position    | not      |             | not  |         | not       |             |
-      | true      | true  | current  | is not | has not | Committee   | not      |             | not  |         | not       |             |
-      | true      | false | current  | is     | has not | Position    |          | not         | not  |         | not       |             |
-      | true      |false | current  | is     | has     | Position    |          | not         | not  |         |           | not         |
-      | true      | false | past     | is not | has not | Position    | not      |             |      | not     | not       |             |
-      | true      | false | long_ago | is not | has not | Position    | not      | not         | not  | not     | not       | not         |
-      | true      | false | future   | is not | has not | Position    | not      | not         | not  | not     | not       | not         |
-      | false     | false | current  | is not | has not | Position    | not      | not         | not  | not     | not       | not         |
+|renewable|req  |period  |renew |confirm|description|interest|disinterest|past|present|confirmed|unconfirmed|
+|true     |false|current |is not|has not|Position   |not     |           |not |       |not      |           |
+|true     |true |current |is not|has not|Committee  |not     |           |not |       |not      |           |
+|true     |false|current |is    |has not|Position   |        |not        |not |       |not      |           |
+|true     |false|current |is    |has    |Position   |        |not        |not |       |         |not        |
+|true     |false|past    |is not|has not|Position   |not     |           |    |not    |not      |           |
+|true     |false|long_ago|is not|has not|Position   |not     |not        |not |not    |not      |not        |
+|true     |false|future  |is not|has not|Position   |not     |not        |not |not    |not      |not        |
+|false    |false|current |is not|has not|Position   |not     |not        |not |not    |not      |not        |
 

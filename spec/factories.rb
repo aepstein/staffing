@@ -131,32 +131,10 @@ FactoryGirl.define do
   factory :request do
     association :user
     committee { |request| request.association :requestable_committee }
-    starts_at do |request|
-      if request.committee
-        if position = request.committee.positions.except(:order).first
-          periods = position.schedule.periods
-        else
-          periods = false
-        end
-      else
-        periods = false
-      end
-      (periods && periods.last) ? periods.last.starts_at : Time.zone.today
-    end
-    ends_at do |request|
-      if request.committee
-        if position = request.committee.positions.except(:order).first
-          periods = position.schedule.periods
-        else
-          periods = false
-        end
-      else
-        periods = false
-      end
-      (periods && periods.first) ? periods.first.ends_at : request.starts_at + 1.year
-    end
+    starts_at { Time.zone.today }
+    ends_at { |request| request.starts_at + 1.year }
     factory :expired_request do
-      starts_at Date.today - 2.years
+      starts_at Time.zone.today - 2.years
     end
   end
 

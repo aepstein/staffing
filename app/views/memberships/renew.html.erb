@@ -19,10 +19,7 @@
   </tr>
 </thead>
 <tbody>
-  <%= form.fields_for :memberships,
-      @user.memberships.select { |m|
-        @user.memberships.renewable.unrenewed.include? m
-      } do |subform| %>
+  <%= form.fields_for :memberships, @user.memberships.renewal_candidate do |subform| %>
 
     <%= table_row_tag( subform.object.errors.empty? ) do %>
       <% subform.object.renewal_confirmed_at = Time.zone.now %>

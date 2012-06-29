@@ -2,7 +2,7 @@ class Period < ActiveRecord::Base
   attr_accessible :schedule_id, :starts_at, :ends_at
   attr_readonly :schedule_id
 
-  default_scope order { periods.starts_at }
+  default_scope order { starts_at.desc }
 
   scope :past, lambda { where { ends_at < Time.zone.today } }
   scope :current, lambda { overlaps( Time.zone.today, Time.zone.today ) }

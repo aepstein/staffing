@@ -72,7 +72,7 @@ class Request < ActiveRecord::Base
   belongs_to :rejected_by_authority, class_name: 'Authority'
   belongs_to :rejected_by_user, class_name: 'User'
 
-  scope :ordered, includes( :user ).
+  scope :ordered, joins { user.outer }.
     order { [ user.last_name, user.first_name, position ] }
   scope :unexpired, lambda { where { ends_at > Time.zone.today } }
   scope :expired, lambda { where { ends_at <= Time.zone.today } }
@@ -127,7 +127,7 @@ class Request < ActiveRecord::Base
 
   end
 
-  acts_as_list :scope => :user_id
+  acts_as_list scope: :user_id
 
   validates :committee, presence: true
   validates :user, presence: true

@@ -90,7 +90,7 @@ class Membership < ActiveRecord::Base
         "users.statuses_mask & #{membership.position.statuses_mask} > 0"
       ) ) }
   }
-  scope :ordered, joins { [ user, period ] }.
+  scope :ordered, joins { user.outer }.
     order { [ ends_at.desc, starts_at.desc, users.last_name, users.first_name,
     users.middle_name ] }
   scope :assigned, where { user_id.not_eq( nil ) }
@@ -146,10 +146,10 @@ class Membership < ActiveRecord::Base
   scope :notifiable, includes(:position).where { user_id != nil }.
     merge( Position.unscoped.notifiable )
   scope :renewal_confirmed, lambda {
-    renewable.where { renewal_confirmed_at != nil }
+    renewal_candidate.where { renewal_confirmed_at != nil }
   }
   scope :renewal_unconfirmed, lambda {
-    renewable.where( :renewal_confirmed_at => nil )
+    renewal_candidate.where( renewal_confirmed_at: nil )
   }
   scope :renewed, where { renewed_by_membership_id != nil }
   scope :unrenewed, where( :renewed_by_membership_id => nil )
