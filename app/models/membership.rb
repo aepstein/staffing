@@ -303,7 +303,8 @@ class Membership < ActiveRecord::Base
   # If this fulfills an active request, assign it to that request
   def claim_request
     return true if request || user.blank?
-    self.request = requests.interested.first
+    candidate = requests.interested.first
+    candidate.memberships << self if candidate
     true
   end
 
@@ -320,7 +321,6 @@ class Membership < ActiveRecord::Base
   # If associated with a new, active request, close the request
   def close_claimed_request
     return true unless request_id_changed? && self.request && request.active?
-    request.association(:memberships).reset
     request.close
     true
   end
