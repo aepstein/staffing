@@ -24,6 +24,21 @@
 </p>
 <% end %>
 
+<% if @membership.renewed_by_membership %>
+<p>
+  <b>Renewed by membership:</b> <%=link_to @membership.renewed_by_membership %>
+</p>
+<% end %>
+
+<% if @membership.renewed_memberships.any? %>
+<p>
+<b>Renewed memberships:</b>
+</p>
+
+<%=render partial: 'memberships', object: @membership.renewed_memberships,
+  locals: { user: @membership.user } %>
+<% end %>
+
 <% if @membership.join_notice_at? %>
 <p>
   <b>Join notice at:</b> <%=h @membership.join_notice_at.to_formatted_s( :long_ordinal ) %>
