@@ -26,7 +26,7 @@
 
 <% if @membership.renewed_by_membership %>
 <p>
-  <b>Renewed by membership:</b> <%=link_to @membership.renewed_by_membership %>
+  <b>Renewed by membership:</b> <%=link_to @membership.renewed_by_membership, @membership.renewed_by_membership %>
 </p>
 <% end %>
 
