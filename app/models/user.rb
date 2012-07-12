@@ -242,6 +242,14 @@ class User < ActiveRecord::Base
     super.to_phone :pretty
   end
 
+  def refresh
+    return if updated_at < ( Time.zone.now - 1.month )
+    if ldap_entry
+      self.status = ldap_entry.status if ldap_entry.status
+      save
+    end
+  end
+
   protected
 
   def memberships_scope(tense = nil)
@@ -268,8 +276,11 @@ class User < ActiveRecord::Base
       self.middle_name = ldap_entry.middle_name.titleize if middle_name.blank? && ldap_entry.middle_name
       self.last_name = ldap_entry.last_name.titleize if last_name.blank? && ldap_entry.last_name
       self.email = "#{net_id}@cornell.edu" if email.blank? && net_id
-      self.status = ldap_entry.status if statuses.empty? && ldap_entry.status
-      # TODO addresses and phone numbers
+      self.status = ldap_entry.status if ldap_entry.status
+      self.home_phone = ldap_entry.home_phone if home_phone.blank? && ldap_entry.home_phone
+      self.work_phone = ldap_entry.work_phone if work_phone.blank? && ldap_entry.work_phone
+      self.mobile_phone = ldap_entry.mobile_phone if mobile_phone.blank? && ldap_entry.mobile_phone
+      # TODO addresses
     else
       self.first_name ||= 'UNKNOWN'
       self.last_name ||= 'UNKNOWN'

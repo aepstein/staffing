@@ -3,7 +3,7 @@
 <html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
 
 <head>
-	<title>Committee Staffing System - Cornell Assemblies</title>
+	<title>Committee Staffing System &gt; <%= controller.controller_name.titleize %> &gt; <%= controller.action_name.titleize %></title>
 	<meta http-equiv="Content-Type" content="text/html; charset=ISO-8859-1" />
 	<meta http-equiv="Content-Language" content="en-us" />
 	<link rel="SHORTCUT ICON" href="<%= image_path('favicon.ico') %>" type="image/x-icon" />
@@ -22,24 +22,24 @@
 
 <hr class="banner-separator" />
 
-<div id="cu-identity">
-	<div id="cu-logo">
-		<a id="insignia-link" href="http://www.cornell.edu/"><img src="<%=image_path('cornell-assemblies-rails/layout/unit_signature.gif')%>" alt="Cornell University" width="283" height="76" border="0" /></a>
+<div id="cu-identity-wrap">
+	<div id="cu-identity-content">
+		<a id="insignia-link" href="http://www.cornell.edu/"><img src="<%=image_path 'layout/cu_logo_unstyled.gif' %>" alt="Cornell University" border="0" /></a>
 		<div id="unit-signature-links">
 			<a id="cornell-link" href="http://www.cornell.edu/">Cornell University</a>
-			<a id="unit-link" href="http://assembly.cornell.edu">Office of the Assemblies</a>
 		</div>
-  </div>
 
 	<div id="search-navigation">
-		<ul>
-			<li><a href="http://assembly.cornell.edu/Site/Search">Search Assemblies</a></li>
-			<li><a href="http://www.cornell.edu/search/">Search Cornell</a></li>
-		</ul>
+			<ul>
+				<li><a href="http://www.cornell.edu/search/">Search Cornell</a></li>
+			</ul>
+		</div>
 	</div>
 </div>
 
 <hr class="banner-separator" />
+
+
 <div id="header">
 	<div id="navigation">
 		<ul>
@@ -66,14 +66,16 @@
 	<div id="identity">
 		<h1>Committees</h1>
 	</div>
-</div>
-<hr />
-<div id="wrap">
-<div id="content">
-	<div id="main">
+</div> <!-- #header -->
 
-<p style="color: red"><%= flash[:error] %></p>
-<p style="color: green"><%= flash[:notice] %></p>
+<hr class="banner-separator" />
+
+<div id="container">
+<div id="content">
+
+  <% flash.each do |name, msg| %>
+    <%= content_tag :div, msg, id: "flash_#{name}" %>
+  <% end %>
 
 <% if breadcrumbs %>
 <p>
@@ -83,9 +85,9 @@
 
 <%= yield %>
 
-   </div> <!-- id=main -->
-</div> <!-- id=content -->
-</div> <!-- id=wrap -->
+</div> <!-- #content -->
+</div> <!-- #container -->
+
 <div id="footer">
 <div id="footer-content">
 &copy; 2008-<%= Time.zone.today.year %> Office of the Assemblies, Cornell University.

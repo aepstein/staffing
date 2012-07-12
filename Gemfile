@@ -26,7 +26,10 @@ gem 'escape_utils'
 gem 'prawn', '~> 1.0.0rc'
 gem 'prawn-fast-png'
 gem 'cornell-assemblies-rails',
-  :git => 'git://assembly.cornell.edu/git/cornell-assemblies-rails.git'
+  git: 'git://assembly.cornell.edu/git/cornell-assemblies-rails.git',
+  branch: '0-0-2'
+gem 'cornell-assemblies-branding',
+  git: 'git://assembly.cornell.edu/git/cornell-assemblies-branding.git'
 group :assets do
   gem 'sass-rails'
   gem 'coffee-rails'
