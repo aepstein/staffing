@@ -44,8 +44,7 @@
 	<div id="navigation">
 		<ul>
 <% if current_user %>
-<li><%= link_to 'my profile', profile_path %></li>
-<li><%= link_to 'logout', logout_path %></li>
+<li><%= link_to 'home', profile_path %></li>
 <% if current_user.admin? %>
 <li><%= link_to 'authorities', authorities_path %></li>
 <li><%= link_to 'brands', brands_path %></li>
@@ -57,8 +56,11 @@
 <li><%= link_to 'quizzes', quizzes_path %></li>
 <li><%= link_to 'users', users_path %></li>
 <% end %>
+<% unless sso_net_id %>
+<li><%= link_to 'log out', logout_path %></li>
+<% end %>
 <% else %>
-<%= link_to 'login', login_path %>
+<%= link_to 'log in', login_path %>
 <% end %>
 		</ul>
 	</div>
