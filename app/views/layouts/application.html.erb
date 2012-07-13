@@ -3,7 +3,7 @@
 <html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
 
 <head>
-	<title>Committee Staffing System &gt; <%= controller.controller_name.titleize %> &gt; <%= controller.action_name.titleize %></title>
+	<title>Campus Committees &gt; <%= controller.controller_name.titleize %> &gt; <%= controller.action_name.titleize %></title>
 	<meta http-equiv="Content-Type" content="text/html; charset=ISO-8859-1" />
 	<meta http-equiv="Content-Language" content="en-us" />
 	<link rel="SHORTCUT ICON" href="<%= image_path('favicon.ico') %>" type="image/x-icon" />
@@ -24,51 +24,54 @@
 
 <div id="cu-identity-wrap">
 	<div id="cu-identity-content">
-		<a id="insignia-link" href="http://www.cornell.edu/"><img src="<%=image_path 'layout/cu_logo_unstyled.gif' %>" alt="Cornell University" border="0" /></a>
-		<div id="unit-signature-links">
-			<a id="cornell-link" href="http://www.cornell.edu/">Cornell University</a>
-		</div>
+	<a id="insignia-link" href="http://www.cornell.edu/"><img src="<%=image_path 'layout/cu_logo_unstyled.gif' %>" alt="Cornell University" border="0" /></a>
+	  <div id="unit-signature-links">
+		  <a id="cornell-link" href="http://www.cornell.edu/">Cornell University</a>
+	  </div><!-- #unit-signature-links -->
 
-	<div id="search-navigation">
-			<ul>
-				<li><a href="http://www.cornell.edu/search/">Search Cornell</a></li>
-			</ul>
-		</div>
-	</div>
-</div>
+	  <div id="search-navigation">
+	    <ul>
+			  <li><a href="http://www.cornell.edu/search/">Search Cornell</a></li>
+		  </ul>
+	  </div> <!-- #search-navigation -->
+	</div> <!-- #cu-identity-content -->
+</div> <!-- cu-identity-wrap -->
 
 <hr class="banner-separator" />
 
-
-<div id="header">
-	<div id="navigation">
-		<ul>
-<% if current_user %>
-<li><%= link_to 'home', profile_path %></li>
-<% if current_user.admin? %>
-<li><%= link_to 'authorities', authorities_path %></li>
-<li><%= link_to 'brands', brands_path %></li>
-<li><%= link_to 'committees', committees_path %></li>
-<li><%= link_to 'positions', positions_path %></li>
-<li><%= link_to 'qualifications', qualifications_path %></li>
-<li><%= link_to 'questions', questions_path %></li>
-<li><%= link_to 'schedules', schedules_path %></li>
-<li><%= link_to 'quizzes', quizzes_path %></li>
-<li><%= link_to 'users', users_path %></li>
-<% end %>
-<% unless sso_net_id %>
-<li><%= link_to 'log out', logout_path %></li>
-<% end %>
-<% else %>
-<%= link_to 'log in', login_path %>
-<% end %>
-		</ul>
-	</div>
-	<hr />
-	<div id="identity">
-		<h1>Committees</h1>
-	</div>
-</div> <!-- #header -->
+  <div id="header">
+    <div id="navigation-wrap">
+	    <div id="navigation">
+		    <ul>
+          <% if current_user %>
+          <li><%= link_to 'home', profile_path %></li>
+          <% if current_user.admin? %>
+          <li><%= link_to 'authorities', authorities_path %></li>
+          <li><%= link_to 'brands', brands_path %></li>
+          <li><%= link_to 'committees', committees_path %></li>
+          <li><%= link_to 'positions', positions_path %></li>
+          <li><%= link_to 'qualifications', qualifications_path %></li>
+          <li><%= link_to 'questions', questions_path %></li>
+          <li><%= link_to 'schedules', schedules_path %></li>
+          <li><%= link_to 'quizzes', quizzes_path %></li>
+          <li><%= link_to 'users', users_path %></li>
+          <% end %>
+          <% unless sso_net_id %>
+          <li><%= link_to 'log out', logout_path %></li>
+          <% end %>
+          <% else %>
+          <%= link_to 'log in', login_path %>
+          <% end %>
+		    </ul>
+	    </div> <!-- #navigation -->
+	  </div> <!-- #navigation-wrap -->
+    <hr class="banner-separator" />
+    <div id="identity-wrap">
+	    <div id="identity">
+		    <h1>Campus Committees</h1>
+	    </div> <!-- #identity -->
+	  </div> <!-- #identity-wrap -->
+  </div> <!--#header -->
 
 <hr class="banner-separator" />
 

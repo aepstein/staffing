@@ -278,7 +278,7 @@ class User < ActiveRecord::Base
       self.email = "#{net_id}@cornell.edu" if email.blank? && net_id
       self.status = ldap_entry.status if ldap_entry.status
       self.home_phone = ldap_entry.home_phone if home_phone.blank? && ldap_entry.home_phone
-      self.work_phone = ldap_entry.work_phone if work_phone.blank? && ldap_entry.work_phone
+      self.work_phone = ldap_entry.campus_phone if work_phone.blank? && ldap_entry.campus_phone
       self.mobile_phone = ldap_entry.mobile_phone if mobile_phone.blank? && ldap_entry.mobile_phone
       # TODO addresses
     else
