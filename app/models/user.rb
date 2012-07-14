@@ -277,7 +277,7 @@ class User < ActiveRecord::Base
       self.middle_name ||= ldap_entry.middle_name.titleize if ldap_entry.middle_name
       self.last_name ||= ldap_entry.last_name.titleize if ldap_entry.last_name
       self.email ||= "#{net_id}@cornell.edu" if net_id
-      self.status = ldap_entry.status if status.blank? && ldap_entry.status
+      self.status ||= ldap_entry.status if ldap_entry.status
       self.home_phone ||= ldap_entry.home_phone if ldap_entry.home_phone
       self.work_phone ||= ldap_entry.campus_phone if ldap_entry.campus_phone
       self.mobile_phone ||= ldap_entry.mobile_phone if ldap_entry.mobile_phone
