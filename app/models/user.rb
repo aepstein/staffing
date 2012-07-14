@@ -246,6 +246,7 @@ class User < ActiveRecord::Base
     return if updated_at < ( Time.zone.now - 1.month )
     if ldap_entry
       self.status = ldap_entry.status if ldap_entry.status
+      import_ldap_attributes
       save
     end
   end
@@ -272,14 +273,14 @@ class User < ActiveRecord::Base
 
   def import_ldap_attributes
     if ldap_entry
-      self.first_name = ldap_entry.first_name.titleize if first_name.blank? && ldap_entry.first_name
-      self.middle_name = ldap_entry.middle_name.titleize if middle_name.blank? && ldap_entry.middle_name
-      self.last_name = ldap_entry.last_name.titleize if last_name.blank? && ldap_entry.last_name
-      self.email = "#{net_id}@cornell.edu" if email.blank? && net_id
-      self.status = ldap_entry.status if ldap_entry.status
-      self.home_phone = ldap_entry.home_phone if home_phone.blank? && ldap_entry.home_phone
-      self.work_phone = ldap_entry.campus_phone if work_phone.blank? && ldap_entry.campus_phone
-      self.mobile_phone = ldap_entry.mobile_phone if mobile_phone.blank? && ldap_entry.mobile_phone
+      self.first_name ||= ldap_entry.first_name.titleize if ldap_entry.first_name
+      self.middle_name ||= ldap_entry.middle_name.titleize if ldap_entry.middle_name
+      self.last_name ||= ldap_entry.last_name.titleize if ldap_entry.last_name
+      self.email ||= "#{net_id}@cornell.edu" if net_id
+      self.status = ldap_entry.status if status.blank? && ldap_entry.status
+      self.home_phone ||= ldap_entry.home_phone if ldap_entry.home_phone
+      self.work_phone ||= ldap_entry.campus_phone if ldap_entry.campus_phone
+      self.mobile_phone ||= ldap_entry.mobile_phone if ldap_entry.mobile_phone
       # TODO addresses
     else
       self.first_name ||= 'UNKNOWN'
