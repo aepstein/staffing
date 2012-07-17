@@ -8,11 +8,12 @@ GIT
 
 GIT
   remote: git://assembly.cornell.edu/git/cornell-assemblies-rails.git
-  revision: f9ed1e06abae0ceec01c8b73a67e780209a333de
+  revision: 472fff15e5788fb6d0816c1542c08949730eabb0
   specs:
     cornell-assemblies-rails (0.0.2)
       bcrypt-ruby (~> 3.0)
       cocoon (~> 1.0)
+      cornell_ldap (~> 1.4.3)
       formtastic (~> 2.1)
       jquery-rails (~> 2.0)
       rails (~> 3.1)

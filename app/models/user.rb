@@ -1,5 +1,7 @@
 class User < ActiveRecord::Base
   notifiable_events :renew
+  has_ldap_entry :net_id
+  has_phone :mobile_phone, :work_phone, :home_phone
 
   STATUSES = %w( staff faculty undergrad grad alumni temporary )
   attr_accessible :first_name, :middle_name, :last_name, :email, :mobile_phone,
@@ -227,21 +229,6 @@ class User < ActiveRecord::Base
     User::STATUSES.reject { |status| ((statuses_mask || 0) & 2**User::STATUSES.index(status)).zero? }
   end
 
-  def mobile_phone
-    return super if super.blank?
-    super.to_phone :pretty
-  end
-
-  def home_phone
-    return super if super.blank?
-    super.to_phone :pretty
-  end
-
-  def work_phone
-    return super if super.blank?
-    super.to_phone :pretty
-  end
-
   def refresh
     return if updated_at < ( Time.zone.now - 1.month )
     if ldap_entry
@@ -255,19 +242,6 @@ class User < ActiveRecord::Base
   def memberships_scope(tense = nil)
     scope = Membership.unscoped.where( :user_id => id )
     tense.blank? ? scope : scope.send( tense )
-  end
-
-  def ldap_entry=(ldap_entry)
-    @ldap_entry = ldap_entry
-  end
-
-  def ldap_entry
-    return nil if @ldap_entry == false
-    begin
-      @ldap_entry ||= CornellLdap::Record.find net_id
-    rescue Exception
-      @ldap_entry = false
-    end
   end
 
   def import_ldap_attributes
