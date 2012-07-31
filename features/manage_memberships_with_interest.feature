@@ -23,6 +23,7 @@ Feature: Manage memberships with interest
     And a request exists with user: user "applicant", committee: committee "requestable_committee"
     And a membership: "renewable" exists with position: position "requestable_committee", user: user "<incumbent>", period: period "past"
     And membership: "renewable" <renew> interested in renewal
+    And membership: "renewable" <decline> declined renewal
     And a membership: "current" exists with position: position "requestable_committee", period: period "current"
     And membership: "current" has no renewed_memberships
     And the request has status: "<status>"
@@ -32,14 +33,18 @@ Feature: Manage memberships with interest
     And I should <new> "Very Interested" within "#new_candidates"
     And I should <no_renewals> "No candidates" within "#renewal_candidates"
     And I should <no_new> "No candidates" within "#new_candidates"
+    And I should <no_declined> "No candidates" within "#declined_renewal_candidates"
+    And I should <declined> "Very Interested" within "#declined_renewal_candidates"
     Examples:
-      |status|incumbent|renew |renewals|new    |no_renewals|no_new |
-      |active|other    |is    |not see |see    |not see    |not see|
-      |closed|other    |is    |not see |not see|not see    |see    |
-      |active|other    |is not|not see |see    |see        |not see|
-      |closed|other    |is not|not see |not see|see        |see    |
-      |active|applicant|is    |see     |see    |not see    |not see|
-      |closed|applicant|is    |see     |not see|not see    |see    |
-      |active|applicant|is not|not see |see    |see        |not see|
-      |closed|applicant|is not|not see |not see|see        |see    |
+      |status|incumbent|renew |decline|renewals|new    |no_renewals|no_new |no_declined|declined|
+      |active|other    |is    |is not |not see |see    |not see    |not see|see        |not see |
+      |closed|other    |is    |is not |not see |not see|not see    |see    |see        |not see |
+      |active|other    |is not|is not |not see |see    |see        |not see|see        |not see |
+      |closed|other    |is not|is not |not see |not see|see        |see    |see        |not see |
+      |active|applicant|is    |is not |see     |see    |not see    |not see|see        |not see |
+      |active|applicant|is    |is     |not see |see    |see        |not see|not see    |see     |
+      |closed|applicant|is    |is not |see     |not see|not see    |see    |see        |not see |
+      |closed|applicant|is    |is     |not see |not see|see        |see    |not see    |see     |
+      |active|applicant|is not|is not |not see |see    |see        |not see|see        |not see |
+      |closed|applicant|is not|is not |not see |not see|see        |see    |see        |not see |
 

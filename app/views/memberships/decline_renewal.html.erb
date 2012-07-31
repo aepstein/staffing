@@ -1,0 +1,23 @@
+<h2>Decline renewal</h2>
+
+<p>
+Use this form to decline renewal of the membership described below.
+</p>
+
+<%= render partial: 'memberships/detail', locals: { membership: @membership } %>
+
+<%= semantic_form_for(@membership, as: :membership,
+  url: do_decline_renewal_membership_path( @membership ), method: :put ) do |form| %>
+  <%= form.inputs do %>
+  <%= form.input :decline_comment, label: 'Comment',
+    hint: 'Include a brief explanation for why renewal is being declined.' %>
+  <% end %>
+  <%= form.actions do %>
+  <%= form.action :submit, label: 'Decline Renewal' %>
+  <% end %>
+<% end %>
+
+<p>
+<%= link_to 'Show', @membership %>
+</p>
+

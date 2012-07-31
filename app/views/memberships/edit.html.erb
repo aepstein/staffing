@@ -7,13 +7,19 @@
 <div id="renewal_candidates">
 <h3>Renewal candidates</h3>
 
-<%= render partial: 'candidates', object: @membership.renewed_memberships.candidates %>
+<%= render partial: 'candidates', object: @membership.renewed_memberships.candidates.renewal_undeclined %>
 </div>
 
 <div id="new_candidates">
 <h3>Other applicants</h3>
 
 <%= render partial: 'candidates', object: @membership.requests.interested %>
+</div>
+
+<div id="declined_renewal_candidates">
+<h3>Declined renewal candidates</h3>
+
+<%= render partial: 'candidates', object: @membership.renewed_memberships.candidates.renewal_declined %>
 </div>
 
 <p>

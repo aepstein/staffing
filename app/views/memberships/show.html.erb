@@ -1,27 +1,25 @@
-<p>
-  <b>User:</b> <%=h @membership.user %>
-</p>
-
-<p>
-  <b>Period:</b> <%=h @membership.period %>
-</p>
-
-<p>
-  <b>Position:</b> <%=h @membership.position %>
-</p>
-
-<p>
-  <b>Starts at:</b> <%=h @membership.starts_at.to_s(:rfc822) %>
-</p>
-
-<p>
-  <b>Ends at:</b> <%=h @membership.ends_at.to_s(:rfc822) %>
-</p>
+<%=render partial: 'memberships/detail', locals: { membership: @membership } %>
 
 <% if @membership.request %>
 <p>
   <b>Request:</b> <%=link_to 'Yes', @membership.request %>
 </p>
+<% end %>
+
+<% if @membership.declined_at? %>
+<p>
+  <b>Renewal declined at: </b> <%= @membership.declined_at.to_formatted_s( :long_ordinal ) %>
+</p>
+
+<p>
+  <b>Renewal declined by: </b> <%= @membership.declined_by_user %>
+</p>
+
+<p>
+  <b>Renewal declined comment:</b>
+</p>
+
+<%=markdown @membership.decline_comment %>
 <% end %>
 
 <% if @membership.renewed_by_membership %>

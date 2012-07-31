@@ -5,6 +5,7 @@ class Membership < ActiveRecord::Base
   attr_accessible :user_name, :user_id, :period_id, :position_id,
     :request_id, :starts_at, :ends_at, :designees_attributes,
     :designees_attributes, as: :updator
+  attr_accessible :decline_comment, as: :decliner
   attr_readonly :position_id
 
   include UserNameLookup
@@ -15,6 +16,8 @@ class Membership < ActiveRecord::Base
   belongs_to :request, inverse_of: :memberships
   belongs_to :renewed_by_membership, class_name: 'Membership',
     inverse_of: :renewed_memberships
+  belongs_to :declined_by_user, class_name: 'User',
+    inverse_of: :declined_memberships
   has_many :enrollments, primary_key: :position_id,
     foreign_key: :position_id
   has_many :renewed_memberships, class_name: 'Membership',
@@ -160,6 +163,8 @@ class Membership < ActiveRecord::Base
     joins('INNER JOIN enrollments ON enrollments.position_id = memberships.position_id').
     where( [ 'enrollments.committee_id = ?', committee_id ] )
   }
+  scope :renewal_declined, lambda { where { declined_at.not_eq( nil ) } }
+  scope :renewal_undeclined, lambda { where { declined_at.eq( nil ) } }
 
   search_methods :user_name_cont
 
@@ -177,9 +182,19 @@ class Membership < ActiveRecord::Base
   validate :must_be_within_period, :user_must_be_qualified,
     :concurrent_memberships_must_not_exceed_slots
 
-  before_save :clear_notices, :claim_request
+  before_save :clear_notices, :claim_request, :undecline_if_renewed
   after_save :populate_unassigned, :close_claimed_request, :claim_renewed_memberships
   after_destroy :populate_unassigned
+
+  def decline_renewal(decliner_attributes, options={})
+    assign_attributes decliner_attributes, as: :decliner
+    if declined_at?
+      errors.add :base, "already declined renewal"
+    end
+    self.declined_at = Time.zone.now
+    self.declined_by_user = options.delete(:user)
+    save
+  end
 
   def self.concurrent_counts( period, position_id )
     statement_parts = [
@@ -306,6 +321,11 @@ class Membership < ActiveRecord::Base
     candidate = requests.interested.first
     candidate.memberships << self if candidate
     true
+  end
+
+  # If this membership is renewed, unset the renewal declined state as it is irrelevant
+  def undecline_if_renewed
+    self.declined_at = nil if renewed_by_membership
   end
 
   # If this renews an existing membership, mark the membership renew

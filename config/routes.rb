@@ -61,7 +61,12 @@ Staffing::Application.routes.draw do
       end
     end
   end
-  resources :memberships, :except => [ :index, :new, :create ]
+  resources :memberships, :except => [ :index, :new, :create ] do
+    member do
+      get :decline_renewal
+      put :do_decline_renewal
+    end
+  end
   resources :motions, :except => [ :new, :create ] do
     resources :users, :only => [ :index ] do
       collection do

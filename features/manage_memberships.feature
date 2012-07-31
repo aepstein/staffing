@@ -87,29 +87,34 @@ Feature: Manage memberships
     Then I should <update> authorized
     Given I put on the page for membership: "focus"
     Then I should <update> authorized
-    Given I am on the page for membership: "focus"
-    Then I should <show> authorized
+    Given I am on the decline_renewal page for membership: "focus"
+    Then I should <decline> authorized
+    Given I put on the do_decline_renewal page for membership: "focus"
+    Then I should <decline> authorized
     Given I am on the memberships page for position: "focus"
     Then I should <index> "Owner"
+    Given I am on the page for membership: "focus"
+    Then I should <show> authorized
     Given I delete on the page for membership: "focus"
     Then I should <destroy> authorized
     Examples:
-      | authority | membership | user         | create  | update  | destroy | index | show    |
-      | current   | current    | admin        | see     | see     | see     | see   | see     |
-      | current   | current    | authority    | see     | see     | see     | see   | see     |
-      | future    | future     | authority    | not see | see     | see     | see   | see     |
-      | future    | current    | authority    | not see | not see | not see | see   | see     |
-      | current   | future     | authority    | see     | not see | not see | see   | see     |
-      | current   | past       | authority    | see     | not see | not see | see   | see     |
-      | past      | past       | authority    | not see | not see | not see | see   | see     |
-      | current   | current    | authority_ro | not see | not see | not see | see   | see     |
-      | future    | future     | authority_ro | not see | not see | not see | see   | see     |
-      | future    | current    | authority_ro | not see | not see | not see | see   | see     |
-      | current   | future     | authority_ro | not see | not see | not see | see   | see     |
-      | current   | past       | authority_ro | not see | not see | not see | see   | see     |
-      | past      | past       | authority_ro | not see | not see | not see | see   | see     |
-      | current   | current    | owner        | not see | not see | not see | see   | see     |
-      | current   | current    | regular      | not see | not see | not see | see   | see     |
+      |authority|membership|user        |create |update |decline|destroy|index|show|
+      |current  |current   |admin       |see    |see    |see    |see    |see  |see |
+      |current  |future    |admin       |see    |see    |not see|see    |see  |see |
+      |current  |current   |authority   |see    |see    |see    |see    |see  |see |
+      |future   |future    |authority   |not see|see    |not see|see    |see  |see |
+      |future   |current   |authority   |not see|not see|see    |not see|see  |see |
+      |current  |future    |authority   |see    |not see|not see|not see|see  |see |
+      |current  |past      |authority   |see    |not see|see    |not see|see  |see |
+      |past     |past      |authority   |not see|not see|not see|not see|see  |see |
+      |current  |current   |authority_ro|not see|not see|not see|not see|see  |see |
+      |future   |future    |authority_ro|not see|not see|not see|not see|see  |see |
+      |future   |current   |authority_ro|not see|not see|not see|not see|see  |see |
+      |current  |future    |authority_ro|not see|not see|not see|not see|see  |see |
+      |current  |past      |authority_ro|not see|not see|not see|not see|see  |see |
+      |past     |past      |authority_ro|not see|not see|not see|not see|see  |see |
+      |current  |current   |owner       |not see|not see|not see|not see|see  |see |
+      |current  |current   |regular     |not see|not see|not see|not see|see  |see |
 
   Scenario: Register new membership given a position or edit
     Given a period: "2009" exists with schedule: schedule "annual", starts_at: "2009-06-01", ends_at: "2010-05-31"
@@ -146,12 +151,26 @@ Feature: Manage memberships
     And I should see "Ends at: 15 Jan 2010"
     And I should not see "Designee for Important Committee"
 
-  Scenario:  Show join and leave notice sending information
+  Scenario: Show join and leave notice sending information
     Given a membership exists with join_notice_at: "2010-01-01 06:00:00", leave_notice_at: "2010-01-01 07:00:00"
     And I log in as user: "admin"
     And I am on the page for the membership
     Then I should see "Join notice at: January 1st, 2010 06:00"
     And I should see "Leave notice at: January 1st, 2010 07:00"
+
+  Scenario: Decline renewal of a membership
+    Given a position exists
+    And a membership exists with position: the position
+    And user: "admin" has first_name: "Mister", last_name: "Administrator"
+    And I log in as user: "admin"
+    When I am on the edit page for the membership
+    When I follow "Decline Renewal" for the 1st membership for the position
+    And I fill in "Comment" with "No *membership* for you!"
+    And I press "Decline Renewal"
+    Then I should see "Membership renewal was successfully declined."
+    And I should see "Renewal declined at:"
+    And I should see "Renewal declined by: Mister Administrator"
+    And I should see "Renewal declined comment: No membership for you!"
 
   Scenario: Delete membership
     Given a user: "user1" exists with first_name: "John", last_name: "Doe 1"

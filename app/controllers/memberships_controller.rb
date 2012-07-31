@@ -1,10 +1,11 @@
 class MembershipsController < ApplicationController
   before_filter :require_user, :initialize_context
-  before_filter :initialize_index, :only => [ :index, :renewed, :unrenewed,
+  before_filter :initialize_index, only: [ :index, :renewed, :unrenewed,
     :current, :future, :past, :assignable ]
-  before_filter :new_membership_from_params, :only => [ :new, :create ]
+  before_filter :new_membership_from_params, only: [ :new, :create ]
   filter_access_to :new, :create, :edit, :update, :destroy, :show, :confirm,
-    :attribute_check => true
+    :decline_renewal, :do_decline_renewal,
+    attribute_check: true
   filter_access_to :assign do
     permitted_to! :edit, @membership
   end
@@ -12,6 +13,27 @@ class MembershipsController < ApplicationController
     @user ? permitted_to!( :show, @user ) : permitted_to!( :index )
   end
   before_filter :setup_breadcrumbs
+
+  # GET /memberships/:membership_id/decline_renewal
+  def decline_renewal
+    respond_to do |format|
+      format.html
+    end
+  end
+
+  # PUT /memberships/:membership_id/do_decline_renewal
+  def do_decline_renewal
+    respond_to do |format|
+      if @membership.decline_renewal( params[:membership], user: current_user )
+        flash[:notice] = 'Membership renewal was successfully declined.'
+        format.html { redirect_to(@membership) }
+        format.xml  { head :ok }
+      else
+        format.html { render :action => "edit" }
+        format.xml  { render :xml => @membership.errors, status: :unprocessable_entity }
+      end
+    end
+  end
 
   # GET /users/:user_id/memberships/renew
   # PUT /users/:user_id/memberships/renew
