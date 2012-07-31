@@ -163,6 +163,21 @@ describe User do
     @user.empl_id.should eql 10000
   end
 
+  context 'role symbols' do
+
+    let(:user) { build :user }
+
+    it "should return [:user] only for regular user" do
+      user.role_symbols.should include(:user)
+      user.role_symbols.should_not include(:admin)
+    end
+
+    it "should return [:user,:admin] admin user" do
+      user.admin = true
+      user.role_symbols.should include(:user,:admin)
+    end
+  end
+
   def setup_authority_id_scenario
     @authorized = create(:position)
     @unauthorized = create(:position)

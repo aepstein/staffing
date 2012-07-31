@@ -44,13 +44,12 @@ group :development do
   gem 'ruby-graphviz', require: 'graphviz'
 end
 group :test do
-  gem 'test-unit'
-  gem 'cucumber-rails'
-  gem 'database_cleaner'
-  gem 'capybara'
-  gem 'spork'
-  gem 'factory_girl', '~> 3.0', :require => false
-  gem 'factory_girl_rails', '~> 3.0'
+  gem 'test-unit', require: false
+  gem 'cucumber-rails', require: false
+  gem 'database_cleaner', require: false
+  gem 'capybara', '~> 2.0.0beta2'
+  gem 'spork', require: false
+  gem 'factory_girl_rails', '~> 3.0', require: false
   gem 'pickle'
   gem 'email_spec'
   gem 'launchy'

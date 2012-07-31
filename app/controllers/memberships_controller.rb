@@ -1,7 +1,7 @@
 class MembershipsController < ApplicationController
   before_filter :require_user, :initialize_context
   before_filter :initialize_index, only: [ :index, :renewed, :unrenewed,
-    :current, :future, :past, :assignable ]
+    :current, :future, :past, :assignable, :renewable ]
   before_filter :new_membership_from_params, only: [ :new, :create ]
   filter_access_to :new, :create, :edit, :update, :destroy, :show, :confirm,
     :decline_renewal, :do_decline_renewal,
@@ -33,6 +33,14 @@ class MembershipsController < ApplicationController
         format.xml  { render :xml => @membership.errors, status: :unprocessable_entity }
       end
     end
+  end
+
+  # GET /authorities/:authority_id/memberships/renewable
+  def renewable
+    @memberships = @memberships.renewal_candidate.undeclined.renew_until(Time.zone.today)
+    add_breadcrumb "Renewable",
+      polymorphic_path( [ :renewable, @context, :memberships ] )
+    index
   end
 
   # GET /users/:user_id/memberships/renew
@@ -142,7 +150,7 @@ class MembershipsController < ApplicationController
   # GET /authorities/:authority_id/memberships.xml
   def index
     @q = @memberships.search( params[:q] )
-    @memberships = @q.result.ordered.page( params[:page] )
+    @memberships = @q.result.page( params[:page] )
 
     respond_to do |format|
       format.html { render :action => 'index' }
@@ -246,7 +254,9 @@ class MembershipsController < ApplicationController
   end
 
   def initialize_index
-    @memberships = @context.memberships
+    @memberships = @context.memberships.ordered
+    @memberships = @memberships.joins { position }.
+      order { positions.name } unless @position
   end
 
   def setup_breadcrumbs

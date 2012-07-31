@@ -22,8 +22,8 @@ Feature: Manage authority memberships
     Then I should see "Index memberships for Focus Authority"
     And I should see the following memberships:
       |User     |Position         |Committees |
-      |John Doe |Future Position  |           |
       |John Doe |Current Position |           |
+      |John Doe |Future Position  |           |
       |John Doe |Past Position    |           |
     Given I am on the current memberships page for authority: "focus"
     Then I should see "Current memberships for Focus Authority"

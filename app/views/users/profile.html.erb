@@ -15,9 +15,11 @@ You may review requests and update memberships for the following authorities:
 <% current_user.authorities.authorized(0).each do |authority| %>
 <li>
 <%= link_to h( authority ), authority %>
+(<%= link_to 'renewable memberships', renewable_authority_memberships_path( authority ) %>)
 (<%= link_to 'active requests', active_authority_requests_path( authority ) %>)
 (<%= link_to 'rejected requests', rejected_authority_requests_path( authority ) %>)
 (<%= link_to 'current memberships', current_authority_memberships_path( authority ) %>)
+(<%= link_to 'future memberships', future_authority_memberships_path( authority ) %>)
 </li>
 <% end %>
 </ul>

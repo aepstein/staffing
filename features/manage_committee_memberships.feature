@@ -37,8 +37,8 @@ Feature: Manage committee memberships
     Then I should see "Index memberships for Focus Committee"
     And I should see the following memberships:
       |User     |Position         |Title      |Votes |
-      |John Doe |Future Position  |Chair      |1     |
       |John Doe |Current Position |Vice-Chair |1     |
+      |John Doe |Future Position  |Chair      |1     |
       |John Doe |Past Position    |Member     |1     |
     Given I am on the current memberships page for committee: "focus"
     Then I should see "Current memberships for Focus Committee"

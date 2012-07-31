@@ -4,11 +4,8 @@ class ApplicationController < ActionController::Base
   is_authenticator
   has_breadcrumbs
 
-  protected
-
   def permission_denied
-    flash[:error] = "You are not allowed to perform the requested action."
-    redirect_to profile_url
+    redirect_to root_url, alert: "You are not allowed to perform the requested action."
   end
 end
 
