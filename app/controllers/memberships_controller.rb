@@ -37,7 +37,7 @@ class MembershipsController < ApplicationController
 
   # GET /authorities/:authority_id/memberships/renewable
   def renewable
-    @memberships = @memberships.renewal_candidate.undeclined.renew_until(Time.zone.today)
+    @memberships = @memberships.renewal_candidate.renewal_undeclined.renew_until(Time.zone.today)
     add_breadcrumb "Renewable",
       polymorphic_path( [ :renewable, @context, :memberships ] )
     index

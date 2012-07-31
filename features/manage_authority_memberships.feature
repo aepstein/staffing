@@ -41,3 +41,9 @@ Feature: Manage authority memberships
       |User     |Position         |Committees |
       |John Doe |Past Position    |           |
 
+  Scenario: List renewable memberships correctly for an authority
+    Given I log in as user: "owner"
+    And I am on the renewable memberships page for authority: "focus"
+    Then I should not see "John Doe"
+#TODO actually test for renewable memberships to show up here
+
