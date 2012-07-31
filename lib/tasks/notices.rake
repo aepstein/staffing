@@ -1,5 +1,5 @@
 task :notices => [ 'notices:leave', 'notices:join', 'notices:reject',
-  'notices:renew' ]
+  'notices:decline', 'notices:renew' ]
 
 namespace :notices do
 
