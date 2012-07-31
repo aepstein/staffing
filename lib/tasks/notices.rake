@@ -19,6 +19,14 @@ namespace :notices do
     end
   end
 
+  desc "Send notices for all declined memberships"
+  task :decline => [ :environment ] do
+    Membership.decline_notice_pending.readonly(false).each do |membership|
+      membership.send_decline_notice!
+      notices_log "Sent decline notice for membership #{membership.id}."
+    end
+  end
+
   desc "Send notices for all requests that have been rejected"
   task :reject => [ :environment ] do
     Request.reject_notice_pending.readonly(false).each do |request|

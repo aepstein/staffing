@@ -146,6 +146,7 @@ class Membership < ActiveRecord::Base
   }
   scope :join_notice_pending, lambda { notifiable.current.no_join_notice }
   scope :leave_notice_pending, lambda { notifiable.past.no_leave_notice }
+  scope :decline_notice_pending, lambda { renewal_declined.no_decline_notice }
   scope :notifiable, includes(:position).where { user_id != nil }.
     merge( Position.unscoped.notifiable )
   scope :renewal_confirmed, lambda {
