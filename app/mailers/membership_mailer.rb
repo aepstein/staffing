@@ -21,5 +21,15 @@ class MembershipMailer < ActionMailer::Base
     )
   end
 
+  def decline_notice(membership)
+    @membership = membership
+    mail(
+      to: membership.user.to_email,
+      cc: membership.watchers.map(&:to_email),
+      from: "\"#{membership.position.authority.effective_contact_name}\" <#{membership.position.authority.effective_contact_email}>",
+      subject: "Renewal of your appointment to #{membership.description} was declined"
+    )
+  end
+
 end
 

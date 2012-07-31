@@ -1,0 +1,10 @@
+Dear <%= @membership.user.first_name %>,
+
+This notice is to inform you that your membership in <%= @membership.description %>, which began on <%= @membership.starts_at.to_formatted_s :long_ordinal %>, will not be renewed beyond the originally scheduled end date of <%= @membership.ends_at.to_formatted_s :long_ordinal %>.
+
+<%=@membership.decline_comment %>
+
+Best regards,
+
+<%= @membership.position.authority.effective_contact_name %>
+

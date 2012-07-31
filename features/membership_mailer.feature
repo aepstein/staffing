@@ -64,6 +64,24 @@ Feature: User mailer
       | no_enrollment         | Orphan position |           | not       | not     | not      |
       | other_authority       | Other authority | not       | not       | not     | not      |
 
+  Scenario Outline: Send decline notice to a user
+    Given a membership exists with position: position "<position>", period: period "focus", user: user "focus", decline_comment: "No *membership* for you!"
+    And the membership is declined renewal
+    And a decline notice email is sent for the membership
+    Then 1 email should be delivered to user: "focus"
+    And the email should have subject: "Renewal of your appointment to <description> was declined", from: "info@example.org"
+    And the email should contain "Dear Johnny" in the both parts body
+    And the email should contain "This notice is to inform you that your membership in <description>, which began on June 1st, 2008, will not be renewed beyond the originally scheduled end date of May 31st, 2009." in the both parts body
+    And the email should contain "No *membership* for you!" in the text part body
+    And the email should contain "No <em>membership</em> for you!" in the html part body
+    And the email should contain "Best regards," in the both parts body
+    And the email should <authority> contain "The Authority" in the both parts body
+    Examples:
+      | position              | description     | authority |
+      | requestable_committee | Cool committee  |           |
+      | no_enrollment         | Orphan position |           |
+      | other_authority       | Other authority | not       |
+
   Scenario Outline: Copy the watchers for a position
     Given a position: "watcher" exists with schedule: schedule "focus"
     And a committee: "other_committee" exists
