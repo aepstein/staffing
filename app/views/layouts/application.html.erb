@@ -8,6 +8,7 @@
 	<meta http-equiv="Content-Language" content="en-us" />
 	<link rel="SHORTCUT ICON" href="<%= image_path('favicon.ico') %>" type="image/x-icon" />
 	<%=raw stylesheet_link_tag 'application' %>
+	<%=raw stylesheet_link_tag 'print', media: :print %>
 	<!--[if IE 6]><%=raw stylesheet_link_tag 'ie6' %><![endif]-->
 	<!--[if IE 7]><%=raw stylesheet_link_tag 'ie7' %><![endif]-->
 	<%=raw javascript_include_tag 'application' %>
@@ -35,7 +36,7 @@
 		  </ul>
 	  </div> <!-- #search-navigation -->
 	</div> <!-- #cu-identity-content -->
-</div> <!-- cu-identity-wrap -->
+</div> <!-- #cu-identity-wrap -->
 
 <hr class="banner-separator" />
 

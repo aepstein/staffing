@@ -1,6 +1,6 @@
 GIT
   remote: git://assembly.cornell.edu/git/cornell-assemblies-branding.git
-  revision: e1b8efd39caffb39406231c1a4edee5dd8acc79a
+  revision: 1c89cb71bfa95a395cde247a553fb7795acc9015
   specs:
     cornell-assemblies-branding (0.0.1)
       cornell-assemblies-rails (~> 0.0.2)
@@ -8,7 +8,7 @@ GIT
 
 GIT
   remote: git://assembly.cornell.edu/git/cornell-assemblies-rails.git
-  revision: 2e27a8b4056f46fcab677e7343add0bbeda40363
+  revision: bc5304f7ca4605aec5afb5e7528971d69bed6c39
   specs:
     cornell-assemblies-rails (0.0.2)
       bcrypt-ruby (~> 3.0)
