@@ -70,7 +70,20 @@ class UsersController < ApplicationController
   def show
     respond_to do |format|
       format.html # show.html.erb
-      format.xml  { render :xml => @user }
+      format.jpg {
+        case params[:version]
+        when 'small'
+          send_file @user.portrait.small.path, type: :jpg, disposition: 'inline',
+            filename: "#{@user.name :file}-small.jpg"
+        when 'thumb'
+          send_file @user.portrait.thumb.path, type: :jpg, disposition: 'inline',
+            filename: "#{@user.name :file}-thumb.jpg"
+        else
+          send_file @user.portrait.path, type: :jpg, disposition: 'inline',
+            filename: "#{@user.name :file}.jpg"
+        end
+      }
+      format.xml  { render xml: @user }
     end
   end
 

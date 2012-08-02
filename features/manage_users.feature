@@ -137,6 +137,7 @@ Feature: Manage users
     And I should see "Work address: 100 Day Hall"
     And I should see "Date of birth: June 4, 1982"
     And I should see "Resume? No"
+    And I should see "Portrait: No"
     And I should see "Statuses: unknown"
     And I should see "Administrator? Yes"
     When I follow "Edit"
@@ -152,6 +153,7 @@ Feature: Manage users
     And I fill in "Work address" with "200 Day Hall"
     And I fill in "Date of birth" with "1982-07-10"
     And I attach a file named "resume.pdf" of 1 kilobyte to "Resume"
+    And I attach the file "spec/assets/photo.jpg" to "Portrait"
     And I choose "No"
     And I choose "undergrad"
     And I press "Update"
@@ -168,6 +170,7 @@ Feature: Manage users
     And I should see "Work address: 200 Day Hall"
     And I should see "Date of birth: July 10, 1982"
     And I should see "Resume? Yes"
+    And I should not see "Portrait: No"
     And I should see "Statuses: undergrad"
     And I should see "Administrator? No"
 

@@ -47,6 +47,11 @@
 </p>
 
 <p>
+  <b>Portrait:</b> <%= @user.portrait.blank? ? 'No' : image_tag(user_path(
+    @user, format: :jpg, version: 'thumb' )) %>
+</p>
+
+<p>
   <b>Statuses:</b> <%= @user.statuses.empty? ? 'unknown' : @user.statuses.join( ', ' ) %>
 </p>
 
@@ -56,7 +61,7 @@
 
 <h3>Generate tent card</h3>
 
-<%=form_tag tent_user_path(@user, :format => :pdf), :method => :get do %>
+<%=form_tag tent_user_path(@user, format: :pdf), method: :get do %>
 <p>
   <b><%=label_tag :brand_id, 'Brand' %></b>
   <%=select_tag :brand_id, options_from_collection_for_select(Brand.all, :id, :name) %><br/>

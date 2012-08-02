@@ -1,4 +1,4 @@
-  <%= render "shared/error_messages", :target => form.object %>
+  <%= render "shared/error_messages", target: form.object %>
   <%= form.inputs do %>
     <%= form.input :first_name %>
     <%= form.input :middle_name %>
@@ -10,6 +10,8 @@
     <%= form.input :work_address %>
     <%= form.input :date_of_birth, as: :string %>
     <%= form.input :resume, as: :file, hint: 'You may optionally provide a resume (pdf only)' %>
+    <%= form.input :portrait, as: :file, hint: 'You may optionally provide a picture (jpg only)' %>
+    <%= form.input :portrait_cache, as: :hidden %>
     <% if permitted_to? :manage, form.object %>
       <%= form.input :net_id %>
       <%= form.input :empl_id %>
