@@ -16,8 +16,7 @@ class PortraitUploader < CarrierWave::Uploader::Base
 
   # Use mounted_as parameter to give file predictable name
   def filename
-    return "#{mounted_as}" if super.blank?
-    "#{mounted_as}#{File.extname(super)}"
+    "#{mounted_as}.jpg"
   end
 
   # Partitions model id in form 000/000/001 for scalable storage
