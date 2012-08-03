@@ -61,7 +61,8 @@ class UsersController < ApplicationController
   include UserTentReports
   def tent
     @context = @user
-    @tents = [ [ @user.name, params[:title] ] ]
+    @tents = [ [ @user.name, params[:title],
+      ( @user.portrait? ? @user.portrait.small.path : nil ) ] ]
     render_user_tent_reports
   end
 

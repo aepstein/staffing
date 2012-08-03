@@ -40,7 +40,8 @@ class Committee < ActiveRecord::Base
         memo[membership.user] += membership.enrollments.map(&:title)
         memo
       end
-      out.map { |user, titles| [ user.name, titles.uniq.join(', ') ] }
+      out.map { |user, titles| [ user.name, titles.uniq.join(', '),
+        ( user.portrait? ? user.portrait.small.path : nil ) ] }
     end
   end
   has_many :requestable_enrollments, class_name: 'Enrollment',

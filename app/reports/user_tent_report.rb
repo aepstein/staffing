@@ -16,7 +16,9 @@ class UserTentReport < Prawn::Document
     logo = brand.logo.tent.store_path
     rotate 180, origin: [720,306] do
       bounding_box [720,306], width: 720, height: 234 do
+        y_pos = cursor
         image logo, height: 72
+        image user[2], fit: [72,72], at: [638,y_pos] if user[2]
         move_down 9
         text user[0], size: 48, align: :center, style: :bold
         unless user[1].blank?
@@ -25,7 +27,9 @@ class UserTentReport < Prawn::Document
       end
     end
     bounding_box [0,234], width: 720, height: 234 do
+      y_pos = cursor
       image logo, height: 72
+      image user[2], fit: [72,72], at: [638,y_pos] if user[2]
       move_down 9
       text user[0], size: 48, align: :center, style: :bold
       unless user[1].blank?
