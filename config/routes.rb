@@ -1,5 +1,6 @@
 Staffing::Application.routes.draw do
   resources :answers, except: [ :index, :new, :create ]
+  resources :attachments, only: [ :show ]
   resources :authorities do
     resources :memberships, only: [ :index ] do
       collection do

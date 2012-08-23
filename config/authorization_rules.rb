@@ -22,6 +22,9 @@ authorization do
       :schedules ],
       to: [ :show, :index ]
     has_permission_on [ :motions, :requests ], to: :index
+    has_permission_on :attachments, to: :show do
+      if_permitted_to :show, :attachable
+    end
     has_permission_on :committees, to: :vote do
       if_attribute enrollments: {
         position_id: is_in { user.memberships.current.map(&:position_id) },

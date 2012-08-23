@@ -10,6 +10,12 @@ FactoryGirl.define do
     content 'blue'
   end
 
+  factory :attachment do
+    association :attachable, factory: :motion
+    document { File.open "#{::Rails.root}/spec/assets/empl_ids.csv" }
+    sequence(:description) { |n| "Document #{n}" }
+  end
+
   factory :authority do
     sequence(:name) { |n| "Authority #{n}" }
   end

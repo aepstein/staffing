@@ -1,7 +1,7 @@
 class Motion < ActiveRecord::Base
   attr_accessible :period_id, :name, :content, :description, :complete,
-    :referring_motion_id, :sponsorships_attributes
-  attr_readonly :period_id
+    :referring_motion_id, :sponsorships_attributes, :attachments_attributes
+  attr_readonly :committee_id, :period_id
 
   acts_as_list scope: [ :period_id, :committee_id ]
 
@@ -14,20 +14,27 @@ class Motion < ActiveRecord::Base
     # Build and return a sponsorship if provided user is allowed
     # Otherwise, return nil
     def populate_for( user )
-      build( :user => user ) if @association.owner.users.allowed.include? user
+      if proxy_association.owner.users.allowed.include? user
+        p = build
+        p.user = user
+        return p
+      end
     end
   end
   has_many :users, through: :sponsorships do
     # Only voting members may be sponsors
     def allowed
-      return [] unless @association.owner.committee && @association.owner.period_id?
+      return [] unless proxy_association.owner.committee && proxy_association.owner.period_id?
       User.joins(:memberships).merge(
-        @association.owner.committee.memberships.where( 'enrollments.votes > 0' ).
-        overlap( @association.owner.period.starts_at,
-        @association.owner.period.ends_at ).except(:order)
+        proxy_association.owner.committee.memberships.where( 'enrollments.votes > 0' ).
+        overlap( proxy_association.owner.period.starts_at,
+        proxy_association.owner.period.ends_at ).except(:order)
       )
     end
   end
+  has_and_belongs_to_many :watchers, class_name: 'User',
+    join_table: 'motions_watchers'
+  has_many :attachments, as: :attachable, dependent: :destroy
   has_many :meeting_motions, dependent: :destroy
   has_many :meetings, through: :meeting_motions
   has_many :motion_mergers, inverse_of: :motion, dependent: :destroy
@@ -36,7 +43,7 @@ class Motion < ActiveRecord::Base
     class_name: 'Motion', foreign_key: :referring_motion_id,
     dependent: :destroy do
     def build_referee( new_committee )
-      new_motion = build( @association.owner.attributes )
+      new_motion = build( proxy_association.owner.attributes )
       new_motion.committee = new_committee
       new_motion
     end
@@ -44,12 +51,12 @@ class Motion < ActiveRecord::Base
     def build_divided( instances=false )
       instances ||= (empty? ? 2 : 1 )
       new_motions = []
-      new_attributes = @association.owner.attributes
+      new_attributes = proxy_association.owner.attributes
       %w( committee_id id position created_at updated_at ).each { |attribute| new_attributes.delete attribute }
       instances.times do |i|
-        new_attributes[:name] = "#{@association.owner.name} (#{@association.owner.id}-#{i})"
+        new_attributes[:name] = "#{proxy_association.owner.name} (#{proxy_association.owner.id}-#{i})"
         new_motion = build new_attributes
-        new_motion.committee = @association.owner.committee
+        new_motion.committee = proxy_association.owner.committee
         new_motions << new_motion
       end
       new_motions
@@ -65,8 +72,8 @@ class Motion < ActiveRecord::Base
   scope :current, lambda { joins(:period).merge Period.unscoped.current }
   scope :in_process, lambda { with_status( :started, :proposed ) }
 
-  accepts_nested_attributes_for :sponsorships, allow_destroy: true,
-    reject_if: proc { |a| a['user_name'].blank? }
+  accepts_nested_attributes_for :attachments, allow_destroy: true
+  accepts_nested_attributes_for :sponsorships, allow_destroy: true
 
   delegate :periods, :period_ids, to: :committee
 
@@ -125,6 +132,19 @@ class Motion < ActiveRecord::Base
 
   end
 
+  notifiable_events :propose
+
+  # Users who should be notified of this motion's progress
+  def observers
+    ( watchers + committee.observers ).uniq
+  end
+
+  # Emails of observers OR default observer email if no observers are available
+  def observer_emails
+    observers.map(&:to_email) +
+      Staffing::Application.app_config['defaults']['observer_email']
+  end
+
   def tense
     return nil if period.blank?
     period.tense
@@ -142,7 +162,18 @@ class Motion < ActiveRecord::Base
     false
   end
 
-  def to_s; name; end
+  def to_s(format=nil)
+    case format
+    when :file
+      to_s(:full).strip.downcase.gsub(/[^a-z0-9]/,'-').squeeze('-')
+    when :full
+      "#{committee} #{to_s :numbered}"
+    when :numbered
+      "R. #{position}: #{name}"
+    else
+      name
+    end
+  end
 
   protected
 

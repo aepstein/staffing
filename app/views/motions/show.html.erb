@@ -26,7 +26,11 @@
 
 <%=markdown @motion.content %>
 
-<p><b>Sponsors:</b> <%= @motion.users.map(&:name).join(', ') %> </p>
+<p><b>Sponsors:</b> <%= @motion.users.map(&:name).listify %> </p>
+
+<p>Attachments:</p>
+
+<%= render partial: 'attachments/attachments', object: @motion.attachments %>
 
 <p>
 <% if permitted_to? :edit, @motion -%>

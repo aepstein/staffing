@@ -23,6 +23,10 @@
 </p>
 
 <p>
+  <b>Manager?</b>  <%= @enrollment.manager? ? 'Yes' : 'No' %>
+</p>
+
+<p>
 <% if permitted_to? :edit, @enrollment -%>
 <%= link_to 'Edit', edit_enrollment_path(@enrollment) %> |
 <% end -%>

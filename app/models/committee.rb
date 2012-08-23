@@ -12,7 +12,8 @@ class Committee < ActiveRecord::Base
   scope :inactive, where { active.not_eq( true ) }
 
   attr_accessible :name, :description, :join_message, :leave_message, :brand_id,
-    :requestable, :public_url, :schedule_id, :reject_message, :active
+    :requestable, :public_url, :schedule_id, :reject_message, :active,
+    :contact_name, :contact_email
 
   belongs_to :schedule, inverse_of: :committees
   belongs_to :brand, inverse_of: :committees
@@ -27,9 +28,14 @@ class Committee < ActiveRecord::Base
   has_many :motions, inverse_of: :committee, dependent: :destroy
   has_many :requests, inverse_of: :committee
   has_many :enrollments, inverse_of: :committee, dependent: :destroy
-  has_many :watcher_enrollments, conditions: { membership_notices: true },
+  has_many :member_watcher_enrollments, conditions: { membership_notices: true },
     class_name: 'Enrollment'
-  has_many :watchers, through: :watcher_enrollments, source: :users
+  has_many :member_watchers, through: :member_watcher_enrollments, source: :users
+  has_many :manager_enrollments, conditions: { manager: true },
+    class_name: 'Enrollment'
+  has_many :managers, through: :manager_enrollments, source: :users
+  has_and_belongs_to_many :watchers, class_name: 'User',
+    join_table: 'committees_watchers'
   has_many :positions, through: :enrollments
   has_many :memberships, through: :positions do
     def tents(date)
@@ -49,8 +55,35 @@ class Committee < ActiveRecord::Base
   has_many :requestable_positions, through: :requestable_enrollments,
     source: :position, conditions: { active: true }
 
+  delegate :effective_contact_name_and_email, to: :committee
+
   validates :name, presence: true, uniqueness: true
   validates :schedule, presence: true
+
+  # People who should be notified of progress on business items
+  def observers
+    ( watchers + managers ).uniq
+  end
+
+  # Emails of observers OR default observer email if no observers are available
+  def observer_emails
+    observers.map(&:to_email) +
+      Staffing::Application.app_config['defaults']['observer_email']
+  end
+
+  def effective_contact_name
+    return contact_name if contact_name?
+    Staffing::Application.app_config['defaults']['authority']['contact_name']
+  end
+
+  def effective_contact_email
+    return contact_email if contact_email?
+    Staffing::Application.app_config['defaults']['authority']['contact_email']
+  end
+
+  def effective_contact_name_and_email
+    "\"#{effective_contact_name}\" <#{effective_contact_email}>"
+  end
 
   def current_emails
     memberships.current.includes(:designees, :user).except(:order).all.

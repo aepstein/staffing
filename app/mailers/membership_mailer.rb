@@ -5,7 +5,7 @@ class MembershipMailer < ActionMailer::Base
     @membership = membership
     mail(
       :to => membership.user.to_email,
-      :cc => membership.watchers.map(&:to_email),
+      :cc => membership.watcher_users.map(&:to_email),
       :from => "\"#{membership.position.authority.effective_contact_name}\" <#{membership.position.authority.effective_contact_email}>",
       :subject => "Your appointment to #{membership.description}"
     )
@@ -15,7 +15,7 @@ class MembershipMailer < ActionMailer::Base
     @membership = membership
     mail(
       :to => membership.user.to_email,
-      :cc => membership.watchers.map(&:to_email),
+      :cc => membership.watcher_users.map(&:to_email),
       :from => "\"#{membership.position.authority.effective_contact_name}\" <#{membership.position.authority.effective_contact_email}>",
       :subject => "Expiration of your appointment to #{membership.description}"
     )
@@ -25,7 +25,7 @@ class MembershipMailer < ActionMailer::Base
     @membership = membership
     mail(
       to: membership.user.to_email,
-      cc: membership.watchers.map(&:to_email),
+      cc: membership.watcher_users.map(&:to_email),
       from: "\"#{membership.position.authority.effective_contact_name}\" <#{membership.position.authority.effective_contact_email}>",
       subject: "Renewal of your appointment to #{membership.description} was declined"
     )

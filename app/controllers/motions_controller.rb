@@ -71,7 +71,6 @@ class MotionsController < ApplicationController
 
   # GET /motions/1/edit
   def edit
-    @motion.sponsorships.build
     respond_to do |format|
       format.html # edit.html.erb
     end
@@ -80,6 +79,7 @@ class MotionsController < ApplicationController
   # POST /committees/:committee_id/motions
   # POST /committees/:committee_id/motions.xml
   def create
+    @motion.attachments.each { |a| a.attachable = @motion }
     respond_to do |format|
       if @motion.save
         flash[:notice] = 'Motion was successfully created.'

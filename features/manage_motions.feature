@@ -59,6 +59,7 @@ Feature: Manage motions
       | future_  | started | non-voting | member  | not see | not see | not see | not see  |
       | current_ | started | voting     | regular | not see | not see | not see | not see  |
 
+  @javascript @wip
   Scenario: Register new motion
     Given a schedule exists
     And a period: "focus" exists with schedule: the schedule, starts_at: "2010-01-01", ends_at: "2010-12-31"
@@ -76,7 +77,10 @@ Feature: Manage motions
     And I fill in "Name" with "Charter amendment"
     And I fill in "Description" with "This is a *big* change."
     And I fill in "Content" with "*Whereas* and *Resolved*"
-    And I fill in "User" with "abc1"
+    And I fill in "Sponsor" with "abc1"
+    And I follow "add attachment"
+    And I attach the file "spec/assets/empl_ids.csv" to "Attachment document"
+    And I fill in "Attachment description" with "Sample employee ids"
     And I press "Create"
     Then I should see "Motion was successfully created."
     And I should see "Committee: Powerful Committee"
@@ -85,12 +89,15 @@ Feature: Manage motions
     And I should see "George Washington"
     And I should see "This is a big change."
     And I should see "Whereas and Resolved"
+    And I should see "Sample employee ids"
     When I follow "Edit"
     And I fill in "Name" with "Charter change"
     And I fill in "Description" with "This is a big change."
     And I fill in "Content" with "Whereas and Finally Resolved"
-    And I check "Remove sponsor"
-    And I fill in "User" with "abc2"
+    And I follow "remove sponsorship"
+    And I follow "add sponsorship"
+    And I follow "remove attachment"
+    And I fill in "Sponsor" with "abc2"
     And I press "Update"
     Then I should see "Motion was successfully updated."
     And I should see "Name: Charter change"
@@ -98,6 +105,7 @@ Feature: Manage motions
     And I should see "Whereas and Finally Resolved"
     And I should see "John Adams"
     And I should not see "George Washington"
+    And I should not see "Sample employee ids"
 
   Scenario: Delete motion
     Given there are no motions

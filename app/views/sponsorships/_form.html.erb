@@ -1,3 +1,0 @@
-<%= form.input :user_name, :as => :autocomplete, :label => "User",
-:url => form.object.motion.persisted? ? allowed_motion_users_path( form.object.motion, :format => :json ) : users_path( :format => :json ) %>
-

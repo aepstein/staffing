@@ -1,0 +1,12 @@
+<div class="nested-fields">
+<% if f.object.new_record? %>
+<%= f.input :user_name, as: :autocomplete, label: "Sponsor",
+  url: ( f.object.motion.persisted? ? allowed_motion_users_path( f.object.motion, format: :json ) : users_path( format: :json ) ) %>
+<% else %>
+<li><%= f.object.user %></li>
+<% end %>
+<p>
+<%= link_to_remove_association 'remove sponsorship', f %>
+</p>
+</div>
+

@@ -1,6 +1,6 @@
 class Enrollment < ActiveRecord::Base
   attr_accessible :committee_id, :position_name, :position_id, :title, :votes,
-    :requestable, :membership_notices
+    :requestable, :membership_notices, :manager
   attr_readonly :committee_id
 
   belongs_to :position, inverse_of: :enrollments

@@ -68,7 +68,7 @@ class Membership < ActiveRecord::Base
   has_many :users, through: :requests, source: :user do
     def assignable; User.assignable_to( proxy_association.owner.position ); end
   end
-  has_many :watcher_users, through: :committees, source: :watchers, uniq: true do
+  has_many :watcher_users, through: :committees, source: :member_watchers, uniq: true do
     def overlapping
       merge( Membership.unscoped.overlap proxy_association.owner.starts_at,
         proxy_association.owner.ends_at )

@@ -29,6 +29,7 @@ gem 'cornell-assemblies-rails',
   git: 'git://assembly.cornell.edu/git/cornell-assemblies-rails.git'
 gem 'cornell-assemblies-branding',
   git: 'git://assembly.cornell.edu/git/cornell-assemblies-branding.git'
+gem 'decent_exposure'
 group :assets do
   gem 'sass-rails'
   gem 'coffee-rails'

@@ -1,0 +1,10 @@
+<% if attachments.any? %>
+<ul>
+  <%= render partial: 'attachments/attachment', collection: attachments %>
+</ul>
+<% else %>
+<p>
+No attachments.
+</p>
+<% end %>
+

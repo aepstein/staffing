@@ -13,8 +13,9 @@ class UserSessionsController < ApplicationController
     return permission_denied if sso_net_id
     user = User.find_by_net_id(params[:net_id])
     if user && user.authenticate(params[:password])
+      reset_session
       session[:user_id] = user.id
-      redirect_to root_url, :notice => LOGIN_NOTICE
+      redirect_to root_url, notice: LOGIN_NOTICE
     else
       flash.now.alert = "Invalid net id or password"
       render "new"
@@ -24,8 +25,8 @@ class UserSessionsController < ApplicationController
   # GET /logout
   def destroy
     return permission_denied if sso_net_id
-    session[:user_id] = nil
-    redirect_to login_url, :notice => LOGOUT_NOTICE
+    reset_session
+    redirect_to login_url, notice: LOGOUT_NOTICE
   end
 end
 

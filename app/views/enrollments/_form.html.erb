@@ -8,6 +8,8 @@
     :hint => 'Can this committee and position be accessed through the application process?' %>
   <%= form.input :membership_notices, :as => :radio,
     :hint => 'Should enrolled user be copied on notices regarding membership changes?' %>
+  <%= form.input :manager, as: :radio,
+    hint: 'Should enrolled user be copied on notices regarding motions?' %>
   <% end %>
   <%= form.actions %>
 
