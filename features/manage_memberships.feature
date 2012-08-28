@@ -77,6 +77,7 @@ Feature: Manage memberships
     And a position: "focus" exists with name: "Focus Position", authority: authority "authority", schedule: the schedule
     And a user: "owner" exists with net_id: "owner", password: "secret", admin: false, last_name: "Owner"
     And a membership: "focus" exists with position: position "focus", user: user "owner", period: the <membership>_period
+    And membership: "focus" <renew> interested in renewal
     And a user: "regular" exists
     And I log in as user: "<user>"
     And I am on the new membership page for position: "focus"
@@ -98,23 +99,25 @@ Feature: Manage memberships
     Given I delete on the page for membership: "focus"
     Then I should <destroy> authorized
     Examples:
-      |authority|membership|user        |create |update |decline|destroy|index|show|
-      |current  |current   |admin       |see    |see    |see    |see    |see  |see |
-      |current  |future    |admin       |see    |see    |not see|see    |see  |see |
-      |current  |current   |authority   |see    |see    |see    |see    |see  |see |
-      |future   |future    |authority   |not see|see    |not see|see    |see  |see |
-      |future   |current   |authority   |not see|not see|see    |not see|see  |see |
-      |current  |future    |authority   |see    |not see|not see|not see|see  |see |
-      |current  |past      |authority   |see    |not see|see    |not see|see  |see |
-      |past     |past      |authority   |not see|not see|not see|not see|see  |see |
-      |current  |current   |authority_ro|not see|not see|not see|not see|see  |see |
-      |future   |future    |authority_ro|not see|not see|not see|not see|see  |see |
-      |future   |current   |authority_ro|not see|not see|not see|not see|see  |see |
-      |current  |future    |authority_ro|not see|not see|not see|not see|see  |see |
-      |current  |past      |authority_ro|not see|not see|not see|not see|see  |see |
-      |past     |past      |authority_ro|not see|not see|not see|not see|see  |see |
-      |current  |current   |owner       |not see|not see|not see|not see|see  |see |
-      |current  |current   |regular     |not see|not see|not see|not see|see  |see |
+      |authority|membership|user        |renew |create |update |decline|destroy|index|show|
+      |current  |current   |admin       |is    |see    |see    |see    |see    |see  |see |
+      |current  |current   |admin       |is not|see    |see    |not see|see    |see  |see |
+      |current  |future    |admin       |is    |see    |see    |not see|see    |see  |see |
+      |current  |current   |authority   |is    |see    |see    |see    |see    |see  |see |
+      |current  |current   |authority   |is not|see    |see    |not see|see    |see  |see |
+      |future   |future    |authority   |is    |not see|see    |not see|see    |see  |see |
+      |future   |current   |authority   |is    |not see|not see|see    |not see|see  |see |
+      |current  |future    |authority   |is    |see    |not see|not see|not see|see  |see |
+      |current  |past      |authority   |is    |see    |not see|see    |not see|see  |see |
+      |past     |past      |authority   |is    |not see|not see|not see|not see|see  |see |
+      |current  |current   |authority_ro|is    |not see|not see|not see|not see|see  |see |
+      |future   |future    |authority_ro|is    |not see|not see|not see|not see|see  |see |
+      |future   |current   |authority_ro|is    |not see|not see|not see|not see|see  |see |
+      |current  |future    |authority_ro|is    |not see|not see|not see|not see|see  |see |
+      |current  |past      |authority_ro|is    |not see|not see|not see|not see|see  |see |
+      |past     |past      |authority_ro|is    |not see|not see|not see|not see|see  |see |
+      |current  |current   |owner       |is    |not see|not see|not see|not see|see  |see |
+      |current  |current   |regular     |is    |not see|not see|not see|not see|see  |see |
 
   Scenario: Register new membership given a position or edit
     Given a period: "2009" exists with schedule: schedule "annual", starts_at: "2009-06-01", ends_at: "2010-05-31"

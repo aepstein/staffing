@@ -6,7 +6,8 @@ authorization do
       :user_renewal_notices, :sendings ],
       to: [ :manage, :show, :index ]
     has_permission_on :memberships, to: [ :decline_renewal ] do
-      if_attribute declined_at: is { nil }, starts_at: lte { Time.zone.today }
+      if_attribute declined_at: is { nil }, starts_at: lte { Time.zone.today },
+        renew_until: is_not { nil }
     end
     has_permission_on :committees, to: [ :tents, :members ]
     has_permission_on :users, to: [ :tent ]
@@ -64,7 +65,8 @@ authorization do
       } } } }
     end
     has_permission_on :memberships, to: [ :decline_renewal ], join_by: :and do
-      if_attribute declined_at: is { nil }, starts_at: lte { Time.zone.today }
+      if_attribute declined_at: is { nil }, starts_at: lte { Time.zone.today },
+        renew_until: is_not { nil }
       if_attribute position: { authority: { authorized_enrollments: {
         votes: gt { 0 },
         memberships: {
