@@ -14,14 +14,14 @@ Feature: Manage motions
     And an enrollment exists with position: position "voting", committee: committee "committee", votes: 1
     And an enrollment exists with position: position "non-voting", committee: committee "committee", votes: 0
     And a user: "admin" exists with admin: true
-
+@wip
   Scenario Outline: Test permissions for motions controller actions
-    Given a motion: "focus" exists with name: "Focus", committee: committee "committee", period: the <period>period, status: "<status>"
+    Given a motion: "focus" exists with name: "Focus", committee: committee "committee", period: the <period>_period, status: "<status>"
     And a user: "sponsor" exists
-    And a membership exists with user: user "sponsor", position: position "voting", period: the <period>period
+    And a membership exists with user: user "sponsor", position: position "voting", period: the <period>_period
     And a sponsorship exists with motion: the motion, user: user "sponsor"
     And a user: "member" exists
-    And a membership exists with user: user "member", position: position "<position>", period: the <period>period
+    And a membership exists with user: user "member", position: position "<position>", period: the <period>_period
     And a user: "regular" exists
     And I log in as user: "<user>"
     And I am on the page for the motion
@@ -37,27 +37,51 @@ Feature: Manage motions
     Then I should <create> authorized
     Given I post on the motions page for committee: "committee"
     Then I should <create> authorized
-    And I am on the edit page for the motion
+    When I am on the edit page for the motion
     Then I should <update> authorized
     Given I put on the page for the motion
     Then I should <update> authorized
-    Given I delete on the page for the motion
+    Given I put on the propose page for the motion
+    Then I should <propose> authorized
+    Given I put on the withdraw page for the motion
+    Then I should <withdraw> authorized
+    Given the motion has status: "<status>"
+    When I put on the restart page for the motion
+    Then I should <restart> authorized
+    Given the motion has status: "<status>"
+    When I am on the divide page for the motion
+    Then I should <divide> authorized
+    Given I am on the merge page for the motion
+    Then I should <merge> authorized
+    Given I put on the adopt page for the motion
+    Then I should <adopt> authorized
+    Given the motion has status: "<status>"
+    When I put on the implement page for the motion
+    Then I should <implement> authorized
+    Given the motion has status: "<status>"
+    When I put on the reject page for the motion
+    Then I should <reject> authorized
+    Given the motion has status: "<status>"
+    When I am on the refer page for the motion
+    Then I should <refer> authorized
+    Given the motion has status: "<status>"
+    When I delete on the page for the motion
     Then I should <destroy> authorized
     Examples:
-      | period   | status  | position   | user    | create  | update  | destroy | show     |
-      | current_ | started | voting     | admin   | see     | see     | see     | see      |
-      | past_    | started | voting     | admin   | see     | see     | see     | see      |
-      | future_  | started | voting     | admin   | see     | see     | see     | see      |
-      | current_ | started | voting     | sponsor | see     | see     | see     | see      |
-      | past_    | started | voting     | sponsor | not see | not see | not see | see      |
-      | future_  | started | voting     | sponsor | not see | not see | not see | see      |
-      | current_ | started | voting     | member  | see     | not see | not see | not see  |
-      | past_    | started | voting     | member  | not see | not see | not see | not see  |
-      | future_  | started | voting     | member  | not see | not see | not see | not see  |
-      | current_ | started | non-voting | member  | not see | not see | not see | not see  |
-      | past_    | started | non-voting | member  | not see | not see | not see | not see  |
-      | future_  | started | non-voting | member  | not see | not see | not see | not see  |
-      | current_ | started | voting     | regular | not see | not see | not see | not see  |
+|period |status |position  |user   |create |update |destroy|show   |restart|withdraw|divide |merge  |adopt  |implement|reject |refer  |
+|current|started|voting    |admin  |see    |see    |see    |see    |not see|see     |not see|not see|not see|not see  |not see|not see|
+|past   |started|voting    |admin  |see    |see    |see    |see    |not see|see     |not see|not see|not see|not see  |not see|not see|
+|future |started|voting    |admin  |see    |see    |see    |see    |not see|see     |not see|not see|not see|not see  |not see|not see|
+|current|started|voting    |sponsor|see    |see    |see    |see    |not see|see     |not see|not see|not see|not see  |not see|not see|
+|past   |started|voting    |sponsor|not see|not see|not see|see    |not see|see     |not see|not see|not see|not see  |not see|not see|
+|future |started|voting    |sponsor|not see|not see|not see|see    |not see|not see |not see|not see|not see|not see  |not see|not see|
+|current|started|voting    |member |see    |not see|not see|not see|not see|not see |not see|not see|not see|not see  |not see|not see|
+|past   |started|voting    |member |not see|not see|not see|not see|not see|not see |not see|not see|not see|not see  |not see|not see|
+|future |started|voting    |member |not see|not see|not see|not see|not see|not see |not see|not see|not see|not see  |not see|not see|
+|current|started|non-voting|member |not see|not see|not see|not see|not see|not see |not see|not see|not see|not see  |not see|not see|
+|past   |started|non-voting|member |not see|not see|not see|not see|not see|not see |not see|not see|not see|not see  |not see|not see|
+|future |started|non-voting|member |not see|not see|not see|not see|not see|not see |not see|not see|not see|not see  |not see|not see|
+|current|started|voting    |regular|not see|not see|not see|not see|not see|not see |not see|not see|not see|not see  |not see|not see|
 
   @javascript @wip
   Scenario: Register new motion

@@ -1,0 +1,34 @@
+<p>
+  <b>Committee:</b> <%= motion.committee %>
+</p>
+
+<p>
+  <b>Period:</b> <%= motion.period %>
+</p>
+
+<p>
+  <b>Position:</b> <%= motion.position %>
+</p>
+
+<p>
+  <b>Name:</b> <%= motion.name %>
+</p>
+
+<p>
+  <b>Description:</b>
+</p>
+
+<%=markdown motion.description %>
+
+<p>
+  <b>Content:</b>
+</p>
+
+<%=markdown motion.content %>
+
+<p><b>Sponsors:</b> <%= motion.users.map(&:name).listify %> </p>
+
+<p>Attachments:</p>
+
+<%= render partial: 'attachments/attachments', object: motion.attachments %>
+

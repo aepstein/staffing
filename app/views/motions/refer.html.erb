@@ -1,0 +1,17 @@
+<p>
+Use this form to refer this motion to another committee.
+This will create a <em>referred motion</em> in the other committee that can
+then work through that committee's normal business process.
+</p>
+
+<%= semantic_form_for @motion, url: refer_motion_path( @motion ),
+  method: :put do |form| %>
+  <%= form.inputs for: :referred_motions do |referred_motion_form| %>
+    <%= referred_motion_form.input :committee_name, label: 'Committee',
+      hint: 'To which committee should this motion be referred?' %>
+    <%= render partial: 'motions/form' %>
+  <% end %>
+
+  <%= form.actions %>
+<% end %>
+

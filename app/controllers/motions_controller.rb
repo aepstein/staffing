@@ -112,6 +112,131 @@ class MotionsController < ApplicationController
     end
   end
 
+  # PUT /motions/:id/propose
+  def propose
+    respond_to do |format|
+      if @motion.propose
+        format.html { redirect_to @motion, notice: 'Motion was successfully proposed.' }
+        format.xml { head :ok }
+      else
+        format.html { redirect_to @motion, alert: 'Cannot propose the motion.' }
+        format.xml { render xml: @motion.errors, status: :unprocessable_entity }
+      end
+    end
+  end
+
+  # PUT /motions/:id/withdraw
+  def withdraw
+    respond_to do |format|
+      if @motion.propose
+        format.html { redirect_to @motion, notice: 'Motion was successfully withdrawn.' }
+        format.xml { head :ok }
+      else
+        format.html { redirect_to @motion, alert: 'Cannot withdraw the motion.' }
+        format.xml { render xml: @motion.errors, status: :unprocessable_entity }
+      end
+    end
+  end
+
+  # GET /motions/:id/merge - form where user selects motion to which this motion is to be merged
+  # PUT /motions/:id/merge - do actual merge
+  def merge
+    respond_to do |format|
+      if request.method == :get
+        format.html { render action: :merge }
+      else
+        if @motion.create_terminal_motion_merger( params[:motion_merger] )
+          format.html { redirect_to @motion.terminal_merged_motion,
+            notice: 'Motion was successfully merged.' }
+          format.xml { head :ok }
+        else
+          format.html { redirect_to @motion, alert: 'Cannot merge the motion.' }
+          format.xml { render xml: @motion.errors, status: :unprocessable_entity }
+        end
+      end
+    end
+  end
+
+  # GET /motions/:id/refer
+  # PUT /motions/:id/refer
+  def refer
+    respond_to do |format|
+      if request.method == :get
+        @motion.referred_motions.build_referee
+        format.html { render action: :refer }
+      else
+        @motion.assign_attributes(params[:motion])
+        if @motion.divide
+          flash[:notice] = 'Motion was successfully referred.'
+          format.html { redirect_to(@motion) }
+          format.xml  { head :ok }
+        else
+          format.html { render action: "refer" }
+          format.xml  { render xml: @motion.errors, status: :unprocessable_entity }
+        end
+      end
+    end
+  end
+
+  # GET /motions/:id/divide
+  # PUT /motions/:id/divide
+  def divide
+    respond_to do |format|
+      if request.method == :get
+        format.html { render action: :divide }
+      else
+        @motion.assign_attributes(params[:motion])
+        if @motion.divide
+          flash[:notice] = 'Motion was successfully divided.'
+          format.html { redirect_to(@motion) }
+          format.xml  { head :ok }
+        else
+          format.html { render :action => "divide" }
+          format.xml  { render :xml => @motion.errors, :status => :unprocessable_entity }
+        end
+      end
+    end
+  end
+
+  # PUT /motions/:id/adopt
+  def adopt
+    respond_to do |format|
+      if @motion.adopt
+        format.html { redirect_to @motion, notice: 'Motion was successfully adopted.' }
+        format.xml { head :ok }
+      else
+        format.html { redirect_to @motion, alert: 'Cannot adopt the motion.' }
+        format.xml { render xml: @motion.errors, status: :unprocessable_entity }
+      end
+    end
+  end
+
+  # PUT /motions/:id/implement
+  def implement
+    respond_to do |format|
+      if @motion.implement
+        format.html { redirect_to @motion, notice: 'Motion was successfully implemented.' }
+        format.xml { head :ok }
+      else
+        format.html { redirect_to @motion, alert: 'Cannot implement the motion.' }
+        format.xml { render xml: @motion.errors, status: :unprocessable_entity }
+      end
+    end
+  end
+
+  # PUT /motions/:id/reject
+  def reject
+    respond_to do |format|
+      if @motion.reject
+        format.html { redirect_to @motion, notice: 'Motion was successfully rejected.' }
+        format.xml { head :ok }
+      else
+        format.html { redirect_to @motion, alert: 'Cannot reject the motion.' }
+        format.xml { render xml: @motion.errors, status: :unprocessable_entity }
+      end
+    end
+  end
+
   # DELETE /motions/1
   # DELETE /motions/1.xml
   def destroy

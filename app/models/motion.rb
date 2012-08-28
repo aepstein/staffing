@@ -37,6 +37,10 @@ class Motion < ActiveRecord::Base
   has_many :attachments, as: :attachable, dependent: :destroy
   has_many :meeting_motions, dependent: :destroy
   has_many :meetings, through: :meeting_motions
+  has_one :terminal_motion_merger, inverse_of: :merged_motion, dependent: :destroy,
+    class_name: 'MotionMerger', foreign_key: :merged_motion_id
+  has_one :terminal_merged_motion, through: :terminal_motion_merger,
+    source: :motion
   has_many :motion_mergers, inverse_of: :motion, dependent: :destroy
   has_many :merged_motions, through: :motion_mergers, source: :merged_motion
   has_many :referred_motions, inverse_of: :referring_motion,
@@ -160,6 +164,11 @@ class Motion < ActiveRecord::Base
   def divisee?
     return true if referring_motion && ( referring_motion.committee == committee )
     false
+  end
+
+  # What motions can this motion be merged to?
+  def mergeable_motions
+    committee.motions.with_status( :proposed ).where { |m| m.id.not_eq( id ) }
   end
 
   def to_s(format=nil)

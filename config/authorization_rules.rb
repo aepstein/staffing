@@ -9,7 +9,10 @@ authorization do
       if_attribute declined_at: is { nil }, starts_at: lte { Time.zone.today },
         renew_until: is_not { nil }
     end
-    has_permission_on :committees, to: [ :tents, :members ]
+    has_permission_on :motions, to: [ :refer, :implement, :reject ] do
+      if_attribute status: is { 'adopted' }
+    end
+    has_permission_on :committees, to: [ :tents, :members, :lead ]
     has_permission_on :users, to: [ :tent ]
     has_permission_on :users, to: :resume
     has_permission_on :requests, to: [ :reject, :reactivate ]
@@ -31,6 +34,12 @@ authorization do
         position_id: is_in { user.memberships.current.map(&:position_id) },
         votes: gt { 0 } }
     end
+    has_permission_on :committees, to: :lead do
+      if_attribute enrollments: {
+        manager: is { true },
+        position_id: is_in { user.memberships.current.map(&:position_id) },
+        votes: gt { 0 } }
+    end
     has_permission_on :motions, to: :show, join_by: :and do
       if_attribute status: is { 'started' }
       if_attribute sponsorships: { user_id: is { user.id } }
@@ -38,10 +47,20 @@ authorization do
     has_permission_on :motions, to: :create do
       if_permitted_to :vote, :committee
     end
-    has_permission_on :motions, to: [ :manage ], join_by: :and do
+    has_permission_on :motions, to: [ :manage, :propose, :withdraw ], join_by: :and do
       if_permitted_to :vote, :committee
       if_attribute status: is { 'started' },
         sponsorships: { user_id: is { user.id } }
+    end
+    has_permission_on :motions, to: [ :restart ], join_by: :and do
+      if_permitted_to :vote, :committee
+      if_attribute status: is { 'withdrawn' },
+        sponsorships: { user_id: is { user.id } }
+    end
+    has_permission_on :motions, to: [ :merge, :divide, :withdraw, :adopt,
+      :reject, :refer, :restart ] do
+      if_permitted_to :lead, :committee
+      if_attribute status: is { 'proposed' }
     end
     has_permission_on :users, to: :resume do
       if_attribute id: is { user.id }

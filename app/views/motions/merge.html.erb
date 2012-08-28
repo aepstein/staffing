@@ -1,0 +1,21 @@
+<p>
+Use this form to merge the motion to another motion proposed before the same committee.
+</p>
+
+<h3>Motion to be merged</h3>
+
+<%= render partial: 'motions/detail', locals: { motion: @motion_merger.merged_motion } %>
+
+<h3>Motion to which it will be merged</h3>
+
+<%= semantic_form_for @motion_merger, as: :motion_merger,
+  url: merge_motion_path( @motion_merger.merged_motion ) do |form| %>
+  <%= form.inputs do %>
+    <%= form.input :motion, as: :select,
+      collection: @motion_merger.merged_motion.mergeable_motions,
+      hint: 'What motion should this motion be merged into?' %>
+  <% end %>
+
+  <%= form.actions %>
+<% end %>
+
