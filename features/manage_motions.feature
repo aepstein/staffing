@@ -68,22 +68,22 @@ Feature: Manage motions
     When I delete on the page for the motion
     Then I should <destroy> authorized
     Examples:
-|period |status |position  |user   |create |update |destroy|show   |restart|withdraw|divide |merge  |adopt  |implement|reject |refer  |
-|current|started|voting    |admin  |see    |see    |see    |see    |not see|see     |not see|not see|not see|not see  |not see|not see|
-|past   |started|voting    |admin  |see    |see    |see    |see    |not see|see     |not see|not see|not see|not see  |not see|not see|
-|future |started|voting    |admin  |see    |see    |see    |see    |not see|see     |not see|not see|not see|not see  |not see|not see|
-|current|started|voting    |sponsor|see    |see    |see    |see    |not see|see     |not see|not see|not see|not see  |not see|not see|
-|past   |started|voting    |sponsor|not see|not see|not see|see    |not see|see     |not see|not see|not see|not see  |not see|not see|
-|future |started|voting    |sponsor|not see|not see|not see|see    |not see|not see |not see|not see|not see|not see  |not see|not see|
-|current|started|voting    |member |see    |not see|not see|not see|not see|not see |not see|not see|not see|not see  |not see|not see|
-|past   |started|voting    |member |not see|not see|not see|not see|not see|not see |not see|not see|not see|not see  |not see|not see|
-|future |started|voting    |member |not see|not see|not see|not see|not see|not see |not see|not see|not see|not see  |not see|not see|
-|current|started|non-voting|member |not see|not see|not see|not see|not see|not see |not see|not see|not see|not see  |not see|not see|
-|past   |started|non-voting|member |not see|not see|not see|not see|not see|not see |not see|not see|not see|not see  |not see|not see|
-|future |started|non-voting|member |not see|not see|not see|not see|not see|not see |not see|not see|not see|not see  |not see|not see|
-|current|started|voting    |regular|not see|not see|not see|not see|not see|not see |not see|not see|not see|not see  |not see|not see|
+|period |status |position  |user   |create |update |destroy|show   |restart|propose |withdraw|divide |merge  |adopt  |implement|reject |refer  |
+|current|started|voting    |admin  |see    |see    |see    |see    |not see|see     |see     |not see|not see|not see|not see  |not see|not see|
+|past   |started|voting    |admin  |see    |see    |see    |see    |not see|not see |see     |not see|not see|not see|not see  |not see|not see|
+|future |started|voting    |admin  |see    |see    |see    |see    |not see|not see |see     |not see|not see|not see|not see  |not see|not see|
+|current|started|voting    |sponsor|see    |see    |see    |see    |not see|see     |see     |not see|not see|not see|not see  |not see|not see|
+|past   |started|voting    |sponsor|not see|not see|not see|see    |not see|not see |see     |not see|not see|not see|not see  |not see|not see|
+|future |started|voting    |sponsor|not see|not see|not see|see    |not see|not see |not see |not see|not see|not see|not see  |not see|not see|
+|current|started|voting    |member |see    |not see|not see|not see|not see|not see |not see |not see|not see|not see|not see  |not see|not see|
+|past   |started|voting    |member |not see|not see|not see|not see|not see|not see |not see |not see|not see|not see|not see  |not see|not see|
+|future |started|voting    |member |not see|not see|not see|not see|not see|not see |not see |not see|not see|not see|not see  |not see|not see|
+|current|started|non-voting|member |not see|not see|not see|not see|not see|not see |not see |not see|not see|not see|not see  |not see|not see|
+|past   |started|non-voting|member |not see|not see|not see|not see|not see|not see |not see |not see|not see|not see|not see  |not see|not see|
+|future |started|non-voting|member |not see|not see|not see|not see|not see|not see |not see |not see|not see|not see|not see  |not see|not see|
+|current|started|voting    |regular|not see|not see|not see|not see|not see|not see |not see |not see|not see|not see|not see  |not see|not see|
 
-  @javascript @wip
+  @javascript
   Scenario: Register new motion
     Given a schedule exists
     And a period: "focus" exists with schedule: the schedule, starts_at: "2010-01-01", ends_at: "2010-12-31"

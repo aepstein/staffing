@@ -3,7 +3,10 @@ class MotionsController < ApplicationController
   before_filter :initialize_index
   before_filter :new_motion_from_params, :only => [ :new, :create ]
   before_filter :setup_breadcrumbs
-  filter_access_to :new, :create, :edit, :update, :destroy, :show, :attribute_check => true
+  filter_access_to :new, :create, :edit, :update, :destroy, :show,
+    :adopt, :divide, :implement, :merge, :propose, :refer, :reject,
+    :restart, :withdraw,
+    attribute_check: true
 
   # GET /meetings/:meeting_id/motions/allowed
   # GET /meetings/:meeting_id/motions/allowed.xml
@@ -120,6 +123,19 @@ class MotionsController < ApplicationController
         format.xml { head :ok }
       else
         format.html { redirect_to @motion, alert: 'Cannot propose the motion.' }
+        format.xml { render xml: @motion.errors, status: :unprocessable_entity }
+      end
+    end
+  end
+
+  # PUT /motions/:id/restart
+  def restart
+    respond_to do |format|
+      if @motion.restart
+        format.html { redirect_to @motion, notice: 'Motion was successfully restarted.' }
+        format.xml { head :ok }
+      else
+        format.html { redirect_to @motion, alert: 'Cannot restart the motion.' }
         format.xml { render xml: @motion.errors, status: :unprocessable_entity }
       end
     end
