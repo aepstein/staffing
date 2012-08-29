@@ -5,14 +5,14 @@ authorization do
       :quizzes, :questions, :requests, :schedules, :users,
       :user_renewal_notices, :sendings ],
       to: [ :manage, :show, :index ]
+    has_permission_on :committees, to: [ :tents, :members, :chair, :own ]
     has_permission_on :memberships, to: [ :decline_renewal ] do
       if_attribute declined_at: is { nil }, starts_at: lte { Time.zone.today },
         renew_until: is_not { nil }
     end
-    has_permission_on :motions, to: [ :refer, :implement, :reject ] do
+    has_permission_on :motions, to: [ :implement ] do
       if_attribute status: is { 'adopted' }
     end
-    has_permission_on :committees, to: [ :tents, :members, :lead ]
     has_permission_on :users, to: [ :tent ]
     has_permission_on :users, to: :resume
     has_permission_on :requests, to: [ :reject, :reactivate ]
@@ -34,33 +34,42 @@ authorization do
         position_id: is_in { user.memberships.current.map(&:position_id) },
         votes: gt { 0 } }
     end
-    has_permission_on :committees, to: :lead do
+    has_permission_on :committees, to: :chair do
       if_attribute enrollments: {
         manager: is { true },
         position_id: is_in { user.memberships.current.map(&:position_id) },
         votes: gt { 0 } }
     end
-    has_permission_on :motions, to: :show, join_by: :and do
-      if_attribute status: is { 'started' }
+    has_permission_on :motions, to: :own do
       if_attribute sponsorships: { user_id: is { user.id } }
     end
-    has_permission_on :motions, to: :create do
+    has_permission_on :motions, to: :manage, join_by: :and do
       if_permitted_to :vote, :committee
+      if_attribute status: is { 'started' }
     end
-    has_permission_on :motions, to: [ :manage, :propose, :withdraw ], join_by: :and do
-      if_permitted_to :vote, :committee
-      if_attribute status: is { 'started' },
-        sponsorships: { user_id: is { user.id } }
+    has_permission_on :motions, to: [ :show, :propose, :withdraw ], join_by: :and do
+      if_permitted_to :own
+      if_attribute status: is { 'started' }
     end
     has_permission_on :motions, to: [ :restart ], join_by: :and do
-      if_permitted_to :vote, :committee
-      if_attribute status: is { 'withdrawn' },
-        sponsorships: { user_id: is { user.id } }
+      if_permitted_to :own
+      if_attribute status: is { 'withdrawn' }
     end
-    has_permission_on :motions, to: [ :merge, :divide, :withdraw, :adopt,
-      :reject, :refer, :restart ] do
-      if_permitted_to :lead, :committee
+    has_permission_on :motions, to: :withdraw, join_by: :and do
+      if_permitted_to :own
       if_attribute status: is { 'proposed' }
+    end
+    has_permission_on :motions, to: :show do
+      if_attribute status: is_not_in { %w( started withdrawn ) }
+    end
+    has_permission_on :motions, to: [ :adopt, :divide, :merge, :refer, :reject,
+      :restart, :withdraw ] do
+      if_permitted_to :vicechair, :committee
+      if_attribute status: is { 'proposed' }
+    end
+    has_permission_on :motions, to: [ :refer, :reject ], join_by: :and do
+      if_permitted_to :chair, :committee
+      if_attribute status: is { 'adopted' }
     end
     has_permission_on :users, to: :resume do
       if_attribute id: is { user.id }
@@ -118,6 +127,9 @@ privileges do
   end
   privilege :decline_renewal do
     includes :do_decline_renewal
+  end
+  privilege :chair do
+    includes :vicechair
   end
 end
 
