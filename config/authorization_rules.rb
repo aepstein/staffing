@@ -5,10 +5,14 @@ authorization do
       :quizzes, :questions, :requests, :schedules, :users,
       :user_renewal_notices, :sendings ],
       to: [ :manage, :show, :index ]
-    has_permission_on :committees, to: [ :tents, :members, :chair, :own ]
+    has_permission_on :committees, to: [ :tents, :members, :chair ]
     has_permission_on :memberships, to: [ :decline_renewal ] do
       if_attribute declined_at: is { nil }, starts_at: lte { Time.zone.today },
         renew_until: is_not { nil }
+    end
+    has_permission_on :motions, to: [ :own ] do
+      if_attribute period: { starts_at: lte { Time.zone.today },
+        ends_at: gte { Time.zone.today } }
     end
     has_permission_on :motions, to: [ :implement ] do
       if_attribute status: is { 'adopted' }
@@ -40,14 +44,21 @@ authorization do
         position_id: is_in { user.memberships.current.map(&:position_id) },
         votes: gt { 0 } }
     end
-    has_permission_on :motions, to: :own do
+    has_permission_on :motions, to: :own, join_by: :and do
+      if_permitted_to :vote, :committee
       if_attribute sponsorships: { user_id: is { user.id } }
     end
-    has_permission_on :motions, to: :manage, join_by: :and do
+    has_permission_on :motions, to: :create, join_by: :and do
       if_permitted_to :vote, :committee
+    end
+    has_permission_on :motions, to: :manage, join_by: :and do
+      if_permitted_to :own
       if_attribute status: is { 'started' }
     end
-    has_permission_on :motions, to: [ :show, :propose, :withdraw ], join_by: :and do
+    has_permission_on :motions, to: :show do
+      if_attribute sponsorships: { user_id: is { user.id } }
+    end
+    has_permission_on :motions, to: [ :propose, :withdraw ], join_by: :and do
       if_permitted_to :own
       if_attribute status: is { 'started' }
     end
@@ -63,7 +74,7 @@ authorization do
       if_attribute status: is_not_in { %w( started withdrawn ) }
     end
     has_permission_on :motions, to: [ :adopt, :divide, :merge, :refer, :reject,
-      :restart, :withdraw ] do
+      :restart, :withdraw ], join_by: :and do
       if_permitted_to :vicechair, :committee
       if_attribute status: is { 'proposed' }
     end

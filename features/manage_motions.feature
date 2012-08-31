@@ -70,10 +70,10 @@ Feature: Manage motions
     Examples:
 |period |status |position  |user   |create |update |destroy|show   |restart|propose |withdraw|divide |merge  |adopt  |implement|reject |refer  |
 |current|started|voting    |admin  |see    |see    |see    |see    |not see|see     |see     |not see|not see|not see|not see  |not see|not see|
-|past   |started|voting    |admin  |see    |see    |see    |see    |not see|not see |see     |not see|not see|not see|not see  |not see|not see|
-|future |started|voting    |admin  |see    |see    |see    |see    |not see|not see |see     |not see|not see|not see|not see  |not see|not see|
+|past   |started|voting    |admin  |see    |see    |see    |see    |not see|not see |not see |not see|not see|not see|not see  |not see|not see|
+|future |started|voting    |admin  |see    |see    |see    |see    |not see|not see |not see |not see|not see|not see|not see  |not see|not see|
 |current|started|voting    |sponsor|see    |see    |see    |see    |not see|see     |see     |not see|not see|not see|not see  |not see|not see|
-|past   |started|voting    |sponsor|not see|not see|not see|see    |not see|not see |see     |not see|not see|not see|not see  |not see|not see|
+|past   |started|voting    |sponsor|not see|not see|not see|see    |not see|not see |not see |not see|not see|not see|not see  |not see|not see|
 |future |started|voting    |sponsor|not see|not see|not see|see    |not see|not see |not see |not see|not see|not see|not see  |not see|not see|
 |current|started|voting    |member |see    |not see|not see|not see|not see|not see |not see |not see|not see|not see|not see  |not see|not see|
 |past   |started|voting    |member |not see|not see|not see|not see|not see|not see |not see |not see|not see|not see|not see  |not see|not see|
