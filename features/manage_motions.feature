@@ -4,13 +4,15 @@ Feature: Manage motions
   I want to create, modify, list, show, and destroy motions
 
   Background:
-    Given a position: "voting" exists with name: "Member of Committee", slots: 2
+    Given a position: "chair" exists with name: "Chair of Committee", slots: 2
+    And a position: "voting" exists with name: "Member of Committee", slots: 2
     And a position: "non-voting" exists with name: "Ex-Officio Member of Committee", slots: 2
     And a schedule: "committee" exists
     And a past_period exists with schedule: schedule "committee"
     And a current_period exists with schedule: schedule "committee"
     And a future_period exists with schedule: schedule "committee"
     And a committee: "committee" exists with name: "Active Committee", schedule: the schedule
+    And an enrollment exists with position: position "chair", committee: committee "committee", votes: 1, manager: true
     And an enrollment exists with position: position "voting", committee: committee "committee", votes: 1
     And an enrollment exists with position: position "non-voting", committee: committee "committee", votes: 0
     And a user: "admin" exists with admin: true
@@ -51,7 +53,8 @@ Feature: Manage motions
     Given the motion has status: "<status>"
     When I am on the divide page for the motion
     Then I should <divide> authorized
-    Given I am on the merge page for the motion
+    Given the motion has status: "<status>"
+    When I am on the merge page for the motion
     Then I should <merge> authorized
     Given I put on the adopt page for the motion
     Then I should <adopt> authorized
@@ -68,20 +71,55 @@ Feature: Manage motions
     When I delete on the page for the motion
     Then I should <destroy> authorized
     Examples:
-|period |status |position  |user   |create |update |destroy|show   |restart|propose |withdraw|divide |merge  |adopt  |implement|reject |refer  |
-|current|started|voting    |admin  |see    |see    |see    |see    |not see|see     |see     |not see|not see|not see|not see  |not see|not see|
-|past   |started|voting    |admin  |see    |see    |see    |see    |not see|not see |not see |not see|not see|not see|not see  |not see|not see|
-|future |started|voting    |admin  |see    |see    |see    |see    |not see|not see |not see |not see|not see|not see|not see  |not see|not see|
-|current|started|voting    |sponsor|see    |see    |see    |see    |not see|see     |see     |not see|not see|not see|not see  |not see|not see|
-|past   |started|voting    |sponsor|not see|not see|not see|see    |not see|not see |not see |not see|not see|not see|not see  |not see|not see|
-|future |started|voting    |sponsor|not see|not see|not see|see    |not see|not see |not see |not see|not see|not see|not see  |not see|not see|
-|current|started|voting    |member |see    |not see|not see|not see|not see|not see |not see |not see|not see|not see|not see  |not see|not see|
-|past   |started|voting    |member |not see|not see|not see|not see|not see|not see |not see |not see|not see|not see|not see  |not see|not see|
-|future |started|voting    |member |not see|not see|not see|not see|not see|not see |not see |not see|not see|not see|not see  |not see|not see|
-|current|started|non-voting|member |not see|not see|not see|not see|not see|not see |not see |not see|not see|not see|not see  |not see|not see|
-|past   |started|non-voting|member |not see|not see|not see|not see|not see|not see |not see |not see|not see|not see|not see  |not see|not see|
-|future |started|non-voting|member |not see|not see|not see|not see|not see|not see |not see |not see|not see|not see|not see  |not see|not see|
-|current|started|voting    |regular|not see|not see|not see|not see|not see|not see |not see |not see|not see|not see|not see  |not see|not see|
+|period |status   |position  |user   |create |update |destroy|show   |restart|propose|withdraw|divide |merge  |adopt  |implement|reject |refer  |
+|current|started  |voting    |admin  |see    |see    |see    |see    |not see|see    |see     |not see|not see|not see|not see  |not see|not see|
+|past   |started  |voting    |admin  |see    |see    |see    |see    |not see|not see|not see |not see|not see|not see|not see  |not see|not see|
+|future |started  |voting    |admin  |see    |see    |see    |see    |not see|not see|not see |not see|not see|not see|not see  |not see|not see|
+|current|started  |voting    |sponsor|see    |see    |see    |see    |not see|see    |see     |not see|not see|not see|not see  |not see|not see|
+|past   |started  |voting    |sponsor|not see|not see|not see|see    |not see|not see|not see |not see|not see|not see|not see  |not see|not see|
+|future |started  |voting    |sponsor|not see|not see|not see|see    |not see|not see|not see |not see|not see|not see|not see  |not see|not see|
+|current|started  |chair     |member |see    |not see|not see|not see|not see|not see|not see |not see|not see|not see|not see  |not see|not see|
+|past   |started  |chair     |member |not see|not see|not see|not see|not see|not see|not see |not see|not see|not see|not see  |not see|not see|
+|future |started  |chair     |member |not see|not see|not see|not see|not see|not see|not see |not see|not see|not see|not see  |not see|not see|
+|current|started  |voting    |member |see    |not see|not see|not see|not see|not see|not see |not see|not see|not see|not see  |not see|not see|
+|past   |started  |voting    |member |not see|not see|not see|not see|not see|not see|not see |not see|not see|not see|not see  |not see|not see|
+|future |started  |voting    |member |not see|not see|not see|not see|not see|not see|not see |not see|not see|not see|not see  |not see|not see|
+|current|started  |non-voting|member |not see|not see|not see|not see|not see|not see|not see |not see|not see|not see|not see  |not see|not see|
+|past   |started  |non-voting|member |not see|not see|not see|not see|not see|not see|not see |not see|not see|not see|not see  |not see|not see|
+|future |started  |non-voting|member |not see|not see|not see|not see|not see|not see|not see |not see|not see|not see|not see  |not see|not see|
+|current|started  |voting    |regular|not see|not see|not see|not see|not see|not see|not see |not see|not see|not see|not see  |not see|not see|
+|current|proposed |voting    |admin  |see    |see    |see    |see    |see    |not see|see     |see    |see    |see    |not see  |see    |see    |
+|past   |proposed |voting    |admin  |see    |see    |see    |see    |not see|not see|not see |not see|not see|not see|not see  |not see|not see|
+|future |proposed |voting    |admin  |see    |see    |see    |see    |not see|not see|not see |not see|not see|not see|not see  |not see|not see|
+|current|proposed |voting    |sponsor|see    |not see|not see|see    |not see|not see|see     |not see|not see|not see|not see  |not see|not see|
+|past   |proposed |voting    |sponsor|not see|not see|not see|see    |not see|not see|not see |not see|not see|not see|not see  |not see|not see|
+|future |proposed |voting    |sponsor|not see|not see|not see|see    |not see|not see|not see |not see|not see|not see|not see  |not see|not see|
+|current|proposed |chair     |member |see    |not see|not see|see    |see    |not see|see     |see    |see    |see    |not see  |see    |see    |
+|past   |proposed |chair     |member |not see|not see|not see|see    |not see|not see|not see |not see|not see|not see|not see  |not see|not see|
+|future |proposed |chair     |member |not see|not see|not see|see    |not see|not see|not see |not see|not see|not see|not see  |not see|not see|
+|current|proposed |voting    |member |see    |not see|not see|see    |not see|not see|not see |not see|not see|not see|not see  |not see|not see|
+|past   |proposed |voting    |member |not see|not see|not see|see    |not see|not see|not see |not see|not see|not see|not see  |not see|not see|
+|future |proposed |voting    |member |not see|not see|not see|see    |not see|not see|not see |not see|not see|not see|not see  |not see|not see|
+|current|proposed |non-voting|member |not see|not see|not see|see    |not see|not see|not see |not see|not see|not see|not see  |not see|not see|
+|past   |proposed |non-voting|member |not see|not see|not see|see    |not see|not see|not see |not see|not see|not see|not see  |not see|not see|
+|future |proposed |non-voting|member |not see|not see|not see|see    |not see|not see|not see |not see|not see|not see|not see  |not see|not see|
+|current|proposed |voting    |regular|not see|not see|not see|see    |not see|not see|not see |not see|not see|not see|not see  |not see|not see|
+|current|withdrawn|voting    |admin  |see    |see    |see    |see    |see    |not see|not see |not see|not see|not see|not see  |not see|not see|
+|past   |withdrawn|voting    |admin  |see    |see    |see    |see    |not see|not see|not see |not see|not see|not see|not see  |not see|not see|
+|future |withdrawn|voting    |admin  |see    |see    |see    |see    |not see|not see|not see |not see|not see|not see|not see  |not see|not see|
+|current|withdrawn|voting    |sponsor|see    |not see|not see|see    |see    |not see|not see |not see|not see|not see|not see  |not see|not see|
+|past   |withdrawn|voting    |sponsor|not see|not see|not see|see    |not see|not see|not see |not see|not see|not see|not see  |not see|not see|
+|future |withdrawn|voting    |sponsor|not see|not see|not see|see    |not see|not see|not see |not see|not see|not see|not see  |not see|not see|
+|current|withdrawn|chair     |member |see    |not see|not see|not see|not see|not see|not see |not see|not see|not see|not see  |not see|not see|
+|past   |withdrawn|chair     |member |not see|not see|not see|not see|not see|not see|not see |not see|not see|not see|not see  |not see|not see|
+|future |withdrawn|chair     |member |not see|not see|not see|not see|not see|not see|not see |not see|not see|not see|not see  |not see|not see|
+|current|withdrawn|voting    |member |see    |not see|not see|not see|not see|not see|not see |not see|not see|not see|not see  |not see|not see|
+|past   |withdrawn|voting    |member |not see|not see|not see|not see|not see|not see|not see |not see|not see|not see|not see  |not see|not see|
+|future |withdrawn|voting    |member |not see|not see|not see|not see|not see|not see|not see |not see|not see|not see|not see  |not see|not see|
+|current|withdrawn|non-voting|member |not see|not see|not see|not see|not see|not see|not see |not see|not see|not see|not see  |not see|not see|
+|past   |withdrawn|non-voting|member |not see|not see|not see|not see|not see|not see|not see |not see|not see|not see|not see  |not see|not see|
+|future |withdrawn|non-voting|member |not see|not see|not see|not see|not see|not see|not see |not see|not see|not see|not see  |not see|not see|
+|current|withdrawn|voting    |regular|not see|not see|not see|not see|not see|not see|not see |not see|not see|not see|not see  |not see|not see|
 
   @javascript
   Scenario: Register new motion

@@ -1,0 +1,9 @@
+<% f.object.committee = committee if committee %>
+<div class="nested-fields">
+  <%= render partial: 'motions/form', object: f %>
+
+  <p>
+  <%= link_to_remove_association 'remove motion', f %>
+  </p>
+</div>
+

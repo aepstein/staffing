@@ -9,7 +9,7 @@ then work through that committee's normal business process.
   <%= form.inputs for: :referred_motions do |referred_motion_form| %>
     <%= referred_motion_form.input :committee_name, label: 'Committee',
       hint: 'To which committee should this motion be referred?' %>
-    <%= render partial: 'motions/form' %>
+    <%= referred_motion_form.input :name, label: 'Name' %>
   <% end %>
 
   <%= form.actions %>

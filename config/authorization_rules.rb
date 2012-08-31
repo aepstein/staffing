@@ -76,11 +76,15 @@ authorization do
     has_permission_on :motions, to: [ :adopt, :divide, :merge, :refer, :reject,
       :restart, :withdraw ], join_by: :and do
       if_permitted_to :vicechair, :committee
-      if_attribute status: is { 'proposed' }
+      if_attribute status: is { 'proposed' },
+        period: { starts_at: lte { Time.zone.today },
+          ends_at: gte { Time.zone.today } }
     end
     has_permission_on :motions, to: [ :refer, :reject ], join_by: :and do
       if_permitted_to :chair, :committee
-      if_attribute status: is { 'adopted' }
+      if_attribute status: is { 'adopted' },
+        period: { starts_at: lte { Time.zone.today },
+          ends_at: gte { Time.zone.today } }
     end
     has_permission_on :users, to: :resume do
       if_attribute id: is { user.id }

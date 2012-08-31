@@ -1,7 +1,7 @@
 class MotionsController < ApplicationController
   before_filter :initialize_context
   before_filter :initialize_index
-  before_filter :new_motion_from_params, :only => [ :new, :create ]
+  before_filter :new_motion_from_params, only: [ :new, :create ]
   before_filter :setup_breadcrumbs
   filter_access_to :new, :create, :edit, :update, :destroy, :show,
     :adopt, :divide, :implement, :merge, :propose, :refer, :reject,
@@ -129,6 +129,7 @@ class MotionsController < ApplicationController
   end
 
   # PUT /motions/:id/restart
+  # TODO should have functionality similar to edit so chair or sponsor can alter sponsors, etc.
   def restart
     respond_to do |format|
       if @motion.restart
@@ -157,11 +158,12 @@ class MotionsController < ApplicationController
   # GET /motions/:id/merge - form where user selects motion to which this motion is to be merged
   # PUT /motions/:id/merge - do actual merge
   def merge
+    @motion_merger = @motion.build_terminal_motion_merger(params[:motion_merger])
     respond_to do |format|
-      if request.method == :get
+      if request.method_symbol == :get
         format.html { render action: :merge }
       else
-        if @motion.create_terminal_motion_merger( params[:motion_merger] )
+        if @motion_merger.save
           format.html { redirect_to @motion.terminal_merged_motion,
             notice: 'Motion was successfully merged.' }
           format.xml { head :ok }
@@ -176,15 +178,13 @@ class MotionsController < ApplicationController
   # GET /motions/:id/refer
   # PUT /motions/:id/refer
   def refer
+    @motion.referred_motions.build_referee( params[:motion] )
     respond_to do |format|
-      if request.method == :get
-        @motion.referred_motions.build_referee
+      if request.method_symbol == :get
         format.html { render action: :refer }
       else
-        @motion.assign_attributes(params[:motion])
-        if @motion.divide
-          flash[:notice] = 'Motion was successfully referred.'
-          format.html { redirect_to(@motion) }
+        if @motion.refer
+          format.html { redirect_to(@motion, notice: 'Motion was successfully referred.') }
           format.xml  { head :ok }
         else
           format.html { render action: "refer" }
@@ -198,17 +198,19 @@ class MotionsController < ApplicationController
   # PUT /motions/:id/divide
   def divide
     respond_to do |format|
-      if request.method == :get
+      if request.method_symbol == :get
         format.html { render action: :divide }
       else
-        @motion.assign_attributes(params[:motion])
+        @motion.assign_attributes(
+          { referred_motions_attributes: params[:motion][:referred_motions_attributes] },
+          as: :divider )
+        @motion.referred_motions.each { |m| m.committee = @motion.committee }
         if @motion.divide
-          flash[:notice] = 'Motion was successfully divided.'
-          format.html { redirect_to(@motion) }
+          format.html { redirect_to(@motion, notice: 'Motion was successfully divided.') }
           format.xml  { head :ok }
         else
           format.html { render :action => "divide" }
-          format.xml  { render :xml => @motion.errors, :status => :unprocessable_entity }
+          format.xml  { render :xml => @motion.errors, status: :unprocessable_entity }
         end
       end
     end

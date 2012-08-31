@@ -1,6 +1,11 @@
 class Motion < ActiveRecord::Base
+  include CommitteeNameLookup
+
   attr_accessible :period_id, :name, :content, :description, :complete,
-    :referring_motion_id, :sponsorships_attributes, :attachments_attributes
+    :referring_motion_id, :sponsorships_attributes, :attachments_attributes,
+    as: [ :default, :divider, :referrer ]
+  attr_accessible :referred_motions_attributes, as: [ :divider, :referrer ]
+  attr_accessible :name, :committee_name, as: :referrer
   attr_readonly :committee_id, :period_id
 
   acts_as_list scope: [ :period_id, :committee_id ]
@@ -46,9 +51,11 @@ class Motion < ActiveRecord::Base
   has_many :referred_motions, inverse_of: :referring_motion,
     class_name: 'Motion', foreign_key: :referring_motion_id,
     dependent: :destroy do
-    def build_referee( new_committee )
+    def build_referee( referral_attributes = {} )
+      referral_attributes ||= {}
       new_motion = build( proxy_association.owner.attributes )
-      new_motion.committee = new_committee
+      new_motion.assign_attributes referral_attributes, as: :referrer
+      new_motion.period ||= new_motion.committee.periods.active if new_motion.committee
       new_motion
     end
 
@@ -78,6 +85,7 @@ class Motion < ActiveRecord::Base
 
   accepts_nested_attributes_for :attachments, allow_destroy: true
   accepts_nested_attributes_for :sponsorships, allow_destroy: true
+  accepts_nested_attributes_for :referred_motions, allow_destroy: true
 
   delegate :periods, :period_ids, to: :committee
 
