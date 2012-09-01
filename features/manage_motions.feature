@@ -120,6 +120,22 @@ Feature: Manage motions
 |past   |withdrawn|non-voting|member |not see|not see|not see|not see|not see|not see|not see |not see|not see|not see|not see  |not see|not see|
 |future |withdrawn|non-voting|member |not see|not see|not see|not see|not see|not see|not see |not see|not see|not see|not see  |not see|not see|
 |current|withdrawn|voting    |regular|not see|not see|not see|not see|not see|not see|not see |not see|not see|not see|not see  |not see|not see|
+|current|adopted  |voting    |admin  |see    |see    |see    |see    |not see|not see|not see |not see|not see|not see|see      |see    |see    |
+|past   |adopted  |voting    |admin  |see    |see    |see    |see    |not see|not see|not see |not see|not see|not see|see      |not see|not see|
+|future |adopted  |voting    |admin  |see    |see    |see    |see    |not see|not see|not see |not see|not see|not see|see      |not see|not see|
+|current|adopted  |voting    |sponsor|see    |not see|not see|see    |not see|not see|not see |not see|not see|not see|not see  |not see|not see|
+|past   |adopted  |voting    |sponsor|not see|not see|not see|see    |not see|not see|not see |not see|not see|not see|not see  |not see|not see|
+|future |adopted  |voting    |sponsor|not see|not see|not see|see    |not see|not see|not see |not see|not see|not see|not see  |not see|not see|
+|current|adopted  |chair     |member |see    |not see|not see|see    |not see|not see|not see |not see|not see|not see|not see  |see    |see    |
+|past   |adopted  |chair     |member |not see|not see|not see|see    |not see|not see|not see |not see|not see|not see|not see  |not see|not see|
+|future |adopted  |chair     |member |not see|not see|not see|see    |not see|not see|not see |not see|not see|not see|not see  |not see|not see|
+|current|adopted  |voting    |member |see    |not see|not see|see    |not see|not see|not see |not see|not see|not see|not see  |not see|not see|
+|past   |adopted  |voting    |member |not see|not see|not see|see    |not see|not see|not see |not see|not see|not see|not see  |not see|not see|
+|future |adopted  |voting    |member |not see|not see|not see|see    |not see|not see|not see |not see|not see|not see|not see  |not see|not see|
+|current|adopted  |non-voting|member |not see|not see|not see|see    |not see|not see|not see |not see|not see|not see|not see  |not see|not see|
+|past   |adopted  |non-voting|member |not see|not see|not see|see    |not see|not see|not see |not see|not see|not see|not see  |not see|not see|
+|future |adopted  |non-voting|member |not see|not see|not see|see    |not see|not see|not see |not see|not see|not see|not see  |not see|not see|
+|current|adopted  |voting    |regular|not see|not see|not see|see    |not see|not see|not see |not see|not see|not see|not see  |not see|not see|
 
   @javascript
   Scenario: Register new motion
