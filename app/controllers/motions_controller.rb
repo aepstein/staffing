@@ -7,6 +7,8 @@ class MotionsController < ApplicationController
     :adopt, :divide, :implement, :merge, :propose, :refer, :reject,
     :restart, :withdraw,
     attribute_check: true
+  before_filter :status_check, except: [ :new, :create, :edit, :update,
+    :show, :destroy, :allowed, :past, :current, :index ]
 
   # GET /meetings/:meeting_id/motions/allowed
   # GET /meetings/:meeting_id/motions/allowed.xml
@@ -311,6 +313,10 @@ class MotionsController < ApplicationController
     if @motion && @motion.persisted?
       add_breadcrumb @motion, motion_path(@motion)
     end
+  end
+
+  def status_check
+    raise NotAuthorized unless @motion.status_events.include? action_name
   end
 end
 

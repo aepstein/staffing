@@ -90,7 +90,7 @@ class Request < ActiveRecord::Base
     where { ( ends_at <= Time.zone.today ) | ( status != 'active' ) } }
   scope :reject_notice_pending, lambda { rejected.no_reject_notice }
 
-  state_machine :status, :initial => :active do
+  state_machine :status, initial: :active do
     state :closed
 
     state :active do

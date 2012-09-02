@@ -110,9 +110,12 @@ class Motion < ActiveRecord::Base
   state_machine :status, :initial => :started do
 
     before_transition all - :divided => :divided, :do => :do_divide
+    before_transition all - :proposed => :proposed do |motion|
+      motion.published = true
+    end
 
     state :started, :proposed, :referred, :merged, :divided, :withdrawn, :adopted,
-      :implemented
+      :implemented, :cancelled
 
     event :propose do
       transition :started => :proposed

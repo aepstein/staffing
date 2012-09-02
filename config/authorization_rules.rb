@@ -14,9 +14,7 @@ authorization do
       if_attribute period: { starts_at: lte { Time.zone.today },
         ends_at: gte { Time.zone.today } }
     end
-    has_permission_on :motions, to: [ :implement ] do
-      if_attribute status: is { 'adopted' }
-    end
+    has_permission_on :motions, to: [ :implement ]
     has_permission_on :users, to: [ :tent ]
     has_permission_on :users, to: :resume
     has_permission_on :requests, to: [ :reject, :reactivate ]
@@ -51,16 +49,16 @@ authorization do
     has_permission_on :motions, to: :create, join_by: :and do
       if_permitted_to :vote, :committee
     end
-    has_permission_on :motions, to: :manage, join_by: :and do
+    has_permission_on :motions, to: :update, join_by: :and do
       if_permitted_to :own
       if_attribute status: is { 'started' }
     end
     has_permission_on :motions, to: :show do
+      if_attribute published: true
       if_attribute sponsorships: { user_id: is { user.id } }
     end
     has_permission_on :motions, to: [ :propose, :withdraw ], join_by: :and do
       if_permitted_to :own
-      if_attribute status: is { 'started' }
     end
     has_permission_on :motions, to: [ :restart ], join_by: :and do
       if_permitted_to :own
@@ -68,10 +66,6 @@ authorization do
     end
     has_permission_on :motions, to: :withdraw, join_by: :and do
       if_permitted_to :own
-      if_attribute status: is { 'proposed' }
-    end
-    has_permission_on :motions, to: :show do
-      if_attribute status: is_not_in { %w( started withdrawn ) }
     end
     has_permission_on :motions, to: [ :adopt, :divide, :merge, :refer, :reject,
       :restart, :withdraw ], join_by: :and do
