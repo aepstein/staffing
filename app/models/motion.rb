@@ -68,6 +68,7 @@ class Motion < ActiveRecord::Base
         new_attributes[:name] = "#{proxy_association.owner.name} (#{proxy_association.owner.id}-#{i})"
         new_motion = build new_attributes
         new_motion.committee = proxy_association.owner.committee
+        new_motion.published = true
         new_motions << new_motion
       end
       new_motions
@@ -136,7 +137,7 @@ class Motion < ActiveRecord::Base
       transition :adopted => :implemented
     end
     event :restart do
-      transition :withdrawn => :started
+      transition [ :proposed, :withdrawn ] => :started
     end
     event :reject do
       transition [ :proposed, :adopted ] => :rejected

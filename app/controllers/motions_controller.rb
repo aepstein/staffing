@@ -7,6 +7,11 @@ class MotionsController < ApplicationController
     :adopt, :divide, :implement, :merge, :propose, :refer, :reject,
     :restart, :withdraw,
     attribute_check: true
+  filter_access_to :adopt, :divide, :implement, :merge, :propose, :refer, :reject,
+    :restart, :withdraw do
+    raise Authorization::NotAuthorized unless @motion.status_events.include? action_name.to_sym
+    permitted_to! action_name, @motion
+  end
   before_filter :status_check, except: [ :new, :create, :edit, :update,
     :show, :destroy, :allowed, :past, :current, :index ]
 
@@ -206,7 +211,7 @@ class MotionsController < ApplicationController
         @motion.assign_attributes(
           { referred_motions_attributes: params[:motion][:referred_motions_attributes] },
           as: :divider )
-        @motion.referred_motions.each { |m| m.committee = @motion.committee }
+        @motion.referred_motions.each { |m| m.committee = @motion.committee; m.published = true }
         if @motion.divide
           format.html { redirect_to(@motion, notice: 'Motion was successfully divided.') }
           format.xml  { head :ok }
@@ -316,7 +321,6 @@ class MotionsController < ApplicationController
   end
 
   def status_check
-    raise NotAuthorized unless @motion.status_events.include? action_name
   end
 end
 

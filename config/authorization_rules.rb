@@ -5,16 +5,13 @@ authorization do
       :quizzes, :questions, :requests, :schedules, :users,
       :user_renewal_notices, :sendings ],
       to: [ :manage, :show, :index ]
-    has_permission_on :committees, to: [ :tents, :members, :chair ]
+    has_permission_on :committees, to: [ :chair, :members, :tents, :vote ]
     has_permission_on :memberships, to: [ :decline_renewal ] do
       if_attribute declined_at: is { nil }, starts_at: lte { Time.zone.today },
         renew_until: is_not { nil }
     end
-    has_permission_on :motions, to: [ :own ] do
-      if_attribute period: { starts_at: lte { Time.zone.today },
-        ends_at: gte { Time.zone.today } }
-    end
-    has_permission_on :motions, to: [ :implement ]
+    has_permission_on :motions, to: [ :adopt, :divide, :implement, :merge,
+      :propose, :refer, :reject, :restart, :withdraw ]
     has_permission_on :users, to: [ :tent ]
     has_permission_on :users, to: :resume
     has_permission_on :requests, to: [ :reject, :reactivate ]
@@ -42,8 +39,7 @@ authorization do
         position_id: is_in { user.memberships.current.map(&:position_id) },
         votes: gt { 0 } }
     end
-    has_permission_on :motions, to: :own, join_by: :and do
-      if_permitted_to :vote, :committee
+    has_permission_on :motions, to: :own do
       if_attribute sponsorships: { user_id: is { user.id } }
     end
     has_permission_on :motions, to: :create, join_by: :and do
@@ -58,27 +54,28 @@ authorization do
       if_attribute sponsorships: { user_id: is { user.id } }
     end
     has_permission_on :motions, to: [ :propose, :withdraw ], join_by: :and do
+      if_permitted_to :vote, :committee
       if_permitted_to :own
     end
     has_permission_on :motions, to: [ :restart ], join_by: :and do
+      if_permitted_to :vote, :committee
       if_permitted_to :own
       if_attribute status: is { 'withdrawn' }
     end
     has_permission_on :motions, to: :withdraw, join_by: :and do
+      if_permitted_to :vote, :committee
       if_permitted_to :own
     end
     has_permission_on :motions, to: [ :adopt, :divide, :merge, :refer, :reject,
       :restart, :withdraw ], join_by: :and do
       if_permitted_to :vicechair, :committee
       if_attribute status: is { 'proposed' },
-        period: { starts_at: lte { Time.zone.today },
-          ends_at: gte { Time.zone.today } }
+        period: { starts_at: lte { Time.zone.today }, ends_at: gte { Time.zone.today } }
     end
-    has_permission_on :motions, to: [ :refer, :reject ], join_by: :and do
+    has_permission_on :motions, to: [ :refer ], join_by: :and do
       if_permitted_to :chair, :committee
       if_attribute status: is { 'adopted' },
-        period: { starts_at: lte { Time.zone.today },
-          ends_at: gte { Time.zone.today } }
+        period: { starts_at: lte { Time.zone.today }, ends_at: gte { Time.zone.today } }
     end
     has_permission_on :users, to: :resume do
       if_attribute id: is { user.id }
