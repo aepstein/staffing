@@ -71,6 +71,11 @@ FactoryGirl.define do
     starts_at { period.starts_at }
     ends_at { period.ends_at }
 
+    factory :renewable_membership do
+      association :position, renewable: true
+      renew_until { |m| m.period.ends_at + 1.year }
+    end
+
     factory :current_membership do
       association :position
       period { association(:current_period, :schedule => position.schedule) }

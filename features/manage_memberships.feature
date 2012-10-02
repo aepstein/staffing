@@ -162,11 +162,10 @@ Feature: Manage memberships
     And I should see "Leave notice at: January 1st, 2010 07:00"
 
   Scenario: Decline renewal of a membership
-    Given a position exists
-    And a membership exists with position: the position
+    Given a position exists with renewable: true, slots: 1
+    And a renewable_membership exists with position: the position
     And user: "admin" has first_name: "Mister", last_name: "Administrator"
     And I log in as user: "admin"
-    When I am on the edit page for the membership
     When I follow "Decline Renewal" for the 1st membership for the position
     And I fill in "Comment" with "No *membership* for you!"
     And I press "Decline Renewal"
