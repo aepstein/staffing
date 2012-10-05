@@ -50,7 +50,7 @@ class MembershipReport < Prawn::Document
           membership.user.name,
           membership.user.net_id,
           membership.user.work_address,
-          membership.user.mobile_phone
+          membership.user.mobile_phone? ? membership.user.mobile_phone.to_phone(:pretty) : ''
         ]
       else
         [
