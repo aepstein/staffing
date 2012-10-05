@@ -3,6 +3,7 @@ class Motion < ActiveRecord::Base
 
   attr_accessible :period_id, :name, :content, :description, :complete,
     :referring_motion_id, :sponsorships_attributes, :attachments_attributes,
+    :event_date, :event_description,
     as: [ :default, :divider, :referrer ]
   attr_accessible :referred_motions_attributes, as: [ :divider, :referrer ]
   attr_accessible :name, :committee_name, as: :referrer
@@ -42,6 +43,7 @@ class Motion < ActiveRecord::Base
   has_many :attachments, as: :attachable, dependent: :destroy
   has_many :meeting_motions, dependent: :destroy
   has_many :meetings, through: :meeting_motions
+  has_many :motion_events, dependent: :destroy, inverse_of: :motion
   has_one :terminal_motion_merger, inverse_of: :merged_motion, dependent: :destroy,
     class_name: 'MotionMerger', foreign_key: :merged_motion_id
   has_one :terminal_merged_motion, through: :terminal_motion_merger,
@@ -95,6 +97,10 @@ class Motion < ActiveRecord::Base
   validates :position, uniqueness: { scope: [ :period_id, :committee_id ] }
   validates :period, presence: true
   validates :committee, presence: true
+  validates :event_date, timeliness: { allow_blank: true, if: :period,
+    unless: { |motion| motion.permitted_to? :admin },
+    between: lambda { |motion| [ motion.period.starts_at, Time.zone.today ] }
+  }
   validate :period_must_be_in_committee_schedule
 
 #  before_validation :add_to_list_bottom, :on => :create
@@ -150,6 +156,9 @@ class Motion < ActiveRecord::Base
 
   notifiable_events :propose
 
+  attr_accessor :event_date
+  attr_accessor :event_description
+
   # Users who should be notified of this motion's progress
   def observers
     ( watchers + committee.observers ).uniq
@@ -197,6 +206,12 @@ class Motion < ActiveRecord::Base
   end
 
   protected
+
+  def build_motion_event(event)
+    motion_events.build(
+      description: ""
+    )
+  end
 
   def do_divide; referred_motions.create_divided!; end
 

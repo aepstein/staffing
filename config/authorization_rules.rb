@@ -10,8 +10,8 @@ authorization do
       if_attribute declined_at: is { nil }, starts_at: lte { Time.zone.today },
         renew_until: is_not { nil }
     end
-    has_permission_on :motions, to: [ :adopt, :divide, :implement, :merge,
-      :propose, :refer, :reject, :restart, :withdraw ]
+    has_permission_on :motions, to: [ :admin, :adopt, :divide, :implement,
+      :merge, :propose, :refer, :reject, :restart, :withdraw ]
     has_permission_on :users, to: [ :tent ]
     has_permission_on :users, to: :resume
     has_permission_on :requests, to: [ :reject, :reactivate ]
