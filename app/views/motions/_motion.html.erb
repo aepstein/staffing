@@ -13,5 +13,7 @@
     <td><%= link_to 'Show', motion %></td>
     <td><%= link_to( 'Edit', edit_motion_path(motion) ) if permitted_to? :edit, motion %></td>
     <td><%= link_to( 'Destroy', motion, data: { confirm: 'Are you sure?' }, method: :delete ) if permitted_to? :destroy, motion %></td>
+    <%=render partial: 'motions/event', collection: Motion::EVENTS,
+      locals: { motion: motion } %>
   <% end %>
 

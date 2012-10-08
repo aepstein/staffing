@@ -13,7 +13,7 @@ class MotionsController < ApplicationController
     permitted_to! action_name, @motion
   end
   before_filter :status_check, except: [ :new, :create, :edit, :update,
-    :show, :destroy, :allowed, :past, :current, :index ]
+    :show, :destroy, :allowed, :past, :current, :proposed, :index ]
 
   # GET /meetings/:meeting_id/motions/allowed
   # GET /meetings/:meeting_id/motions/allowed.xml
@@ -36,6 +36,14 @@ class MotionsController < ApplicationController
   def current
     @motions = @motions.current
     add_breadcrumb 'Current', polymorphic_path([:current, @context, :motions])
+    index
+  end
+
+  # GET /committees/:committee_id/motions/proposed
+  # GET /committees/:committee_id/motions/proposed.xml
+  def proposed
+    @motions = @motions.current.with_status(:proposed)
+    add_breadcrumb 'Proposed', polymorphic_path([:proposed, @context, :motions])
     index
   end
 
@@ -152,7 +160,7 @@ class MotionsController < ApplicationController
   # PUT /motions/:id/withdraw
   def withdraw
     respond_to do |format|
-      if @motion.propose
+      if @motion.withdraw
         format.html { redirect_to @motion, notice: 'Motion was successfully withdrawn.' }
         format.xml { head :ok }
       else

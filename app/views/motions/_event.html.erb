@@ -1,0 +1,4 @@
+<td><% if motion.status_paths.events.include?(event) && permitted_to?( event, motion )
+  %><%=link_to event.to_s.titleize, polymorphic_path( [ event, motion ] ),
+  method: Motion::EVENTS_PUTONLY.include?(event) ? :put : :get %><% else %><% end %></td>
+

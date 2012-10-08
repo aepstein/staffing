@@ -38,7 +38,7 @@ Staffing::Application.routes.draw do
     end
     resources :motions, only: [ :index, :new, :create ] do
       collection do
-        get :past, :current
+        get :past, :current, :proposed
       end
     end
     resources :positions, only: [ :index ]
