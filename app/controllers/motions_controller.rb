@@ -219,7 +219,7 @@ class MotionsController < ApplicationController
         @motion.assign_attributes(
           { referred_motions_attributes: params[:motion][:referred_motions_attributes] },
           as: :divider )
-        @motion.referred_motions.each { |m| m.committee = @motion.committee; m.published = true }
+        @motion.referred_motions.each { |m| m.committee = @motion.committee; m.published = true; m.period = @motion.period }
         if @motion.divide
           format.html { redirect_to(@motion, notice: 'Motion was successfully divided.') }
           format.xml  { head :ok }

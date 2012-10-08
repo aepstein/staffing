@@ -6,7 +6,11 @@ Given /^#{capture_model} is (divided|proposed|rejected|withdrawn|restarted)$/ do
     step "I log in as user: \"chair\""
     step "I am on the proposed motions page for the committee"
     step "I follow \"Divide\" within \"#motions\""
-    # fill in the divide form & submit
+    step "I follow \"add dividing motion\""
+    step %{I fill in "Name" with "Charter amendment"}
+    step %{I fill in "Description" with "This is a *big* change."}
+    step %{I fill in "Content" with "*Whereas* and *Resolved*"}
+    step %{I press "Update Motion"}
   when 'proposed'
     step "I log in as user: \"sponsor\""
     step "I follow \"Propose\" within \"#motions\""

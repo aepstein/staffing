@@ -12,15 +12,17 @@ These motions will be considered in the same committee in which this motion is p
 <div id="referred_motions">
   <%= semantic_form_for @motion, url: divide_motion_path( @motion ),
     method: :put do |form| %>
-      <%= render partial: 'motions/event_form', object: form %>
+      <%=render partial: 'motions/event_form', object: form %>
       <%= form.inputs for: :referred_motions, name: 'dividing motion' do |subform| %>
-        <%= render partial: 'motions/referred_motion_fields' %>
+        <%=render "shared/error_messages", target: subform.object %>
+        <%=render partial: 'motions/referred_motion_fields',
+          locals: { role: :divider, committee: @motion.committee, f: subform } %>
       <% end %>
 
       <div class='links'>
         <p>
           <%= link_to_add_association 'add dividing motion', form, :referred_motions,
-            render_options: { locals: { committee: @motion.committee } } %>
+            render_options: { locals: { role: :divider, committee: @motion.committee } } %>
         </p>
       </div>
 
