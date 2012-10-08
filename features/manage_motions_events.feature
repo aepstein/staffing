@@ -33,3 +33,15 @@ Feature: Manage motions
     Then I should see "Motion was successfully withdrawn."
     And the motion should exist with status: "withdrawn", published: true
 
+  Scenario: Restart the motion
+    Given the motion is withdrawn
+    And I am on the motions page for user: "sponsor"
+    And I follow "Restart" within "#motions"
+    Then I should see "Motion was successfully restarted."
+    And the motion should exist with status: "started", published: true
+
+  Scenario: Divide the motion
+    Given the motion is divided
+    Then I should see "Motion was successfully divided."
+    And the motion should exist with status: "divided", published: true
+

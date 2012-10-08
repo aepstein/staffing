@@ -143,6 +143,11 @@ Staffing::Application.routes.draw do
         put :renew
       end
     end
+    resources :motions, only: [ :index ] do
+      collection do
+        get :current, :past, :proposed
+      end
+    end
     resources :positions, only: [:index] do
       collection do
         get :requestable
