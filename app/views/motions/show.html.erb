@@ -1,5 +1,10 @@
 <%= render partial: 'motions/detail', locals: { motion: @motion } %>
 
+<h3>Events</h3>
+
+<%= render partial: 'motion_events/motion_events',
+  object: @motion.motion_events, locals: { motion: @motion } %>
+
 <p>
 <% if permitted_to? :edit, @motion -%>
 <%= link_to 'Edit', edit_motion_path(@motion) %> |

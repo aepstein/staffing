@@ -1,6 +1,8 @@
 class Motion < ActiveRecord::Base
   include CommitteeNameLookup
 
+  has_paper_trail
+
   attr_accessible :period_id, :name, :content, :description, :complete,
     :referring_motion_id, :sponsorships_attributes, :attachments_attributes,
     :event_date, :event_description,
@@ -95,13 +97,10 @@ class Motion < ActiveRecord::Base
   validates :name, presence: true, uniqueness: {
     scope: [ :period_id, :committee_id ] }
   validates :position, uniqueness: { scope: [ :period_id, :committee_id ] }
-  validates :period, presence: true
+  validates :period, presence: true, inclusion: { if: :committee,
+    in: lambda { |motion| motion.committee.schedule.periods } }
   validates :committee, presence: true
-  validates :event_date, timeliness: { allow_blank: true, if: :period,
-    unless: { |motion| motion.permitted_to? :admin },
-    between: lambda { |motion| [ motion.period.starts_at, Time.zone.today ] }
-  }
-  validate :period_must_be_in_committee_schedule
+  validates :event_date, timeliness: { allow_blank: true, type: :date }
 
 #  before_validation :add_to_list_bottom, :on => :create
   before_create do |motion|
@@ -119,6 +118,14 @@ class Motion < ActiveRecord::Base
     before_transition all - :divided => :divided, :do => :do_divide
     before_transition all - :proposed => :proposed do |motion|
       motion.published = true
+    end
+    after_transition all => [ :started, :proposed, :referred, :merged, :divided,
+      :withdrawn, :adopted, :implemented, :cancelled ] do |motion, transition|
+      motion.motion_events.create!(
+        event: transition.event.to_s,
+        description: motion.event_description,
+        occurrence: motion.event_date.blank? ? Time.zone.today : motion.event_date
+      )
     end
 
     state :started, :proposed, :referred, :merged, :divided, :withdrawn, :adopted,
@@ -206,12 +213,6 @@ class Motion < ActiveRecord::Base
   end
 
   protected
-
-  def build_motion_event(event)
-    motion_events.build(
-      description: ""
-    )
-  end
 
   def do_divide; referred_motions.create_divided!; end
 

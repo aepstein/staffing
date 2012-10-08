@@ -6,6 +6,7 @@ then work through that committee's normal business process.
 
 <%= semantic_form_for @motion, url: refer_motion_path( @motion ),
   method: :put do |form| %>
+  <%= render partial: 'motions/event_form', object: form %>
   <%= form.inputs for: :referred_motions do |referred_motion_form| %>
     <%= referred_motion_form.input :committee_name, label: 'Committee',
       hint: 'To which committee should this motion be referred?' %>

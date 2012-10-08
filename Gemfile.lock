@@ -164,6 +164,9 @@ GEM
     net-ssh-gateway (1.1.0)
       net-ssh (>= 1.99.1)
     nokogiri (1.5.5)
+    paper_trail (2.6.3)
+      activerecord (~> 3.0)
+      railties (~> 3.0)
     pdf-reader (1.1.1)
       Ascii85 (~> 1.0.0)
       ruby-rc4
@@ -304,6 +307,7 @@ DEPENDENCIES
   kaminari
   launchy
   mysql2
+  paper_trail (~> 2.0)
   pickle
   prawn (~> 1.0.0rc)
   prawn-fast-png

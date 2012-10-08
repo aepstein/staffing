@@ -10,6 +10,7 @@ Use this form to merge the motion to another motion proposed before the same com
 
 <%= semantic_form_for @motion_merger, as: :motion_merger,
   url: merge_motion_path( @motion_merger.merged_motion ) do |form| %>
+  <%= render partial: 'motions/event_form', object: form %>
   <%= form.inputs do %>
     <%= form.input :motion, as: :select,
       collection: @motion_merger.merged_motion.mergeable_motions,

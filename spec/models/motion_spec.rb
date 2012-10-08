@@ -39,7 +39,7 @@ describe Motion do
   it 'should change status to referred when referred motion is created' do
     @motion.propose!
     referee = @motion.referred_motions.build_referee(
-      create(:committee, :schedule => @motion.committee.schedule )
+      committee_name: create(:committee, schedule: @motion.committee.schedule ).name
     )
     referee.save!
     @motion.reload
@@ -100,6 +100,7 @@ describe Motion do
     wrong_period = create(:period, :schedule => @motion.committee.schedule,
       :starts_at => ( @motion.period.ends_at + 1.day ) )
     create( :enrollment, :position => right_position, :committee => @motion.committee )
+    @motion.committee.schedule.association(:periods).reset
     allowed_user = create( :membership, :period => @motion.period, :position => right_position ).user
     wrong_period_user = create( :membership, :period => wrong_period, :position => right_position ).user
     wrong_committee_user = create( :membership, :period => @motion.period, :position => wrong_position ).user
@@ -125,8 +126,11 @@ describe Motion do
   def setup_temporal_motions
     Motion.delete_all
     committee = create( :committee )
-    @current = create( :motion, :committee => committee, :period => create( :current_period, :schedule => committee.schedule ) )
-    @past = create( :motion, :committee => committee, :period => create( :past_period, :schedule => committee.schedule ) )
+    current_period = create( :current_period, :schedule => committee.schedule )
+    past_period = create( :past_period, :schedule => committee.schedule )
+    committee.schedule.association(:periods).reset
+    @current = create( :motion, :committee => committee, :period => current_period )
+    @past = create( :motion, :committee => committee, :period => past_period )
   end
 
   def divided_motions
@@ -141,7 +145,7 @@ describe Motion do
     referred = create(:motion)
     referred.propose!
     motion = referred.referred_motions.build_referee(
-      create(:committee, :schedule => referred.committee.schedule )
+      committee_name: create(:committee, schedule: referred.committee.schedule ).name
     )
     motion.save!
     motion

@@ -1,0 +1,21 @@
+<% motion ||= false %>
+<% if motion_events.any? %>
+<table id="motion-events">
+<thead>
+<tr>
+  <% unless motion %>
+  <th>Motion</th>
+  <% end %>
+  <th>Date</th>
+  <th>Event</th>
+  <th>Description</th>
+</tr>
+</thead>
+<tbody>
+<%=render partial: 'motion_events/motion_event', collection: motion_events.ordered %>
+</tbody>
+</table>
+<% else %>
+<p>No events.</p>
+<% end %>
+

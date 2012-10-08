@@ -12,6 +12,7 @@ These motions will be considered in the same committee in which this motion is p
 <div id="referred_motions">
   <%= semantic_form_for @motion, url: divide_motion_path( @motion ),
     method: :put do |form| %>
+      <%= render partial: 'motions/event_form', object: form %>
       <%= form.inputs for: :referred_motions, name: 'dividing motion' do |subform| %>
         <%= render partial: 'motions/referred_motion_fields' %>
       <% end %>
