@@ -1,6 +1,6 @@
 <% committee ||= false %>
 <% period ||= false %>
-  <%= table_row_tag do %>
+  <%= table_row_tag(true, false, { id: "motion-#{motion.id}" }) do %>
     <% unless committee %>
     <td><%= motion.committee %></td>
     <% end %>

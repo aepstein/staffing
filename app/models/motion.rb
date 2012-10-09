@@ -138,9 +138,9 @@ class Motion < ActiveRecord::Base
     state :proposed, :referred, :merged, :divided, :withdrawn, :adopted,
       :implemented, :cancelled
 
-    state :started
+    state :started do
       validate do |motion|
-        unless motion.referring_motion_id? || motion.sponsorships.reject(&:marked_for_destruction).length > 0
+        unless motion.referring_motion_id? || motion.sponsorships.reject(&:marked_for_destruction?).length > 0
           errors.add :sponsorships, "cannot be empty for new motion"
         end
       end

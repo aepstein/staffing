@@ -103,6 +103,11 @@ FactoryGirl.define do
         association( :period, :schedule => committee.schedule )
       end
     end
+    factory :sponsored_motion do
+      after(:build) do |motion|
+        motion.sponsorships << [ FactoryGirl.build(:sponsorship, motion: motion) ]
+      end
+    end
   end
 
   factory :motion_merger do
