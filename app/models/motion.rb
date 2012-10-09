@@ -81,10 +81,6 @@ class Motion < ActiveRecord::Base
       end
       new_motions
     end
-
-    def create_divided!( instances=false )
-      build_divided( instances ).map { |motion| motion.save!; motion }
-    end
   end
 
   scope :ordered, order { position }
@@ -119,7 +115,11 @@ class Motion < ActiveRecord::Base
 
   state_machine :status, :initial => :started do
 
-    before_transition all - :divided => :divided, :do => :do_divide
+    before_transition all => [ :divided, :referred ] do |motion, transition|
+      referred_motions.select(&:new_record?).each do |new_motion|
+        new_motion.watchers << motion.watchers
+      end
+    end
     before_transition all - :proposed => :proposed do |motion|
       motion.published = true
     end
@@ -132,16 +132,19 @@ class Motion < ActiveRecord::Base
       )
     end
     after_transition all => [ :merged ] do |motion|
-      ( motion.terminal_merged_motion.users - motion.users ).each do |user|
-        motion.sponsorships.create! do |sponsorship|
-          sponsorship.user = user
-        end
-      end
-      motion.watchers << motion.terminal_merged_motion.watchers
+      motion.terminal_merged_motion.watchers << motion.watchers
     end
 
-    state :started, :proposed, :referred, :merged, :divided, :withdrawn, :adopted,
+    state :proposed, :referred, :merged, :divided, :withdrawn, :adopted,
       :implemented, :cancelled
+
+    state :started
+      validate do |motion|
+        unless motion.referring_motion_id? || motion.sponsorships.reject(&:marked_for_destruction).length > 0
+          errors.add :sponsorships, "cannot be empty for new motion"
+        end
+      end
+    end
 
     event :propose do
       transition :started => :proposed
@@ -230,8 +233,6 @@ class Motion < ActiveRecord::Base
   end
 
   protected
-
-  def do_divide; referred_motions.create_divided!; end
 
   def period_must_be_in_committee_schedule
     return unless period && committee

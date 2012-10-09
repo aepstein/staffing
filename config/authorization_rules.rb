@@ -66,6 +66,11 @@ authorization do
       if_permitted_to :vote, :committee
       if_permitted_to :own
     end
+    has_permission_on :motions, to: [ :update, :show ], join_by: :and do
+      if_permitted_to :vicechair, :committee
+      if_attribute status: is { 'started' }, referring_motion_id: is_not { nil },
+        period: { starts_at: lte { Time.zone.today }, ends_at: gte { Time.zone.today } }
+    end
     has_permission_on :motions, to: [ :adopt, :divide, :merge, :refer, :reject,
       :restart, :withdraw ], join_by: :and do
       if_permitted_to :vicechair, :committee
