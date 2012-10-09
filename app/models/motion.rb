@@ -131,6 +131,14 @@ class Motion < ActiveRecord::Base
         occurrence: motion.event_date.blank? ? Time.zone.today : motion.event_date
       )
     end
+    after_transition all => [ :merged ] do |motion|
+      ( motion.terminal_merged_motion.users - motion.users ).each do |user|
+        motion.sponsorships.create! do |sponsorship|
+          sponsorship.user = user
+        end
+      end
+      motion.watchers << motion.terminal_merged_motion.watchers
+    end
 
     state :started, :proposed, :referred, :merged, :divided, :withdrawn, :adopted,
       :implemented, :cancelled
@@ -199,8 +207,13 @@ class Motion < ActiveRecord::Base
   end
 
   # What motions can this motion be merged to?
+  # * must be in same committee
+  # * must be in proposed state
+  # * must not be same motion
+  # * must be in same period
   def mergeable_motions
-    committee.motions.with_status( :proposed ).where { |m| m.id.not_eq( id ) }
+    committee.motions.with_status( :proposed ).where { |m| m.id.not_eq( id ) }.
+      where { |m| m.period_id.eq( period_id ) }
   end
 
   def to_s(format=nil)

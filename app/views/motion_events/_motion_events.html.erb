@@ -12,7 +12,8 @@
 </tr>
 </thead>
 <tbody>
-<%=render partial: 'motion_events/motion_event', collection: motion_events.ordered %>
+<%=render partial: 'motion_events/motion_event', collection: motion_events.ordered,
+  locals: { motion: motion } %>
 </tbody>
 </table>
 <% else %>

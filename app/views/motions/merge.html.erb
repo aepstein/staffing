@@ -17,6 +17,8 @@ Use this form to merge the motion to another motion proposed before the same com
       hint: 'What motion should this motion be merged into?' %>
   <% end %>
 
-  <%= form.actions %>
+  <%= form.actions do %>
+    <%= form.action :submit, label: "Merge" %>
+  <% end %>
 <% end %>
 

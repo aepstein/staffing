@@ -1,5 +1,14 @@
-Given /^#{capture_model} is (divided|proposed|rejected|withdrawn|restarted)$/ do |motion, state|
+Given /^#{capture_model} is (divided|merged|proposed|rejected|restarted|withdrawn)$/ do |motion, state|
   case state
+  when 'merged'
+    step "#{motion} is proposed"
+    step "I log out"
+    step "I log in as user: \"chair\""
+    step "I am on the proposed motions page for the committee"
+    step %{a motion: "target" exists with committee: the committee, period: the period, name: "Target", published: true, status: "proposed"}
+    step %{I follow "Merge" within "#motions"}
+    step %{I select "Target" from "Motion"}
+    step %{I press "Merge"}
   when 'divided'
     step "#{motion} is proposed"
     step "I log out"

@@ -11,7 +11,7 @@ Feature: Manage motions
     And an enrollment exists with position: position "voter", committee: the committee, votes: 1
     And a user: "sponsor" exists
     And a membership exists with period: the period, position: position "voter", user: user "sponsor"
-    And a motion exists with committee: the committee, period: the period
+    And a motion: "original" exists with committee: the committee, period: the period
     And a position: "chair" exists with schedule: the schedule
     And an enrollment exists with position: position: "chair", committee: the committee, manager: true
     And a user: "chair" exists
@@ -40,8 +40,15 @@ Feature: Manage motions
     Then I should see "Motion was successfully restarted."
     And the motion should exist with status: "started", published: true
 
+  @javascript
   Scenario: Divide the motion
     Given the motion is divided
     Then I should see "Motion was successfully divided."
     And the motion should exist with status: "divided", published: true
+
+  @javascript
+  Scenario: Merge the motion
+    Given the motion is merged
+    Then I should see "Motion was successfully merged."
+    And motion: "original" should exist with status: "merged", published: true
 
