@@ -8,7 +8,7 @@ class User < ActiveRecord::Base
     :work_phone, :home_phone, :work_address, :date_of_birth, :resume, :portrait,
     :renewal_checkpoint, :memberships_attributes, :password,
     :password_confirmation, as: [ :default, :admin ]
-  attr_accessible :net_id, :empl_id, :admin, :status, as: :admin
+  attr_accessible :net_id, :empl_id, :admin, :staff, :status, as: :admin
 
   default_scope lambda { ordered }
 
@@ -193,6 +193,7 @@ class User < ActiveRecord::Base
     @role_symbols ||= [:user]
     @role_symbols << :admin if admin?
     @role_symbols << :authority if authorities.any?
+    @role_symbols << :staff if staff?
     @role_symbols
   end
 

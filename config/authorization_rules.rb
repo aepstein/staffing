@@ -4,7 +4,16 @@ authorization do
       :meetings, :memberships, :motions, :periods, :positions, :qualifications,
       :quizzes, :questions, :requests, :schedules, :users,
       :user_renewal_notices, :sendings ],
-      to: [ :manage, :show, :index ]
+      to: [ :manage ]
+
+    includes :staff
+  end
+  role :staff do
+    has_permission_on [ :authorities, :brands, :committees, :enrollments,
+      :meetings, :memberships, :motions, :periods, :positions, :qualifications,
+      :quizzes, :questions, :requests, :schedules, :users,
+      :user_renewal_notices, :sendings ],
+      to: [ :create, :update, :show, :index ]
     has_permission_on :committees, to: [ :chair, :members, :tents, :vote ]
     has_permission_on :memberships, to: [ :decline_renewal ] do
       if_attribute declined_at: is { nil }, starts_at: lte { Time.zone.today },
@@ -15,6 +24,8 @@ authorization do
     has_permission_on :users, to: [ :tent ]
     has_permission_on :users, to: :resume
     has_permission_on :requests, to: [ :reject, :reactivate ]
+
+    includes :user
   end
   role :authority do
     has_permission_on :users, to: :show
@@ -47,7 +58,8 @@ authorization do
     end
     has_permission_on :motions, to: :update, join_by: :and do
       if_permitted_to :own
-      if_attribute status: is { 'started' }
+      if_attribute status: is { 'started' },
+        period: { starts_at: lte { Time.zone.today }, ends_at: gte { Time.zone.today } }
     end
     has_permission_on :motions, to: :show do
       if_attribute published: true

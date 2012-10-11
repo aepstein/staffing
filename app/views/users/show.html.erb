@@ -59,6 +59,10 @@
   <b>Administrator?</b> <%=h @user.admin? ? 'Yes' : 'No' %>
 </p>
 
+<p>
+  <b>Staff?</b> <%=h @user.staff? ? 'Yes' : 'No' %>
+</p>
+
 <h3>Generate tent card</h3>
 
 <%=form_tag tent_user_path(@user, format: :pdf), method: :get do %>

@@ -16,6 +16,7 @@
       <%= form.input :net_id %>
       <%= form.input :empl_id %>
       <%= form.input :admin, as: :radio, label: 'Administrator?' %>
+      <%= form.input :staff, as: :radio, label: 'Staff?' %>
       <%= form.input :status, as: :radio, collection: User::STATUSES %>
     <% end %>
   <% end %>

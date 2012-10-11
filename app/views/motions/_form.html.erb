@@ -3,8 +3,10 @@
     <%= form.input :name, hint: 'Name of the motion' %>
     <%= form.input :description, hint: 'Briefly describe purpose and effect of motion' %>
     <%= form.input :content, hint: 'Provide the text of the motion' %>
+    <% if form.object.new_record? && permitted_to?( :admin, form.object ) %>
     <%= form.input :period, collection: form.object.committee.schedule.periods,
       hint: 'For what period is the motion sponsored' %>
+    <% end %>
 
     <%= form.inputs for: :sponsorships, name: 'sponsor' do |subform| %>
       <%= render partial: 'sponsorships/sponsorship_fields', locals: { f: subform } %>

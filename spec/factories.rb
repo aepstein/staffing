@@ -103,6 +103,14 @@ FactoryGirl.define do
         association( :period, :schedule => committee.schedule )
       end
     end
+    factory :referred_motion do
+      referring_motion do |motion|
+        FactoryGirl.create( :sponsored_motion,
+          status: 'proposed',
+          committee: FactoryGirl.create(:committee, schedule: motion.committee.schedule ),
+          period: motion.period )
+      end
+    end
     factory :sponsored_motion do
       after(:build) do |motion|
         motion.sponsorships << [ FactoryGirl.build(:sponsorship, motion: motion) ]
@@ -203,8 +211,8 @@ FactoryGirl.define do
   factory :user do
     first_name "John"
     last_name "Doe"
-    sequence(:net_id) { |n| "fake_net_id#{n}" }
-    sequence(:email) { |n| "fake_net_id#{n}@example.com" }
+    sequence(:net_id) { |n| "fake#{n}" }
+    sequence(:email) { |n| "fake#{n}@example.com" }
     password 'secret'
     password_confirmation { password }
   end
@@ -212,15 +220,9 @@ FactoryGirl.define do
   factory :sponsorship do
     association :motion
     user do
-      if motion.users.allowed.any?
-        motion.users.allowed.first
-      else
-        p = association( :position, :schedule => motion.committee.schedule )
-        association( :enrollment, :committee => motion.committee, :position => p )
-#        motion.reload; p.reload
-#        motion.committee.association(:memberships).reset
-        association( :membership, :period => motion.period, :position => p ).user
-      end
+      p = association( :position, :schedule => motion.committee.schedule )
+      association( :enrollment, :committee => motion.committee, :position => p )
+      association( :membership, :period => motion.period, :position => p ).user
     end
   end
 end

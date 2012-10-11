@@ -5,7 +5,7 @@ class ApplicationController < ActionController::Base
   has_breadcrumbs
 
   def permission_denied
-    redirect_to root_url, alert: "You are not allowed to perform the requested action."
+    redirect_to root_url, alert: "You may not perform the requested action."
   end
 end
 

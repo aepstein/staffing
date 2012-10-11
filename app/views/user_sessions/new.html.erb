@@ -2,7 +2,7 @@
 
 <%= form_tag user_session_path do %>
   <p>
-  <%= label_tag :net_id %><br />
+  <%= label_tag :net_id, 'Net Id' %><br />
   <%= text_field_tag :net_id, params[:net_id] %>
   </p>
 
@@ -12,7 +12,7 @@
   </p>
 
   <p>
-  <%= submit_tag "Login" %>
+  <%= submit_tag "Log in" %>
   </p>
 
 <% end %>

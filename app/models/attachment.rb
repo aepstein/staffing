@@ -1,5 +1,5 @@
 class Attachment < ActiveRecord::Base
-  attr_accessible :document, :description
+  attr_accessible :document, :document_cache, :description
   attr_readonly :attachable_type, :attachable_id
 
   belongs_to :attachable, polymorphic: true

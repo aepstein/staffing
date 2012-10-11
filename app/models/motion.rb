@@ -7,10 +7,11 @@ class Motion < ActiveRecord::Base
 
   has_paper_trail
 
-  attr_accessible :period_id, :name, :content, :description, :complete,
+  attr_accessible :name, :content, :description, :complete,
     :referring_motion_id, :sponsorships_attributes, :attachments_attributes,
     :event_date, :event_description,
-    as: [ :default, :divider, :referrer ]
+    as: [ :admin, :default, :divider, :referrer ]
+  attr_accessible :period_id, as: [ :admin ]
   attr_accessible :referred_motions_attributes, as: [ :divider, :referrer ]
   attr_accessible :name, :committee_name, as: :referrer
   attr_readonly :committee_id, :period_id
@@ -116,7 +117,7 @@ class Motion < ActiveRecord::Base
   state_machine :status, :initial => :started do
 
     before_transition all => [ :divided, :referred ] do |motion, transition|
-      referred_motions.select(&:new_record?).each do |new_motion|
+      motion.referred_motions.select(&:new_record?).each do |new_motion|
         new_motion.watchers << motion.watchers
       end
     end
@@ -140,9 +141,9 @@ class Motion < ActiveRecord::Base
 
     state :started do
       validate do |motion|
-        unless motion.referring_motion_id? || motion.sponsorships.reject(&:marked_for_destruction?).length > 0
-          errors.add :sponsorships, "cannot be empty for new motion"
-        end
+#        unless motion.referring_motion_id? || motion.sponsorships.reject(&:marked_for_destruction?).length > 0
+#          errors.add :sponsorships, "cannot be empty for new motion"
+#        end
       end
     end
 

@@ -18,9 +18,7 @@ class Committee < ActiveRecord::Base
   belongs_to :schedule, inverse_of: :committees
   belongs_to :brand, inverse_of: :committees
   has_many :periods, through: :schedule do
-    def active
-      current.first
-    end
+    def active; current.first; end
   end
   has_many :designees, inverse_of: :committee
   has_many :authorities, inverse_of: :committee

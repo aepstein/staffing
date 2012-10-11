@@ -100,8 +100,7 @@ class MotionsController < ApplicationController
     @motion.attachments.each { |a| a.attachable = @motion }
     respond_to do |format|
       if @motion.save
-        flash[:notice] = 'Motion was successfully created.'
-        format.html { redirect_to @motion }
+        format.html { redirect_to @motion, notice: 'Motion was successfully created.' }
         format.xml  { render :xml => @motion, :status => :created, :location => @motion }
       else
         format.html { render :action => "new" }
@@ -113,15 +112,9 @@ class MotionsController < ApplicationController
   # PUT /motions/1
   # PUT /motions/1.xml
   def update
-    if permitted_to? :manage, @motion
-      [ :user_id, :period_id ].each do |k|
-        @motion.send "#{k}=", params[k]  if params[k]
-      end
-    end
     respond_to do |format|
-      if @motion.update_attributes(params[:motion])
-        flash[:notice] = 'Motion was successfully updated.'
-        format.html { redirect_to(@motion) }
+      if @motion.update_attributes(params[:motion], as: ( permitted_to?(:admin) ? :admin : :default ))
+        format.html { redirect_to @motion, notice: 'Motion was successfully updated.' }
         format.xml  { head :ok }
       else
         format.html { render :action => "edit" }
@@ -301,8 +294,9 @@ class MotionsController < ApplicationController
   end
 
   def new_motion_from_params
-    @motion = @committee.motions.build( params[:motion] )
-    @motion.period ||= @committee.periods.active
+    @motion = @committee.motions.build( params[:motion],
+      as: ( permitted_to?(:admin) ? :admin : :default ) )
+    @motion.period ||= @motion.committee.periods.active
   end
 
   def setup_breadcrumbs
