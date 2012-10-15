@@ -46,7 +46,15 @@ Scenario Outline: Create/edit a sponsored motion
     |voter       |
     |staff       |
 
-Scenario: Edit a referred motion
+@javascript
+Scenario Outline: Edit a referred motion
+  Given I have a referred motion as <relationship>
+  When I update the referred motion
+  Then I should see the updated referred motion
+  Examples:
+    |relationship|
+    |vicechair   |
+    |staff       |
 
 Scenario: List/search/delete a motion
 

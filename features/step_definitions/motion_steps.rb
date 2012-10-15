@@ -232,19 +232,57 @@ Then /^I should see the edited motion$/ do
   end
 end
 
-Given /^there are (\d+) motions$/ do |quantity|
-  @schedules = quantity.to_i.downto(1).
-    map { |i| create :schedule, name: "Schedule #{i}" }
+Given /^I have a referred motion as (vicechair|staff)$/ do |relationship|
+  role = case relationship
+  when 'staff'
+    'staff'
+  else
+    'plain'
+  end
+  committee_relationship = case relationship
+  when 'staff'
+    'nonmember'
+  else
+    relationship
+  end
+  step %{I log in as the #{role} user}
+  step %{I have a current #{committee_relationship} relationship to the committee}
+  @motion = create( :referred_motion, committee: @committee )
+  create(:attachment, attachable: @motion, description: "Sample employee ids")
 end
 
-Given /^I "(.+)" the (\d+)(?:st|nd|rd|th) motion$/ do |text, position|
-  visit(schedules_url)
-  within("table > tbody > tr:nth-child(#{position.to_i})") do
-    click_link "#{text}"
+When /^I update the referred motion$/ do
+  visit(edit_motion_path(@motion))
+  fill_in "Name", with: "Referred motion"
+  fill_in "Description", with: "This is different"
+  fill_in "Content", with: "Whereas and resolved"
+  click_link "remove attachment"
+  click_button "Update"
+end
+
+Then /^I should see the updated referred motion$/ do
+  within('#flash_notice') { page.should have_text("Motion was successfully updated.") }
+  within("#motion-#{@motion.id}") do
+    page.should have_text("Name: Referred motion")
+    page.should have_text("This is different")
+    page.should have_text("Whereas and resolved")
+    page.should have_no_text("Sample employee ids")
   end
 end
 
-Then /^I should see the following motions:$/ do |table|
-  table.diff!( tableish( 'table > thead,tbody > tr', 'th,td' ) )
-end
+#Given /^there are (\d+) motions$/ do |quantity|
+#  @schedules = quantity.to_i.downto(1).
+#    map { |i| create :schedule, name: "Schedule #{i}" }
+#end
+
+#Given /^I "(.+)" the (\d+)(?:st|nd|rd|th) motion$/ do |text, position|
+#  visit(schedules_url)
+#  within("table > tbody > tr:nth-child(#{position.to_i})") do
+#    click_link "#{text}"
+#  end
+#end
+
+#Then /^I should see the following motions:$/ do |table|
+#  table.diff!( tableish( 'table > thead,tbody > tr', 'th,td' ) )
+#end
 
