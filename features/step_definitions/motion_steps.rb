@@ -157,13 +157,15 @@ When /^I create a motion as (voter|staff)$/ do |relationship|
   step %{I log in as the #{role} user}
   step %{I have a current #{committee_relationship} relationship to the committee}
   if committee_relationship == 'nonmember'
-    @sponsor = create( :past_membership,
+    sponsor_membership = create( :past_membership,
       position: create( :enrollment, committee: @committee, votes: 1 ).position,
-      user: create( :user, first_name: 'George', last_name: 'Washington' ) ).user
-    @alternate_sponsor = create( :past_membership,
+      user: create( :user, net_id: 'zzz2', first_name: 'George', last_name: 'Washington' ) )
+    @period = sponsor_membership.period
+    @sponsor = sponsor_membership.user
+    @alternate_sponsor = create( :membership,
       position: create( :enrollment, committee: @committee, votes: 1 ).position,
-      user: create( :user, net_id: zzz1, first_name: 'John', last_name: 'Adams' ) ).user
-    @period = create(:past_period, schedule: @committee.schedule)
+      period: @period,
+      user: create( :user, net_id: 'zzz1', first_name: 'John', last_name: 'Adams' ) ).user
   else
     @sponsor = @current_user
     @current_user.update_attributes first_name: 'George', last_name: 'Washington'
@@ -176,6 +178,7 @@ When /^I create a motion as (voter|staff)$/ do |relationship|
   visit(new_committee_motion_path(@committee))
   if relationship == 'staff'
     select @period.to_s, from: 'Period'
+    fill_in "Sponsor", with: "#{@sponsor.net_id}"
   else
     within("form") { page.should have_no_text('Period') }
   end

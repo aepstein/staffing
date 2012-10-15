@@ -77,17 +77,14 @@ FactoryGirl.define do
     end
 
     factory :current_membership do
-      association :position
       period { association(:current_period, :schedule => position.schedule) }
     end
 
     factory :future_membership do
-      association :position
       period { association(:future_period, :schedule => position.schedule) }
     end
 
     factory :past_membership do
-      association :position
       period { association(:past_period, :schedule => position.schedule) }
     end
   end

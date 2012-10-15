@@ -42,7 +42,6 @@ group :development, :test do
   gem 'rspec-rails'
 end
 group :development do
-  gem 'thin'
   gem 'ruby-graphviz', require: 'graphviz'
 end
 group :test do

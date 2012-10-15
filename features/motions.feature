@@ -34,9 +34,10 @@ Scenario Outline: Access control
     |nonmember|current|referred |un |started |may not|may not|may not|may not|
     |nonmember|current|sponsored|un |started |may not|may not|may not|may not|
     |nonmember|current|sponsored|   |started |may    |may not|may not|may not|
-@wip @javascript
+
+@javascript
 Scenario Outline: Create/edit a sponsored motion
-  When I create a motion as voter
+  When I create a motion as <relationship>
   Then I should see the new motion
   When I update the motion
   Then I should see the edited motion
