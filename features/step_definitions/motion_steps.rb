@@ -270,19 +270,21 @@ Then /^I should see the updated referred motion$/ do
   end
 end
 
-#Given /^there are (\d+) motions$/ do |quantity|
-#  @schedules = quantity.to_i.downto(1).
-#    map { |i| create :schedule, name: "Schedule #{i}" }
-#end
+Given /^there are (\d+) motions for a committee$/ do |quantity|
+  @committee = create(:committee)
+  @motions = quantity.to_i.downto(1).
+    map { |i| create :sponsored_motion, name: "Motion #{i}", committee: @committee }
+end
 
-#Given /^I "(.+)" the (\d+)(?:st|nd|rd|th) motion$/ do |text, position|
-#  visit(schedules_url)
-#  within("table > tbody > tr:nth-child(#{position.to_i})") do
-#    click_link "#{text}"
-#  end
-#end
+Given /^I "(.+)" the (\d+)(?:st|nd|rd|th) motion for the committee$/ do |text, motion|
+  visit(committee_motions_path(@committee))
+  within("table > tbody > tr:nth-child(#{motion.to_i})") do
+    click_link "#{text}"
+  end
+end
 
-#Then /^I should see the following motions:$/ do |table|
-#  table.diff!( tableish( 'table > thead,tbody > tr', 'th,td' ) )
-#end
+Then /^I should see the following motions for the committee:$/ do |table|
+  visit(committee_motions_path(@committee))
+  within("#motions") { table.diff!( tableish( 'table > tbody > tr', 'td:nth-child(2)' ) ) }
+end
 

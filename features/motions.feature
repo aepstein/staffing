@@ -55,6 +55,13 @@ Scenario Outline: Edit a referred motion
     |relationship|
     |vicechair   |
     |staff       |
-
-Scenario: List/search/delete a motion
+@wip
+Scenario: List/delete a motion
+  Given I log in as the admin user
+  And there are 4 motions for a committee
+  And I "Destroy" the 3rd motion for the committee
+  Then I should see the following motions for the committee:
+  | Motion 1 |
+  | Motion 2 |
+  | Motion 4 |
 
