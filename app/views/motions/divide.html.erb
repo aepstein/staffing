@@ -26,7 +26,9 @@ These motions will be considered in the same committee in which this motion is p
         </p>
       </div>
 
-    <%= form.actions %>
+    <%= form.actions do %>
+    <%= form.action :submit, label: 'Divide' %>
+    <% end %>
   <% end %>
 </div>
 

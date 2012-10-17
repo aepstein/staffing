@@ -209,9 +209,7 @@ class MotionsController < ApplicationController
       if request.method_symbol == :get
         format.html { render action: :divide }
       else
-        @motion.assign_attributes(
-          { referred_motions_attributes: params[:motion][:referred_motions_attributes] },
-          as: :divider )
+        @motion.assign_attributes( params[:motion], as: :divider )
         @motion.referred_motions.each { |m| m.committee = @motion.committee; m.published = true; m.period = @motion.period }
         if @motion.divide
           format.html { redirect_to(@motion, notice: 'Motion was successfully divided.') }

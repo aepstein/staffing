@@ -8,7 +8,7 @@
     <td><%= motion.period %></td>
     <% end %>
     <td><%= motion.position %></td>
-    <td><%= motion.name %></td>
+    <td class="name"><%= motion.name %></td>
     <td><%= motion.status %></td>
     <td><%= link_to 'Show', motion %></td>
     <td><%= link_to( 'Edit', edit_motion_path(motion) ) if permitted_to? :edit, motion %></td>

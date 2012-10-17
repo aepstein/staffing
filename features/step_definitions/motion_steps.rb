@@ -1,44 +1,61 @@
-#Given /^#{capture_model} is (divided|merged|proposed|rejected|restarted|withdrawn)$/ do |motion, state|
-#  case state
-#  when 'merged'
-#    step "#{motion} is proposed"
-#    step "I log out"
-#    step "I log in as user: \"chair\""
-#    step "I am on the proposed motions page for the committee"
-#    step %{a motion: "target" exists with committee: the committee, period: the period, name: "Target", published: true, status: "proposed"}
-#    step %{I follow "Merge" within "#motions"}
-#    step %{I select "Target" from "Motion"}
-#    step %{I press "Merge"}
-#  when 'divided'
-#    step "#{motion} is proposed"
-#    step "I log out"
-#    step "I log in as user: \"chair\""
-#    step "I am on the proposed motions page for the committee"
-#    step "I follow \"Divide\" within \"#motions\""
-#    step "I follow \"add dividing motion\""
-#    step %{I fill in "Name" with "Charter amendment"}
-#    step %{I fill in "Description" with "This is a *big* change."}
-#    step %{I fill in "Content" with "*Whereas* and *Resolved*"}
-#    step %{I press "Update Motion"}
-#  when 'proposed'
-#    step "I log in as user: \"sponsor\""
-#    step "I follow \"Propose\" within \"#motions\""
-#  when 'rejected'
-#    step "#{motion} is proposed"
-#    step "I log out"
-#    step "I log in as user: \"chair\""
-#    step "I am on the proposed motions page for the committee"
-#    step "I follow \"Reject\" within \"#motions\""
-#  when 'withdrawn'
-#    step "#{motion} is proposed"
-#    step "I log out"
-#    step "I log in as user: \"sponsor\""
-#    step "I follow \"Withdraw\" within \"#motions\""
-#  when 'restarted'
-#    step "I log in as user: \"sponsor\""
-#    step "I follow \"Restart\" within \"#motions\""
-#  end
-#end
+When /^I (adopt|amend|divide|implement|merge|propose|refer|reject|restart|withdraw) the motion$/ do |event|
+  @event = event
+  case @event
+  when 'adopt'
+    Capybara.current_session.driver.submit :put, adopt_motion_url(@motion), {}
+  when 'amend'
+    # todo
+    true.should be_false
+  when 'divide'
+    visit(divide_motion_path(@motion))
+    click_link 'add dividing motion'
+    fill_in 'Name', with: 'Charter amendment'
+    fill_in 'Description', with: 'This is a big change'
+    fill_in 'Content', with: 'Whereas and resolved'
+    click_button 'Divide'
+  when 'implement'
+    Capybara.current_session.driver.submit :put, adopt_motion_url(@motion), {}
+  when 'merge'
+    create :motion, committee: @motion.committee, period: @motion.period,
+      name: 'Target', published: true, status: 'proposed'
+    visit(merge_motion_path(@motion))
+    select 'Target', from: 'Motion'
+    click_button 'Merge'
+  when 'propose'
+    Capybara.current_session.driver.submit :put, propose_motion_url(@motion), {}
+  when 'refer'
+    # todo
+    true.should be_false
+  when 'reject'
+    Capybara.current_session.driver.submit :put, reject_motion_url(@motion), {}
+  when 'restart'
+    Capybara.current_session.driver.submit :put, restart_motion_url(@motion), {}
+  when 'withdraw'
+    Capybara.current_session.driver.submit :put, withdraw_motion_url(@motion), {}
+  end
+end
+
+Then /^I should see confirmation of the event on the motion$/ do
+  new_status = case @event
+    when 'adopt'; 'adopted'
+    when 'amend'; 'amended'
+    when 'divide'; 'divided'
+    when 'implement'; 'implemented'
+    when 'merge'; 'merged'
+    when 'propose'; 'proposed'
+    when 'refer'; 'referred'
+    when 'reject'; 'rejected'
+    when 'restart'; 'started'
+    when 'withdraw'; 'withdrawn'
+  end
+  event_description = case @event
+    when 'restart'; 'restarted'
+    else; new_status
+  end
+  @motion.reload
+  @motion.status.should eql new_status
+  within("#flash_notice") { page.should have_text "Motion was successfully #{event_description}." }
+end
 
 Given /^I have a (current|past|future) (chair|vicechair|voter|nonvoter|nonmember) relationship to the committee$/ do |tense, relationship|
   @committee = create :committee
@@ -91,6 +108,23 @@ Given /^(?:an )authorization scenario of (un)?published, (\w+) motion of (sponso
   if relationship == 'sponsor'
     create :sponsorship, motion: @motion, user: @current_user
   end
+end
+
+Then /^I may( not)? (adopt|divide|implement|merge|propose|refer|reject|restart|withdraw) the motion$/ do |negate, event|
+  visit(committee_motions_url(@committee))
+  if negate.blank?
+    within("#motion-#{@motion.id}") { page.should have_text(event.titleize) }
+  else
+    if page.has_selector?("#motion-#{@motion.id}")
+      within("#motion-#{@motion.id}") { page.should have_no_text(event.titleize) }
+    end
+  end
+  if %w( divide merge ).include?( event )
+    visit(send("#{event}_motion_path", @motion))
+    step %{I should#{negate} be authorized}
+  end
+  Capybara.current_session.driver.submit :put, send("#{event}_motion_url", @motion), {}
+  step %{I should#{negate} be authorized}
 end
 
 Then /^I may( not)? create motions for the committee$/ do |negate|
@@ -285,6 +319,6 @@ end
 
 Then /^I should see the following motions for the committee:$/ do |table|
   visit(committee_motions_path(@committee))
-  within("#motions") { table.diff!( tableish( 'table > tbody > tr', 'td:nth-child(2)' ) ) }
+  table.diff! tableish( 'table#motions > tbody > tr', 'td:nth-of-type(3)' )
 end
 
