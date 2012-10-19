@@ -81,7 +81,7 @@ class AuthoritiesController < ApplicationController
     @authority.destroy
 
     respond_to do |format|
-      format.html { redirect_to(authorities_url) }
+      format.html { redirect_to authorities_url, notice: 'Authority was successfully destroyed.' }
       format.xml  { head :ok }
     end
   end

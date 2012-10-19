@@ -1,16 +1,6 @@
 <h2>Listing authorities</h2>
 
-<table>
-  <thead>
-  <tr>
-    <th>Name</th>
-  </tr>
-  </thead>
-  <tbody>
-  <%= render :partial => 'authority', :collection => @authorities %>
-  </tbody>
-</table>
-
+<%= render partial: "authorities/authorities", object: @authorities %>
 <hr />
 
 <p>

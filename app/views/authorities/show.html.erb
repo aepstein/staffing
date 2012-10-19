@@ -1,3 +1,4 @@
+<div id="authority-<%= @authority.id %>">
 <p>
   <b>Name:</b> <%=h @authority.name %>
 </p>
@@ -17,6 +18,7 @@
 <p><b>Reject message:</b></p>
 
 <%=markdown @authority.reject_message %>
+</div>
 
 <p>
 <% if permitted_to? :edit, @authority -%>
