@@ -1,3 +1,4 @@
+<div id="committee-<%= @committee.id %>">
 <p>
   <b>Name:</b> <%=h @committee.name %>
 </p>
@@ -33,6 +34,9 @@
 <p><b>Reject message:</b></p>
 
 <%=markdown @committee.reject_message %>
+
+</div>
+
 
 <%=form_tag tents_committee_path(@committee, :format => :pdf), :method => :get do %>
 <p>

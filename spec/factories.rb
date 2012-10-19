@@ -55,6 +55,9 @@ FactoryGirl.define do
     title "member"
     votes 1
     requestable false
+    factory :requestable_enrollment do
+      requestable true
+    end
   end
 
   factory :membership do

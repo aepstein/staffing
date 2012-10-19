@@ -1,13 +1,18 @@
 <% user ||= false %>
-<table>
+<% if committees.any? %>
+<table id="committees">
   <thead>
   <tr>
     <th>Name</th>
   </tr>
   </thead>
   <tbody>
-  <%= render :partial => 'committee', :collection => committees,
-    :locals => { :user => user } %>
+  <%= render partial: 'committees/committee', collection: committees, locals: { user: user } %>
   </tbody>
 </table>
+<% else %>
+<p>
+No committees.
+</p>
+<% end %>
 

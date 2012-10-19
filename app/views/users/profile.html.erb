@@ -72,6 +72,7 @@ You may not start motions for any committee at this time.
 </p>
 <% end %>
 
+<div id="requests">
 <h3>Your Requests for Membership</h3>
 
 <p>
@@ -87,4 +88,5 @@ You may browse <%= link_to pluralize( current_user.committees.requestable.count(
 <%= render :partial => 'requests/requests', :object => current_user.requests.unexpired,
   :locals => { :user => current_user } %>
 <% end %>
+</div> <!-- #requests -->
 
