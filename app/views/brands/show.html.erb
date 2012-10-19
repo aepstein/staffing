@@ -1,9 +1,10 @@
+<div id="brand-<%= @brand.id %>">
 <p>
   <b>Name:</b> <%=h @brand.name %>
 </p>
 
-<p><b>Logo:</b> <%=image_tag thumb_brand_path(@brand, :format => :png) %></p>
-
+<p><b>Logo:</b> <%=image_tag thumb_brand_path(@brand, format: :png) %></p>
+</div>
 
 <p>
 <% if permitted_to? :edit, @brand -%>

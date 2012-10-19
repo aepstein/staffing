@@ -1,4 +1,4 @@
-  <%= table_row_tag do %>
+  <%= table_row_tag true, false, { id: "brand-#{brand.id}" } do %>
     <td><%=h brand.name %></td>
     <td><%= link_to 'Show', brand %></td>
     <td><%= link_to( 'Edit', edit_brand_path(brand) ) if permitted_to? :edit, brand %></td>

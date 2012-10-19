@@ -1,7 +1,7 @@
 class BrandsController < ApplicationController
   before_filter :initialize_context
-  before_filter :initialize_index, :only => [ :index ]
-  before_filter :new_brand_from_params, :only => [ :new, :create ]
+  before_filter :initialize_index, only: [ :index ]
+  before_filter :new_brand_from_params, only: [ :new, :create ]
   filter_resource_access
   filter_access_to :thumb do
     permitted_to! :show
@@ -12,8 +12,8 @@ class BrandsController < ApplicationController
   # GET /brands/:id/thumb.png
   def thumb
     respond_to do |format|
-      format.png { send_file @brand.logo.thumb.store_path, :type => :png,
-        :disposition => 'inline'  }
+      format.png { send_file @brand.logo.thumb.store_path, type: :png,
+        disposition: 'inline'  }
     end
   end
 
@@ -22,7 +22,7 @@ class BrandsController < ApplicationController
   def index
     respond_to do |format|
       format.html # index.html.erb
-      format.xml  { render :xml => @brands }
+      format.xml  { render xml: @brands }
     end
   end
 
@@ -31,7 +31,7 @@ class BrandsController < ApplicationController
   def show
     respond_to do |format|
       format.html # show.html.erb
-      format.xml  { render :xml => @brand }
+      format.xml  { render xml: @brand }
     end
   end
 
@@ -40,7 +40,7 @@ class BrandsController < ApplicationController
   def new
     respond_to do |format|
       format.html # new.html.erb
-      format.xml  { render :xml => @brand }
+      format.xml  { render xml: @brand }
     end
   end
 
@@ -55,10 +55,10 @@ class BrandsController < ApplicationController
       if @brand.save
         flash[:notice] = 'Brand was successfully created.'
         format.html { redirect_to(@brand) }
-        format.xml  { render :xml => @brand, :status => :created, :location => @brand }
+        format.xml  { render xml: @brand, status: :created, location: @brand }
       else
-        format.html { render :action => "new" }
-        format.xml  { render :xml => @brand.errors, :status => :unprocessable_entity }
+        format.html { render action: "new" }
+        format.xml  { render xml: @brand.errors, status: :unprocessable_entity }
       end
     end
   end
@@ -72,8 +72,8 @@ class BrandsController < ApplicationController
         format.html { redirect_to(@brand) }
         format.xml  { head :ok }
       else
-        format.html { render :action => "edit" }
-        format.xml  { render :xml => @brand.errors, :status => :unprocessable_entity }
+        format.html { render action: "edit" }
+        format.xml  { render xml: @brand.errors, status: :unprocessable_entity }
       end
     end
   end
@@ -84,7 +84,7 @@ class BrandsController < ApplicationController
     @brand.destroy
 
     respond_to do |format|
-      format.html { redirect_to(brands_url) }
+      format.html { redirect_to(brands_url, notice: 'Brand was successfully destroyed.') }
       format.xml  { head :ok }
     end
   end
