@@ -4,15 +4,16 @@ This will create a <em>referred motion</em> in the other committee that can
 then work through that committee's normal business process.
 </p>
 
-<%= semantic_form_for @motion, url: refer_motion_path( @motion ),
-  method: :put do |form| %>
-  <%= render partial: 'motions/event_form', object: form %>
-  <%= form.inputs for: :referred_motions do |referred_motion_form| %>
-    <%= referred_motion_form.input :committee_name, label: 'Committee',
-      hint: 'To which committee should this motion be referred?' %>
-    <%= referred_motion_form.input :name, label: 'Name' %>
-  <% end %>
+<%= semantic_form_for @referred_motion, as: :referred_motion,
+  url: refer_motion_path( @motion ), method: :put do |form| %>
+  <%= render "shared/error_messages", target: form.object %>
+  <%= form.input :committee_name, label: 'Committee',
+    hint: 'To which committee should this motion be referred?' %>
+  <%= form.input :name, label: 'Name',
+    hint: 'What should be the new name of the motion?' %>
 
-  <%= form.actions %>
+  <%= form.actions do %>
+    <%= form.action :submit, label: 'Refer' %>
+  <% end %>
 <% end %>
 

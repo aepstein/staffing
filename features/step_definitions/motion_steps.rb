@@ -24,8 +24,11 @@ When /^I (adopt|amend|divide|implement|merge|propose|refer|reject|restart|withdr
   when 'propose'
     Capybara.current_session.driver.submit :put, propose_motion_url(@motion), {}
   when 'refer'
-    # todo
-    true.should be_false
+    other_committee = create( :committee, schedule: @committee.schedule )
+    visit(refer_motion_path(@motion))
+    fill_in 'Committee', with: other_committee.name
+    fill_in 'Name', with: "#{@motion.name} referred"
+    click_button 'Refer'
   when 'reject'
     Capybara.current_session.driver.submit :put, reject_motion_url(@motion), {}
   when 'restart'

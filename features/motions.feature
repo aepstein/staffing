@@ -24,7 +24,7 @@ Scenario Outline: Access control
     |nonvoter |current|sponsored|un |started |may not|may not|may not|may not|
     |sponsor  |current|referred |un |started |may    |may    |may    |may not|
     |sponsor  |current|sponsored|un |started |may    |may    |may    |may not|
-    |sponsor  |current|sponsored|un |proposed|may    |may not|may not|may not|
+    |sponsor  |current|sponsored|un |proposed|may    |may    |may not|may not|
     |sponsor  |past   |sponsored|un |started |may    |may not|may not|may not|
     |voter    |current|referred |un |started |may not|may    |may not|may not|
     |voter    |current|sponsored|un |started |may not|may    |may not|may not|
@@ -137,8 +137,8 @@ Scenario Outline: Motion events without javascript
     |sponsor  |current|sponsored|   |proposed |withdraw|
     |vicechair|current|sponsored|   |proposed |adopt   |
     |vicechair|current|sponsored|   |proposed |merge   |
-#    |vicechair|current|sponsored|   |proposed |refer   |
     |vicechair|current|sponsored|   |proposed |restart |
+    |vicechair|current|sponsored|   |proposed |refer   |
 
 @javascript
 Scenario Outline: Motion events with javascript

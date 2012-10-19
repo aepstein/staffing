@@ -2,6 +2,7 @@ class MotionsController < ApplicationController
   before_filter :initialize_context
   before_filter :initialize_index
   before_filter :new_motion_from_params, only: [ :new, :create ]
+  before_filter :new_referred_motion_from_params, only: [ :refer ]
   before_filter :setup_breadcrumbs
   filter_access_to :new, :create, :edit, :update, :destroy, :show,
     :adopt, :divide, :implement, :merge, :propose, :refer, :reject,
@@ -186,13 +187,12 @@ class MotionsController < ApplicationController
   # GET /motions/:id/refer
   # PUT /motions/:id/refer
   def refer
-    @motion.referred_motions.build_referee( params[:motion] )
     respond_to do |format|
       if request.method_symbol == :get
         format.html { render action: :refer }
       else
         if @motion.refer
-          format.html { redirect_to(@motion, notice: 'Motion was successfully referred.') }
+          format.html { redirect_to(@referred_motion, notice: 'Motion was successfully referred.') }
           format.xml  { head :ok }
         else
           format.html { render action: "refer" }
@@ -295,6 +295,10 @@ class MotionsController < ApplicationController
     @motion = @committee.motions.build( params[:motion],
       as: ( permitted_to?(:admin) ? :admin : :default ) )
     @motion.period ||= @motion.committee.periods.active
+  end
+
+  def new_referred_motion_from_params
+    @referred_motion = @motion.referred_motions.build_referee( params[:referred_motion] )
   end
 
   def setup_breadcrumbs

@@ -13,7 +13,7 @@ class Motion < ActiveRecord::Base
     as: [ :admin, :default, :divider, :referrer ]
   attr_accessible :period_id, as: [ :admin ]
   attr_accessible :referred_motions_attributes, as: [ :divider, :referrer ]
-  attr_accessible :name, :committee_name, as: :referrer
+  attr_accessible :committee_name, as: :referrer
   attr_readonly :committee_id, :period_id
 
   acts_as_list scope: [ :period_id, :committee_id ]
@@ -91,7 +91,7 @@ class Motion < ActiveRecord::Base
 
   accepts_nested_attributes_for :attachments, allow_destroy: true
   accepts_nested_attributes_for :sponsorships, allow_destroy: true
-  accepts_nested_attributes_for :referred_motions, allow_destroy: true
+  accepts_nested_attributes_for :referred_motions
 
   delegate :periods, :period_ids, to: :committee
 
@@ -105,7 +105,10 @@ class Motion < ActiveRecord::Base
 
 #  before_validation :add_to_list_bottom, :on => :create
   before_create do |motion|
-    if motion.referee?
+    if motion.referring_motion && motion.referring_motion.published?
+      motion.published = true
+    end
+    if motion.referee? && !motion.referring_motion.referred?
       motion.referring_motion.lock!
       motion.referring_motion.refer!
     end
