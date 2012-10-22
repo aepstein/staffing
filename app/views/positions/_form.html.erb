@@ -19,5 +19,17 @@
   <%= form.input :leave_message %>
   <%= form.input :reject_message %>
   <% end %>
+
+  <%= form.inputs for: :enrollments, name: 'enrollment' do |subform| %>
+    <%= render partial: 'enrollments/enrollment_fields', locals: { f: subform } %>
+  <% end %>
+
+  <div class='links'>
+    <p>
+      <%= link_to_add_association 'add enrollment', form, :enrollments,
+        partial: 'enrollments/enrollment_fields' %>
+    </p>
+  </div>
+
   <%= form.actions %>
 

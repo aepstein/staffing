@@ -1,6 +1,7 @@
 <% committee = false unless defined? committee %>
 <% position = false unless defined? position %>
-<table>
+<% if enrollments.any? %>
+<table id="enrollments">
   <thead>
   <tr>
   <% unless committee %>
@@ -11,11 +12,19 @@
   <% end %>
     <th>Title</th>
     <th>Votes</th>
+    <th>Requestable?</th>
+    <th>Membership notices?</th>
+    <th>Manager?</th>
   </tr>
   </thead>
   <tbody>
-<%= render :partial => "enrollment", :collection => enrollments,
-  :locals => { :committee => committee, :position => position } %>
+<%= render partial: "enrollments/enrollment", collection: enrollments,
+  locals: { committee: committee, position: position } %>
   </tbody>
 </table>
+<% else %>
+<p>
+No enrollments.
+</p>
+<% end %>
 

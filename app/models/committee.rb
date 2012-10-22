@@ -13,7 +13,7 @@ class Committee < ActiveRecord::Base
 
   attr_accessible :name, :description, :join_message, :leave_message, :brand_id,
     :requestable, :public_url, :schedule_id, :reject_message, :active,
-    :contact_name, :contact_email
+    :contact_name, :contact_email, :enrollments_attributes
 
   belongs_to :schedule, inverse_of: :committees
   belongs_to :brand, inverse_of: :committees
@@ -52,6 +52,8 @@ class Committee < ActiveRecord::Base
     conditions: { requestable: true }
   has_many :requestable_positions, through: :requestable_enrollments,
     source: :position, conditions: { active: true }
+
+  accepts_nested_attributes_for :enrollments, allow_destroy: true
 
   delegate :effective_contact_name_and_email, to: :committee
 

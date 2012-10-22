@@ -25,7 +25,6 @@ Staffing::Application.routes.draw do
     collection do
       get :available
     end
-    resources :enrollments, only: [ :index, :new, :create ]
     resources :meetings, only: [ :index, :new, :create ] do
       collection do
         get :past, :current, :future
@@ -48,7 +47,6 @@ Staffing::Application.routes.draw do
       end
     end
   end
-  resources :enrollments, except: [ :index, :new, :create ]
   resources :meetings, except: [ :new, :create ] do
     member do
       get :editable_minutes, :published_minutes, :audio

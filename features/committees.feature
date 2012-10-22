@@ -15,6 +15,7 @@ Scenario Outline: Access control
     |staff|may |may    |may    |may not|
     |plain|may |may not|may not|may not|
 
+@javascript
 Scenario: Create/edit a committee
   Given I log in as the staff user
   When I create an committee

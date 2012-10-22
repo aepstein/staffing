@@ -35,6 +35,11 @@
 
 <%=markdown @committee.reject_message %>
 
+<h3>Enrollments</h3>
+
+<%= render partial: 'enrollments/enrollments', object: @committee.enrollments,
+  locals: { committee: @committee } %>
+
 </div>
 
 
@@ -77,7 +82,6 @@
 <%= nested_index @committee, 'memberships', %w( past current future ) %> |
 <%= nested_index @committee, 'meetings', %w( past current future ) %> |
 <%= nested_index @committee, 'motions', %w( past current ) %> |
-<%= nested_index @committee, 'enrollments' %> |
 <%= link_to 'List Positions', committee_positions_path(@committee) %> |
 <%= nested_index @committee, 'requests', %w( active inactive ) %> |
 <%= link_to 'Tent cards (pdf)', tents_committee_path( @committee, :format => :pdf ) %> |

@@ -1,7 +1,7 @@
 class Enrollment < ActiveRecord::Base
-  attr_accessible :committee_id, :position_name, :position_id, :title, :votes,
-    :requestable, :membership_notices, :manager
-  attr_readonly :committee_id
+  attr_accessible :committee_id, :committee_name, :position_name, :position_id,
+    :title, :votes, :requestable, :membership_notices, :manager
+  attr_readonly :committee_id, :position_id
 
   belongs_to :position, inverse_of: :enrollments
   belongs_to :committee, inverse_of: :enrollments
@@ -20,12 +20,6 @@ class Enrollment < ActiveRecord::Base
   validates :votes,
     numericality: { greater_than_or_equal_to: 0, only_integer: true }
 
-  def position_name; position.name if position; end
-
-  def position_name=(name)
-    self.position = Position.find_by_name name unless name.blank?
-    self.position = nil if name.blank?
-  end
-
+  include CommitteeNameLookup, PositionNameLookup
 end
 

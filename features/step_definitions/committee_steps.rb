@@ -56,7 +56,8 @@ When /^I create an committee$/ do
   create :schedule, name: 'Semester'
   create :brand, name: 'Prestigious'
   create :brand, name: 'Silly'
-  visit(new_committee_url)
+  create :position, name: 'Member of Committee'
+  visit(new_committee_path)
   fill_in "Name", with: "Important Committee"
   fill_in "Contact name", with: "Officials"
   fill_in "Contact email", with: "officials@example.com"
@@ -66,6 +67,13 @@ When /^I create an committee$/ do
   fill_in "Join message", with: "Welcome to *committee*."
   fill_in "Leave message", with: "You were *dropped* from the committee."
   fill_in "Reject message", with: "There were *no* slots."
+  click_link "add enrollment"
+  fill_in "Position", with: "Member of Committee"
+  fill_in "Title", with: "Voting Member"
+  fill_in "Votes", with: "1"
+  within_fieldset("Requestable?") { choose 'Yes' }
+  within_fieldset("Membership notices?") { choose 'Yes' }
+  within_fieldset("Manager?") { choose 'Yes' }
   click_button 'Create'
   @committee = Committee.find( URI.parse(current_url).path.match(/[\d]+$/)[0].to_i )
 end
@@ -82,11 +90,21 @@ Then /^I should see the new committee$/ do
     page.should have_text "Welcome to committee."
     page.should have_text "You were dropped from the committee."
     page.should have_text "There were no slots."
+    page.should have_no_text "No enrollments."
+    step %{I should see the following enrollments:}, table(%{
+      | Member of Committee | Voting Member | 1 |
+    })
+    enrollment = @committee.enrollments.first
+    within("tr#enrollment-#{enrollment.id}") do
+      within("td:nth-of-type(4)") { page.should have_text "Yes" }
+      within("td:nth-of-type(5)") { page.should have_text "Yes" }
+      within("td:nth-of-type(6)") { page.should have_text "Yes" }
+    end
   end
 end
 
 When /^I update the committee$/ do
-  visit(edit_committee_url(@committee))
+  visit(edit_committee_path(@committee))
   fill_in "Name", with: "No Longer Important Committee"
   fill_in "Contact name", with: "Boss"
   fill_in "Contact email", with: "boss@example.com"
@@ -96,6 +114,7 @@ When /^I update the committee$/ do
   fill_in "Join message", with: "Welcome message"
   fill_in "Leave message", with: "Farewell message"
   fill_in "Reject message", with: "There were *not enough* slots."
+  click_link "remove enrollment"
   click_button 'Update'
 end
 
@@ -111,6 +130,7 @@ Then /^I should see the edited committee$/ do
     page.should have_text "Welcome message"
     page.should have_text "Farewell message"
     page.should have_text "There were not enough slots."
+    page.should have_text 'No enrollments.'
   end
 end
 

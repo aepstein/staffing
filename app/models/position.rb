@@ -1,7 +1,7 @@
 class Position < ActiveRecord::Base
   attr_accessible :authority_id, :quiz_id, :schedule_id, :slots, :name,
     :join_message, :leave_message, :statuses, :renewable, :notifiable,
-    :designable, :active, :reject_message
+    :designable, :active, :reject_message, :enrollments_attributes
 
   default_scope lambda { ordered }
 
@@ -86,6 +86,8 @@ class Position < ActiveRecord::Base
       "(SELECT positions.id FROM positions WHERE ( positions.statuses_mask = 0 OR " +
       "(positions.statuses_mask & users.statuses_mask) > 0 ) AND " +
       "(positions.active = #{connection.quote true}) )"
+
+  accepts_nested_attributes_for :enrollments, allow_destroy: true
 
   scope :ordered, order { name }
   scope :with_status, lambda { |status|

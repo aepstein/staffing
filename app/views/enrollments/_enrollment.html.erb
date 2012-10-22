@@ -1,4 +1,4 @@
-  <%= table_row_tag do %>
+  <%= table_row_tag true, false, { id: "enrollment-#{enrollment.id}" } do %>
     <% unless committee %>
     <td><%=h enrollment.committee %></td>
     <% end %>
@@ -7,8 +7,9 @@
     <% end %>
     <td><%=h enrollment.title %></td>
     <td><%=h enrollment.votes %></td>
-    <td><%= link_to 'Show', enrollment %></td>
-    <td><%= link_to( 'Edit', edit_enrollment_path(enrollment) ) if permitted_to? :edit, enrollment %></td>
-    <td><%= link_to( 'Destroy', enrollment, data: { confirm: 'Are you sure?' }, method: :delete ) if permitted_to? :destroy, enrollment %></td>
+    <td><%= enrollment.requestable? ? 'Yes' : 'No' %></td>
+    <td><%= enrollment.membership_notices? ? 'Yes' : 'No' %></td>
+    <td><%= enrollment.manager? ? 'Yes' : 'No' %></td>
+></td>
   <% end %>
 
