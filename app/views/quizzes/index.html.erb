@@ -1,11 +1,27 @@
 <h2>Listing quizzes</h2>
 
-<%= render :partial => "quizzes", :object => @quizzes %>
+<%= form_for @q, url: request.fullpath, method: :get do |form| %>
+<p>
+  <%= form.label :name_cont, 'Name' %>
+  <%= form.text_field :name_cont %>
+  <%= form.submit "Search" %>
+</p>
+<% end %>
+
+<p>
+<%= paginate @quizzes %>
+</p>
+
+<%= render partial: "quizzes/quizzes", object: @quizzes %>
+
+<p>
+<%= paginate @quizzes %>
+</p>
 
 <hr />
 
 <p>
-<% if permitted_to? :create, :quizzes %>
+<% if permitted_to?( :create, :quizzes ) %>
 <%= link_to 'New quiz', new_quiz_path %>
 <% end %>
 </p>

@@ -1,11 +1,15 @@
-<table>
+<% if quizzes.any? %>
+<table id="quizzes">
 <thead>
   <tr>
     <th>Name</th>
   </tr>
 </thead>
 <tbody>
-<%= render :partial => "quizzes/quiz", :collection => quizzes %>
+<%= render partial: "quizzes/quiz", collection: quizzes %>
 </tbody>
 </table>
+<% else %>
+<p>No quizzes.</p>
+<% end %>
 

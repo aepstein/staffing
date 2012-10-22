@@ -1,0 +1,20 @@
+<% if questions.any? %>
+<table id="questions">
+  <thead>
+  <tr>
+    <th>Name</th>
+    <th>Content</th>
+    <th>Disposition</th>
+    <th>Global?</th>
+  </tr>
+  </thead>
+
+  <tbody>
+  <%= render partial: 'questions/question', collection: @questions %>
+  </tbody>
+
+</table>
+<% else %>
+<p>No questions.</p>
+<% end %>
+

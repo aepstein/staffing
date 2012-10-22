@@ -1,21 +1,6 @@
 <h2>Listing questions<%=h " for #{@quiz}" if @quiz %></h2>
 
-<table>
-  <thead>
-  <tr>
-    <th>Name</th>
-    <th>Content</th>
-    <th>Disposition</th>
-    <th>Global?</th>
-  </tr>
-  </thead>
-
-  <tbody>
-  <%= render :partial => 'question', :collection => @questions %>
-  </tbody>
-
-</table>
-
+<%= render :partial => "questions/questions" %>
 <hr />
 
 <p>

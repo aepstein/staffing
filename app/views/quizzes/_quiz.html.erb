@@ -1,4 +1,4 @@
-  <%= table_row_tag do %>
+  <%= table_row_tag true, false, { id: "quiz-#{quiz.id}" } do %>
     <td><%=h quiz.name %></td>
     <td><%= link_to 'Show', quiz %></td>
     <td><%= link_to( 'Edit', edit_quiz_path(quiz) ) if permitted_to? :edit, quiz %></td>
