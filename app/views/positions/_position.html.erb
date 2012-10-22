@@ -1,4 +1,4 @@
-  <%= table_row_tag do %>
+  <%= table_row_tag true, false, { id: "position-#{position.id}" } do %>
     <td><%=h position.name %></td>
     <td><%=h position.authority %></td>
     <td><%=h position.quiz %></td>

@@ -90,7 +90,7 @@ class PositionsController < ApplicationController
     @position.destroy
 
     respond_to do |format|
-      format.html { redirect_to(positions_url) }
+      format.html { redirect_to(positions_url, notice: "Position was successfully destroyed.") }
       format.xml  { head :ok }
     end
   end

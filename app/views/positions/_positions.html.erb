@@ -1,4 +1,5 @@
-<table>
+<% if positions.any? %>
+<table id="positions">
   <thead>
   <tr>
     <th>Name</th>
@@ -11,8 +12,11 @@
   </thead>
 
   <tbody>
-  <%= render :partial => 'position', :collection => @positions %>
+  <%= render partial: 'positions/position', collection: positions %>
   </tbody>
 
 </table>
+<% else %>
+<p>No positions.</p>
+<% end %>
 

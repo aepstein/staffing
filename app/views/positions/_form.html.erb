@@ -21,13 +21,15 @@
   <% end %>
 
   <%= form.inputs for: :enrollments, name: 'enrollment' do |subform| %>
-    <%= render partial: 'enrollments/enrollment_fields', locals: { f: subform } %>
+    <%= render partial: 'enrollments/enrollment_fields', locals: { f: subform,
+      position: form.object } %>
   <% end %>
 
   <div class='links'>
     <p>
       <%= link_to_add_association 'add enrollment', form, :enrollments,
-        partial: 'enrollments/enrollment_fields' %>
+        partial: 'enrollments/enrollment_fields',
+        render_options: { locals: { position: form.object } } %>
     </p>
   </div>
 
