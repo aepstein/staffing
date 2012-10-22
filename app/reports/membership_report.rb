@@ -19,15 +19,15 @@ class MembershipReport < Prawn::Document
     self.voting_memberships ||= memberships.where('enrollments.votes > 0')
     self.nonvoting_memberships ||= memberships.where('enrollments.votes = 0')
     include_palatino
-    super( :page_size => 'LETTER' )
+    super( page_size: 'LETTER' )
   end
 
   def draw_letterhead
     brand = committee.brand || Brand.first
-    image brand.logo.letterhead.store_path, :height => 72
+    image brand.logo.letterhead.store_path, height: 72
     font 'Palatino' do
-      text_box '109 Day Hall', :size => 11, :at => [360, 720]
-      text_box 'Ithaca, NY 14853', :size => 11, :at => [360, 709]
+      text_box '109 Day Hall', size: 11, at: [360, 720]
+      text_box 'Ithaca, NY 14853', size: 11, at: [360, 709]
       draw_letterhead_contact 'p', '607.255.3175'
       draw_letterhead_contact 'f', '607.255.2182'
       draw_letterhead_contact 'e', 'assembly@cornell.edu'
@@ -37,9 +37,9 @@ class MembershipReport < Prawn::Document
 
   def draw_letterhead_contact( letter, content )
     self.letterhead_contact_offset ||= LETTERHEAD_CONTACT_OFFSET
-    text_box "#{letter}.", :size => 9, :at => [360, letterhead_contact_offset],
-      :width => 18
-    text_box content, :size => 9, :at => [378, letterhead_contact_offset]
+    text_box "#{letter}.", size: 9, at: [360, letterhead_contact_offset],
+      width: 18
+    text_box content, size: 9, at: [378, letterhead_contact_offset]
     self.letterhead_contact_offset -= 9
   end
 
@@ -72,7 +72,7 @@ class MembershipReport < Prawn::Document
     if as_of != Time.zone.today
       text "(generated #{Time.zone.today.to_s :long_ordinal})", align: :center, size: 10
     end
-    font 'Helvetica', :size => 10 do
+    font 'Helvetica', size: 10 do
       rows = [ %w( Name NetID Address Phone Title Until ) ]
       rows << [ 'Voting members', '', '', '', '', '' ]
       rows += rowify_memberships voting_memberships
@@ -82,7 +82,7 @@ class MembershipReport < Prawn::Document
         rows << [ 'Non-voting members', '', '', '', '', '' ]
         rows += rowify_memberships nonvoting_memberships
       end
-      table rows, :header => true, :width => 540 do |table|
+      table rows, header: true, width: 540 do |table|
         table.row(0).background_color = '000000'
         table.row(0).text_color = 'FFFFFF'
         table.cells.padding = 2

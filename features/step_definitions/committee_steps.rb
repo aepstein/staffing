@@ -199,7 +199,9 @@ Given /^a report scenario of a committee to which I have a (current|past|future)
 end
 
 When /^I download the (members (?:csv|pdf)|tents pdf|emplid csv) report$/ do |type|
+  VectorUploader.enable_processing = true
   create :brand
+  VectorUploader.enable_processing = false
   case type
   when 'members csv'
     visit(committee_memberships_url(@committee, format: :csv))

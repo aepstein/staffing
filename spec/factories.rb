@@ -22,7 +22,7 @@ FactoryGirl.define do
 
   factory :brand do
     sequence( :name ) { |n| "Brand #{n}" }
-    logo { File.open "#{::Rails.root}/spec/assets/logo.eps" }
+    logo { File.open "#{::Rails.root}/spec/assets/logo.svg" }
   end
 
   factory :committee do

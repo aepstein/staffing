@@ -50,7 +50,7 @@ Scenario Outline: List requestable committees
     |undergrad|any      |may    |
     |undergrad|no       |may not|
     |no       |no       |may not|
-@wip
+
 Scenario Outline: Reports for committee
   Given a report scenario of a committee to which I have a <tense> <role> relationship
   When I download the <type> report

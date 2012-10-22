@@ -4,19 +4,19 @@ class VectorUploader < CarrierWave::Uploader::Base
 
   # Tent version should be 1 inch high with 600dpi
   version :tent do
-    process :vector_to_png_inches => 1.0
+    process vector_to_png_inches: 1.0
     def filename; substitute_extension super, 'png'; end
   end
 
   # Letterhead version should be 0.88 inches high with 600dpi
   version :letterhead do
-    process :vector_to_png_inches => 0.88
+    process vector_to_png_inches: 0.88
     def filename; substitute_extension super, 'png'; end
   end
 
   # Thumbnail version should be within 100x100 pixel box
   version :thumb do
-    process :vector_to_png_pixels => 100.0
+    process vector_to_png_pixels: 100.0
     def filename; substitute_extension super, 'png'; end
   end
 
