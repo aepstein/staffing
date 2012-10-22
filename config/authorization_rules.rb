@@ -1,7 +1,7 @@
 authorization do
   role :admin do
-    has_permission_on [ :authorities, :brands, :committees, :enrollments,
-      :meetings, :memberships, :motions, :periods, :positions, :qualifications,
+    has_permission_on [ :authorities, :brands, :committees,
+      :meetings, :memberships, :motions, :positions, :qualifications,
       :quizzes, :questions, :requests, :schedules, :users,
       :user_renewal_notices, :sendings ],
       to: [ :manage ]
@@ -9,8 +9,8 @@ authorization do
     includes :staff
   end
   role :staff do
-    has_permission_on [ :authorities, :brands, :committees, :enrollments,
-      :meetings, :memberships, :motions, :periods, :positions, :qualifications,
+    has_permission_on [ :authorities, :brands, :committees,
+      :meetings, :memberships, :motions, :positions, :qualifications,
       :quizzes, :questions, :requests, :schedules, :users,
       :user_renewal_notices, :sendings ],
       to: [ :create, :update, :show, :index ]
@@ -31,8 +31,8 @@ authorization do
     has_permission_on :users, to: :show
   end
   role :user do
-    has_permission_on [ :authorities, :brands, :committees, :enrollments,
-      :meetings, :memberships, :periods, :positions, :qualifications,
+    has_permission_on [ :authorities, :brands, :committees,
+      :meetings, :memberships, :positions, :qualifications,
       :schedules ],
       to: [ :show, :index ]
     has_permission_on [ :motions, :requests ], to: :index

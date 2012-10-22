@@ -21,8 +21,8 @@ class Period < ActiveRecord::Base
     where( schedule_id: period.schedule_id ) }
 
   belongs_to :schedule, inverse_of: :periods
-  has_many :motions, inverse_of: :period
-  has_many :meetings, inverse_of: :period
+  has_many :motions, inverse_of: :period, dependent: :restrict
+  has_many :meetings, inverse_of: :period, dependent: :restrict
   has_many :memberships, inverse_of: :period, dependent: :destroy do
     def populate_unassigned!
       proxy_association.owner.schedule.positions.active.each do |position|
@@ -54,6 +54,12 @@ class Period < ActiveRecord::Base
   after_update do |period|
     if period.starts_at_changed? || period.ends_at_changed?
       period.memberships.repopulate_unassigned!
+    end
+  end
+  before_destroy do |period|
+    if period.memberships.assigned.any?
+      raise ::ActiveRecord::DeleteRestrictionError,
+        'cannot delete period if assigned memberships are associated'
     end
   end
 

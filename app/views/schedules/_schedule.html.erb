@@ -1,4 +1,4 @@
-  <%= table_row_tag do %>
+  <%= table_row_tag true, false, { id: "schedule-#{schedule.id}" } do %>
     <td><%=h schedule.name %></td>
     <td><%= link_to 'Show', schedule %></td>
     <td><%= link_to( 'Edit', edit_schedule_path(schedule) ) if permitted_to? :edit, schedule %></td>

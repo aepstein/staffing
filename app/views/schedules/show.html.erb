@@ -1,12 +1,19 @@
+<div id="schedule-<%= @schedule.id %>">
 <p>
   <b>Name:</b> <%=h @schedule.name %>
 </p>
+
+<h3>Periods</h3>
+
+<%= render partial: 'periods/periods', object: @schedule.periods,
+  locals: { schedule: @schedule } %>
+
+</div> <!-- #schedule-<%= @schedule.id %> -->
 
 <p>
 <% if permitted_to? :edit, @schedule -%>
 <%= link_to 'Edit', edit_schedule_path(@schedule) %> |
 <% end %>
-<%= link_to 'List Periods', schedule_periods_path(@schedule) %> |
 <%= link_to 'Back', schedules_path %>
 </p>
 

@@ -1,15 +1,22 @@
 <h2>Listing schedules</h2>
 
-<table>
-  <thead>
-  <tr>
-    <th>Name</th>
-  </tr>
-  </thead>
-  <tbody>
-  <%= render :partial => 'schedule', :collection => @schedules %>
-  </tbody>
-</table>
+<%= form_for @q, :url => request.fullpath, :method => :get do |form| %>
+<p>
+  <%= form.label :name_cont, 'Name' %>
+  <%= form.text_field :name_cont %>
+  <%= form.submit "Search" %>
+</p>
+<% end %>
+
+<p>
+<%= paginate @schedules %>
+</p>
+
+<%= render partial: "schedules/schedules", object: @schedules %>
+
+<p>
+<%= paginate @schedules %>
+</p>
 
 <hr />
 

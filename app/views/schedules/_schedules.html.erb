@@ -1,0 +1,15 @@
+<% if schedules.any? %>
+<table id="schedules">
+  <thead>
+  <tr>
+    <th>Name</th>
+  </tr>
+  </thead>
+  <tbody>
+  <%= render partial: 'schedules/schedule', collection: schedules %>
+  </tbody>
+</table>
+<% else %>
+<p>No schedules.</p>
+<% end %>
+

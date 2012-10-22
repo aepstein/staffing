@@ -116,11 +116,11 @@ class Position < ActiveRecord::Base
     { id: position.id, ids: position.committee_ids, length: position.committees.length } )
   }
 
-  validates :name, :presence => true, :uniqueness => true
-  validates :authority, :presence => true
-  validates :quiz, :presence => true
-  validates :schedule, :presence => true
-  validates :slots, :numericality => { :only_integer => true, :greater_than => 0 }
+  validates :name, presence: true, uniqueness: true
+  validates :authority, presence: true
+  validates :quiz, presence: true
+  validates :schedule, presence: true
+  validates :slots, numericality: { only_integer: true, greater_than: 0 }
 
   after_create :populate_slots!
   after_update :repopulate_slots!

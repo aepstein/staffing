@@ -1,10 +1,8 @@
-  <%= table_row_tag do %>
+  <%= table_row_tag true, false, { id: "period-#{period.id}" } do %>
+    <% unless schedule %>
+    <td><%= period.schedule %></td>
+    <% end %>
     <td><%=h period.starts_at.to_s :rfc822 %></td>
     <td><%=h period.ends_at.to_s :rfc822 %></td>
-    <% unless read_only %>
-    <td><%= link_to 'Show', period %></td>
-    <td><%= link_to( 'Edit', edit_period_path(period) ) if permitted_to? :edit, period %></td>
-    <td><%= link_to( 'Destroy', period, data: { confirm: 'Are you sure?' }, method: :delete ) if permitted_to? :destroy, period %></td>
-    <% end %>
   <% end %>
 

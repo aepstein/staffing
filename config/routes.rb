@@ -83,7 +83,6 @@ Staffing::Application.routes.draw do
       end
     end
   end
-  resources :periods, except: [ :index, :new, :create ]
   resources :positions do
     resources :memberships, only: [ :index, :new, :create ] do
       collection do
@@ -114,9 +113,7 @@ Staffing::Application.routes.draw do
       end
     end
   end
-  resources :schedules do
-    resources :periods, only: [ :index, :new, :create ]
-  end
+  resources :schedules
   resources :users do
     member do
       get :resume, :tent

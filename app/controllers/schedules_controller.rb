@@ -7,7 +7,9 @@ class SchedulesController < ApplicationController
   # GET /schedules
   # GET /schedules.xml
   def index
-    @schedules = Schedule.all
+    search = params[:term] ? { :name_cont => params[:term] } : params[:q]
+    @q ||= Schedule.search( search )
+    @schedules = @q.result.ordered.page( params[:page] )
 
     respond_to do |format|
       format.html # index.html.erb
@@ -73,7 +75,7 @@ class SchedulesController < ApplicationController
     @schedule.destroy
 
     respond_to do |format|
-      format.html { redirect_to(schedules_url) }
+      format.html { redirect_to(schedules_url, notice: "Schedule was successfully destroyed.") }
       format.xml  { head :ok }
     end
   end

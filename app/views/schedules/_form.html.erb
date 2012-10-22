@@ -2,5 +2,17 @@
   <%= form.inputs do %>
   <%= form.input :name %>
   <% end %>
+
+  <%= form.inputs for: :periods, name: 'Periods' do |subform| %>
+    <%= render partial: 'periods/period_fields', locals: { f: subform } %>
+  <% end %>
+
+  <div class='links'>
+    <p>
+      <%= link_to_add_association 'add period', form, :periods,
+        partial: 'periods/period_fields' %>
+    </p>
+  </div>
+
   <%= form.actions %>
 

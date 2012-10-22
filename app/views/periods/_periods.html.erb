@@ -1,12 +1,21 @@
-<table>
+<% schedule = false unless defined? schedule %>
+<% if periods.any? %>
+<table id="periods">
   <thead>
   <tr>
+    <% unless schedule %>
+    <th>Schedule</th>
+    <% end %>
     <th>Starts at</th>
     <th>Ends at</th>
   </tr>
   </thead>
   <tbody>
-  <%= render :partial => 'periods/period', :collection => periods, :locals => { :read_only => defined?(read_only) } %>
+  <%= render partial: 'periods/period', collection: periods, locals: {
+    schedule: schedule } %>
   </tbody>
 </table>
+<% else %>
+<p>No periods.</p>
+<% end %>
 
