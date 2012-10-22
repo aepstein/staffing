@@ -1,6 +1,6 @@
 <h2>Listing questions<%=h " for #{@quiz}" if @quiz %></h2>
 
-<%= render :partial => "questions/questions" %>
+<%= render partial: "questions/questions", object: @questions %>
 <hr />
 
 <p>
