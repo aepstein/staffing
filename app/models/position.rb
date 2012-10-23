@@ -9,7 +9,6 @@ class Position < ActiveRecord::Base
   belongs_to :quiz, inverse_of: :positions
   belongs_to :schedule, inverse_of: :positions
 
-  has_and_belongs_to_many :qualifications
   has_many :memberships, inverse_of: :position, dependent: :destroy do
     # Repopulate for a period
     def repopulate_unassigned_for_period!( period )
