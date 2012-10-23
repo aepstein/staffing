@@ -1,6 +1,6 @@
   <%= table_row_tag true, false, { id: "question-#{question.id}" } do %>
-    <td><%=h question.name %></td>
-    <td><%=h question.content %></td>
+    <td><%= question.name %></td>
+    <td><%= question.content? ? question.content[0..100] : '' %></td>
     <td><%= Question::DISPOSITIONS.key( question.disposition ) %></td>
     <td><%= question.global? ? 'Yes' : 'No' %></td>
     <td><%= link_to 'Show', question %></td>

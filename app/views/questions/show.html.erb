@@ -1,3 +1,4 @@
+<div id="question-<%= @question.id %>">
 <p>
   <b>Name:</b> <%=h @question.name %>
 </p>
@@ -16,15 +17,18 @@
   <b>Global?</b> <%= @question.global? ? 'Yes' : 'No' %>
 </p>
 
-<% if @question.quizzes.length > 0 -%>
 <h3>Quizzes</h3>
 
-<ul>
+<% if @question.quizzes.any? -%>
+<ul id="quizzes">
 <% @question.quizzes.each do |quiz| -%>
 <li><%= link_to h(quiz), quiz %></li>
 <% end -%>
 </ul>
+<% else %>
+<p>No quizzes.</p>
 <% end -%>
+</div> <!-- #question-<%= @question.id %> -->
 
 <p>
 <% if permitted_to? :edit, @question -%>

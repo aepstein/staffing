@@ -1,6 +1,27 @@
 <h2>Listing questions<%=h " for #{@quiz}" if @quiz %></h2>
 
+<%= form_for @q, url: request.fullpath, method: :get do |form| %>
+<p>
+  <%= form.label :name_cont, 'Name' %>
+  <%= form.text_field :name_cont %>
+  <br/>
+  <%= form.label :content_cont, 'Content' %>
+  <%= form.text_field :content_cont %>
+  <br/>
+  <%= form.submit "Search" %>
+</p>
+<% end %>
+
+<p>
+<%= paginate @questions %>
+</p>
+
 <%= render partial: "questions/questions", object: @questions %>
+
+<p>
+<%= paginate @questions %>
+</p>
+
 <hr />
 
 <p>

@@ -12,6 +12,6 @@ class Quiz < ActiveRecord::Base
 
   validates :name, presence: true, uniqueness: true
 
-  def to_s; name; end
+  def to_s; name? ? name : super; end
 end
 

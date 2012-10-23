@@ -1,7 +1,6 @@
 class QuestionsController < ApplicationController
   before_filter :initialize_context
-  before_filter :initialize_index, :only => [ :index ]
-  before_filter :new_question_from_params, :only => [ :new, :create ]
+  before_filter :new_question_from_params, only: [ :new, :create ]
   filter_resource_access
   before_filter :setup_breadcrumbs
 
@@ -10,6 +9,12 @@ class QuestionsController < ApplicationController
   # GET /quizzes/:quiz_id/questions
   # GET /quizzes/:quiz_id/questions.xml
   def index
+    search = params[:term] ? { name_cont: params[:term] } : params[:q]
+    @q ||= Question.search( search )
+    @questions = @q.result.ordered
+    @questions = @questions.where { |q| q.quiz_id.eq( @quiz.id ) } if @quiz
+    @questions = @questions.page( params[:page] )
+
     respond_to do |format|
       format.html # index.html.erb
       format.xml  { render :xml => @questions }
@@ -74,7 +79,7 @@ class QuestionsController < ApplicationController
     @question.destroy
 
     respond_to do |format|
-      format.html { redirect_to(questions_url) }
+      format.html { redirect_to(questions_url, notice: "Question was successfully destroyed.") }
       format.xml  { head :ok }
     end
   end
@@ -83,11 +88,6 @@ class QuestionsController < ApplicationController
     @question = Question.find params[:id] if params[:id]
     @quiz = Quiz.find params[:quiz_id] if params[:quiz_id]
     @context = @quiz
-  end
-
-  def initialize_index
-    @questions = @quiz.questions if @quiz
-    @questions ||= Question.scoped
   end
 
   def new_question_from_params
