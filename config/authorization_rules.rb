@@ -1,7 +1,7 @@
 authorization do
   role :admin do
     has_permission_on [ :authorities, :brands, :committees,
-      :meetings, :memberships, :motions, :positions, :qualifications,
+      :meetings, :memberships, :motions, :positions,
       :quizzes, :questions, :requests, :schedules, :users,
       :user_renewal_notices, :sendings ],
       to: [ :manage ]
@@ -10,7 +10,7 @@ authorization do
   end
   role :staff do
     has_permission_on [ :authorities, :brands, :committees,
-      :meetings, :memberships, :motions, :positions, :qualifications,
+      :meetings, :memberships, :motions, :positions,
       :quizzes, :questions, :requests, :schedules, :users,
       :user_renewal_notices, :sendings ],
       to: [ :create, :update, :show, :index ]
@@ -32,8 +32,7 @@ authorization do
   end
   role :user do
     has_permission_on [ :authorities, :brands, :committees,
-      :meetings, :memberships, :positions, :qualifications,
-      :schedules ],
+      :meetings, :memberships, :positions, :schedules ],
       to: [ :show, :index ]
     has_permission_on [ :motions, :requests ], to: :index
     has_permission_on :attachments, to: :show do

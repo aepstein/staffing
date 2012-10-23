@@ -1,8 +1,0 @@
-  <%= table_row_tag do %>
-    <td><%=h qualification.name %></td>
-    <td><%=h qualification.description %></td>
-    <td><%= link_to 'Show', qualification %></td>
-    <td><%= link_to( 'Edit', edit_qualification_path(qualification) ) if permitted_to? :edit, qualification %></td>
-    <td><%= link_to( 'Destroy', qualification, data: { confirm: 'Are you sure?' }, method: :delete ) if permitted_to? :destroy, qualification %></td>
-  <% end %>
-
