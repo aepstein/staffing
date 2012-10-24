@@ -1,7 +1,7 @@
 Given /^I log in as the (admin|staff|plain) user$/ do |type|
   @current_user = case type
   when 'admin'
-    create :user, admin: true
+    create :user, admin: true, first_name: "Senior", last_name: "Administrator"
   when 'staff'
     create :user, staff: true
   else

@@ -3,6 +3,15 @@
     <%= form.input :first_name %>
     <%= form.input :middle_name %>
     <%= form.input :last_name %>
+    <% if permitted_to? :staff, form.object %>
+      <% if form.object.new_record? %>
+        <%= form.input :net_id, label: 'Net id' %>
+      <% else %>
+        <%= form.input :net_id, label: 'Net id', input_html: { readonly: true } %>
+      <% end %>
+      <%= form.input :empl_id, label: 'Empl id' %>
+      <%= form.input :status, as: :radio, collection: User::STATUSES %>
+    <% end %>
     <%= form.input :email %>
     <%= form.input :mobile_phone %>
     <%= form.input :work_phone %>
@@ -13,11 +22,8 @@
     <%= form.input :portrait, as: :file, hint: 'You may optionally provide a picture (jpg only)' %>
     <%= form.input :portrait_cache, as: :hidden %>
     <% if permitted_to? :manage, form.object %>
-      <%= form.input :net_id %>
-      <%= form.input :empl_id %>
       <%= form.input :admin, as: :radio, label: 'Administrator?' %>
       <%= form.input :staff, as: :radio, label: 'Staff?' %>
-      <%= form.input :status, as: :radio, collection: User::STATUSES %>
     <% end %>
   <% end %>
   <%= form.actions %>

@@ -180,8 +180,7 @@ class Membership < ActiveRecord::Base
   validates :ends_at, timeliness: { type: :date, on_or_after: :starts_at }
   validates :renew_until, timeliness: { type: :date, after: :ends_at,
     allow_blank: true }
-  validate :must_be_within_period, :user_must_be_qualified,
-    :concurrent_memberships_must_not_exceed_slots
+  validate :must_be_within_period, :concurrent_memberships_must_not_exceed_slots
 
   before_save :clear_notices, :claim_request, :undecline_if_renewed
   after_save :populate_unassigned, :close_claimed_request, :claim_renewed_memberships
@@ -282,13 +281,6 @@ class Membership < ActiveRecord::Base
   end
 
   protected
-
-  def user_must_be_qualified
-    return unless user && position
-    if (position.qualification_ids - user.qualification_ids).size > 0
-      errors.add :user, "is not qualified for position"
-    end
-  end
 
   def must_be_within_period
     return unless period && starts_at && ends_at

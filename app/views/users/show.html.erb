@@ -1,3 +1,4 @@
+<div id="user-<%= @user.id %>">
 <p>
   <b>First name:</b> <%=h @user.first_name %>
 </p>
@@ -62,6 +63,7 @@
 <p>
   <b>Staff?</b> <%=h @user.staff? ? 'Yes' : 'No' %>
 </p>
+</div> <!-- #user-<%= @user.id %> -->
 
 <h3>Generate tent card</h3>
 

@@ -51,7 +51,7 @@ FactoryGirl.define do
 
   factory :enrollment do
     association :committee
-    position { association :position, :schedule => committee.schedule }
+    position { association :position, schedule: committee.schedule }
     title "member"
     votes 1
     requestable false
@@ -137,10 +137,6 @@ FactoryGirl.define do
     factory :renewable_position do
       renewable true
     end
-  end
-
-  factory :qualification do
-    sequence(:name) { |n| "Qualification #{n}" }
   end
 
   factory :question do

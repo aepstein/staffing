@@ -12,7 +12,7 @@ class Position < ActiveRecord::Base
   has_many :memberships, inverse_of: :position, dependent: :destroy do
     # Repopulate for a period
     def repopulate_unassigned_for_period!( period )
-      unassigned.where( :period_id => period.id ).delete_all
+      unassigned.where( period_id: period.id ).delete_all
       populate_unassigned_for_period! period
     end
     # Create vacant memberships for all periods

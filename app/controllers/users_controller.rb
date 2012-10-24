@@ -160,7 +160,7 @@ class UsersController < ApplicationController
     @user.destroy
 
     respond_to do |format|
-      format.html { redirect_to(users_url) }
+      format.html { redirect_to(users_url, notice: "User was successfully destroyed.") }
       format.xml  { head :ok }
     end
   end
@@ -200,7 +200,11 @@ class UsersController < ApplicationController
   end
 
   def role
-    permitted_to?(:manage, @user) ? :admin : :default
+    if permitted_to?( :manage, @user )
+      return :admin
+    else
+      permitted_to?(:staff, @user) ? :staff : :default
+    end
   end
 
 end

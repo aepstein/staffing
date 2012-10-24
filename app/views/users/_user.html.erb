@@ -1,4 +1,4 @@
-  <%= table_row_tag do %>
+  <%= table_row_tag true, false, { id: "user-#{user.id}" } do %>
     <td><%=h user.name( :last_first ) %></td>
     <td><%=h user.net_id %></td>
     <td><%=h user.email %></td>

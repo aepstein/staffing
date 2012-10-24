@@ -1,6 +1,6 @@
 <h2>Listing users</h2>
 
-<%= form_for @q, :url => request.fullpath, :method => :get do |form| %>
+<%= form_for @q, url: request.fullpath, method: :get do |form| %>
 <p>
   <%= form.label :name_cont, 'Name' %>
   <%= form.text_field :name_cont %>
@@ -12,24 +12,7 @@
 <%= paginate @users %>
 </p>
 
-<table>
-  <thead>
-  <tr>
-    <th>Name</th>
-    <th>Net id</th>
-    <th>Email</th>
-    <th>Mobile phone</th>
-    <th>Work phone</th>
-    <th>Home phone</th>
-    <th>Work address</th>
-    <th>Date of birth</th>
-    <th>Statuses</th>
-  </tr>
-  </thead>
-  <tbody>
-  <%= render :partial => 'user', :collection => @users %>
-  </tbody>
-</table>
+<%= render partial: "users/users", object: @users %>
 
 <p>
 <%= paginate @users %>

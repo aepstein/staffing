@@ -7,8 +7,9 @@ class User < ActiveRecord::Base
   attr_accessible :first_name, :middle_name, :last_name, :email, :mobile_phone,
     :work_phone, :home_phone, :work_address, :date_of_birth, :resume, :portrait,
     :renewal_checkpoint, :memberships_attributes, :password,
-    :password_confirmation, as: [ :default, :admin ]
-  attr_accessible :net_id, :empl_id, :admin, :staff, :status, as: :admin
+    :password_confirmation, as: [ :default, :admin, :staff ]
+  attr_accessible :net_id, :empl_id, :status, as: [ :admin, :staff ]
+  attr_accessible :admin, :staff, as: [ :admin ]
 
   default_scope lambda { ordered }
 
