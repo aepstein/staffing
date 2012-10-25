@@ -1,3 +1,11 @@
+Spork.prefork do
+  module TemporaryFiles
+    def temporary_file_path; "#{::Rails.root}/tmp/test"; end
+  end
+
+  World(TemporaryFiles)
+end
+
 Spork.each_run do
   Before do
     $temporary_files ||= []

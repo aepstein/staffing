@@ -59,4 +59,13 @@ Scenario: List/delete a user
     | User 11, Sequenced33  |
     | User 12, Sequenced34  |
     | User 14, Sequenced36  |
+@wip
+Scenario Outline: Set user empl_ids in bulk
+  Given I log in as the staff user
+  When I set empl_ids in bulk via <method>
+  Then I should see empl_ids set
+  Examples:
+    |method    |
+    |text      |
+    |attachment|
 

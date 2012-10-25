@@ -5,7 +5,7 @@ class UsersController < ApplicationController
   filter_access_to :new, :create, :edit, :update, :destroy, :show, :tent,
     attribute_check: true
   filter_access_to :import_empl_id, :do_import_empl_id do
-    permitted_to! :manage, :users
+    permitted_to! :staff, :users
   end
   before_filter :setup_breadcrumbs, except: [ :profile ]
 

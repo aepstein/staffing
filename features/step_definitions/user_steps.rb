@@ -207,3 +207,28 @@ Given /^I search for users with name "([^"]+)"$/ do |needle|
   click_button "Search"
 end
 
+When /^I set empl_ids in bulk via (text|attachment)$/ do |method|
+  @user = create(:user, net_id: 'faker1')
+  visit(import_empl_id_users_url)
+  values = [ %w( faker1 123456 ), %w( faker2 123457 ) ]
+  path = "#{temporary_file_path}/users.csv"
+  if method == 'text'
+    fill_in 'users', with: CSV.generate { |csv| values.each { |v| csv << v } }
+  else
+    file = CSV.open("#{temporary_file_path}/users.csv",'w') do |csv|
+      values.each { |v| csv << v }
+      csv
+    end
+    $temporary_files << file
+    attach_file "users_file", file.path
+  end
+  click_button "Import empl_ids"
+end
+
+Then /^I should see empl_ids set$/ do
+  within("#flash_notice") { page.should have_text "Processed empl_ids." }
+  @user.reload
+  @user.empl_id.should eql 123456
+  User.where { net_id.eq( 'faker2' ) }.should be_empty
+end
+

@@ -41,7 +41,7 @@ Feature: Manage users
     And I should not see "Old motion"
     And I should not see "Implemented motion"
 
-  Scenario Outline: List committees in which user can vote
+  Scenario Outline: List committees in which user can vote on user profile page
     Given a user: "owner" exists
     And a committee exists with name: "Key committee"
     And a position exists
@@ -72,26 +72,4 @@ Feature: Manage users
       | Committee           |
       | Unexpired Committee |
     And I should see "1 expired request"
-
-  Scenario: Set user empl_ids in bulk (from csv text)
-    Given a user exists with net_id: "jd1"
-    And I log in as user: "admin"
-    And I am on the users page
-    And I follow "Import empl_ids"
-    And I fill in "users" with "jd1,123456"
-    And I press "Import empl_ids"
-    Then I should see "Processed empl_ids."
-    Given I am on the page for the user
-    Then I should see "Empl id: 123456"
-
-  Scenario: Set user empl_ids in bulk (from csv file)
-    Given a user exists with net_id: "jd1"
-    And I log in as user: "admin"
-    And I am on the users page
-    And I follow "Import empl_ids"
-    And I attach the file "spec/assets/empl_ids.csv" to "users_file"
-    And I press "Import empl_ids"
-    Then I should see "Processed empl_ids."
-    Given I am on the page for the user
-    Then I should see "Empl id: 123456"
 
