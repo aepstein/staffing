@@ -1,4 +1,4 @@
-  <%= table_row_tag do %>
+  <%= table_row_tag true, false, { id: "meeting-#{meeting.id}" } do %>
     <% unless committee %>
     <td><%= meeting.committee %></td>
     <% end %>

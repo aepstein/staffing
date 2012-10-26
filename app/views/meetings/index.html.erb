@@ -4,8 +4,9 @@
 <%= paginate @meetings %>
 </p>
 
-<%= render :partial => "meetings", :object => @meetings,
-  :locals => { :committee => @committee ? @committee : false, :position => @user ? true : false } %>
+<%= render partial: "meetings/meetings", object: @meetings,
+  locals: { committee: ( @committee ? @committee : false ),
+            position: ( @user ? true : false ) } %>
 
 <p>
 <%= paginate @meetings %>
@@ -14,7 +15,8 @@
 <hr />
 
 <p>
-<% if @committee && permitted_to?( :create, @committee.meetings.build ) %>
+<% if @committee && permitted_to?( :create, @committee.meetings.
+  build( period_id: @committee.periods.active ? @committee.periods.active.id : nil ) ) %>
 <%= link_to 'New meeting', new_committee_meeting_path( @committee ) %>
 <% end %>
 </p>

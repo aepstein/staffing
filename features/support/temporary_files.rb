@@ -1,6 +1,15 @@
 Spork.prefork do
   module TemporaryFiles
     def temporary_file_path; "#{::Rails.root}/tmp/test"; end
+    def temporary_file(name,size)
+      FileUtils.mkdir_p temporary_file_path
+      file = File.new( "#{temporary_file_path}/#{name}", 'w' )
+      size.times { file << 'a' }
+      file.close
+      $temporary_files ||= Array.new
+      $temporary_files << file
+      file
+    end
   end
 
   World(TemporaryFiles)

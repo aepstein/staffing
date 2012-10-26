@@ -1,3 +1,4 @@
+<div id="meeting-<%= @meeting.id %>">
 <p>
   <b>Committee:</b> <%= @meeting.committee %>
 </p>
@@ -33,6 +34,7 @@
 <p>
   <b>Motions:</b> <%= @meeting.motions.map(&:name).join(', ') %>
 </p>
+</div> <!-- #meeting-<%= @meeting.id %> -->
 
 <p>
 <% if permitted_to? :edit, @meeting -%>

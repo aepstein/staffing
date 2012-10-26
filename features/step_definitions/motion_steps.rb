@@ -60,32 +60,6 @@ Then /^I should see confirmation of the event on the motion$/ do
   within("#flash_notice") { page.should have_text "Motion was successfully #{event_description}." }
 end
 
-Given /^I have a (current|past|future) (chair|vicechair|voter|nonvoter|nonmember) relationship to the committee$/ do |tense, relationship|
-  @committee = create :committee
-  @period = case tense
-  when 'current'
-    create(:current_period, schedule: @committee.schedule )
-  when 'past'
-    create(:past_period, schedule: @committee.schedule )
-  else
-    create(:future_period, schedule: @committee.schedule )
-  end
-  if relationship != 'nonmember'
-    position = create :position, schedule: @committee.schedule
-    create :membership, position: position, period: @period, user: @current_user
-    enrollment = case relationship
-    when 'chair', 'vicechair'
-      create :enrollment, manager: true, committee: @committee, position: position
-    when 'voter'
-      create :enrollment, votes: 1, committee: @committee, position: position
-    when 'nonvoter'
-      create :enrollment, votes: 0, position: position
-    else
-      nil
-    end
-  end
-end
-
 Given /^(?:an )authorization scenario of (un)?published, (\w+) motion of (sponsored|referred) origin to which I have a (current|past|future) (admin|staff|chair|vicechair|voter|sponsor|nonvoter|nonmember) relationship$/ do |publication, status, origin, tense, relationship|
   Motion.delete_all
   committee_relationship = case relationship
@@ -106,7 +80,8 @@ Given /^(?:an )authorization scenario of (un)?published, (\w+) motion of (sponso
   end
   step %{I log in as the #{role} user}
   step %{I have a #{tense} #{committee_relationship} relationship to the committee}
-  @motion = create "#{origin}_motion".to_sym,  committee: @committee,
+  @period = create( "#{tense}_period".to_sym, schedule: @committee.schedule )
+  @motion = create "#{origin}_motion".to_sym, committee: @committee,
     period: @period, status: status, published: publication.blank?
   if relationship == 'sponsor'
     create :sponsorship, motion: @motion, user: @current_user

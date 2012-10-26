@@ -30,8 +30,8 @@ authorization do
     has_permission_on :users, to: :show
   end
   role :user do
-    has_permission_on [ :authorities, :brands, :committees,
-      :meetings, :memberships, :positions, :schedules ],
+    has_permission_on [ :authorities, :brands, :committees, :memberships,
+      :positions, :schedules ],
       to: [ :show, :index ]
     has_permission_on [ :motions, :requests ], to: :index
     has_permission_on :attachments, to: :show do
@@ -47,6 +47,17 @@ authorization do
         manager: is { true },
         position_id: is_in { user.memberships.current.map(&:position_id) },
         votes: gt { 0 } }
+    end
+    has_permission_on :meetings, to: :show do
+      if_attribute published: is { true }
+      if_attribute ends_at: lt { Time.zone.now }
+      if_attribute committee: { enrollments: { position_id: is_in { user.memberships.
+        where { ends_at.gte( Time.zone.today ) }.map(&:position_id) } } }
+    end
+    has_permission_on :meetings, to: :manage, join_by: :and do
+      if_permitted_to :vicechair, :committee
+      if_attribute period: { starts_at: lte { Time.zone.today },
+        ends_at: gte { Time.zone.today } }
     end
     has_permission_on :motions, to: :own do
       if_attribute sponsorships: { user_id: is { user.id } }

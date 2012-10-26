@@ -1,9 +1,10 @@
 class MeetingsController < ApplicationController
   before_filter :initialize_context
-  before_filter :new_meeting_from_params, :only => [ :new, :create ]
-  before_filter :initialize_index, :only => [ :current, :past, :future, :index ]
+  before_filter :new_meeting_from_params, only: [ :new, :create ]
+  before_filter :initialize_index, only: [ :current, :past, :future, :index ]
   before_filter :setup_breadcrumbs
-  filter_access_to :new, :create, :edit, :update, :destroy, :show
+  filter_access_to :new, :create, :edit, :update, :destroy, :show,
+    attribute_check: true
   filter_access_to :index, :current, :past, :future do
     true
   end
@@ -60,7 +61,7 @@ class MeetingsController < ApplicationController
   # GET /motions/:motion_id/meetings
   # GET /motions/:motion_id/meetings.xml
   def index
-    @meetings = @meetings.page( params[:page] )
+    @meetings = @meetings.with_permissions_to(:show).page( params[:page] )
 
     respond_to do |format|
       format.html { render :action => 'index' } # index.html.erb
@@ -127,7 +128,7 @@ class MeetingsController < ApplicationController
     @meeting.destroy
 
     respond_to do |format|
-      format.html { redirect_to committee_meetings_url @meeting.committee }
+      format.html { redirect_to committee_meetings_url( @meeting.committee ), notice: "Meeting was successfully destroyed." }
       format.xml  { head :ok }
     end
   end
@@ -135,14 +136,14 @@ class MeetingsController < ApplicationController
   private
 
   def new_meeting_from_params
-    @meeting = @committee.meetings.build
-    @meeting.attributes = params[:meeting]
+    @meeting = @committee.meetings.build( params[:meeting] )
+    @meeting.period ||= @committee.periods.active
   end
 
   def initialize_index
-    @meetings = Meeting.scoped
-    @meetings = @meetings.where(:committee_id => @committee.id) if @committee
+    @meetings = @committee.meetings if @committee
     @meetings = @motion.meetings if @motion
+    @meetings ||= Meeting.scoped
   end
 
   def initialize_context

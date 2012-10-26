@@ -60,6 +60,42 @@ FactoryGirl.define do
     end
   end
 
+  factory :meeting do
+    association :committee
+    period do
+      if committee.schedule.periods.empty?
+        committee.schedule.association(:periods).reset
+        association(:period, schedule: committee.schedule)
+      end
+      committee.schedule.periods.first
+    end
+    starts_at { period.starts_at + 1.hour }
+    ends_at { starts_at + 1.hour }
+    location 'Day Hall'
+
+    factory :current_meeting do
+      starts_at { Time.zone.now - 1.hour }
+      ends_at { Time.zone.now + 1.hour }
+    end
+
+    factory :recent_meeting do
+      starts_at { Time.zone.now - 1.day }
+      ends_at { ( Time.zone.now - 1.day ) + 1.hour }
+    end
+
+    factory :pending_meeting do
+      starts_at { Time.zone.now + 1.day }
+    end
+  end
+
+  factory :meeting_motion do
+    association :meeting
+    motion do
+#      meeting.reload
+      association :motion, committee: meeting.committee
+    end
+  end
+
   factory :membership do
     association :user
     association :position
@@ -80,15 +116,23 @@ FactoryGirl.define do
     end
 
     factory :current_membership do
-      period { association(:current_period, :schedule => position.schedule) }
+      period { association(:current_period, schedule: position.schedule) }
+
+      factory :recent_membership do
+        ends_at { Time.zone.today - 2.days }
+      end
+
+      factory :pending_membership do
+        starts_at { Time.zone.today + 2.days }
+      end
     end
 
     factory :future_membership do
-      period { association(:future_period, :schedule => position.schedule) }
+      period { association(:future_period, schedule: position.schedule) }
     end
 
     factory :past_membership do
-      period { association(:past_period, :schedule => position.schedule) }
+      period { association(:past_period, schedule: position.schedule) }
     end
   end
 
@@ -155,28 +199,6 @@ FactoryGirl.define do
     ends_at { |request| request.starts_at + 1.year }
     factory :expired_request do
       starts_at Time.zone.today - 2.years
-    end
-  end
-
-  factory :meeting do
-    association :committee
-    period do
-      if committee.schedule.periods.empty?
-        committee.schedule.association(:periods).reset
-        association(:period, :schedule => committee.schedule)
-      end
-      committee.schedule.periods.first
-    end
-    starts_at { period.starts_at + 1.hour }
-    ends_at { starts_at + 1.hour }
-    location 'Day Hall'
-  end
-
-  factory :meeting_motion do
-    association :meeting
-    motion do
-#      meeting.reload
-      association :motion, :committee => meeting.committee
     end
   end
 
