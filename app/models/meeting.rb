@@ -32,7 +32,7 @@ class Meeting < ActiveRecord::Base
   validates :location, presence: true
   validate :period_must_be_in_committee_schedule, :must_be_in_period
 
-  default_scope order( 'meetings.starts_at DESC' )
+  default_scope order { starts_at.desc }
 
   scope :past, lambda { where { ends_at < Time.zone.today.to_time } }
   scope :future, lambda { where {

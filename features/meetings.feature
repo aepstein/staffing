@@ -34,7 +34,6 @@ Scenario Outline: Access control
     |plain   |   |current      |current     |may    |may not|may not|may not|
     |plain   |   |pending      |current     |may    |may not|may not|may not|
 
-@javascript @wip
 Scenario Outline: Create/edit a meeting
   Given I log in as the staff user
   When I create a meeting as <role>
@@ -44,21 +43,21 @@ Scenario Outline: Create/edit a meeting
   Examples:
     |role |
     |staff|
-    |voter|
+    |chair|
 
 Scenario: Search meetings
-  Given I log in as the plain user
+  Given I log in as the staff user
   And there are 4 meetings
-  And I search for meetings with name "2"
+  When I search for meetings with period "1 Jan 2003 - 31 Dec 2003"
   Then I should see the following meetings:
-  | Meeting 2 |
+    |01 Jan 2003 09:00|
 
 Scenario: List/delete a meeting
   Given I log in as the admin user
   And there are 4 meetings
   And I "Destroy" the 3rd meeting
   Then I should see the following meetings:
-  | Meeting 1 |
-  | Meeting 2 |
-  | Meeting 4 |
+    |01 Jan 2004 09:00|
+    |01 Jan 2003 09:00|
+    |01 Jan 2001 09:00|
 

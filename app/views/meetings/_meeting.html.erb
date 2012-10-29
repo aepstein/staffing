@@ -2,6 +2,7 @@
     <% unless committee %>
     <td><%= meeting.committee %></td>
     <% end %>
+    <td><%= meeting.period %></td>
     <td><%= meeting.starts_at.to_formatted_s :short_year %></td>
     <td><%= meeting.ends_at.to_formatted_s :short_year %></td>
     <td><%= meeting.location %></td>

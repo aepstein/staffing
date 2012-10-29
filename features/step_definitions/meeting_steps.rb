@@ -102,8 +102,8 @@ When /^I create a meeting as (staff|chair)$/ do |relationship|
   end
   @start = Time.zone.now + 1.day
   @end = (Time.zone.now + 1.day) + 1.hour
-  fill_in "Starts at", with: "#{@start.to_s :db}"
-  fill_in "Ends at", with: "#{@end.to_s :db}"
+  fill_in "Starts at", with: "#{@start.to_s :rfc822}"
+  fill_in "Ends at", with: "#{@end.to_s :rfc822}"
   fill_in "Location", with: "Green Room"
   click_button 'Create'
   @meeting = Meeting.find( URI.parse(current_url).path.match(/[\d]+$/)[0].to_i )
@@ -116,7 +116,7 @@ Then /^I should see the new meeting$/ do
     page.should have_text "Period: #{@current_period}"
     page.should have_text "Starts at: #{@start.to_s :long_ordinal}"
     page.should have_text "Ends at: #{@end.to_s :long_ordinal}"
-    page.should have_text "Location: Red Room"
+    page.should have_text "Location: Green Room"
     page.should have_text "Audio? No"
     page.should have_text "Editable minutes? No"
     page.should have_text "Published minutes? No"
@@ -127,8 +127,8 @@ When /^I update the meeting$/ do
   @start += 1.hour
   @end += 1.hour
   visit(edit_meeting_path(@meeting))
-  fill_in "Starts at", with: "#{@start.to_s :db}"
-  fill_in "Ends at", with: "#{@end.to_s :db}"
+  fill_in "Starts at", with: "#{@start.to_s :rfc822}"
+  fill_in "Ends at", with: "#{@end.to_s :rfc822}"
   fill_in "Location", with: "Red Room"
   attach_file "Audio", File.expand_path("spec/assets/audio.mp3")
   attach_file "Editable minutes", temporary_file("minutes.doc",20.bytes)
@@ -149,12 +149,22 @@ Then /^I should see the edited meeting$/ do
 end
 
 Given /^there are (\d+) meetings$/ do |quantity|
-  @meetings = quantity.to_i.downto(1).
-    map { |i| create :meeting, name: "Meeting #{i}" }
+  @committee = create(:committee)
+  @meetings = []; i = 1
+  while i < 5 do
+    period = create( :period, starts_at: Date.new(2000+i,01,01),
+      ends_at: Date.new(2000+i,12,31),
+      schedule: @committee.schedule )
+    @meetings << create( :meeting,
+      starts_at: Time.zone.local(2000+i,01,01,9,0,0),
+      period: period,
+      committee: @committee )
+    i += 1
+  end
 end
 
 When /^I "(.+)" the (\d+)(?:st|nd|rd|th) meeting$/ do |text, meeting|
-  visit(meetings_url)
+  visit(committee_meetings_url(@committee))
   within("table > tbody > tr:nth-child(#{meeting.to_i})") do
     click_link "#{text}"
   end
@@ -162,12 +172,12 @@ When /^I "(.+)" the (\d+)(?:st|nd|rd|th) meeting$/ do |text, meeting|
 end
 
 Then /^I should see the following meetings:$/ do |table|
-  table.diff! tableish( 'table#meetings > tbody > tr', 'td:nth-of-type(1)' )
+  table.diff! tableish( 'table#meetings > tbody > tr', 'td:nth-of-type(2)' )
 end
 
-Given /^I search for meetings with name "([^"]+)"$/ do |needle|
-  visit(meetings_url)
-  fill_in "Name", with: needle
+When /^I search for meetings with period "([^"]+)"$/ do |needle|
+  visit(committee_meetings_url(@committee))
+  select needle, from: 'Period'
   click_button "Search"
 end
 

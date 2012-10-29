@@ -1,5 +1,26 @@
 <h2><%= params[:action].titleize %> meetings for <%= @committee ? @committee : "" %></h2>
 
+<%= form_for @q, url: request.fullpath, method: :get do |form| %>
+  <% if @committee %>
+  <p>
+    <%= form.label :period_id_eq, 'Period' %>
+    <%= form.select :period_id_eq,
+      @committee.schedule.periods.map { |p| [ p.to_s, p.id ] } %>
+  </p>
+  <% end %>
+  <p>
+    <%= form.label :starts_at_gt, 'Starts After' %>
+    <%= form.text_field :starts_at_gt %>
+  </p>
+  <p>
+    <%= form.label :ends_at_lt, 'Ends Before' %>
+    <%= form.text_field :ends_at_lt %>
+  </p>
+  <p>
+    <%= submit_tag 'Search' %>
+  </p>
+<% end %>
+
 <p>
 <%= paginate @meetings %>
 </p>

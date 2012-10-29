@@ -61,11 +61,12 @@ class MeetingsController < ApplicationController
   # GET /motions/:motion_id/meetings
   # GET /motions/:motion_id/meetings.xml
   def index
-    @meetings = @meetings.with_permissions_to(:show).page( params[:page] )
+    @q = @meetings.search( params[:q] )
+    @meetings = @q.result.page( params[:page] )
 
     respond_to do |format|
-      format.html { render :action => 'index' } # index.html.erb
-      format.xml  { render :xml => @meetings }
+      format.html { render action: 'index' } # index.html.erb
+      format.xml  { render xml: @meetings }
     end
   end
 
@@ -74,7 +75,7 @@ class MeetingsController < ApplicationController
   def show
     respond_to do |format|
       format.html # show.html.erb
-      format.xml  { render :xml => @meeting }
+      format.xml  { render xml: @meeting }
     end
   end
 
@@ -83,13 +84,12 @@ class MeetingsController < ApplicationController
   def new
     respond_to do |format|
       format.html # new.html.erb
-      format.xml  { render :xml => @meeting }
+      format.xml  { render xml: @meeting }
     end
   end
 
   # GET /meetings/1/edit
   def edit
-    @meeting.meeting_motions.build
   end
 
   # POST /committees/:committee_id/meetings
@@ -99,10 +99,10 @@ class MeetingsController < ApplicationController
       if @meeting.save
         flash[:notice] = 'Meeting was successfully created.'
         format.html { redirect_to(@meeting) }
-        format.xml  { render :xml => @meeting, :status => :created, :location => @meeting }
+        format.xml  { render xml: @meeting, status: :created, location: @meeting }
       else
-        format.html { render :action => "new" }
-        format.xml  { render :xml => @meeting.errors, :status => :unprocessable_entity }
+        format.html { render action: "new" }
+        format.xml  { render xml: @meeting.errors, status: :unprocessable_entity }
       end
     end
   end
@@ -112,12 +112,11 @@ class MeetingsController < ApplicationController
   def update
     respond_to do |format|
       if @meeting.update_attributes(params[:meeting])
-        flash[:notice] = 'Meeting was successfully updated.'
-        format.html { redirect_to(@meeting) }
+        format.html { redirect_to @meeting, notice: 'Meeting was successfully updated.' }
         format.xml  { head :ok }
       else
-        format.html { render :action => "edit" }
-        format.xml  { render :xml => @meeting.errors, :status => :unprocessable_entity }
+        format.html { render action: "edit" }
+        format.xml  { render xml: @meeting.errors, status: :unprocessable_entity }
       end
     end
   end
@@ -144,6 +143,7 @@ class MeetingsController < ApplicationController
     @meetings = @committee.meetings if @committee
     @meetings = @motion.meetings if @motion
     @meetings ||= Meeting.scoped
+    @meetings = @meetings.with_permissions_to(:show)
   end
 
   def initialize_context

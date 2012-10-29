@@ -8,7 +8,7 @@ Spork.prefork do
       file.close
       $temporary_files ||= Array.new
       $temporary_files << file
-      file
+      file.path
     end
   end
 
