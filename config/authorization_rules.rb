@@ -59,6 +59,33 @@ authorization do
       if_attribute period: { starts_at: lte { Time.zone.today },
         ends_at: gte { Time.zone.today } }
     end
+    has_permission_on :memberships, to: [ :new ], join_by: :and do
+      if_attribute position: { authority: { authorized_enrollments: {
+          votes: gt { 0 },
+          memberships: {
+            user_id: is { user.id },
+            ends_at: gte { Time.zone.today }
+        } } } }
+    end
+    has_permission_on :memberships, to: [ :create, :update ], join_by: :and do
+      if_attribute position: { authority: { authorized_enrollments: {
+          votes: gt { 0 },
+          memberships: {
+            user_id: is { user.id },
+            starts_at: lte { object.ends_at },
+            ends_at: gte { [ object.starts_at, Time.zone.today ].max }
+        } } } }
+    end
+    has_permission_on :memberships, to: [ :decline_renewal ], join_by: :and do
+      if_attribute declined_at: is { nil }, starts_at: lte { Time.zone.today },
+        renew_until: is_not { nil }
+      if_attribute position: { authority: { authorized_enrollments: {
+        votes: gt { 0 },
+        memberships: {
+        user_id: is { user.id },
+        ends_at: gte { [ object.ends_at, Time.zone.today ].max }
+      } } } }
+    end
     has_permission_on :motions, to: :own do
       if_attribute sponsorships: { user_id: is { user.id } }
     end
@@ -114,25 +141,6 @@ authorization do
     end
     has_permission_on :requests, to: [ :reject ] do
       if_attribute committee_id: is_in { user.committees.authorized.map(&:id) }
-    end
-    has_permission_on :memberships, to: [ :manage ] do
-      if_attribute position: { authority: { authorized_enrollments: {
-        votes: gt { 0 },
-        memberships: {
-        user_id: is { user.id },
-        starts_at: lte { object.blank? ? Time.zone.today : object.ends_at },
-        ends_at: gte { object.blank? ? Time.zone.today : [ object.starts_at, Time.zone.today ].max }
-      } } } }
-    end
-    has_permission_on :memberships, to: [ :decline_renewal ], join_by: :and do
-      if_attribute declined_at: is { nil }, starts_at: lte { Time.zone.today },
-        renew_until: is_not { nil }
-      if_attribute position: { authority: { authorized_enrollments: {
-        votes: gt { 0 },
-        memberships: {
-        user_id: is { user.id },
-        ends_at: gte { object.blank? ? Time.zone.today : [ object.ends_at, Time.zone.today ].max }
-      } } } }
     end
     has_permission_on :users, to: [ :profile ]
     has_permission_on :users, to: [ :edit, :update, :show, :index ] do

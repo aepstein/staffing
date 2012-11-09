@@ -46,13 +46,6 @@ describe Motion do
     @motion.status.should eql 'referred'
   end
 
-  it 'should create divided motions when divide! is called' do
-    @motion.propose!
-    @motion.divide!
-    @motion.status.should eql 'divided'
-    @motion.referred_motions.length.should eql 2
-  end
-
   it 'should have a referred? method that indicates if it is referred' do
     @motion.referred?.should be_false
     referee = referee_motion
@@ -136,6 +129,7 @@ describe Motion do
   def divided_motions
     divided = create(:motion)
     divided.propose!
+    divided.referred_motions.build_divided
     divided.divide!
     divided.referred_motions.length.should eql 2
     divided.referred_motions

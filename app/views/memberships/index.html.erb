@@ -53,7 +53,7 @@
 <hr />
 
 <p>
-<% if @position && permitted_to?( :create, :memberships ) %>
+<% if @position && permitted_to?( :new, @position.memberships.build_for_authorization ) %>
 <%= link_to 'New membership', new_position_membership_path(@position) %>
 <% end %>
 </p>

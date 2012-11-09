@@ -78,6 +78,7 @@ class Motion < ActiveRecord::Base
         new_motion = build new_attributes
         new_motion.committee = proxy_association.owner.committee
         new_motion.published = true
+        new_motion.period = proxy_association.owner.period
         new_motions << new_motion
       end
       new_motions
@@ -117,7 +118,7 @@ class Motion < ActiveRecord::Base
     motion.referring_motion.save! if motion.referee?
   end
 
-  state_machine :status, :initial => :started do
+  state_machine :status, initial: :started do
 
     before_transition all => [ :divided, :referred ] do |motion, transition|
       motion.referred_motions.select(&:new_record?).each do |new_motion|

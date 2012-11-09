@@ -162,12 +162,17 @@ FactoryGirl.define do
     end
   end
 
+  factory :motion_event do
+    association :motion, status: 'proposed'
+    occurrence { Time.zone.today }
+    event { 'propose' }
+  end
+
   factory :motion_merger do
-    merged_motion { association :motion, :status => 'proposed' }
+    merged_motion { association :motion, status: 'proposed' }
     motion do
-#      merged_motion.reload
-      association :motion, :committee => merged_motion.committee,
-        :period => merged_motion.period
+      association :motion, committee: merged_motion.committee,
+        period: merged_motion.period, status: 'proposed'
     end
   end
 
@@ -177,6 +182,7 @@ FactoryGirl.define do
     association :schedule
     association :quiz
     slots 1
+    minimum_slots { slots }
     active true
     factory :renewable_position do
       renewable true

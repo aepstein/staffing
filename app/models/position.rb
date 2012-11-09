@@ -1,7 +1,8 @@
 class Position < ActiveRecord::Base
   attr_accessible :authority_id, :quiz_id, :schedule_id, :slots, :name,
     :join_message, :leave_message, :statuses, :renewable, :notifiable,
-    :designable, :active, :reject_message, :enrollments_attributes
+    :designable, :active, :reject_message, :enrollments_attributes,
+    :minimum_slots
 
   default_scope lambda { ordered }
 
@@ -10,15 +11,18 @@ class Position < ActiveRecord::Base
   belongs_to :schedule, inverse_of: :positions
 
   has_many :memberships, inverse_of: :position, dependent: :destroy do
+
     # Repopulate for a period
     def repopulate_unassigned_for_period!( period )
       unassigned.where( period_id: period.id ).delete_all
       populate_unassigned_for_period! period
     end
+
     # Create vacant memberships for all periods
     def populate_unassigned!
       proxy_association.owner.periods.each { |p| populate_unassigned_for_period! p }
     end
+
     # Create vacant memberships
     def populate_unassigned_for_period!( period )
       unless proxy_association.owner.schedule.periods.include? period
@@ -40,10 +44,22 @@ class Position < ActiveRecord::Base
       # Save without validation -- method should produce valid memberships
       memberships.each { |membership| membership.save! validate: false }
     end
+
     # Spaces for period
     def vacancies_for_period( period )
       Membership.concurrent_counts( period, proxy_association.owner.id ).
-        map { |r| [r.first, ( proxy_association.owner.slots - r.last )] }
+        map { |r| [r.first, ( proxy_association.owner.minimum_slots - r.last )] }
+    end
+
+    def build_for_authorization
+      membership = build
+      membership.period ||= proxy_association.owner.schedule.periods.active
+      membership.period ||= proxy_association.owner.schedule.periods.first
+      if membership.period
+        membership.starts_at ||= membership.period.starts_at
+        membership.ends_at ||= membership.period.ends_at
+      end
+      membership
     end
 
     private
@@ -95,12 +111,12 @@ class Position < ActiveRecord::Base
       "> 0 OR positions.statuses_mask = 0" )
   }
   scope :assignable_to, lambda { |user| with_status(user.status).active }
-  scope :notifiable, where( :notifiable => true )
-  scope :renewable, where( :renewable => true )
-  scope :unrenewable, where( :renewable => false )
-  scope :designable, where( :designable => true )
-  scope :active, where( :active => true )
-  scope :inactive, where { active != true }
+  scope :notifiable, where( notifiable: true )
+  scope :renewable, where( renewable: true )
+  scope :unrenewable, where( renewable: false )
+  scope :designable, where( designable: true )
+  scope :active, where( active: true )
+  scope :inactive, where { active.not_eq( true ) }
   # Other positions that are enrolled in exactly the same committees as this
   # * presume same position means same committees
   # * presume different position means different committees if other position has no commmittees
@@ -120,12 +136,15 @@ class Position < ActiveRecord::Base
   validates :quiz, presence: true
   validates :schedule, presence: true
   validates :slots, numericality: { only_integer: true, greater_than: 0 }
+  validates :minimum_slots, presence: true,
+    numericality: { only_integer: true, less_than_or_equal_to: :slots,
+      if: :slots? }
 
   after_create :populate_slots!
   after_update :repopulate_slots!
 
   def current_emails
-    memberships.assigned.current.all(:include => [ :user ]).map { |membership| membership.user.email }
+    memberships.assigned.current.all(include: [ :user ]).map { |membership| membership.user.email }
   end
 
   def statuses=(statuses)
@@ -159,11 +178,12 @@ class Position < ActiveRecord::Base
   # Delete unassigned memberships if:
   # * activity status changes
   # * schedule changes
-  # * number of slots is decreased
+  # * number of minimum_slots is decreased
   # Populate new memberships if position is active
   def repopulate_slots!
-    return true unless schedule_id_changed? || slots_changed?
-    if active_changed? || schedule_id_changed? || ( slots_changed? && slots_was > slots )
+    return true unless active_changed? || schedule_id_changed? || minimum_slots_changed?
+    if ( active_changed? && inactive? ) || schedule_id_changed? ||
+        ( minimum_slots_changed? && minimum_slots_was > minimum_slots )
       memberships.unassigned.delete_all
     end
     populate_slots!

@@ -4,7 +4,10 @@
   <%= form.input :authority %>
   <%= form.input :quiz %>
   <%= form.input :schedule %>
-  <%= form.input :slots %>
+  <%= form.input :slots,
+    hint: 'What is the maximum number of simultaneous memberships allowed for this position?' %>
+  <%= form.input :minimum_slots,
+    hint: 'What is the minimum number of simultaneous memberships allowed for this position?' %>
   <%= form.input :renewable, :as => :radio, :label => 'Renewable?',
     :hint => 'Should members receive renewal notices regarding this position?' %>
   <%= form.input :notifiable, :as => :radio, :label => 'Notifiable?',

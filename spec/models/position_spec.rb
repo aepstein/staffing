@@ -45,65 +45,47 @@ describe Position do
       position.save.should be_false
     end
 
+    it "should not save without valid minimum_slots" do
+      position.minimum_slots = nil
+      position.save.should be_false
+      position.slots = 1
+      position.minimum_slots = 2
+      position.save.should be_false
+    end
+
   end
 
   context 'unassigned memberships' do
 
-    let(:position) { create( :position ) }
-
-    it 'should have a membership.vacancies_for_period' do
-      position.slots = 2
-      position.save!
-      period = create(:period, :schedule => position.schedule)
-      m = position.memberships.build
-      m.assign_attributes( { :period => period, :starts_at => period.starts_at + 2.days,
-        :ends_at => period.ends_at - 2.days, :user => create(:user) },
-        without_protection: true )
-      m.save!
-      m = position.memberships.build
-      m.assign_attributes( { :period => period, :starts_at => period.starts_at,
-        :ends_at => period.ends_at - 1.days, :user => create(:user) },
-        without_protection: true )
-      m.save!
-      Membership.unassigned.delete_all
-      vacancies = position.memberships.vacancies_for_period(period)
-      vacancies.should eql [
-        [period.starts_at, 1], [period.starts_at + 1.day, 1],
-        [period.starts_at + 2.days, 0], [period.ends_at - 2.days, 0],
-        [period.ends_at - 1.day, 1], [period.ends_at, 2]
-      ]
-    end
-
-    it 'should delete unassigned memberships for an inactivated position' do
-      position.active = false
-      position.save!
-      Membership.where( :position_id => position.id ).should be_empty
-    end
-
     context 'single slot' do
 
       let(:period) { create(:period) }
-      let(:position) { create(:position, :schedule => period.schedule, :slots => 1) }
+      let(:position) { create(:position, schedule: period.schedule) }
 
       it 'should create unassigned shifts when it is created' do
-        position.memberships.unassigned.count.should eql position.memberships.count
-        position.memberships.count.should eql position.slots
+        position.memberships.unassigned.count.should eql 1
+        position.memberships.count.should eql 1
         position.memberships.each do |membership|
           membership.starts_at.should eql period.starts_at
           membership.ends_at.should eql period.ends_at
         end
       end
 
-      it 'should create unassigned shifts when the period\'s slots are increased' do
-        position.slots = ( position.slots + 1 )
-        position.slots_was.should_not eql position.slots
+      it 'should create unassigned memberships when the period\'s minimum_slots are increased' do
+        position.slots += 1
+        position.minimum_slots += 1
         position.save!
-        position.memberships.unassigned.count.should eql position.memberships.count
-        position.memberships.count.should eql position.slots
+        position.memberships.count.should eql 2
         position.memberships.each do |membership|
           membership.starts_at.should eql period.starts_at
           membership.ends_at.should eql period.ends_at
         end
+      end
+
+      it 'should delete unassigned memberships for an inactivated position' do
+        position.active = false
+        position.save!
+        Membership.where( position_id: position.id ).should be_empty
       end
 
     end
@@ -111,14 +93,34 @@ describe Position do
     context 'two slot' do
 
       let(:period) { create(:period) }
-      let(:position) { create(:position, :schedule => period.schedule, :slots => 2) }
+      let(:position) { create(:position, schedule: period.schedule, minimum_slots: 2, slots: 3) }
 
-      it 'should delete unassigned memberships when period\'s slots are decreased' do
+      it 'should have a membership.vacancies_for_period' do
+        m = position.memberships.build
+        m.assign_attributes( { period: period, starts_at: period.starts_at + 2.days,
+          ends_at: period.ends_at - 2.days, user: create(:user) },
+          without_protection: true )
+        m.save!
+        m = position.memberships.build
+        m.assign_attributes( { period: period, starts_at: period.starts_at,
+          ends_at: period.ends_at - 1.days, user: create(:user) },
+          without_protection: true )
+        m.save!
+        Membership.unassigned.delete_all
+        vacancies = position.memberships.vacancies_for_period(period)
+        vacancies.should eql [
+          [period.starts_at, 1], [period.starts_at + 1.day, 1],
+          [period.starts_at + 2.days, 0], [period.ends_at - 2.days, 0],
+          [period.ends_at - 1.day, 1], [period.ends_at, 2]
+        ]
+      end
+
+      it 'should delete unassigned memberships when period\'s minimum slots are decreased' do
         position.memberships.count.should eql 2
-        position.slots -= 1
+        position.minimum_slots -= 1
         position.save!
         position.memberships.unassigned.count.should eql position.memberships.count
-        position.memberships.count.should eql position.slots
+        position.memberships.count.should eql position.minimum_slots
         position.memberships.each do |membership|
           membership.starts_at.should eql period.starts_at
           membership.ends_at.should eql period.ends_at
@@ -131,6 +133,7 @@ describe Position do
         first.user = create(:user)
         first.save.should eql true
         position.slots -= 1
+        position.minimum_slots -= 1
         position.save!
         position.memberships.size.should eql 1
         position.memberships.should include first

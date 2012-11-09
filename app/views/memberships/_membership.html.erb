@@ -1,4 +1,4 @@
-  <%= table_row_tag do %>
+  <%= table_row_tag true, false, { id: "membership-#{membership.id}" } do %>
     <% unless user -%>
     <td><%= membership.user ? membership.user : raw("<i>unassigned</i>") %></td>
     <% end -%>

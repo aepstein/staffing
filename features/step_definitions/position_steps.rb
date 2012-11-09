@@ -1,6 +1,39 @@
-Given /^(?:an )authorization scenario of a position to which I have an? (admin|staff|plain) relationship$/ do |role|
+Given /^(?:an )authorization scenario of a position to which I have an? (admin|staff|plain) relationship$/ do |tense, relationship|
+  role = case relationship
+  when 'admin', 'staff'
+    relationship
+  else
+    'plain'
+  end
   step %{I log in as the #{role} user}
   @position = create( :position )
+end
+
+Given /^I have a (current|past|future|recent|pending) (authority|authority_ro|member) relationship to the position$/ do |tense, relationship|
+  @position.authority.committee = create(:committee)
+  @position.authority.save!
+  position = case relationship
+  when 'authority'
+    create(:enrollment, committee: @position.authority.committee, votes: 1).position
+  when 'authority_ro'
+    create(:enrollment, committee: @position.authority.committee, votes: 0).position
+  else
+    @position
+  end
+  period = case tense
+  when 'recent', 'pending'
+    create(:current_period, schedule: position.schedule)
+  else
+    create("#{tense}_period".to_sym, schedule: position.schedule)
+  end
+  @authority_membership = case tense
+  when 'recent'
+    create(:membership, user: @current_user, position: position, period: period, ends_at: ( Time.zone.today - 1.day ))
+  when 'pending'
+    create(:membership, user: @current_user, position: position, period: period, starts_at: ( Time.zone.today + 1.day ))
+  else
+    create(:membership, user: @current_user, position: position, period: period)
+  end
 end
 
 Then /^I may( not)? see the position$/ do |negate|

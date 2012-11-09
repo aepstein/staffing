@@ -194,13 +194,12 @@ class MembershipsController < ApplicationController
   def create
     respond_to do |format|
       if @membership.save
-        flash[:notice] = 'Membership was successfully created.'
-        format.html { redirect_to(@membership) }
-        format.xml  { render :xml => @membership, :status => :created, :location => @membership }
+        format.html { redirect_to(@membership, notice: 'Membership was successfully created.') }
+        format.xml  { render xml: @membership, status: :created, location: @membership }
       else
         @membership.designees.populate
-        format.html { render :action => "new" }
-        format.xml  { render :xml => @membership.errors, :status => :unprocessable_entity }
+        format.html { render action: "new" }
+        format.xml  { render xml: @membership.errors, status: :unprocessable_entity }
       end
     end
   end
@@ -209,14 +208,13 @@ class MembershipsController < ApplicationController
   # PUT /memberships/1.xml
   def update
     respond_to do |format|
-      if @membership.update_attributes(params[:membership], :as => :updator)
-        flash[:notice] = 'Membership was successfully updated.'
-        format.html { redirect_to(@membership) }
+      if @membership.update_attributes(params[:membership], as: :updator)
+        format.html { redirect_to(@membership, notice: 'Membership was successfully updated.' ) }
         format.xml  { head :ok }
       else
         @membership.designees.populate
         format.html { render :action => "edit" }
-        format.xml  { render :xml => @membership.errors, :status => :unprocessable_entity }
+        format.xml  { render :xml => @membership.errors, status: :unprocessable_entity }
       end
     end
   end
@@ -227,7 +225,8 @@ class MembershipsController < ApplicationController
     @membership.destroy
 
     respond_to do |format|
-      format.html { redirect_to position_memberships_url @membership.position }
+      format.html { redirect_to position_memberships_url(@membership.position),
+        notice: "Membership was successfully destroyed." }
       format.xml  { head :ok }
     end
   end
@@ -274,14 +273,8 @@ class MembershipsController < ApplicationController
   end
 
   def new_membership_from_params
-    @membership = @position.memberships.build
-    @membership.assign_attributes params[:membership], as: :updator if params[:membership]
-    @membership.period ||= @membership.position.schedule.periods.active
-    @membership.period ||= @membership.position.schedule.periods.first
-    if @membership.period
-      @membership.starts_at ||= @membership.period.starts_at
-      @membership.ends_at ||= @membership.period.ends_at
-    end
+    @membership = @position.memberships.build_for_authorization
+    @membership.assign_attributes params[:membership], as: :creator if params[:membership]
   end
 
   def csv_index

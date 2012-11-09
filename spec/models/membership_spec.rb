@@ -44,20 +44,6 @@ describe Membership do
       membership.save.should be_false
     end
 
-    it 'should not save with an unqualified user' do
-      membership.position.qualifications << create(:qualification)
-      membership.user = create(:user)
-      membership.user.qualifications.should_not include membership.position.qualifications.first
-      membership.save.should eql false
-    end
-
-    it 'should save with a qualified user' do
-      membership.position.qualifications << create(:qualification)
-      membership.user = create(:user)
-      membership.position.qualifications.each { |q| membership.user.qualifications << q }
-      membership.save.should eql true
-    end
-
     it 'should not save with a duplicate user/position/period' do
       membership.save!
       membership.position.update_attribute :slots, 2
@@ -69,6 +55,14 @@ describe Membership do
     it 'should not save with an invalid renew_until value' do
       membership.renew_until = membership.ends_at
       membership.save.should be_false
+    end
+
+    it "should not save if it exceeds concurrent counts" do
+      membership.save!
+      conflict = build( :membership, position: membership.position,
+        period: membership.period, starts_at: membership.starts_at + 1.day,
+        ends_at: membership.ends_at - 1.day )
+      conflict.save.should be_false
     end
 
   end
@@ -179,32 +173,37 @@ describe Membership do
 
   end
 
-  context 'vacancies' do
-
+  context 'concurrent_counts' do
     let(:membership) {
-      create :membership, position: create( :position, slots: 2 )
+      create :membership, position: create( :position, slots: 3 )
     }
 
-    it "should start with one assigned and one vacant membership" do
-      membership.position.memberships.assigned.count.should eql 1
-      membership.position.memberships.unassigned.count.should eql 1
-    end
-
     it 'should detect concurrent membership memberships and prevent overstaffing' do
-      second = create( :membership, :starts_at => membership.starts_at + 1.days,
-        :ends_at => membership.ends_at - 1.days, :position => membership.position,
-        :period => membership.period, :user => create(:user) )
+      second = create( :membership, starts_at: membership.starts_at + 1.days,
+        ends_at: membership.ends_at - 1.days, position: membership.position,
+        period: membership.period, user: create(:user) )
       membership.reload
-      over = build(:membership, :starts_at => membership.starts_at,
-        :ends_at => membership.ends_at, :position => membership.position,
-        :period => membership.period, :user => create(:user) )
+      over = build(:membership, starts_at: membership.starts_at,
+        ends_at: membership.ends_at, position: membership.position,
+        period: membership.period, user: create(:user) )
       counts = over.concurrent_counts
       counts[0].should eql [membership.starts_at, 1]
       counts[1].should eql [second.starts_at, 2]
       counts[2].should eql [second.ends_at, 2]
       counts[3].should eql [membership.ends_at, 1]
       counts.size.should eql 4
-      over.save.should eql false
+    end
+  end
+
+  context 'minimum_slots behaviors' do
+
+    let(:membership) {
+      create :membership, position: create( :position, slots: 3, minimum_slots: 2 )
+    }
+
+    it "should start with one assigned and one vacant membership" do
+      membership.position.memberships.assigned.count.should eql 1
+      membership.position.memberships.unassigned.count.should eql 1
     end
 
     it 'should generate unassigned memberships when an membership membership is created' do

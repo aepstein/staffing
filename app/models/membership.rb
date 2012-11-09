@@ -4,11 +4,13 @@ class Membership < ActiveRecord::Base
   attr_accessible :renew_until, :renewal_confirmed_at, as: [ :default, :updator ]
   attr_accessible :user_name, :user_id, :period_id, :position_id,
     :request_id, :starts_at, :ends_at, :designees_attributes,
-    :designees_attributes, as: :updator
+    :designees_attributes, as: [ :creator, :updator ]
   attr_accessible :decline_comment, as: :decliner
   attr_readonly :position_id
 
   include UserNameLookup
+
+  attr_accessor :modifier
 
   belongs_to :user, inverse_of: :memberships
   belongs_to :period, inverse_of: :memberships
@@ -170,8 +172,8 @@ class Membership < ActiveRecord::Base
   search_methods :user_name_cont
 
   accepts_nested_attributes_for :designees,
-    :reject_if => proc { |a| a['user_name'].blank? },
-    :allow_destroy => true
+    reject_if: proc { |a| a['user_name'].blank? },
+    allow_destroy: true
 
   validates :period, presence: true
   validates :position, presence: true
@@ -181,6 +183,7 @@ class Membership < ActiveRecord::Base
   validates :renew_until, timeliness: { type: :date, after: :ends_at,
     allow_blank: true }
   validate :must_be_within_period, :concurrent_memberships_must_not_exceed_slots
+  validate :modifier_must_overlap, if: :modifier
 
   before_save :clear_notices, :claim_request, :undecline_if_renewed
   after_save :populate_unassigned, :close_claimed_request, :claim_renewed_memberships
@@ -206,8 +209,10 @@ class Membership < ActiveRecord::Base
       "SELECT #{marker} AS focus, COUNT(DISTINCT c.id) AS quantity FROM memberships AS m " +
       "LEFT JOIN memberships AS c " +
       "ON c.starts_at <= #{marker} AND c.ends_at >= #{marker} AND c.position_id = #{position_id} " +
-      ( ( period.class != Membership || period.persisted? ) ? "AND c.id != #{period.id} " : "" ) +
-      ( ( period.class == Membership && !period.user.blank? ) ? "AND c.user_id IS NOT NULL " : "" ) +
+      # When dealing with a persisted membership, don't count the membership against itself
+      ( ( period.class == Membership && period.persisted? ) ? "AND c.id != #{period.id} " : "" ) +
+      # When dealing with an assigned membership, unassigned memberships are expendable and can be ignored
+      ( ( period.class == Membership && period.user ) ? "AND c.user_id IS NOT NULL " : "" ) +
       "WHERE m.ends_at >= #{connection.quote period.starts_at} AND " +
       "m.starts_at <= #{connection.quote period.ends_at} AND " +
       "#{marker} >= #{connection.quote period.starts_at} AND " +
@@ -221,7 +226,7 @@ class Membership < ActiveRecord::Base
       ( r.first.class == String ? Time.zone.parse(r.first).to_date : r.first ),
       r.last.to_i
     ] }
-    memberships = Membership.unscoped.where(:position_id => position_id)
+    memberships = Membership.unscoped.where( position_id: position_id )
     if period.class == Membership
       memberships = memberships.where { user_id != nil } unless period.user.blank?
       memberships = memberships.where { id != my { period.id } } if period.persisted?
@@ -281,6 +286,16 @@ class Membership < ActiveRecord::Base
   end
 
   protected
+
+  def modifier_must_overlap
+    return unless authority && starts_at && ends_at
+    unless authority.authorized_memberships.where { enrollments.votes.gt(0) }.
+      overlap(starts_at, ends_at).any?
+      errors.add :modifier,
+        "must have authority to modify the position between " +
+        "#{starts_at.to_s :us_ordinal} and #{ends_at.to_s :us_ordinal}"
+    end
+  end
 
   def must_be_within_period
     return unless period && starts_at && ends_at
@@ -344,7 +359,7 @@ class Membership < ActiveRecord::Base
     # Eliminate unassigned memberships in the new period for this membership
     periods = position.schedule.periods.overlaps( starts_at, ends_at ).to_a
     periods.each do |p|
-       position.memberships.unassigned.where( :period_id => p.id ).delete_all
+       position.memberships.unassigned.where( period_id: p.id ).delete_all
     end
     # Do not populate unassigned memberships if the position is inactive
     return true unless position.active?

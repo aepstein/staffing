@@ -1,10 +1,11 @@
   <%= table_row_tag true, false, { id: "position-#{position.id}" } do %>
-    <td><%=h position.name %></td>
-    <td><%=h position.authority %></td>
-    <td><%=h position.quiz %></td>
-    <td><%=h position.schedule %></td>
+    <td><%= position.name %></td>
+    <td><%= position.authority %></td>
+    <td><%= position.quiz %></td>
+    <td><%= position.schedule %></td>
     <td><%= position.renewable? ? 'Yes' : 'No' %></td>
-    <td><%=h position.slots %></td>
+    <td><%= position.slots %></td>
+    <td><%= position.minimum_slots %></td>
     <td><%= link_to 'Show', position %></td>
     <td><%= link_to( 'Edit', edit_position_path(position) ) if permitted_to? :edit, position %></td>
     <td><%= link_to( 'Destroy', position, data: { confirm: 'Are you sure?' }, method: :delete ) if permitted_to? :destroy, position %></td>
