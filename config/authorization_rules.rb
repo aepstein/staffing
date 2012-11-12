@@ -13,7 +13,7 @@ authorization do
       :meetings, :memberships, :motions, :positions,
       :quizzes, :questions, :requests, :schedules, :users,
       :user_renewal_notices, :sendings ],
-      to: [ :create, :update, :show, :index ]
+      to: [ :create, :update, :show, :index, :staff ]
     has_permission_on :committees, to: [ :chair, :members, :tents, :vote ]
     has_permission_on :memberships, to: [ :decline_renewal ] do
       if_attribute declined_at: is { nil }, starts_at: lte { Time.zone.today },
@@ -59,7 +59,7 @@ authorization do
       if_attribute period: { starts_at: lte { Time.zone.today },
         ends_at: gte { Time.zone.today } }
     end
-    has_permission_on :memberships, to: [ :new ], join_by: :and do
+    has_permission_on :memberships, to: [ :create ], join_by: :and do
       if_attribute position: { authority: { authorized_enrollments: {
           votes: gt { 0 },
           memberships: {
@@ -67,7 +67,7 @@ authorization do
             ends_at: gte { Time.zone.today }
         } } } }
     end
-    has_permission_on :memberships, to: [ :create, :update ], join_by: :and do
+    has_permission_on :memberships, to: [ :update ], join_by: :and do
       if_attribute position: { authority: { authorized_enrollments: {
           votes: gt { 0 },
           memberships: {
@@ -75,6 +75,7 @@ authorization do
             starts_at: lte { object.ends_at },
             ends_at: gte { [ object.starts_at, Time.zone.today ].max }
         } } } }
+      if_attribute period: { ends_at: gte { Time.zone.today } }
     end
     has_permission_on :memberships, to: [ :decline_renewal ], join_by: :and do
       if_attribute declined_at: is { nil }, starts_at: lte { Time.zone.today },
@@ -83,7 +84,7 @@ authorization do
         votes: gt { 0 },
         memberships: {
         user_id: is { user.id },
-        ends_at: gte { [ object.ends_at, Time.zone.today ].max }
+        ends_at: gte { object.ends_at }
       } } } }
     end
     has_permission_on :motions, to: :own do

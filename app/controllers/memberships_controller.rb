@@ -3,34 +3,24 @@ class MembershipsController < ApplicationController
   before_filter :initialize_index, only: [ :index, :renewed, :unrenewed,
     :current, :future, :past, :assignable, :renewable ]
   before_filter :new_membership_from_params, only: [ :new, :create ]
+  before_filter :set_modifier, only: [ :create, :update ]
   filter_access_to :new, :create, :edit, :update, :destroy, :show, :confirm,
-    :decline_renewal, :do_decline_renewal,
-    attribute_check: true
-  filter_access_to :assign do
-    permitted_to! :edit, @membership
-  end
-  filter_access_to :index, :current, :past, :future do
-    @user ? permitted_to!( :show, @user ) : permitted_to!( :index )
-  end
-  before_filter :setup_breadcrumbs
+    :decline_renewal, attribute_check: true
 
   # GET /memberships/:membership_id/decline_renewal
+  # POST /memberships/:membership_id/decline_renewal
   def decline_renewal
     respond_to do |format|
-      format.html
-    end
-  end
-
-  # PUT /memberships/:membership_id/do_decline_renewal
-  def do_decline_renewal
-    respond_to do |format|
-      if @membership.decline_renewal( params[:membership], user: current_user )
-        flash[:notice] = 'Membership renewal was successfully declined.'
-        format.html { redirect_to(@membership) }
-        format.xml  { head :ok }
+      if request.request_method_symbol == :post
+        if @membership.decline_renewal( params[:membership], user: current_user )
+          format.html { redirect_to @membership, notice: 'Membership renewal was successfully declined.' }
+          format.xml  { head :ok }
+        else
+          format.html
+          format.xml  { render xml: @membership.errors, status: :unprocessable_entity }
+        end
       else
-        format.html { render :action => "edit" }
-        format.xml  { render :xml => @membership.errors, status: :unprocessable_entity }
+        format.html
       end
     end
   end
@@ -162,11 +152,9 @@ class MembershipsController < ApplicationController
   # GET /memberships/1
   # GET /memberships/1.xml
   def show
-    @membership = Membership.find(params[:id])
-
     respond_to do |format|
       format.html # show.html.erb
-      format.xml  { render :xml => @membership }
+      format.xml  { render xml: @membership }
     end
   end
 
@@ -275,12 +263,21 @@ class MembershipsController < ApplicationController
   def new_membership_from_params
     @membership = @position.memberships.build_for_authorization
     @membership.assign_attributes params[:membership], as: :creator if params[:membership]
+    @membership
+  end
+
+  def set_modifier
+    unless permitted_to? :staff, @membership
+      @membership.modifier = current_user
+    end
+    @membership
   end
 
   def csv_index
     csv_string = ""
     CSV.generate csv_string do |csv|
-      csv << ['first', 'last','netid','email','mobile','position','committee','title','vote','period','starts at','ends at','renew until?']
+      csv << [ 'first', 'last','netid','email','mobile','position','committee',
+        'title','vote','period','starts at','ends at','renew until?' ]
       @q.result.all(:include => [ :request ]).each do |membership|
         next unless permitted_to?( :show, membership )
         membership.enrollments.each do |enrollment|

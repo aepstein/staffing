@@ -23,7 +23,7 @@ Given /^(?:an )authorization scenario of an? (current|recent|pending|future|past
   step %{I log in as the #{role} user}
   @position = create( :position )
   if %w( authority authority_ro ).include?( relationship )
-    step %{I have a #{member_tense} #{relationship} relationship to the position}
+    step %{I have a #{relation_tense} #{relationship} relationship to the position}
   end
   user = case relationship
   when 'member'
@@ -48,7 +48,7 @@ Given /^(?:an )authorization scenario of an? (current|recent|pending|future|past
   end
 end
 
-Then /^I may( not)? try to create memberships for the position$/ do |negate|
+Then /^I may( not)? create memberships for the position$/ do |negate|
   visit(new_position_membership_url(@position))
   step %{I should#{negate} be authorized}
   visit(position_memberships_url(@position))
@@ -57,12 +57,7 @@ Then /^I may( not)? try to create memberships for the position$/ do |negate|
   else
     page.should have_no_text('New membership')
   end
-end
-
-Then /^I may( not)? create (past|future|current|recent|pending) memberships for the position$/ do |negate, tense|
-  Capybara.current_session.driver.submit :post, position_memberships_url(@position),
-    { "membership" => { "starts_at" => @membership.starts_at.to_s(:rfc822),
-      "ends_at" => @membership.ends_at.to_s(:rfc822) } }
+  Capybara.current_session.driver.submit :post, position_memberships_url(@position), {}
   step %{I should#{negate} be authorized}
 end
 
@@ -75,7 +70,9 @@ Then /^I may( not)? update the membership$/ do |negate|
   if negate.blank?
     within("#membership-#{@membership.id}") { page.should have_text('Edit') }
   else
-    page.should have_no_text('Edit')
+    if page.has_selector?("#membership-#{@membership.id}")
+      within("#membership-#{@membership.id}") { page.should have_no_text('Edit') }
+    end
   end
 end
 

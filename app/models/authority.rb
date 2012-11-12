@@ -16,7 +16,8 @@ class Authority < ActiveRecord::Base
   has_many :enrollments, through: :positions
   has_many :authorized_enrollments, primary_key: :committee_id,
     foreign_key: :committee_id, class_name: 'Enrollment'
-  has_many :authorized_memberships, through: :authorized_enrollments
+  has_many :authorized_memberships, through: :authorized_enrollments,
+    source: :memberships
   has_many :memberships, through: :positions
   has_many :quizzes, through: :positions
   has_many :schedules, through: :positions

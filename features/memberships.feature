@@ -6,22 +6,21 @@ Feature: Memberships
 Scenario Outline: Access control
   Given an authorization scenario of a <member_tense> membership to which I have a <relation_tense> <relation> relationship
   Then I <show> see the membership
-  And I <try_create> try to create memberships for the position
-  And I <create> create <member_tense> memberships for the position
+  And I <create> create memberships for the position
   And I <update> update the membership
   And I <destroy> destroy the membership
   Examples:
-|member_tense|relation_tense|relation    |show|create |try_create|update |destroy|
-|current     |current       |admin       |may |may    |may       |may    |may    |
-|current     |current       |staff       |may |may    |may       |may    |may not|
-|past        |current       |staff       |may |may    |may       |may    |may not|
-|current     |current       |authority   |may |may    |may       |may    |may not|
-|pending     |current       |authority   |may |may    |may       |may    |may not|
-|recent      |current       |authority   |may |may not|may       |may    |may not|
-|past        |current       |authority   |may |may not|may       |may not|may not|
-|future      |current       |authority   |may |may not|may       |may not|may not|
-|current     |current       |authority_ro|may |may not|may not   |may not|may not|
-|current     |current       |plain       |may |may not|may not   |may not|may not|
+|member_tense|relation_tense|relation    |show|create |update |destroy|
+|current     |current       |admin       |may |may    |may    |may    |
+|current     |current       |staff       |may |may    |may    |may not|
+|past        |current       |staff       |may |may    |may    |may not|
+|current     |current       |authority   |may |may    |may    |may not|
+|pending     |current       |authority   |may |may    |may    |may not|
+|recent      |current       |authority   |may |may    |may    |may not|
+|past        |current       |authority   |may |may    |may not|may not|
+|future      |current       |authority   |may |may    |may not|may not|
+|current     |current       |authority_ro|may |may not|may not|may not|
+|current     |current       |plain       |may |may not|may not|may not|
 
 @javascript
 Scenario Outline: Create/edit a sponsored membership

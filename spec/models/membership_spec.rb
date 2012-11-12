@@ -5,6 +5,19 @@ describe Membership do
 
   context 'validation' do
 
+    let(:modifier_membership) do
+      authority = membership.position.authority
+      committee = create(:committee)
+      authority.committee = committee; authority.save!
+      position = create(:enrollment, committee: committee ).position
+      period = create(:period, schedule: position.schedule,
+        starts_at: membership.starts_at - 1.week,
+        ends_at: membership.ends_at + 1.week )
+      create(:membership, position: position, period: period)
+    end
+
+    let(:modifier) { modifier_membership.user }
+
     it 'should create a new instance given valid attributes' do
       membership.save!
     end
@@ -47,8 +60,8 @@ describe Membership do
     it 'should not save with a duplicate user/position/period' do
       membership.save!
       membership.position.update_attribute :slots, 2
-      duplicate = build( :membership, :user => membership.user,
-        :period => membership.period, :position => membership.position )
+      duplicate = build( :membership, user: membership.user,
+        period: membership.period, position: membership.position )
       duplicate.save.should be_false
     end
 
@@ -63,6 +76,24 @@ describe Membership do
         period: membership.period, starts_at: membership.starts_at + 1.day,
         ends_at: membership.ends_at - 1.day )
       conflict.save.should be_false
+    end
+
+    it "should save with a valid modifier" do
+      membership.modifier = modifier
+      membership.save!
+    end
+
+    it "should not save with a non-overlapping early modifier" do
+      modifier_membership.update_column :ends_at, ( membership.starts_at - 1.day )
+      membership.modifier = modifier
+      membership.save.should be_false
+    end
+
+    it "should not save with a non-overlapping late modifier" do
+      modifier_membership.update_column :starts_at, ( membership.ends_at + 1.day )
+      modifier_membership.save!
+      membership.modifier = modifier
+      membership.save.should be_false
     end
 
   end

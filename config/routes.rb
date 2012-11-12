@@ -63,7 +63,7 @@ Staffing::Application.routes.draw do
   resources :memberships, except: [ :index, :new, :create ] do
     member do
       get :decline_renewal
-      put :do_decline_renewal
+      post :decline_renewal
     end
   end
   resources :motions, except: [ :new, :create ] do

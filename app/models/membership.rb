@@ -288,8 +288,8 @@ class Membership < ActiveRecord::Base
   protected
 
   def modifier_must_overlap
-    return unless authority && starts_at && ends_at
-    unless authority.authorized_memberships.where { enrollments.votes.gt(0) }.
+    return unless position && starts_at && ends_at
+    unless position.authority.authorized_memberships.where { enrollments.votes.gt(0) }.
       overlap(starts_at, ends_at).any?
       errors.add :modifier,
         "must have authority to modify the position between " +
