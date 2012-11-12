@@ -84,7 +84,7 @@ authorization do
         votes: gt { 0 },
         memberships: {
         user_id: is { user.id },
-        ends_at: gte { object.ends_at }
+        ends_at: gte { [ object.ends_at, Time.zone.today ].max }
       } } } }
     end
     has_permission_on :motions, to: :own do
@@ -165,9 +165,6 @@ privileges do
   end
   privilege :update do
     includes :edit
-  end
-  privilege :decline_renewal do
-    includes :do_decline_renewal
   end
   privilege :chair do
     includes :vicechair
