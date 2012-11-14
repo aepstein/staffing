@@ -124,4 +124,15 @@ Scenario Outline: Show join and leave notices
     |notice|
     |join  |
     |leave |
+@wip
+Scenario Outline: Search for memberships
+  Given there are 4 memberships
+  When I search for the <attribute> of the 1st membership
+  Then I should only find 1st membership
+  Examples:
+  |attribute|
+  |position |
+  |authority|
+  |user     |
+  |committee|
 

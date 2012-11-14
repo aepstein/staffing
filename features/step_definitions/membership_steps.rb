@@ -276,6 +276,40 @@ Given /^there are (\d+) memberships for a position by (end|start|last|first)$/ d
   end
 end
 
+Given /^there are (\d+) memberships$/ do |quantity|
+  @memberships = quantity.to_i.times.inject([]) do |memo|
+    memo << create(:membership)
+  end
+end
+
+When /^I search for the (position|authority|user|committee) of the (\d+)(?:st|nd|rd|th) membership$/ do |field, position|
+  visit memberships_url
+  pos = ( position.to_i - 1 )
+  case field
+  when 'position'
+    fill_in 'Position', with: @memberships[pos].position.name
+  when 'authority'
+    fill_in 'Authority', with: @memberships[pos].authority.name
+  when 'user'
+    fill_in 'User', with: @memberships[pos].user.net_id
+  when 'committee'
+    fill_in 'Committee',
+      with: create(:enrollment, position: @memberships[pos].position).committee.name
+  end
+end
+
+Then /^I should only find the (\d+)(?:st|nd|rd|th) membership$/ do |position|
+  click_button "Search"
+  pos = ( position.to_i - 1 )
+  needle = @memberships[pos].id
+  within("#memberships") do
+    ( @memberships.map(&:id) - [ needle ] ).each do |id|
+      page.should_not have_selector "#membership-#{id}"
+    end
+    page.should have_selector "#membership-#{needle}"
+  end
+end
+
 Given /^I "(.+)" the (\d+)(?:st|nd|rd|th) membership for the position$/ do |text, membership|
   visit(position_memberships_path(@position))
   within("table > tbody > tr:nth-child(#{membership.to_i})") do
