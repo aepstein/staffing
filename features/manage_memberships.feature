@@ -58,67 +58,6 @@ Feature: Manage memberships
       | focus    | other    | user: "focus"      | Committee |
       | other    | other    | committee: "focus" | User      |
 
-  # Note: we are testing "create" always with a current membership
-  Scenario Outline: Test permissions for memberships controller actions
-    Given a committee: "authority" exists
-    And a schedule exists
-    And a past_period exists with schedule: the schedule
-    And a current_period exists with schedule: the schedule
-    And a future_period exists with schedule: the schedule
-    And a position: "authority" exists with schedule: the schedule
-    And an enrollment exists with committee: committee "authority", position: position "authority"
-    And an authority: "authority" exists with committee: committee "authority"
-    And a user: "authority" exists
-    And a membership exists with user: user "authority", position: position "authority", period: the <authority>_period
-    And a position: "authority_ro" exists with schedule: the schedule
-    And an enrollment exists with committee: committee "authority", position: position "authority_ro", votes: 0
-    And a user: "authority_ro" exists
-    And a membership exists with user: user "authority_ro", position: position "authority_ro", period: the <authority>_period
-    And a position: "focus" exists with name: "Focus Position", authority: authority "authority", schedule: the schedule
-    And a user: "owner" exists with net_id: "owner", password: "secret", admin: false, last_name: "Owner"
-    And a membership: "focus" exists with position: position "focus", user: user "owner", period: the <membership>_period
-    And membership: "focus" <renew> interested in renewal
-    And a user: "regular" exists
-    And I log in as user: "<user>"
-    And I am on the new membership page for position: "focus"
-    Then I should <create> authorized
-    Given I post on the memberships page for position: "focus"
-    Then I should <create> authorized
-    And I am on the edit page for membership: "focus"
-    Then I should <update> authorized
-    Given I put on the page for membership: "focus"
-    Then I should <update> authorized
-    Given I am on the decline_renewal page for membership: "focus"
-    Then I should <decline> authorized
-    Given I put on the do_decline_renewal page for membership: "focus"
-    Then I should <decline> authorized
-    Given I am on the memberships page for position: "focus"
-    Then I should <index> "Owner"
-    Given I am on the page for membership: "focus"
-    Then I should <show> authorized
-    Given I delete on the page for membership: "focus"
-    Then I should <destroy> authorized
-    Examples:
-      |authority|membership|user        |renew |create |update |decline|destroy|index|show|
-      |current  |current   |admin       |is    |see    |see    |see    |see    |see  |see |
-      |current  |current   |admin       |is not|see    |see    |not see|see    |see  |see |
-      |current  |future    |admin       |is    |see    |see    |not see|see    |see  |see |
-      |current  |current   |authority   |is    |see    |see    |see    |see    |see  |see |
-      |current  |current   |authority   |is not|see    |see    |not see|see    |see  |see |
-      |future   |future    |authority   |is    |not see|see    |not see|see    |see  |see |
-      |future   |current   |authority   |is    |not see|not see|see    |not see|see  |see |
-      |current  |future    |authority   |is    |see    |not see|not see|not see|see  |see |
-      |current  |past      |authority   |is    |see    |not see|see    |not see|see  |see |
-      |past     |past      |authority   |is    |not see|not see|not see|not see|see  |see |
-      |current  |current   |authority_ro|is    |not see|not see|not see|not see|see  |see |
-      |future   |future    |authority_ro|is    |not see|not see|not see|not see|see  |see |
-      |future   |current   |authority_ro|is    |not see|not see|not see|not see|see  |see |
-      |current  |future    |authority_ro|is    |not see|not see|not see|not see|see  |see |
-      |current  |past      |authority_ro|is    |not see|not see|not see|not see|see  |see |
-      |past     |past      |authority_ro|is    |not see|not see|not see|not see|see  |see |
-      |current  |current   |owner       |is    |not see|not see|not see|not see|see  |see |
-      |current  |current   |regular     |is    |not see|not see|not see|not see|see  |see |
-
   Scenario: Register new membership given a position or edit
     Given a period: "2009" exists with schedule: schedule "annual", starts_at: "2009-06-01", ends_at: "2010-05-31"
     And a committee exists with name: "Important Committee"
