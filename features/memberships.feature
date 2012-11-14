@@ -68,17 +68,7 @@ Scenario Outline: Prevent authority from editing non-overlap membership
   |recent |current       |authority|not see|
   |pending|current       |authority|not see|
   |pending|pending       |authority|not see|
-
-@javascript
-Scenario Outline: Edit a referred membership
-  Given I have a referred membership as <relationship>
-  When I update the referred membership
-  Then I should see the updated referred membership
-  Examples:
-    |relationship|
-    |vicechair   |
-    |staff       |
-
+@wip
 Scenario: List/delete a membership
   Given I log in as the admin user
   And there are 4 memberships for a committee
@@ -87,28 +77,4 @@ Scenario: List/delete a membership
   | Membership 4 |
   | Membership 3 |
   | Membership 1 |
-
-Scenario Outline: Membership events without javascript
-  Given an authorization scenario of <pub>published, <status> membership of <origin> origin to which I have a <tense> <relation> relationship
-  When I <event> the membership
-  Then I should see confirmation of the event on the membership
-  Examples:
-    |relation |tense  |origin   |pub|status   |event   |
-    |sponsor  |current|sponsored|un |started  |propose |
-    |vicechair|current|referred |   |started  |propose |
-    |sponsor  |current|sponsored|   |proposed |withdraw|
-    |vicechair|current|sponsored|   |proposed |adopt   |
-    |vicechair|current|sponsored|   |proposed |merge   |
-    |vicechair|current|sponsored|   |proposed |restart |
-    |vicechair|current|sponsored|   |proposed |refer   |
-
-@javascript
-Scenario Outline: Membership events with javascript
-  Given an authorization scenario of <pub>published, <status> membership of <origin> origin to which I have a <tense> <relation> relationship
-  When I <event> the membership
-  Then I should see confirmation of the event on the membership
-  Examples:
-    |relation |tense  |origin   |pub|status   |event   |
-    |vicechair|current|sponsored|   |proposed |divide  |
-    |vicechair|current|sponsored|   |proposed |merge   |
 
