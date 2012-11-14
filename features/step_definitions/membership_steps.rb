@@ -132,64 +132,91 @@ Then /^I may( not)? decline the membership$/ do |negate|
   step %{I should#{negate} be authorized}
 end
 
-When /^I create a membership as (staff|authority)$/ do |relationship|
-  role = case relationship
+When /^I attempt to create a (past|current|future|pending|recent) membership as (current|pending|future) (staff|authority)$/ do |member_tense, relation_tense, relation|
+  role = case relation
   when 'staff'
     'staff'
   else
     'plain'
   end
   step %{I log in as the #{role} user}
-  if relationship == 'authority'
-    step %{I have a current #{position_relationship} relationship to the position}
+  @position = create(:position, designable: true)
+  create(:enrollment, position: @position, committee: create(:committee, name: 'Important Committee'))
+  @past_period = create(:past_period, schedule: @position.schedule)
+  @current_period = create(:period, schedule: @position.schedule)
+  @future_period = create(:future_period, schedule: @position.schedule)
+  @period = case member_tense
+  when 'past'
+    @past_period
+  when 'future'
+    @future_period
+  else
+    @current_period
   end
-  fill_in 'Name', with: 'Charter amendment'
-  fill_in 'Description', with: 'This is a *big* change.'
-  fill_in 'Content', with: '*Whereas* and *Resolved*'
-  click_link 'add attachment'
-  attach_file 'Attachment document', File.expand_path('spec/assets/empl_ids.csv')
-  fill_in 'Attachment description', with: 'Sample employee ids'
+  @starts_at = case member_tense
+  when 'pending'
+    Time.zone.today + 1.day
+  else
+    @period.starts_at
+  end
+  @ends_at = case member_tense
+  when 'recent'
+    Time.zone.today - 1.day
+  else
+    @period.ends_at
+  end
+  @candidate = create(:user)
+  @designee = create(:user)
+  if relation == 'authority'
+    step %{I have a #{relation_tense} #{relation} relationship to the position}
+  end
+  visit new_position_membership_url(@position)
+  fill_in 'User', with: @candidate.name(:net_id)
+  select @period.to_s, from: "Period"
+  fill_in 'Starts at', with: @starts_at.to_s(:rfc822)
+  fill_in 'Ends at', with: @ends_at.to_s(:rfc822)
+  fill_in "Designee for Important Committee", with: @designee.name(:net_id)
   click_button 'Create'
-  @membership = Membership.find( URI.parse(current_url).path.match(/[\d]+$/)[0].to_i )
-  @membership.update_column :published, true
+end
+
+Then /^I should( not)? see the modifier error message$/ do |negate|
+  if negate.blank?
+    within(".error_messages") { page.should have_text "must have authority to modify the position between" }
+  else
+    @membership = Membership.find( URI.parse(current_url).path.match(/[\d]+$/)[0].to_i )
+    within('#flash_notice') { page.should have_text('Membership was successfully created.') }
+  end
 end
 
 Then /^I should see the new membership$/ do
-  within('#flash_notice') { page.should have_text('Membership was successfully created.') }
   within("#membership-#{@membership.id}") do
-    page.should have_text("Position: Powerful Position")
+    page.should have_text("Position: #{@position.name}")
     page.should have_text("Period: #{@period.to_s}")
-    page.should have_text("Name: Charter amendment")
-    page.should have_text("Sponsors: George Washington")
-    page.should have_text("This is a big change.")
-    page.should have_text("Whereas and Resolved")
-    page.should have_text("Sample employee ids")
+    page.should have_text("User: #{@candidate.name(:net_id)}")
+    page.should have_text("Starts at: #{@starts_at.to_formatted_s(:us_ordinal)}")
+    page.should have_text("Ends at: #{@ends_at.to_formatted_s(:us_ordinal)}")
+    page.should have_text("Designee for Important Committee: #{@designee.name(:net_id)}")
   end
 end
 
 When /^I update the membership$/ do
-  click_link "Edit"
-  fill_in "Name", with: "Charter change"
-  fill_in "Description", with: "This is a big change."
-  fill_in "Content", with: "Whereas and Finally Resolved"
-  click_link "remove sponsorship"
-  click_link "add sponsorship"
-  within(".new-sponsorship") do
-    fill_in "Sponsor", with: "#{@alternate_sponsor.net_id}"
-  end
-  click_link "remove attachment"
-  click_button "Update"
+  visit edit_membership_url(@membership)
+  fill_in 'User', with: @designee.name(:net_id)
+  @starts_at += 1.day
+  @ends_at -= 1.day
+  fill_in 'Starts at', with: @starts_at.to_s(:rfc822)
+  fill_in 'Ends at', with: @ends_at.to_s(:rfc822)
+  fill_in 'Designee for Important Committee', with: @candidate.name(:net_id)
+  click_button 'Update'
 end
 
 Then /^I should see the edited membership$/ do
   within('#flash_notice') { page.should have_text("Membership was successfully updated.") }
   within("#membership-#{@membership.id}") do
-    page.should have_text("Name: Charter change")
-    page.should have_text("This is a big change.")
-    page.should have_text("Whereas and Finally Resolved")
-    page.should have_text("Sponsors: John Adams")
-    page.should have_no_text("George Washington")
-    page.should have_no_text("Sample employee ids")
+    page.should have_text("User: #{@designee.name(:net_id)}")
+    page.should have_text("Starts at: #{@starts_at.to_formatted_s(:us_ordinal)}")
+    page.should have_text("Ends at: #{@ends_at.to_formatted_s(:us_ordinal)}")
+    page.should have_text("Designee for Important Committee: #{@candidate.name(:net_id)}")
   end
 end
 

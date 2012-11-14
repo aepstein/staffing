@@ -1,5 +1,5 @@
 <p>
-  <b>User:</b> <%=h membership.user %>
+  <b>User:</b> <%= membership.user ? membership.user.name( :net_id ) : content_tag(:em, 'unassigned') %>
 </p>
 
 <p>
@@ -11,10 +11,10 @@
 </p>
 
 <p>
-  <b>Starts at:</b> <%=h membership.starts_at.to_s(:rfc822) %>
+  <b>Starts at:</b> <%=h membership.starts_at.to_s(:us_ordinal) %>
 </p>
 
 <p>
-  <b>Ends at:</b> <%=h membership.ends_at.to_s(:rfc822) %>
+  <b>Ends at:</b> <%=h membership.ends_at.to_s(:us_ordinal) %>
 </p>
 

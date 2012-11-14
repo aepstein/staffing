@@ -1,6 +1,6 @@
 class Designee < ActiveRecord::Base
   attr_accessible :committee_id, :user_id, :user_name, :_destroy,
-    as: [ :default, :updator ]
+    as: [ :default, :creator, :updator ]
   attr_readonly :committee_id
 
   belongs_to :membership, inverse_of: :designees

@@ -173,7 +173,7 @@ class MembershipsController < ApplicationController
   def edit
     @membership.designees.populate
     respond_to do |format|
-      format.html { render :action => 'edit' }
+      format.html { render action: 'edit' }
     end
   end
 

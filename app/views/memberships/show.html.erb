@@ -1,6 +1,5 @@
 <div id="membership-<%= @membership.id %>">
 <%=render partial: 'memberships/detail', locals: { membership: @membership } %>
-</div> <!-- #membership-<%= @membership.id %> -->
 
 <% if @membership.request %>
 <p>
@@ -55,9 +54,10 @@
 
 <% @membership.designees.each do |designee| %>
 <p>
-  <b>Designee for <%=h designee.committee.name %>:</b> <%=h designee.user.name %>
+  <b>Designee for <%=h designee.committee.name %>:</b> <%=h designee.user.name(:net_id) %>
 </p>
 <% end %>
+</div> <!-- #membership-<%= @membership.id %> -->
 
 <p>
 <% if permitted_to? :edit, @membership -%>

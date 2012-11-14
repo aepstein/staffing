@@ -41,7 +41,6 @@ class Membership < ActiveRecord::Base
           designee.committee = committee
           memo << designee
         end
-        memo
       end
     end
     protected

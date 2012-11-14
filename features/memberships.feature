@@ -42,16 +42,32 @@ Scenario Outline: Access control to decline
   | current      | current        | authority| is        | has       | next day      | may not |
   | current      | future         | authority| is        | has       | next day      | may     |
 
-@javascript
-Scenario Outline: Create/edit a sponsored membership
-  When I create a membership as <relationship>
-  Then I should see the new membership
+Scenario Outline: Create/edit a membership
+  When I attempt to create a <tense> membership as <relation_tense> <relation>
+  Then I should not see the modifier error message
+  And I should see the new membership
   When I update the membership
   Then I should see the edited membership
   Examples:
-    |relationship|
-    |voter       |
-    |staff       |
+    |tense  |relation_tense|relation |
+    |past   |current       |staff    |
+    |current|current       |staff    |
+    |future |current       |staff    |
+    |current|current       |authority|
+    |current|pending       |authority|
+    |future |future        |authority|
+
+Scenario Outline: Prevent authority from editing non-overlap membership
+  When I attempt to create a <tense> membership as <relation_tense> <relation>
+  Then I should <error> the modifier error message
+  Examples:
+  |tense  |relation_tense|relation |error  |
+  |past   |current       |authority|see    |
+  |future |current       |authority|see    |
+  |pending|future        |authority|see    |
+  |recent |current       |authority|not see|
+  |pending|current       |authority|not see|
+  |pending|pending       |authority|not see|
 
 @javascript
 Scenario Outline: Edit a referred membership
