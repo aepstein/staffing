@@ -104,7 +104,7 @@ FactoryGirl.define do
         position.schedule.periods.first
       else
         position.schedule.association(:periods).reset
-        association( :period, :schedule => position.schedule )
+        association( :period, schedule: position.schedule )
       end
     end
     starts_at { period.starts_at }

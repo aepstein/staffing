@@ -1,4 +1,7 @@
   <%= table_row_tag true, false, { id: "membership-#{membership.id}" } do %>
+    <td><%=h membership.period %></td>
+    <td><%=h membership.starts_at.to_s :rfc822 %></td>
+    <td><%=h membership.ends_at.to_s :rfc822 %></td>
     <% unless user -%>
     <td><%= membership.user ? membership.user : raw("<i>unassigned</i>") %></td>
     <% end -%>
@@ -14,9 +17,6 @@
     <% else -%>
     <td><%= membership.committees.map(&:to_s).join(', ') %></td>
     <% end -%>
-    <td><%=h membership.period %></td>
-    <td><%=h membership.starts_at.to_s :rfc822 %></td>
-    <td><%=h membership.ends_at.to_s :rfc822 %></td>
     <td><%= membership.renew_until ? membership.renew_until.to_s( :rfc822 ) : "" %></td>
     <td><%= link_to 'Show', membership %></td>
     <% if request && membership.user.blank? %>

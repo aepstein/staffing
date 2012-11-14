@@ -258,10 +258,22 @@ Then /^I should see the updated referred membership$/ do
   end
 end
 
-Given /^there are (\d+) memberships for a position$/ do |quantity|
-  @position = create(:position)
-  @memberships = quantity.to_i.downto(1).
-    map { |i| create :sponsored_membership, name: "Membership #{i}", position: @position }
+Given /^there are (\d+) memberships for a position by (end|start|last|first)$/ do |quantity, column|
+  @period = create(:period, starts_at: '2011-01-01', ends_at: '2011-12-31')
+  @position = create(:position, slots: quantity.to_i, minimum_slots: 0,
+    schedule: @period.schedule)
+  @memberships = quantity.to_i.downto(1).map do |i|
+    case column
+    when 'last'
+      create :membership, position: @position, user: create( :user, last_name: "Doe1000#{i}" )
+    when 'first'
+      create :membership, position: @position, user: create( :user, first_name: "John1000#{i}" )
+    when 'start'
+      create :membership, position: @position, starts_at: ( @period.starts_at + (quantity.to_i - i).days )
+    when 'end'
+      create :membership, position: @position, ends_at: ( @period.ends_at - i.days )
+    end
+  end
 end
 
 Given /^I "(.+)" the (\d+)(?:st|nd|rd|th) membership for the position$/ do |text, membership|
@@ -273,6 +285,6 @@ end
 
 Then /^I should see the following memberships for the position:$/ do |table|
   visit(position_memberships_path(@position))
-  table.diff! tableish( 'table#memberships > tbody > tr', 'td:nth-of-type(3)' )
+  table.diff! tableish( 'table#memberships > tbody > tr', 'td' )
 end
 

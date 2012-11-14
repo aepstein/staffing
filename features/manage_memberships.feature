@@ -78,21 +78,3 @@ Feature: Manage memberships
     And I should see "Renewal declined by: Mister Administrator"
     And I should see "Renewal declined comment: No membership for you!"
 
-  Scenario: Delete membership
-    Given a user: "user1" exists with first_name: "John", last_name: "Doe 1"
-    And a user: "user2" exists with first_name: "John", last_name: "Doe 2"
-    And a user: "user3" exists with first_name: "John", last_name: "Doe 3"
-    And a user: "user4" exists with first_name: "John", last_name: "Doe 4"
-    And a membership exists with position: position "officer", user: user "user4", period: period "2008", starts_at: "2008-06-01", ends_at: "2009-05-31"
-    And a membership exists with position: position "officer", user: user "user3", period: period "2008", starts_at: "2008-06-01", ends_at: "2009-05-31"
-    And a membership exists with position: position "officer", user: user "user2", period: period "2008", starts_at: "2008-06-01", ends_at: "2009-05-31"
-    And a membership exists with position: position "officer", user: user "user1", period: period "2008", starts_at: "2008-06-01", ends_at: "2009-05-31"
-    And I log in as user: "admin"
-    When I follow "Destroy" for the 3rd membership for position: "officer"
-    Then I should see the following memberships:
-      | User       | Period                   | Starts at  | Ends at     |
-      | unassigned | 1 Jun 2008 - 31 May 2009 | 1 Jun 2008 | 31 May 2009 |
-      | John Doe 1 | 1 Jun 2008 - 31 May 2009 | 1 Jun 2008 | 31 May 2009 |
-      | John Doe 2 | 1 Jun 2008 - 31 May 2009 | 1 Jun 2008 | 31 May 2009 |
-      | John Doe 4 | 1 Jun 2008 - 31 May 2009 | 1 Jun 2008 | 31 May 2009 |
-
