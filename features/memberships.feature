@@ -2,7 +2,7 @@ Feature: Memberships
   In order to record memberships of people in positions
   As a committee authority member or administrator
   I want to create, modify, list, show, and destroy memberships
-@wip
+
 Scenario Outline: Access control
   Given an authorization scenario of a <member_tense> membership to which I have a <relation_tense> <relation> relationship
   Then I <show> see the membership
@@ -21,6 +21,26 @@ Scenario Outline: Access control
 |future      |current       |authority   |may |may    |may not|may not|
 |current     |current       |authority_ro|may |may not|may not|may not|
 |current     |current       |plain       |may |may not|may not|may not|
+
+Scenario Outline: Access control to decline
+  Given an authorization scenario of a <member_tense> membership to which I have a <relation_tense> <relation> relationship
+  And the position <renewable> renewable
+  And the member <requested> requested renewal to <request_tense>
+  Then I <decline> decline the membership
+  Examples:
+  | member_tense | relation_tense | relation | renewable | requested | request_tense | decline |
+  | historic     | current        | staff    | is        | has       | today         | may     |
+  | historic     | current        | staff    | is not    | has       | today         | may not |
+  | historic     | current        | staff    | is        | has not   | today         | may not |
+  | historic     | current        | authority| is        | has       | today         | may     |
+  | historic     | current        | authority| is not    | has       | today         | may not |
+  | historic     | current        | authority| is        | has not   | today         | may not |
+  | historic     | recent         | authority| is        | has       | next day      | may not |
+  | past         | pending        | authority| is        | has       | today         | may not |
+  | past         | pending        | authority| is        | has       | tomorrow      | may     |
+  | past         | pending        | authority| is        | has       | next day      | may not |
+  | current      | current        | authority| is        | has       | next day      | may not |
+  | current      | future         | authority| is        | has       | next day      | may     |
 
 @javascript
 Scenario Outline: Create/edit a sponsored membership

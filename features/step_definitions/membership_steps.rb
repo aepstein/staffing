@@ -13,7 +13,7 @@ Given /^#{capture_model} has( not)? confirmed renewal preference$/ do |membershi
   m.update_column :renewal_confirmed_at, ( negate ? nil : ( Time.zone.now ) )
 end
 
-Given /^(?:an )authorization scenario of an? (current|recent|pending|future|past) membership to which I have a (current|recent|pending) (admin|staff|authority|authority_ro|member|plain) relationship$/ do |member_tense, relation_tense, relationship|
+Given /^(?:an )authorization scenario of an? (current|recent|pending|future|past|historic) membership to which I have a (current|recent|pending|future) (admin|staff|authority|authority_ro|member|plain) relationship$/ do |member_tense, relation_tense, relationship|
   role = case relationship
   when 'admin', 'staff'
     relationship
@@ -34,6 +34,10 @@ Given /^(?:an )authorization scenario of an? (current|recent|pending|future|past
   period = case member_tense
   when 'recent', 'pending', 'current'
     create( :current_period, schedule: @position.schedule )
+  when 'historic'
+    past = create( :past_period, schedule: @position.schedule )
+    create( :period, schedule: @position.schedule, ends_at: ( past.starts_at - 1.day ),
+      starts_at: ( past.starts_at - 1.year ) )
   else
     create( :current_period, schedule: @position.schedule )
     create( "#{member_tense}_period", schedule: @position.schedule )
@@ -45,6 +49,23 @@ Given /^(?:an )authorization scenario of an? (current|recent|pending|future|past
     create(:membership, position: @position, user: user, period: period, starts_at: ( Time.zone.today + 1.day ) )
   else
     create(:membership, position: @position, user: user, period: period )
+  end
+end
+
+Given /^the position is( not)? renewable$/ do |negate|
+  @position.update_column :renewable, ( negate.blank? ? true : false )
+end
+
+Given /^the member has( not)? requested renewal to (next day|today|tomorrow)$/ do |negate, tense|
+  if negate.blank?
+    @membership.update_column :renew_until, case tense
+    when 'next day'
+      @membership.ends_at + 1.day
+    when 'today'
+      Time.zone.today
+    when 'tomorrow'
+      Time.zone.today + 1.day
+    end
   end
 end
 
@@ -96,6 +117,19 @@ Then /^I may( not)? see the membership$/ do |negate|
   else
     page.should have_no_selector( "#membership-#{@membership.id}" )
   end
+end
+
+Then /^I may( not)? decline the membership$/ do |negate|
+  visit(position_memberships_url(@position))
+  if negate.blank?
+    within("#membership-#{@membership.id}") { page.should have_text('Decline') }
+  else
+    if page.has_selector?("#membership-#{@membership.id}")
+      within("#membership-#{@membership.id}") { page.should have_no_text('Decline') }
+    end
+  end
+  visit(decline_membership_url(@membership))
+  step %{I should#{negate} be authorized}
 end
 
 When /^I create a membership as (staff|authority)$/ do |relationship|

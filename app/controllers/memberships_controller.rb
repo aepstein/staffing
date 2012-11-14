@@ -5,13 +5,13 @@ class MembershipsController < ApplicationController
   before_filter :new_membership_from_params, only: [ :new, :create ]
   before_filter :set_modifier, only: [ :create, :update ]
   filter_access_to :new, :create, :edit, :update, :destroy, :show, :confirm,
-    :decline_renewal, attribute_check: true
+    :decline, attribute_check: true
 
-  # GET /memberships/:membership_id/decline_renewal
-  # POST /memberships/:membership_id/decline_renewal
-  def decline_renewal
+  # GET /memberships/:membership_id/decline
+  # PUT /memberships/:membership_id/decline
+  def decline
     respond_to do |format|
-      if request.request_method_symbol == :post
+      if request.request_method_symbol == :put
         if @membership.decline_renewal( params[:membership], user: current_user )
           format.html { redirect_to @membership, notice: 'Membership renewal was successfully declined.' }
           format.xml  { head :ok }

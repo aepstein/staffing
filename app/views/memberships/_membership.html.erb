@@ -20,11 +20,11 @@
     <td><%= membership.renew_until ? membership.renew_until.to_s( :rfc822 ) : "" %></td>
     <td><%= link_to 'Show', membership %></td>
     <% if request && membership.user.blank? %>
-    <td><%= link_to( 'Assign', edit_membership_path(membership, :request_id => request.id) ) if permitted_to? :edit, membership %></td>
+    <td><%= link_to( 'Assign', edit_membership_path(membership, request_id: request.id) ) if permitted_to? :edit, membership %></td>
     <% else %>
     <td><%= link_to( 'Edit', edit_membership_path(membership) ) if permitted_to? :edit, membership %></td>
     <% end %>
-    <td><%= link_to( 'Decline Renewal', decline_renewal_membership_path(membership) ) if permitted_to? :decline_renewal, membership %></td>
+    <td><%= link_to( 'Decline', decline_membership_path(membership) ) if permitted_to? :decline, membership %></td>
     <td><%= link_to( 'Destroy', membership, data: { confirm: 'Are you sure?' }, method: :delete ) if permitted_to? :destroy, membership %></td>
   <% end %>
 

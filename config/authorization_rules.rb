@@ -15,9 +15,9 @@ authorization do
       :user_renewal_notices, :sendings ],
       to: [ :create, :update, :show, :index, :staff ]
     has_permission_on :committees, to: [ :chair, :members, :tents, :vote ]
-    has_permission_on :memberships, to: [ :decline_renewal ] do
+    has_permission_on :memberships, to: [ :decline ] do
       if_attribute declined_at: is { nil }, starts_at: lte { Time.zone.today },
-        renew_until: is_not { nil }
+        renew_until: is_not { nil }, position: { renewable: true }
     end
     has_permission_on :motions, to: [ :admin, :adopt, :divide, :implement,
       :merge, :propose, :refer, :reject, :restart, :withdraw ]
@@ -77,14 +77,15 @@ authorization do
         } } } }
       if_attribute period: { ends_at: gte { Time.zone.today } }
     end
-    has_permission_on :memberships, to: [ :decline_renewal ], join_by: :and do
+    has_permission_on :memberships, to: [ :decline ], join_by: :and do
       if_attribute declined_at: is { nil }, starts_at: lte { Time.zone.today },
-        renew_until: is_not { nil }
-      if_attribute position: { authority: { authorized_enrollments: {
+        renew_until: is_not { nil }, position: { renewable: true,
+        authority: { authorized_enrollments: {
         votes: gt { 0 },
         memberships: {
         user_id: is { user.id },
-        ends_at: gte { [ object.ends_at, Time.zone.today ].max }
+        starts_at: lte { object.renew_until },
+        ends_at: gt { [ object.ends_at, ( Time.zone.today - 1.day ) ].max },
       } } } }
     end
     has_permission_on :motions, to: :own do
