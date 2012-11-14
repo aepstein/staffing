@@ -13,7 +13,7 @@
 </p>
 
 <p>
-  <b>Renewal declined by: </b> <%= @membership.declined_by_user %>
+  <b>Renewal declined by: </b> <%= @membership.declined_by_user.name(:net_id) %>
 </p>
 
 <p>

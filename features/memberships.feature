@@ -105,3 +105,23 @@ Scenario: List/delete a membership by starts
     |1 Jan 2011 - 31 Dec 2011|3 Jan 2011|31 Dec 2011|John Doe|
     |1 Jan 2011 - 31 Dec 2011|1 Jan 2011|31 Dec 2011|John Doe|
 
+Scenario Outline: Access control to decline
+  Given an authorization scenario of a past membership to which I have a current <relation> relationship
+  And the position is renewable
+  And the member has requested renewal to today
+  When I decline the membership
+  Then I should see the membership declined
+  Examples:
+    |relation |
+    |staff    |
+    |authority|
+
+Scenario Outline: Show join and leave notices
+  Given an authorization scenario of a past membership to which I have a current plain relationship
+  When the <notice> notice has been sent
+  Then I should see the <notice> notice is sent
+  Examples:
+    |notice|
+    |join  |
+    |leave |
+

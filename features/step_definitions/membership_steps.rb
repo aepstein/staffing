@@ -288,3 +288,31 @@ Then /^I should see the following memberships for the position:$/ do |table|
   table.diff! tableish( 'table#memberships > tbody > tr', 'td' )
 end
 
+When /^I decline the membership$/ do
+  visit decline_membership_url(@membership)
+  fill_in "Comment", with: "No *membership* for you!"
+  click_button "Decline Renewal"
+end
+
+Then /^I should see the membership declined$/ do
+  @membership.reload
+  within("#flash_notice") { page.should have_text( "Membership renewal was successfully declined." ) }
+  within("#membership-#{@membership.id}") do
+    page.should have_text "Renewal declined at: #{@membership.declined_at.to_s(:long_ordinal)}"
+    page.should have_text "Renewal declined by: #{@current_user.name(:net_id)}"
+    page.should have_text "No membership for you!"
+  end
+end
+
+When /^the (join|leave) notice has been sent$/ do |notice|
+  @membership.send "send_#{notice}_notice!"
+end
+
+Then /^I should see the (join|leave) notice is sent$/ do |notice|
+  visit membership_url @membership
+  within("#membership-#{@membership.id}") do
+    page.should have_text( "#{notice.titleize} notice at: " +
+      @membership.send("#{notice}_notice_at").to_formatted_s(:long_ordinal) )
+  end
+end
+

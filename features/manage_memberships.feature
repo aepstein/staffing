@@ -58,23 +58,3 @@ Feature: Manage memberships
       | focus    | other    | user: "focus"      | Committee |
       | other    | other    | committee: "focus" | User      |
 
-  Scenario: Show join and leave notice sending information
-    Given a membership exists with join_notice_at: "2010-01-01 06:00:00", leave_notice_at: "2010-01-01 07:00:00"
-    And I log in as user: "admin"
-    And I am on the page for the membership
-    Then I should see "Join notice at: January 1st, 2010 06:00"
-    And I should see "Leave notice at: January 1st, 2010 07:00"
-
-  Scenario: Decline renewal of a membership
-    Given a position exists with renewable: true, slots: 1
-    And a renewable_membership exists with position: the position
-    And user: "admin" has first_name: "Mister", last_name: "Administrator"
-    And I log in as user: "admin"
-    When I follow "Decline Renewal" for the 1st membership for the position
-    And I fill in "Comment" with "No *membership* for you!"
-    And I press "Decline Renewal"
-    Then I should see "Membership renewal was successfully declined."
-    And I should see "Renewal declined at:"
-    And I should see "Renewal declined by: Mister Administrator"
-    And I should see "Renewal declined comment: No membership for you!"
-
