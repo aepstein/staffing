@@ -276,26 +276,45 @@ Given /^there are (\d+) memberships for a position by (end|start|last|first)$/ d
   end
 end
 
-Given /^there are (\d+) memberships$/ do |quantity|
+Given /^there are (\d+) memberships with a common (position|authority|user|committee)$/ do |quantity, common|
+  @common = case common
+  when 'position'
+    create(:position, slots: quantity.to_i, minimum_slots: 0)
+  else
+    create(common.to_sym)
+  end
   @memberships = quantity.to_i.times.inject([]) do |memo|
-    memo << create(:membership)
+    memo << case common
+    when 'position'
+      create(:membership, position: @common)
+    when 'authority'
+      create(:membership, position: create(:position, authority: @common))
+    when 'user'
+      create(:membership, user: @common)
+    when 'committee'
+      create(:membership, position: create(:enrollment, committee: @common).position)
+    end
   end
 end
 
 When /^I search for the (position|authority|user|committee) of the (\d+)(?:st|nd|rd|th) membership$/ do |field, position|
-  visit memberships_url
+  visit polymorphic_url( [ @common, :memberships ] )
   pos = ( position.to_i - 1 )
   case field
   when 'position'
     fill_in 'Position', with: @memberships[pos].position.name
   when 'authority'
-    fill_in 'Authority', with: @memberships[pos].authority.name
+    fill_in 'Authority', with: @memberships[pos].position.authority.name
   when 'user'
     fill_in 'User', with: @memberships[pos].user.net_id
   when 'committee'
     fill_in 'Committee',
       with: create(:enrollment, position: @memberships[pos].position).committee.name
   end
+end
+
+Then /^I should not see the search field for an? (position|authority|user|committee)$/ do |field|
+  page.should_not have_field field.titleize
 end
 
 Then /^I should only find the (\d+)(?:st|nd|rd|th) membership$/ do |position|

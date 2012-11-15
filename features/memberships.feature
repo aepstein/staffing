@@ -124,15 +124,17 @@ Scenario Outline: Show join and leave notices
     |notice|
     |join  |
     |leave |
-@wip
+
 Scenario Outline: Search for memberships
-  Given there are 4 memberships
+  Given I log in as the plain user
+  And there are 4 memberships with a common <common>
   When I search for the <attribute> of the 1st membership
-  Then I should only find 1st membership
+  Then I should not see the search field for a <common>
+  And I should only find the 1st membership
   Examples:
-  |attribute|
-  |position |
-  |authority|
-  |user     |
-  |committee|
+  |common   |attribute|
+  |user     |position |
+  |user     |authority|
+  |position |user     |
+  |user     |committee|
 
