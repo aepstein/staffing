@@ -69,6 +69,13 @@ Then /^I may( not)? update the user$/ do |negate|
   end
 end
 
+Then /^I may( not)? set renewal preferences for the user$/ do |negate|
+  visit renew_user_memberships_url @user
+  step %{I should#{negate} be authorized}
+  Capybara.current_session.driver.submit :put, renew_user_memberships_url(@user), {}
+  step %{I should#{negate} be authorized}
+end
+
 Then /^I may( not)? destroy the user$/ do |negate|
   visit(users_url)
   if negate.blank?

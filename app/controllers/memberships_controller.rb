@@ -6,6 +6,9 @@ class MembershipsController < ApplicationController
   before_filter :set_modifier, only: [ :create, :update ]
   filter_access_to :new, :create, :edit, :update, :destroy, :show, :confirm,
     :decline, attribute_check: true
+  filter_access_to :renew do
+    permitted_to! :update, @user
+  end
 
   # GET /memberships/:membership_id/decline
   # PUT /memberships/:membership_id/decline

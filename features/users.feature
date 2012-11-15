@@ -8,15 +8,16 @@ Scenario Outline: Access control
   Then I <show> see the user
   And I <create> create users
   And I <update> update the user
+  And I <renew> set renewal preferences for the user
   And I <destroy> destroy the user
   Examples:
-    |role        |show   |create |update |destroy|
-    |admin       |may    |may    |may    |may    |
-    |staff       |may    |may    |may    |may not|
-    |authority   |may    |may not|may not|may not|
-    |authority_ro|may    |may not|may not|may not|
-    |owner       |may    |may not|may    |may not|
-    |plain       |may not|may not|may not|may not|
+    |role        |show   |create |update |renew  |destroy|
+    |admin       |may    |may    |may    |may    |may    |
+    |staff       |may    |may    |may    |may    |may not|
+    |authority   |may    |may not|may not|may not|may not|
+    |authority_ro|may    |may not|may not|may not|may not|
+    |owner       |may    |may not|may    |may    |may not|
+    |plain       |may not|may not|may not|may not|may not|
 
 Scenario Outline: Create/edit a user
   Given I log in as the <role> user
