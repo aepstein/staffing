@@ -156,7 +156,7 @@ class User < ActiveRecord::Base
 
   accepts_nested_attributes_for :memberships
 
-  before_validation :import_ldap_attributes, :on => :create
+  before_validation :import_ldap_attributes, on: :create
   before_validation { |r| r.renewal_checkpoint ||= Time.zone.now unless r.persisted? }
 
   def self.import_empl_id_from_csv_string( string )

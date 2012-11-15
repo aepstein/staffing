@@ -138,3 +138,27 @@ Scenario Outline: Search for memberships
   |position |user     |
   |user     |committee|
 
+Scenario Outline: Show correct renewable memberships
+  Given an authorization scenario of a <tense> membership to which I have a <relation_tense> <relation> relationship
+  And the membership <renewable> renewable
+  Then I <renew> renew the membership
+  Examples:
+    |tense   |relation_tense|relation|renewable|renew  |
+    |past    |current       |member  |is       |may    |
+    |current |current       |member  |is       |may    |
+    |historic|current       |member  |is       |may not|
+    |past    |current       |member  |is not   |may not|
+
+Scenario Outline: Set renewal preferences for a user
+  Given an authorization scenario of a <tense> membership to which I have a <relation_tense> <relation> relationship
+  And the membership is renewable
+  When I fill in <renewal> renewal for the membership
+  And I submit renewals with renotification <renotify>abled
+  Then I should see renewals confirmed with renotification <renotify>abled
+  And the membership should have <renewal> renewal
+  Examples:
+    |tense|relation_tense|relation|renewal|renotify|
+    |past |current       |member  |a      |dis     |
+    |past |current       |member  |a      |en      |
+    |past |current       |member  |no     |en      |
+
