@@ -1,18 +1,3 @@
-Given /^#{capture_model} is( not)? interested in renewal$/ do |membership, negate|
-  m = model(membership)
-  m.update_column :renew_until, ( negate ? nil : ( m.ends_at + 2.years ) )
-end
-
-Given /^#{capture_model} is( not)? declined renewal$/ do |membership, negate|
-  m = model(membership)
-  m.update_column :declined_at, ( negate ? nil : Time.zone.now )
-end
-
-Given /^#{capture_model} has( not)? confirmed renewal preference$/ do |membership, negate|
-  m = model(membership)
-  m.update_column :renewal_confirmed_at, ( negate ? nil : ( Time.zone.now ) )
-end
-
 Given /^(?:an )authorization scenario of an? (current|recent|pending|future|past|historic) membership to which I have a (current|recent|pending|future) (admin|staff|authority|authority_ro|member|plain) relationship$/ do |member_tense, relation_tense, relationship|
   role = case relationship
   when 'admin', 'staff'
