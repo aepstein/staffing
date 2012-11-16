@@ -27,11 +27,11 @@ namespace :notices do
     end
   end
 
-  desc "Send notices for all requests that have been rejected"
+  desc "Send notices for all membership requests that have been rejected"
   task :reject => [ :environment ] do
-    Request.reject_notice_pending.readonly(false).each do |request|
-      request.send_reject_notice!
-      notices_log "Sent reject notice for request #{request.id}."
+    MembershipRequest.reject_notice_pending.readonly(false).each do |membership_request|
+      membership_request.send_reject_notice!
+      notices_log "Sent reject notice for membership request #{membership_request.id}."
     end
   end
 

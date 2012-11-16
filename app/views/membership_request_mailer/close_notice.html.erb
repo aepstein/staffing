@@ -1,19 +1,19 @@
 <p>
-Dear <%= @request.user.first_name %>,
+Dear <%= @membership_request.user.first_name %>,
 </p>
 
 <p>
-This notice is to inform you that your request for appointment to <%= @request.committee %> has been approved.
+This notice is to inform you that your request for appointment to <%= @membership_request.committee %> has been approved.
 </p>
 
-<% if @request.memberships.any? %>
+<% if @membership_request.memberships.any? %>
 <p>
 You have been appointed to the following <%=
-  [ @request.memberships.count, @request.enrollments.count ].max > 1 ? 'positions' : 'position' %>:
+  [ @membership_request.memberships.count, @membership_request.enrollments.count ].max > 1 ? 'positions' : 'position' %>:
 </p>
 
 <ul>
-<%= render :partial => 'membership', :collection => @request.memberships %>
+<%= render :partial => 'membership', :collection => @membership_request.memberships %>
 </ul>
 <% else %>
 <p>

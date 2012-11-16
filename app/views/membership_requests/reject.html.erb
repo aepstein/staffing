@@ -1,0 +1,20 @@
+<h2>Reject <%=h @membership_request.user.name %> for <%=h @membership_request.committee %></h2>
+
+<%= semantic_form_for(@membership_request, url: reject_membership_request_path(@membership_request),
+  html: { method: :put } ) do |form| %>
+  <%= form.inputs do %>
+    <%= form.input :rejected_by_authority, :as => :select, :label => 'Authority',
+      :hint => 'Under which authority should rejection be made?',
+      :collection => ( current_user.authorities.authorized.to_a & @membership_request.authorities ),
+      :html_options => { :include_blank => false } %>
+    <%= form.input :rejection_comment, :as => :text,
+      :hint => 'Provide a brief explanation for rejection of the membership_request to share with the membership_requestor.' %>
+  <% end %>
+  <%= form.actions %>
+<% end %>
+
+<p>
+<%= link_to 'Show', @membership_request %> |
+<%= link_to 'Back', polymorphic_path( [@membership_request.committee, :membership_requests] ) %>
+</p>
+

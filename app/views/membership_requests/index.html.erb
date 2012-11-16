@@ -1,0 +1,19 @@
+<h2><%= params[:action].titleize %> membership_requests <%= @title %></h2>
+
+<p>
+<%= paginate @membership_requests %>
+</p>
+
+<%= render partial: "membership_requests/membership_requests", object: @membership_requests,
+  locals: { committee: @committee, user: (@committee || @authority ? false : @user) } %>
+
+<p>
+<%= paginate @membership_requests %>
+</p>
+
+<hr />
+
+<% if @authority %>
+<p><%= link_to @authority.to_s, @authority %></p>
+<% end %>
+

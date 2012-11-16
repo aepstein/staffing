@@ -1,7 +1,7 @@
   <%= table_row_tag true, false, { id: "committee-#{committee.id}" } do %>
     <td><%=h committee.name %></td>
     <% if user -%>
-    <td><%= link_to 'Request', new_committee_request_path(committee, user_id: user.id) %></td>
+    <td><%= link_to 'MembershipRequest', new_committee_membership_request_path(committee, user_id: user.id) %></td>
     <% else -%>
     <td></td>
     <% end -%>

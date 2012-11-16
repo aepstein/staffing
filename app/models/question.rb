@@ -12,7 +12,7 @@ class Question < ActiveRecord::Base
 
   has_and_belongs_to_many :quizzes
   has_many :answers, inverse_of: :question
-  has_many :requests, through: :answers
+  has_many :membership_requests, through: :answers
   has_many :users, through: :answers
 
   validates :name, presence: true, uniqueness: true

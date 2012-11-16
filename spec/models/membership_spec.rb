@@ -186,18 +186,18 @@ describe Membership do
 
   context 'requested/unrequested scope' do
 
-    let(:request) { create :request }
+    let(:membership_request) { create :membership_request }
     let(:membership) { create :membership,
-      position: request.committee.positions.first,
-      user: request.user, request: request }
+      position: membership_request.committee.positions.first,
+      user: membership_request.user, membership_request: membership_request }
 
     it "should include/exclude qualifying membership" do
       Membership.requested.should include membership
       Membership.unrequested.should_not include membership
     end
 
-    it "should exclude/include membership without request" do
-      membership.request = nil; membership.save!
+    it "should exclude/include membership without membership_request" do
+      membership.membership_request = nil; membership.save!
       Membership.requested.should_not include membership
       Membership.unrequested.should include membership
     end
@@ -288,38 +288,38 @@ describe Membership do
     new_designees.first.committee.should eql enrollment_no_designee.committee
   end
 
-  context "claim request" do
+  context "claim membership_request" do
     let( :committee ) { enrollment.committee }
     let( :position ) { enrollment.position }
     let( :enrollment ) { create :enrollment, requestable: true }
-    let( :request ) { create :request, committee: committee }
-    let( :membership ) { create :membership, position: position, user: request.user }
+    let( :membership_request ) { create :membership_request, committee: committee }
+    let( :membership ) { create :membership, position: position, user: membership_request.user }
 
-    before(:each) { request }
+    before(:each) { membership_request }
 
-    it "should claim a matching request" do
-      membership.request.should eql request
+    it "should claim a matching membership_request" do
+      membership.membership_request.should eql membership_request
     end
 
-    it "should not claim a request for an inactive committee" do
+    it "should not claim a membership_request for an inactive committee" do
       committee.update_attribute :active, false
-      membership.request.should be_nil
+      membership.membership_request.should be_nil
     end
 
-    it "should not claim a request for a non-matching status position" do
+    it "should not claim a membership_request for a non-matching status position" do
       position.update_attribute :statuses_mask, 2
-      ( position.statuses_mask & request.user.statuses_mask ).should eql 0
-      membership.request.should be_nil
+      ( position.statuses_mask & membership_request.user.statuses_mask ).should eql 0
+      membership.membership_request.should be_nil
     end
 
-    it "should not claim a request for an inactive position" do
+    it "should not claim a membership_request for an inactive position" do
       position.update_attribute :active, false
-      membership.request.should be_nil
+      membership.membership_request.should be_nil
     end
 
-    it "should not claim a request for non-requestable enrollment" do
+    it "should not claim a membership_request for non-requestable enrollment" do
       enrollment.update_attribute :requestable, false
-      membership.request.should be_nil
+      membership.membership_request.should be_nil
     end
 
   end

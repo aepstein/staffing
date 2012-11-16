@@ -7,7 +7,7 @@ Staffing::Application.routes.draw do
         get :current, :future, :past, :renewable
       end
     end
-    resources :requests, only: [ :index ] do
+    resources :membership_requests, only: [ :index ] do
       collection do
         get :expired, :unexpired, :active, :inactive, :rejected
       end
@@ -41,7 +41,7 @@ Staffing::Application.routes.draw do
       end
     end
     resources :positions, only: [ :index ]
-    resources :requests, only: [ :new, :create, :index ] do
+    resources :membership_requests, only: [ :new, :create, :index ] do
       collection do
         get :expired, :unexpired, :active, :inactive, :rejected
       end
@@ -64,6 +64,17 @@ Staffing::Application.routes.draw do
     member do
       get :decline
       put :decline
+    end
+  end
+  resources :membership_requests, except: [ :index, :new, :create ] do
+    member do
+      get :reject
+      put :reject, :reactivate
+    end
+    resources :memberships, only: [ :index ] do
+      collection do
+        get :assignable
+      end
     end
   end
   resources :motions, except: [ :new, :create ] do
@@ -89,7 +100,7 @@ Staffing::Application.routes.draw do
         get :current, :future, :past, :unrenewed, :renewed
       end
     end
-    resources :requests, only: [ :new, :create, :index ] do
+    resources :membership_requests, only: [ :new, :create, :index ] do
       collection do
         get :expired, :unexpired, :active, :inactive, :rejected
       end
@@ -101,17 +112,6 @@ Staffing::Application.routes.draw do
   end
   resources :quizzes do
     resources :questions, only: [ :index ]
-  end
-  resources :requests, except: [ :index, :new, :create ] do
-    member do
-      get :reject
-      put :do_reject, :reactivate
-    end
-    resources :memberships, only: [ :index ] do
-      collection do
-        get :assignable
-      end
-    end
   end
   resources :schedules
   resources :users do
@@ -148,7 +148,7 @@ Staffing::Application.routes.draw do
         get :requestable
       end
     end
-    resources :requests, only: [ :index, :new, :create ] do
+    resources :membership_requests, only: [ :index, :new, :create ] do
       collection do
         get :expired, :unexpired, :rejected, :active, :inactive
       end

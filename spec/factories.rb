@@ -2,10 +2,10 @@ require 'factory_girl'
 
 FactoryGirl.define do
   factory :answer do
-    association :request
+    association :membership_request
     question do |a|
       a.association( :question,
-        :quizzes => [a.request.requestable_positions.assignable.first.quiz] )
+        :quizzes => [a.membership_request.requestable_positions.assignable.first.quiz] )
     end
     content 'blue'
   end
@@ -136,6 +136,16 @@ FactoryGirl.define do
     end
   end
 
+  factory :membership_request do
+    association :user
+    committee { |membership_request| membership_request.association :requestable_committee }
+    starts_at { Time.zone.today }
+    ends_at { |membership_request| membership_request.starts_at + 1.year }
+    factory :expired_membership_request do
+      starts_at Time.zone.today - 2.years
+    end
+  end
+
   factory :motion do
     sequence( :name ) { |n| "Motion #{n}" }
     association :committee
@@ -196,16 +206,6 @@ FactoryGirl.define do
 
   factory :quiz do
     sequence(:name) { |n| "Quiz #{n}" }
-  end
-
-  factory :request do
-    association :user
-    committee { |request| request.association :requestable_committee }
-    starts_at { Time.zone.today }
-    ends_at { |request| request.starts_at + 1.year }
-    factory :expired_request do
-      starts_at Time.zone.today - 2.years
-    end
   end
 
   factory :schedule do

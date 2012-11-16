@@ -36,7 +36,7 @@ describe Authority do
     @authority.effective_contact_name.should eql Staffing::Application.app_config['defaults']['authority']['contact_name']
   end
 
-  context "requests" do
+  context "membership_requests" do
     def position
       @position ||= create(:position, authority: @authority)
     end
@@ -49,38 +49,38 @@ describe Authority do
       enrollment.committee
     end
 
-    def request
-      @request ||= create(:request, user: user, committee: committee)
+    def membership_request
+      @membership_request ||= create(:membership_request, user: user, committee: committee)
     end
 
     def user
       @user ||= create(:user)
     end
 
-    it "should retrieve requests that are staffable with no statuses_mask" do
-      @authority.requests.should include request
+    it "should retrieve membership_requests that are staffable with no statuses_mask" do
+      @authority.membership_requests.should include membership_request
     end
 
-    it "should retrieve requests that are staffable with matching statuses_mask" do
+    it "should retrieve membership_requests that are staffable with matching statuses_mask" do
       position.statuses = ['undergrad']
       position.save!
       user.status = 'undergrad'
       user.save!
-      @authority.requests.should include request
+      @authority.membership_requests.should include membership_request
     end
 
-    it "should not retrieve requests that are not requestable" do
-      request
+    it "should not retrieve membership_requests that are not requestable" do
+      membership_request
       enrollment.update_attribute :requestable, false
-      @authority.requests.should be_empty
+      @authority.membership_requests.should be_empty
     end
 
-    it "should not retrieve requests that do not have status match" do
-      request
+    it "should not retrieve membership_requests that do not have status match" do
+      membership_request
       position.statuses = ['undergrad']
       position.save!
       user.status.should_not eql 'undergrad'
-      @authority.requests.should be_empty
+      @authority.membership_requests.should be_empty
     end
   end
 

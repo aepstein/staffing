@@ -205,7 +205,7 @@ end
 
 Then /^I may( not)? request membership in the committee$/ do |negate|
   visit(root_url)
-  within("#requests") do
+  within("#membership_requests") do
     if negate.blank?
       page.should have_text "You may browse 1 committee for which you are eligible to request membership."
     else

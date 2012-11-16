@@ -1,0 +1,20 @@
+Dear <%= @membership_request.user.first_name %>,
+
+This notice is to inform you that your request for appointment to <%= @membership_request.committee %> has been declined for the following reason(s):
+
+<%= @membership_request.rejection_comment %>
+
+<% unless @membership_request.committee.reject_message.blank? -%>
+<%= @membership_request.committee.reject_message %>
+
+<% end -%>
+<% unless @membership_request.rejected_by_authority.reject_message.blank? -%>
+<%= @membership_request.rejected_by_authority.reject_message %>
+
+<% end -%>
+Please note that while the decision to decline appointment is generally final, your request remains on file and you are free to update it if you continue to have interest in the position.  Declined requests may be re-examined at a later date as needed.
+
+Best regards,
+
+<%= @membership_request.rejected_by_authority.effective_contact_name %>
+

@@ -1,0 +1,82 @@
+<%= content_tag :div, id: "membership-request-#{@membership_request.id}" do %>
+<p>
+  <b>Committee:</b> <%=h @membership_request.committee %>
+</p>
+
+<p>
+  <b>Status:</b> <%=raw @membership_request.status %>
+</p>
+
+<% if @membership_request.rejected? %>
+<p>
+  <b>Rejected at:</b> <%=h @membership_request.rejected_at.to_formatted_s :us_ordinal %>
+</p>
+
+<p>
+  <b>Rejected by authority:</b> <%=h @membership_request.rejected_by_authority %>
+</p>
+
+<p>
+  <b>Rejected by user:</b> <%=h @membership_request.rejected_by_user %>
+</p>
+
+<p>
+  <b>Reject notice at:</b> <%=h @membership_request.reject_notice_at? ? @membership_request.reject_notice_at.to_s( :us_ordinal ) : "None sent." %>
+</p>
+
+<p>
+  <b>Rejection comment:</b>
+</p>
+
+<%=markdown @membership_request.rejection_comment %>
+<% end %>
+
+<p>
+  <b>User:</b> <%=h @membership_request.user %>
+</p>
+
+<p>
+  <b>Netid:</b> <%=h @membership_request.user.net_id %>
+</p>
+
+<p>
+  <b>Email:</b> <%=h @membership_request.user.email %>
+</p>
+
+<p>
+  <b>Desired Start Date:</b> <%=h @membership_request.starts_at %>
+</p>
+
+<p>
+  <b>Desired End Date:</b> <%=h @membership_request.ends_at %>
+</p>
+
+<p>
+  <b>Answers:</b>
+</p>
+
+<% @membership_request.answers(:include => [:question]).
+   where { |t| t.question_id.in(
+     @membership_request.questions.except(:select).select { id }
+   ) }.each do |answer| %>
+  <% if answer.question.disposition == 'boolean' %>
+  <%=markdown( answer.question.content + " #{answer.content == 'true' ? 'Yes' : 'No'}" ) %>
+  <% else %>
+  <%=markdown answer.question.content %>
+  <%=markdown answer.content %>
+  <% end %>
+<% end %>
+
+<p>
+  <b>Resume?</b> <%= @membership_request.user.resume.blank? ? 'No' :  link_to('Yes', resume_user_path( @membership_request.user, :format => :pdf ) ) %>
+</p>
+<% end %><!-- #membership-request-<%= @membership_request.id %> -->
+
+<p>
+<% if permitted_to?( :edit, @membership_request ) -%>
+<%= link_to 'Edit', edit_membership_request_path(@membership_request) %> |
+<% end -%>
+<%= link_to 'List Memberships', membership_request_memberships_path(@membership_request) %> |
+<%= link_to 'Back', polymorphic_path( [@membership_request.committee, :membership_requests] ) %>
+</p>
+

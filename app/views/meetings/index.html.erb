@@ -1,6 +1,6 @@
 <h2><%= params[:action].titleize %> meetings for <%= @committee ? @committee : "" %></h2>
 
-<%= form_for @q, url: request.fullpath, method: :get do |form| %>
+<%= form_for @q, url: membership_request.fullpath, method: :get do |form| %>
   <% if @committee %>
   <p>
     <%= form.label :period_id_eq, 'Period' %>

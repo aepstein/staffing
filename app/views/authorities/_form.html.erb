@@ -4,7 +4,7 @@
   <%= form.input :committee_name, :as => :autocomplete, :label => 'Committee',
     :url => committees_path( :format => :json ),
     :hint => "Specify the committee, if any, whose members should be able to read " +
-    "and comment on requests under this authority." %>
+    "and comment on membership_requests under this authority." %>
   <%= form.input :join_message %>
   <%= form.input :leave_message %>
   <%= form.input :reject_message %>

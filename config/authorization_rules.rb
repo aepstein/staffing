@@ -2,7 +2,7 @@ authorization do
   role :admin do
     has_permission_on [ :authorities, :brands, :committees,
       :meetings, :memberships, :motions, :positions,
-      :quizzes, :questions, :requests, :schedules, :users,
+      :quizzes, :questions, :membership_requests, :schedules, :users,
       :user_renewal_notices, :sendings ],
       to: [ :manage ]
 
@@ -11,7 +11,7 @@ authorization do
   role :staff do
     has_permission_on [ :authorities, :brands, :committees,
       :meetings, :memberships, :motions, :positions,
-      :quizzes, :questions, :requests, :schedules, :users,
+      :quizzes, :questions, :membership_requests, :schedules, :users,
       :user_renewal_notices, :sendings ],
       to: [ :create, :update, :show, :index, :staff ]
     has_permission_on :committees, to: [ :chair, :members, :tents, :vote ]
@@ -22,7 +22,7 @@ authorization do
     has_permission_on :motions, to: [ :admin, :adopt, :divide, :implement,
       :merge, :propose, :refer, :reject, :restart, :withdraw ]
     has_permission_on :users, to: [ :resume, :staff, :tent ]
-    has_permission_on :requests, to: [ :reject, :reactivate ]
+    has_permission_on :membership_requests, to: [ :reject, :reactivate ]
 
     includes :user
   end
@@ -33,7 +33,7 @@ authorization do
     has_permission_on [ :authorities, :brands, :committees, :memberships,
       :positions, :schedules ],
       to: [ :show, :index ]
-    has_permission_on [ :motions, :requests ], to: :index
+    has_permission_on [ :motions, :membership_requests ], to: :index
     has_permission_on :attachments, to: :show do
       if_permitted_to :show, :attachable
     end
@@ -88,6 +88,15 @@ authorization do
         ends_at: gt { [ object.ends_at, ( Time.zone.today - 1.day ) ].max },
       } } } }
     end
+    has_permission_on :membership_requests, to: [ :manage, :show ] do
+      if_attribute user_id: is { user.id }
+    end
+    has_permission_on :membership_requests, to: [ :show ] do
+      if_attribute committee_id: is_in { user.committees.authorized(0).map(&:id) }
+    end
+    has_permission_on :membership_requests, to: [ :reject ] do
+      if_attribute committee_id: is_in { user.committees.authorized.map(&:id) }
+    end
     has_permission_on :motions, to: :own do
       if_attribute sponsorships: { user_id: is { user.id } }
     end
@@ -134,15 +143,6 @@ authorization do
     end
     has_permission_on :users, to: :resume do
       if_attribute id: is { user.id }
-    end
-    has_permission_on :requests, to: [ :manage, :show ] do
-      if_attribute user_id: is { user.id }
-    end
-    has_permission_on :requests, to: [ :show ] do
-      if_attribute committee_id: is_in { user.committees.authorized(0).map(&:id) }
-    end
-    has_permission_on :requests, to: [ :reject ] do
-      if_attribute committee_id: is_in { user.committees.authorized.map(&:id) }
     end
     has_permission_on :users, to: [ :profile ]
     has_permission_on :users, to: [ :edit, :update, :show, :index ] do

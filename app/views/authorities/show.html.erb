@@ -25,7 +25,7 @@
 <%= link_to 'Edit', edit_authority_path(@authority) %> |
 <% end -%>
 <%= nested_index @authority, 'memberships', %w( past current future ) %> |
-<%= nested_index @authority, 'requests', %w( expired unexpired active rejected ) %> |
+<%= nested_index @authority, 'membership_requests', %w( expired unexpired active rejected ) %> |
 <%= link_to 'Back', authorities_path %>
 </p>
 

@@ -8,7 +8,7 @@
 <h3>Your Authorities</h3>
 
 <p>
-You may review requests and update memberships for the following authorities:
+You may review membership_requests and update memberships for the following authorities:
 </p>
 
 <ul>
@@ -16,8 +16,8 @@ You may review requests and update memberships for the following authorities:
 <li>
 <%= link_to h( authority ), authority %>
 (<%= link_to 'renewable memberships', renewable_authority_memberships_path( authority ) %>)
-(<%= link_to 'active requests', active_authority_requests_path( authority ) %>)
-(<%= link_to 'rejected requests', rejected_authority_requests_path( authority ) %>)
+(<%= link_to 'active membership_requests', active_authority_membership_requests_path( authority ) %>)
+(<%= link_to 'rejected membership_requests', rejected_authority_membership_requests_path( authority ) %>)
 (<%= link_to 'current memberships', current_authority_memberships_path( authority ) %>)
 (<%= link_to 'future memberships', future_authority_memberships_path( authority ) %>)
 </li>
@@ -72,21 +72,21 @@ You may not start motions for any committee at this time.
 </p>
 <% end %>
 
-<div id="requests">
-<h3>Your Requests for Membership</h3>
+<div id="membership_requests">
+<h3>Your MembershipRequests for Membership</h3>
 
 <p>
-You have <%= link_to pluralize( current_user.requests.unexpired.length, 'current request' ), unexpired_user_requests_path( current_user ) %> and <%= link_to pluralize( current_user.requests.expired.size, 'expired request' ), expired_user_requests_path( current_user ) %>.
+You have <%= link_to pluralize( current_user.membership_requests.unexpired.length, 'current membership request' ), unexpired_user_membership_requests_path( current_user ) %> and <%= link_to pluralize( current_user.membership_requests.expired.size, 'expired membership request' ), expired_user_membership_requests_path( current_user ) %>.
 </p>
 
 <p>
 You may browse <%= link_to pluralize( current_user.committees.requestable.count("committees.id", :distinct => true), 'committee' ), requestable_user_committees_path( current_user ) %> for which you are eligible to request membership.
 </p>
 
-<% if current_user.requests.unexpired.length > 0 %>
-<h4>Current Requests</h4>
-<%= render :partial => 'requests/requests', :object => current_user.requests.unexpired,
+<% if current_user.membership_requests.unexpired.length > 0 %>
+<h4>Current MembershipRequests</h4>
+<%= render :partial => 'membership_requests/membership_requests', :object => current_user.membership_requests.unexpired,
   :locals => { :user => current_user } %>
 <% end %>
-</div> <!-- #requests -->
+</div> <!-- #membership_requests -->
 

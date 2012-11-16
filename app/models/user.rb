@@ -57,14 +57,14 @@ class User < ActiveRecord::Base
     end
     def authorized( votes = 1 )
       return Authority.all if proxy_association.owner.role_symbols.include? :admin
-      prospective.where { committees.enrollments.votes >= my { votes } }
+      prospective.where { |a| a.committees.enrollments.votes >= votes }
     end
   end
   has_many :designees, inverse_of: :user
-  has_many :requests, inverse_of: :user
+  has_many :membership_requests, inverse_of: :user
   has_many :sponsorships, inverse_of: :user
   has_many :motions, through: :sponsorships
-  has_many :answers, through: :requests
+  has_many :answers, through: :membership_requests
   has_many :periods, through: :memberships
   has_many :positions, through: :memberships do
     def current
@@ -185,7 +185,7 @@ class User < ActiveRecord::Base
   def requestables(reload=false)
     @requestables = nil if reload
     return @requestables if @requestables
-    @requestables = requests.map { |request| request.requestable }
+    @requestables = membership_requests.map { |membership_request| membership_request.requestable }
   end
 
   def role_symbols

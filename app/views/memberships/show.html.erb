@@ -1,9 +1,9 @@
 <div id="membership-<%= @membership.id %>">
 <%=render partial: 'memberships/detail', locals: { membership: @membership } %>
 
-<% if @membership.request %>
+<% if @membership.membership_request %>
 <p>
-  <b>Request:</b> <%=link_to 'Yes', @membership.request %>
+  <b>MembershipRequest:</b> <%=link_to 'Yes', @membership.membership_request %>
 </p>
 <% end %>
 

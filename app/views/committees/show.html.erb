@@ -83,7 +83,7 @@
 <%= nested_index @committee, 'meetings', %w( past current future ) %> |
 <%= nested_index @committee, 'motions', %w( past current ) %> |
 <%= link_to 'List Positions', committee_positions_path(@committee) %> |
-<%= nested_index @committee, 'requests', %w( active inactive ) %> |
+<%= nested_index @committee, 'membership_requests', %w( active inactive ) %> |
 <%= link_to 'Tent cards (pdf)', tents_committee_path( @committee, :format => :pdf ) %> |
 <%= link_to 'Members (pdf)', members_committee_path( @committee, :format => :pdf ) %> |
 <%= link_to 'Back', committees_path %>

@@ -14,15 +14,15 @@ describe Answer do
     @answer.save.should be_false
   end
 
-  it 'should not save without a request' do
-    @answer.request = nil
+  it 'should not save without a membership_request' do
+    @answer.membership_request = nil
     @answer.save.should be_false
   end
 
   it 'should not save with a question that is not allowed for the requested position if a position is requested' do
     disallowed_question = create(:question)
-    answer = build(:answer, request: @answer.request, question: disallowed_question)
-    answer.request.questions.should_not include disallowed_question
+    answer = build(:answer, membership_request: @answer.membership_request, question: disallowed_question)
+    answer.membership_request.questions.should_not include disallowed_question
     answer.save.should be_false
   end
 end

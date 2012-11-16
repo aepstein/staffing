@@ -1,7 +1,7 @@
 <% user ||= false %>
 <% committee ||= false %>
 <% position ||= false %>
-<% request ||= false %>
+<% membership_request ||= false %>
 <table id="memberships">
   <thead>
   <tr>
@@ -28,7 +28,7 @@
   <tbody>
 <%= render :partial => "memberships/membership", :collection => memberships,
   :locals => { :user => user, :committee => committee, :position => position,
-    :request => request } %>
+    :membership_request => membership_request } %>
   </tbody>
 </table>
 

@@ -1,11 +1,11 @@
-Dear <%= @request.user.first_name %>,
+Dear <%= @membership_request.user.first_name %>,
 
-This notice is to inform you that your request for appointment to <%= @request.committee %> has been approved.
+This notice is to inform you that your request for appointment to <%= @membership_request.committee %> has been approved.
 
-<% if @request.memberships.any? %>
+<% if @membership_request.memberships.any? %>
 You have been appointed to the following <%=
-  [ @request.memberships.count, @request.enrollments.count ].max > 1 ? 'positions' : 'position' %>:
-<%= render :partial => 'membership', :collection => @request.memberships %>
+  [ @membership_request.memberships.count, @membership_request.enrollments.count ].max > 1 ? 'positions' : 'position' %>:
+<%= render :partial => 'membership', :collection => @membership_request.memberships %>
 <% else %>
 You have not been appointed to any positions as a result of this request.  This is most likely for reasons communicated to you or by you separately from this notice.
 <% end %>

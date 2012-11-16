@@ -1,5 +1,5 @@
 <% user ||= false; committee ||= false %>
-<table id="requests">
+<table id="membership_requests">
   <thead>
   <tr>
     <% unless user %>
@@ -12,7 +12,7 @@
   </tr>
   </thead>
   <tbody>
-  <%= render partial: 'requests/request', collection: requests,
+  <%= render partial: 'membership_requests/membership_request', collection: membership_requests,
     locals: { user: user, committee: committee } %>
   </tbody>
 </table>

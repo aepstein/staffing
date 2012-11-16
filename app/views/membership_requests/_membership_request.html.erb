@@ -1,0 +1,23 @@
+<% user ||= false; committee ||= false %>
+  <%= table_row_tag true, false, { id: "membership-request-#{membership_request.id}" } do %>
+    <% unless user %>
+    <td><%=h membership_request.user.name :last_first %></td>
+    <% end %>
+    <% unless committee %>
+    <td><%=h membership_request.committee %></td>
+    <% end %>
+    <td><%= membership_request.position %></td>
+    <td><%= link_to 'Show', membership_request %></td>
+    <td><%= link_to( 'Edit', edit_membership_request_path(membership_request) ) if permitted_to? :edit, membership_request %></td>
+    <td><%= link_to( 'Destroy', membership_request, data: { confirm: 'Are you sure?' }, method: :delete ) if permitted_to? :destroy, membership_request %></td>
+    <td>
+      <% if permitted_to? :reject, membership_request %>
+        <% if membership_request.rejected? %>
+          <%= link_to 'Reactivate', reactivate_membership_request_path( membership_request ), data: { confirm: 'Are you sure?' }, method: :put %>
+        <% else %>
+          <%= link_to 'Reject', reject_membership_request_path( membership_request ) %>
+        <% end %>
+      <% end %>
+    </td>
+  <% end %>
+

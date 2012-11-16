@@ -3,7 +3,7 @@ class Membership < ActiveRecord::Base
 
   attr_accessible :renew_until, :renewal_confirmed_at, as: [ :default, :updator ]
   attr_accessible :user_name, :user_id, :period_id, :position_id,
-    :request_id, :starts_at, :ends_at, :designees_attributes,
+    :membership_request_id, :starts_at, :ends_at, :designees_attributes,
     :designees_attributes, as: [ :creator, :updator ]
   attr_accessible :decline_comment, as: :decliner
   attr_readonly :position_id
@@ -15,7 +15,7 @@ class Membership < ActiveRecord::Base
   belongs_to :user, inverse_of: :memberships
   belongs_to :period, inverse_of: :memberships
   belongs_to :position, inverse_of: :memberships
-  belongs_to :request, inverse_of: :memberships
+  belongs_to :membership_request, inverse_of: :memberships
   belongs_to :renewed_by_membership, class_name: 'Membership',
     inverse_of: :renewed_memberships
   belongs_to :declined_by_user, class_name: 'User',
@@ -41,6 +41,7 @@ class Membership < ActiveRecord::Base
           designee.committee = committee
           memo << designee
         end
+        memo
       end
     end
     protected
@@ -60,13 +61,13 @@ class Membership < ActiveRecord::Base
     end
   end
   has_many :committees, through: :enrollments
-  has_many :requests, through: :position do
+  has_many :membership_requests, through: :position do
     def overlapping
       overlap( proxy_association.owner.starts_at, proxy_association.owner.ends_at )
     end
     def interested; overlapping.active; end
   end
-  has_many :users, through: :requests, source: :user do
+  has_many :users, through: :membership_requests, source: :user do
     def assignable; User.assignable_to( proxy_association.owner.position ); end
   end
   has_many :watcher_users, through: :committees, source: :member_watchers, uniq: true do
@@ -99,8 +100,8 @@ class Membership < ActiveRecord::Base
     users.middle_name ] }
   scope :assigned, where { user_id.not_eq( nil ) }
   scope :unassigned, where( :user_id => nil )
-  scope :requested, where { request_id != nil }
-  scope :unrequested, where( :request_id => nil )
+  scope :requested, where { membership_request_id != nil }
+  scope :unrequested, where( :membership_request_id => nil )
   scope :ends_within, lambda { |range|
     where { ends_at.gte( Time.zone.today - range ) &
       ends_at.lte( Time.zone.today + range ) }
@@ -184,8 +185,8 @@ class Membership < ActiveRecord::Base
   validate :must_be_within_period, :concurrent_memberships_must_not_exceed_slots
   validate :modifier_must_overlap, if: :modifier
 
-  before_save :clear_notices, :claim_request, :undecline_if_renewed
-  after_save :populate_unassigned, :close_claimed_request, :claim_renewed_memberships
+  before_save :clear_notices, :claim_membership_request, :undecline_if_renewed
+  after_save :populate_unassigned, :close_claimed_membership_request, :claim_renewed_memberships
   after_destroy :populate_unassigned
 
   def decline_renewal(decliner_attributes, options={})
@@ -247,7 +248,7 @@ class Membership < ActiveRecord::Base
 
   def confirmed?
     return false unless confirmed_at?
-    return request.updated_at < confirmed_at if request
+    return membership_request.updated_at < confirmed_at if membership_request
     true
   end
 
@@ -260,14 +261,14 @@ class Membership < ActiveRecord::Base
 
   # Returns the context in which this membership should be framed (useful for polymorphic_path)
   def context
-    request || position || raise( "No context is possible" )
+    membership_request || position || raise( "No context is possible" )
   end
 
   # Identify users who should be copied on notices related to this membership
   def watchers; watcher_users.overlapping; end
 
   def description
-    return request.committee.to_s if request
+    return membership_request.committee.to_s if membership_request
     return position.requestable_committees.first.to_s if position.requestable_committees.any?
     position.to_s
   end
@@ -322,10 +323,10 @@ class Membership < ActiveRecord::Base
     true
   end
 
-  # If this fulfills an active request, assign it to that request
-  def claim_request
-    return true if request || user.blank?
-    candidate = requests.interested.first
+  # If this fulfills an active membership_request, assign it to that membership_request
+  def claim_membership_request
+    return true if membership_request || user.blank?
+    candidate = membership_requests.interested.first
     candidate.memberships << self if candidate
     true
   end
@@ -345,10 +346,10 @@ class Membership < ActiveRecord::Base
     end
   end
 
-  # If associated with a new, active request, close the request
-  def close_claimed_request
-    return true unless request_id_changed? && self.request && request.active?
-    request.close
+  # If associated with a new, active membership_request, close the membership_request
+  def close_claimed_membership_request
+    return true unless membership_request_id_changed? && self.membership_request && membership_request.active?
+    membership_request.close
     true
   end
 

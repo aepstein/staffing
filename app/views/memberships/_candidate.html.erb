@@ -1,4 +1,4 @@
-<% if candidate.is_a? Request %>
+<% if candidate.is_a? MembershipRequest %>
 <li><%=link_to candidate.user.name(:net_id), candidate, target: '_blank' %>
 interested in <%= candidate.committee %> until <%= candidate.ends_at %></li>
 <% else %>

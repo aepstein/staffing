@@ -1,4 +1,4 @@
-module RequestsHelper
+module MembershipRequestsHelper
   def render_question(form)
     as = case form.object.question.disposition
     when 'string'
@@ -10,8 +10,8 @@ module RequestsHelper
     else
       'text'
     end
-    form.input :content, :as => as, :label => form.object.question.name,
-      :hint => form.object.question.content
+    form.input :content, as: as, label: form.object.question.name,
+      hint: form.object.question.content
   end
 end
 

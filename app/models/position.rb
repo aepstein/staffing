@@ -75,7 +75,7 @@ class Position < ActiveRecord::Base
     def assignable; User.assignable_to(proxy_association.owner); end
   end
   has_many :periods, through: :schedule
-  has_many :answers, through: :requests
+  has_many :answers, through: :membership_requests
   has_many :authorized_enrollments, through: :authority
   has_many :enrollments, inverse_of: :position, dependent: :destroy do
     def for_committee(committee)
@@ -96,7 +96,7 @@ class Position < ActiveRecord::Base
     conditions: { requestable: true }
   has_many :requestable_committees, through: :requestable_enrollments,
     source: :committee, conditions: { active: true }
-  has_many :requests, include: :user, through: :requestable_committees,
+  has_many :membership_requests, include: :user, through: :requestable_committees,
     conditions: "enrollments.position_id IN " +
       "(SELECT positions.id FROM positions WHERE ( positions.statuses_mask = 0 OR " +
       "(positions.statuses_mask & users.statuses_mask) > 0 ) AND " +
