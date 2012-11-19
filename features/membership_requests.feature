@@ -76,7 +76,17 @@ Scenario Outline: Reject a request and reactivate
   When I reactivate the membership_request
   Then I should see the reactivated membership_request
   Examples:
-  |relation          |
-  |staff             |
-  |current authority |
+    |relation          |
+    |staff             |
+    |current authority |
+
+Scenario Outline: Reapply on a rejected request
+  Given an authorization scenario of a current membership_request to which I have a <relation> relationship
+  And the membership_request is rejected
+  When I touch the membership_request
+  Then the membership_request should be active
+  Examples:
+    |relation |
+    |staff    |
+    |requestor|
 

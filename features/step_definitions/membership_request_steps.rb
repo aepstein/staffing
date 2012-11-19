@@ -327,6 +327,15 @@ When /^I reactivate the membership_request$/ do
   Capybara.current_session.driver.submit :put, reactivate_membership_request_url(@membership_request), {}
 end
 
+When /^I touch the membership_request$/ do
+  Capybara.current_session.driver.submit :put, membership_request_url(@membership_request), {}
+end
+
+Then /^the membership_request should be active$/ do
+  @membership_request.reload
+  @membership_request.active?.should be_true
+end
+
 Then /^I should see the reactivated membership_request$/ do
   within("#flash_notice") { page.should have_text "Membership request was successfully reactivated." }
 end
@@ -335,63 +344,11 @@ When /^the (close|reject) notice has been sent$/ do |notice|
   @membership_request.send "send_#{notice}_notice!"
 end
 
-Then /^I should see the (join|leave) notice is sent$/ do |notice|
+Then /^I should see the (close|reject) notice is sent$/ do |notice|
   visit membership_request_url @membership_request
   within("#membership-request-#{@membership_request.id}") do
     page.should have_text( "#{notice.titleize} notice at: " +
       @membership_request.send("#{notice}_notice_at").to_formatted_s(:long_ordinal) )
-  end
-end
-
-Given /^the membership_request is( not)? renewable$/ do |unrenewable|
-  if unrenewable.blank?
-    @membership_request.committee.update_column :renewable, true
-  else
-    @membership_request.committee.update_column :renewable, false
-  end
-  @original_renewal_checkpoint = @membership_request.user.renewal_checkpoint - 2.weeks
-  @membership_request.user.update_column :renewal_checkpoint, @original_renewal_checkpoint
-end
-
-When /^I fill in (a|no) renewal for the membership_request$/ do |v|
-  visit renew_user_membership_requests_url( @membership_request.user )
-  within("#membership-request-#{@membership_request.id}") do
-    fill_in "#{@membership_request.committee}",
-      with: ( v == 'a' ? ( @membership_request.ends_at + 1.year ).to_formatted_s(:rfc822) : '' )
-  end
-end
-
-When /^I submit renewals with renotification (en|dis)abled$/ do |renotify|
-  select( ( renotify == 'en' ? "Yes" : "No" ), from: "Notify again?" )
-  click_button 'Update renewals'
-end
-
-Then /^the membership_request should have (a|no) renewal$/ do |renotify|
-  @membership_request.reload
-  @membership_request.renew_until.should case renotify
-  when 'a'
-    eql @membership_request.ends_at + 1.year
-  when 'no'
-    be_nil
-  end
-end
-
-Then /^I should see renewals confirmed with renotification (en|dis)abled$/ do |renotify|
-  within("#flash_notice") { page.should have_text "Renewal preferences successfully updated." }
-  @membership_request.user.reload
-  if renotify == 'en'
-    @membership_request.user.renewal_checkpoint.should be_within(1.second).of(@original_renewal_checkpoint)
-  else
-    @membership_request.user.renewal_checkpoint.should_not be_within(1.week).of(@original_renewal_checkpoint)
-  end
-end
-
-Then /^I may( not)? renew the membership_request$/ do |negate|
-  visit renew_user_membership_requests_url @membership_request.user
-  if negate.blank?
-    page.should have_selector "#membership-request-#{@membership_request.id}"
-  else
-    page.should have_no_selector "#membership-request-#{@membership_request.id}"
   end
 end
 

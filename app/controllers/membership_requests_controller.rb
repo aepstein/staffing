@@ -5,7 +5,7 @@ class MembershipRequestsController < ApplicationController
     :active, :inactive, :rejected ]
   before_filter :new_membership_request_from_params, :only => [ :new, :create ]
   filter_access_to :new, :create, :edit, :update, :destroy, :show, :reject,
-    :do_reject, :reactivate, :attribute_check => true
+    :do_reject, :reactivate, attribute_check: true
   filter_access_to :index, :renewed, :unrenewed, :expired, :unexpired, :active,
     :inactive, :rejected do
     @user ? permitted_to!( :show, @user ) : permitted_to!( :index )
