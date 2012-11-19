@@ -1,26 +1,26 @@
-  <%= render "shared/error_messages", :target => form.object %>
+  <%= render "shared/error_messages", target: form.object %>
   <%= form.inputs do %>
     <% if form.object.new_record? -%>
-    <%= form.input :user_id, :as => :hidden %>
+    <%= form.input :user_id, as: :hidden %>
     <% end -%>
-    <%= form.input :starts_at, :as => :date_picker, :label => 'Desired Start Date',
-      :hint => 'When is the earliest date you are interested in serving?' %>
-    <%= form.input :ends_at, :as => :date_picker, :label => 'Desired End Date',
-      :hint => 'When is the latest date you are interested in serving?' %>
-    <%= form.input :new_position, :as => :select, :collection => form.object.new_position_options, :label => 'Move to',
-      :hint => 'Select the position among your unexpired membership_requests that reflects '+
+    <%= form.input :starts_at, as: :date_picker, label: 'Desired start date',
+      hint: 'When is the earliest date you are interested in serving?' %>
+    <%= form.input :ends_at, as: :date_picker, label: 'Desired end date',
+      hint: 'When is the latest date you are interested in serving?' %>
+    <%= form.input :new_position, as: :select, collection: form.object.new_position_options, label: 'Move to',
+      hint: 'Select the position among your unexpired membership_requests that reflects '+
       'your level of preference for this committee or position.' %>
     <% form.object.answers.each do |answer| %>
       <% if form.object.new_record? || form.object.questions.include?( answer.question ) %>
         <%= form.semantic_fields_for :answers, answer do |subform| %>
-          <%= subform.input( :question_id, :as => :hidden ) if subform.object.new_record? %>
+          <%= subform.input( :question_id, as: :hidden ) if subform.object.new_record? %>
           <%= render_question subform %>
         <% end %>
       <% end %>
     <% end %>
     <%= form.semantic_fields_for :user do |subform| %>
-      <%= subform.input :resume, :as => :file,
-        :hint => 'You may optionally provide a resume (pdf only). This resume will appear in all your membership membership_requests.' %>
+      <%= subform.input :resume, as: :file,
+        hint: 'You may optionally provide a resume (pdf only). This resume will appear in all your membership membership_requests.' %>
     <% end %>
   <% end %>
   <%= form.actions %>

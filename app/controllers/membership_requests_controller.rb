@@ -112,7 +112,7 @@ class MembershipRequestsController < ApplicationController
   def create
     respond_to do |format|
       if @membership_request.save
-        flash[:notice] = 'Request was successfully created.'
+        flash[:notice] = 'Membership request was successfully created.'
         format.html { redirect_to(@membership_request) }
         format.xml  { render :xml => @membership_request, :status => :created, :location => @membership_request }
       else
@@ -128,7 +128,7 @@ class MembershipRequestsController < ApplicationController
     respond_to do |format|
       @membership_request.assign_attributes(params[:membership_request])
       if ( @membership_request.active? && @membership_request.save ) || @membership_request.reactivate
-        flash[:notice] = 'Request was successfully updated.'
+        flash[:notice] = 'Membership request was successfully updated.'
         format.html { redirect_to @membership_request }
         format.xml  { head :ok }
       else
@@ -146,7 +146,7 @@ class MembershipRequestsController < ApplicationController
         @membership_request.rejected_by_user = current_user
         @membership_request.assign_attributes params[:membership_request], as: :rejector
         if @membership_request.reject
-          flash[:notice] = 'Request was successfully rejected.'
+          flash[:notice] = 'Membership request was successfully rejected.'
           format.html { redirect_to @membership_request }
           format.xml  { head :ok }
         else
@@ -170,7 +170,7 @@ class MembershipRequestsController < ApplicationController
   def reactivate
     respond_to do |format|
       if @membership_request.reactivate
-        flash[:notice] = 'Request was successfully reactivated.'
+        flash[:notice] = 'Membership request was successfully reactivated.'
         format.html { redirect_to @membership_request }
         format.xml  { head :ok }
       else
@@ -186,7 +186,8 @@ class MembershipRequestsController < ApplicationController
     @membership_request.destroy
 
     respond_to do |format|
-      format.html { redirect_to polymorphic_url( [ @membership_request.committee, :membership_requests ] ) }
+      format.html { redirect_to polymorphic_url( [ @membership_request.committee, :membership_requests ] ),
+        notice: 'Membership request was successfully destroyed.' }
       format.xml  { head :ok }
     end
   end

@@ -26,10 +26,17 @@ Given /^(?:an )authorization scenario of an? (current|expired) membership_reques
 end
 
 Then /^I may( not)? create membership_requests for the committee$/ do |negate|
-  visit(new_committee_membership_request_url(@committee))
-  step %{I should#{negate} be authorized}
-  Capybara.current_session.driver.submit :post, committee_membership_requests_url(@committee), {}
-  step %{I should#{negate} be authorized}
+  if negate.blank?
+    visit(new_committee_membership_request_url(@committee))
+    step %{I should be authorized}
+    Capybara.current_session.driver.submit :post, committee_membership_requests_url(@committee), {}
+    step %{I should be authorized}
+  else
+    visit(new_committee_membership_request_url(@committee))
+    step %{I fill in basic fields for the membership_request}
+    click_button 'Create'
+    step %{I should see the creator error message}
+  end
 end
 
 Then /^I may( not)? update the membership_request$/ do |negate|
@@ -84,85 +91,92 @@ Then /^I may( not)? reject the membership_request$/ do |negate|
   step %{I should#{negate} be authorized}
 end
 
-When /^I create a membership_request$/ do |membership_request_tense, relation_tense, relation|
-  step %{I log in as the plain user}
-  @committee = create(:committee, designable: true)
-  create(:enrollment, committee: @committee, committee: create(:committee, name: 'Important Committee'))
-  @past_period = create(:past_period, schedule: @committee.schedule)
-  @current_period = create(:period, schedule: @committee.schedule)
-  @future_period = create(:future_period, schedule: @committee.schedule)
-  @period = case membership_request_tense
-  when 'past'
-    @past_period
-  when 'future'
-    @future_period
+Then /^I may( not)? reactivate the membership_request$/ do |negate|
+  visit(committee_membership_requests_url(@committee))
+  if negate.blank?
+    within("#membership-request-#{@membership_request.id}") { page.should have_text('Reactivate') }
   else
-    @current_period
+    if page.has_selector?("#membership-request-#{@membership_request.id}")
+      within("#membership-request-#{@membership_request.id}") { page.should have_no_text('Reactivate') }
+    end
   end
-  @starts_at = case membership_request_tense
-  when 'pending'
-    Time.zone.today + 1.day
+  Capybara.current_session.driver.submit :put, reactivate_membership_request_url(@membership_request), {}
+  step %{I should#{negate} be authorized}
+end
+
+Given /^(?:an? )?(#{User::STATUSES.join '|'}|(?:every|any|no)(?:one|body)) may create membership_requests for the committee$/ do |status|
+  @committee = create(:committee)
+  @enrollment = case status
+  when /^(every|any)/
+    create :enrollment, committee: @committee, requestable: true
+  when /^no/
+    create :enrollment, committee: @committee, requestable: false
   else
-    @period.starts_at
+    create :enrollment, committee: @committee, requestable: true, position: create( :position, statuses: [ status ] )
   end
-  @ends_at = case membership_request_tense
-  when 'recent'
-    Time.zone.today - 1.day
-  else
-    @period.ends_at
-  end
-  @candidate = create(:user)
-  @designee = create(:user)
-  if relation == 'authority'
-    step %{I have a #{relation_tense} #{relation} relationship to the committee}
-  end
+  @quiz = @enrollment.position.quiz
+end
+
+When /^I fill in basic fields for the membership_request$/ do
+  @starts ||= Time.zone.today
+  @ends ||= @starts + 2.years
+  fill_in 'Desired start date', with: @starts.to_s(:rfc822)
+  fill_in 'Desired end date', with: @ends.to_s(:rfc822)
+end
+
+When /^I create a membership_request for the committee$/ do
+  @quiz.questions << create(:question, name: 'Favorite color', content: 'What is your favority color?', disposition: 'string')
+  @quiz.questions << create(:question, name: 'Capital of Assyria', content: 'What is the capital of Assyria?')
+  @quiz.questions << create(:question, name: 'Qualified', content: 'Are you qualified?', disposition: 'boolean')
   visit new_committee_membership_request_url(@committee)
-  fill_in 'User', with: @candidate.name(:net_id)
-  select @period.to_s, from: "Period"
-  fill_in 'Starts at', with: @starts_at.to_s(:rfc822)
-  fill_in 'Ends at', with: @ends_at.to_s(:rfc822)
-  fill_in "Designee for Important Committee", with: @designee.name(:net_id)
+  step %{I fill in basic fields for the membership_request}
+  fill_in 'Favorite color', with: '*bl*ue'
+  fill_in 'Capital of Assyria', with: '*Da*mascus'
+  within_fieldset('Qualified?') { choose 'Yes' }
   click_button 'Create'
 end
 
-Then /^I should( not)? see the modifier error message$/ do |negate|
+Then /^I should( not)? see the creator error message$/ do |negate|
   if negate.blank?
-    within(".error_messages") { page.should have_text "must have authority to modify the committee between" }
+    within(".error_messages") { page.should have_text "may not request membership in the committee" }
   else
     @membership_request = MembershipRequest.find( URI.parse(current_url).path.match(/[\d]+$/)[0].to_i )
-    within('#flash_notice') { page.should have_text('Request was successfully created.') }
+    within('#flash_notice') { page.should have_text('Membership request was successfully created.') }
   end
 end
 
 Then /^I should see the new membership_request$/ do
+  step %{I should not see the creator error message}
   within("#membership-request-#{@membership_request.id}") do
-    page.should have_text("Committee: #{@committee.name}")
-    page.should have_text("Period: #{@period.to_s}")
-    page.should have_text("User: #{@candidate.name(:net_id)}")
-    page.should have_text("Starts at: #{@starts_at.to_formatted_s(:us_ordinal)}")
-    page.should have_text("Ends at: #{@ends_at.to_formatted_s(:us_ordinal)}")
-    page.should have_text("Designee for Important Committee: #{@designee.name(:net_id)}")
+    page.should have_text "Committee: #{@committee.name}"
+    page.should have_text "User: #{@current_user.name(:net_id)}"
+    page.should have_text "Desired start date: #{@starts.to_formatted_s(:long_ordinal)}"
+    page.should have_text "Desired end date: #{@ends.to_formatted_s(:long_ordinal)}"
+    page.should have_text "What is your favority color? blue"
+    page.should have_text "Damascus"
+    page.should have_text "Are you qualified? Yes"
   end
 end
 
 When /^I update the membership_request$/ do
   visit edit_membership_request_url(@membership_request)
-  fill_in 'User', with: @designee.name(:net_id)
-  @starts_at += 1.day
-  @ends_at -= 1.day
-  fill_in 'Starts at', with: @starts_at.to_s(:rfc822)
-  fill_in 'Ends at', with: @ends_at.to_s(:rfc822)
-  fill_in 'Designee for Important Committee', with: @candidate.name(:net_id)
+  @starts += 1.day
+  @ends -= 1.day
+  step %{I fill in basic fields for the membership_request}
+  fill_in 'Favorite color', with: 'yellow'
+  fill_in 'Capital of Assyria', with: 'Carthage'
+  within_fieldset('Qualified?') { choose 'No' }
   click_button 'Update'
 end
 
-Then /^I should see the edited membership_request$/ do
-  within('#flash_notice') { page.should have_text("Request was successfully updated.") }
+Then /^I should see the updated membership_request$/ do
+  within('#flash_notice') { page.should have_text("Membership request was successfully updated.") }
   within("#membership-request-#{@membership_request.id}") do
-    page.should have_text("User: #{@designee.name(:net_id)}")
-    page.should have_text("Starts at: #{@starts_at.to_formatted_s(:us_ordinal)}")
-    page.should have_text("Ends at: #{@ends_at.to_formatted_s(:us_ordinal)}")
-    page.should have_text("Designee for Important Committee: #{@candidate.name(:net_id)}")
+    page.should have_text "Desired start date: #{@starts.to_formatted_s(:long_ordinal)}"
+    page.should have_text "Desired end date: #{@ends.to_formatted_s(:long_ordinal)}"
+    page.should have_text "What is your favority color? yellow"
+    page.should have_text "Carthage"
+    page.should have_text "Are you qualified? No"
   end
 end
 
@@ -222,10 +236,10 @@ Given /^there are (\d+) membership_requests for a committee by (end|start|last|f
   end
 end
 
-Given /^there are (\d+) membership_requests with a common (committee|authority|user|committee)$/ do |quantity, common|
+Given /^there are (\d+) membership_requests with a common (committee|user)$/ do |quantity, common|
   @common = case common
   when 'committee'
-    create(:committee, slots: quantity.to_i, minimum_slots: 0)
+    create(:requestable_committee)
   else
     create(common.to_sym)
   end
@@ -233,12 +247,8 @@ Given /^there are (\d+) membership_requests with a common (committee|authority|u
     memo << case common
     when 'committee'
       create(:membership_request, committee: @common)
-    when 'authority'
-      create(:membership_request, committee: create(:committee, authority: @common))
     when 'user'
       create(:membership_request, user: @common)
-    when 'committee'
-      create(:membership_request, committee: create(:enrollment, committee: @common).committee)
     end
   end
 end
@@ -287,23 +297,41 @@ Then /^I should see the following membership_requests for the committee:$/ do |t
   table.diff! tableish( 'table#membership-requests > tbody > tr', 'td' )
 end
 
-When /^I decline the membership_request$/ do
-  visit decline_membership_request_url(@membership_request)
-  fill_in "Comment", with: "No *membership_request* for you!"
-  click_button "Decline Renewal"
+Given /^the membership_request is rejected$/ do
+  @membership_request.rejected_by_authority = @position.authority
+  @membership_request.rejected_by_user = create(:user, admin: true)
+  @membership_request.rejection_comment = "Membership *denied*."
+  @membership_request.reject!
 end
 
-Then /^I should see the membership_request declined$/ do
+When /^I reject the membership_request$/ do
+  visit reject_membership_request_url(@membership_request)
+  select @membership_request.authorities.first.to_s, from: 'Authority'
+  fill_in "Comment", with: "No *membership* for you!"
+  click_button "Reject"
+end
+
+Then /^I should see the rejected membership_request$/ do
   @membership_request.reload
-  within("#flash_notice") { page.should have_text( "MembershipRequest renewal was successfully declined." ) }
+  within("#flash_notice") { page.should have_text( "Membership request was successfully rejected." ) }
   within("#membership-request-#{@membership_request.id}") do
-    page.should have_text "Renewal declined at: #{@membership_request.declined_at.to_s(:long_ordinal)}"
-    page.should have_text "Renewal declined by: #{@current_user.name(:net_id)}"
-    page.should have_text "No membership_request for you!"
+    page.should have_text "Rejected at: #{@membership_request.rejected_at.to_s(:us_ordinal)}"
+    page.should have_text "Rejected by authority: #{@membership_request.authorities.first.name}"
+    page.should have_text "Rejected by user: #{@current_user.name(:net_id)}"
+    page.should have_text "Reject notice at: None sent."
+    page.should have_text "No membership for you!"
   end
 end
 
-When /^the (join|leave) notice has been sent$/ do |notice|
+When /^I reactivate the membership_request$/ do
+  Capybara.current_session.driver.submit :put, reactivate_membership_request_url(@membership_request), {}
+end
+
+Then /^I should see the reactivated membership_request$/ do
+  within("#flash_notice") { page.should have_text "Membership request was successfully reactivated." }
+end
+
+When /^the (close|reject) notice has been sent$/ do |notice|
   @membership_request.send "send_#{notice}_notice!"
 end
 
@@ -365,5 +393,16 @@ Then /^I may( not)? renew the membership_request$/ do |negate|
   else
     page.should have_no_selector "#membership-request-#{@membership_request.id}"
   end
+end
+
+When /^I move the (\d+)rd membership_request to the position of the (\d+)st membership_request$/ do |from, to|
+  step %{I log in as the staff user}
+  visit edit_membership_request_url @membership_requests[from.to_i - 1]
+  select @membership_requests[to.to_i - 1].committee.name, from: 'Move to'
+  click_button 'Update'
+end
+
+Then /^the membership_requests should have the following positions:$/ do |table|
+  table.diff! @membership_requests.map { |r| r.reload; [ r.position.to_s ] }
 end
 

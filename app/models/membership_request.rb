@@ -173,7 +173,7 @@ class MembershipRequest < ActiveRecord::Base
 
   def must_have_assignable_position
     if requestable_positions.assignable.empty?
-      errors.add :committee, "is not among committees user may membership_request"
+      errors.add :user, "may not request membership in the committee"
     end
   end
 

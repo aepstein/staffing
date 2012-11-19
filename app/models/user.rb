@@ -56,7 +56,7 @@ class User < ActiveRecord::Base
       where { committees.enrollments.memberships.ends_at > Time.zone.today }
     end
     def authorized( votes = 1 )
-      return Authority.all if proxy_association.owner.role_symbols.include? :admin
+      return Authority.all if ( proxy_association.owner.role_symbols & [ :admin, :staff ] ).any?
       prospective.where { |a| a.committees.enrollments.votes >= votes }
     end
   end

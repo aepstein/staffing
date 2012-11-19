@@ -239,3 +239,8 @@ Then /^I should see empl_ids set$/ do
   User.where { net_id.eq( 'faker2' ) }.should be_empty
 end
 
+Given /^I have an? (#{User::STATUSES.join '|'}) status$/ do |status|
+  @current_user.status = status
+  @current_user.save!
+end
+

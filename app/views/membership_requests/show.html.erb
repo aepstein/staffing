@@ -17,7 +17,7 @@
 </p>
 
 <p>
-  <b>Rejected by user:</b> <%=h @membership_request.rejected_by_user %>
+  <b>Rejected by user:</b> <%=h @membership_request.rejected_by_user.name(:net_id) %>
 </p>
 
 <p>
@@ -32,7 +32,7 @@
 <% end %>
 
 <p>
-  <b>User:</b> <%=h @membership_request.user %>
+  <b>User:</b> <%=h @membership_request.user.name(:net_id) %>
 </p>
 
 <p>
@@ -44,11 +44,11 @@
 </p>
 
 <p>
-  <b>Desired Start Date:</b> <%=h @membership_request.starts_at %>
+  <b>Desired start date:</b> <%=h @membership_request.starts_at.to_formatted_s(:long_ordinal) %>
 </p>
 
 <p>
-  <b>Desired End Date:</b> <%=h @membership_request.ends_at %>
+  <b>Desired end date:</b> <%=h @membership_request.ends_at.to_formatted_s(:long_ordinal) %>
 </p>
 
 <p>
