@@ -81,28 +81,28 @@ Scenario: List/delete a membership by last name
 Scenario: List/delete a membership by first name
   Given I log in as the admin user
   And there are 4 memberships for a position by first
-  And I "Destroy" the 3rd membership for the position
   Then I should see the following memberships for the position:
     |1 Jan 2011 - 31 Dec 2011|1 Jan 2011|31 Dec 2011|John10001 Doe|
     |1 Jan 2011 - 31 Dec 2011|1 Jan 2011|31 Dec 2011|John10002 Doe|
+    |1 Jan 2011 - 31 Dec 2011|1 Jan 2011|31 Dec 2011|John10003 Doe|
     |1 Jan 2011 - 31 Dec 2011|1 Jan 2011|31 Dec 2011|John10004 Doe|
 
 Scenario: List/delete a membership by ends
   Given I log in as the admin user
   And there are 4 memberships for a position by end
-  And I "Destroy" the 3rd membership for the position
   Then I should see the following memberships for the position:
     |1 Jan 2011 - 31 Dec 2011|1 Jan 2011|30 Dec 2011|John Doe|
     |1 Jan 2011 - 31 Dec 2011|1 Jan 2011|29 Dec 2011|John Doe|
+    |1 Jan 2011 - 31 Dec 2011|1 Jan 2011|28 Dec 2011|John Doe|
     |1 Jan 2011 - 31 Dec 2011|1 Jan 2011|27 Dec 2011|John Doe|
 
 Scenario: List/delete a membership by starts
   Given I log in as the admin user
   And there are 4 memberships for a position by start
-  And I "Destroy" the 3rd membership for the position
   Then I should see the following memberships for the position:
     |1 Jan 2011 - 31 Dec 2011|4 Jan 2011|31 Dec 2011|John Doe|
     |1 Jan 2011 - 31 Dec 2011|3 Jan 2011|31 Dec 2011|John Doe|
+    |1 Jan 2011 - 31 Dec 2011|2 Jan 2011|31 Dec 2011|John Doe|
     |1 Jan 2011 - 31 Dec 2011|1 Jan 2011|31 Dec 2011|John Doe|
 
 Scenario Outline: Access control to decline

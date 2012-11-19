@@ -1,7 +1,7 @@
 <% user ||= false; committee ||= false %>
   <%= table_row_tag true, false, { id: "membership-request-#{membership_request.id}" } do %>
     <% unless user %>
-    <td><%=h membership_request.user.name :last_first %></td>
+    <td><%=h membership_request.user.name %></td>
     <% end %>
     <% unless committee %>
     <td><%=h membership_request.committee %></td>

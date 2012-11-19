@@ -1,3 +1,9 @@
+Then /^I should not see the search field for an? (position|authority|user|committee)$/ do |field|
+  page.should_not have_field field.titleize
+end
+
+# TODO: remove steps below
+
 Given /^#{capture_model} exists? (before|after) #{capture_model}(?: with #{capture_fields})?$/ do |name, position, parent, attributes|
   p = model(parent)
   if position == 'after'

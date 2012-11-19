@@ -1,5 +1,31 @@
 <h2><%= params[:action].titleize %> membership_requests <%= @title %></h2>
 
+<%= form_for @q, url: request.fullpath, method: :get do |form| %>
+  <% unless @user %>
+  <p>
+    <%= form.label :user_name_cont,'User' %>
+    <%= form.text_field :user_name_cont %>
+  </p>
+  <% end %>
+  <% unless @committee %>
+  <p>
+    <%= form.label :committee_name_cont, 'Committee' %>
+    <%= form.text_field :committee_name_cont %>
+  </p>
+  <% end %>
+  <p>
+    <%= form.label :starts_at_gt, 'Desired start after' %>
+    <%= form.text_field :starts_at_gt %>
+  </p>
+  <p>
+    <%= form.label :starts_at_gt, 'Desired end before' %>
+    <%= form.text_field :ends_at_lt %>
+  </p>
+  <p>
+    <%= submit_tag 'Search' %>
+  </p>
+<% end %>
+
 <p>
 <%= paginate @membership_requests %>
 </p>

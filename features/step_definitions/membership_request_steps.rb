@@ -218,20 +218,14 @@ Then /^I should see the updated referred membership_request$/ do
   end
 end
 
-Given /^there are (\d+) membership_requests for a committee by (end|start|last|first)$/ do |quantity, column|
-  @period = create(:period, starts_at: '2011-01-01', ends_at: '2011-12-31')
-  @committee = create(:committee, slots: quantity.to_i, minimum_slots: 0,
-    schedule: @period.schedule)
+Given /^there are (\d+) membership_requests for a committee by (last|first)$/ do |quantity, column|
+  @committee = create(:requestable_committee)
   @membership_requests = quantity.to_i.downto(1).map do |i|
     case column
     when 'last'
       create :membership_request, committee: @committee, user: create( :user, last_name: "Doe1000#{i}" )
     when 'first'
       create :membership_request, committee: @committee, user: create( :user, first_name: "John1000#{i}" )
-    when 'start'
-      create :membership_request, committee: @committee, starts_at: ( @period.starts_at + (quantity.to_i - i).days )
-    when 'end'
-      create :membership_request, committee: @committee, ends_at: ( @period.ends_at - i.days )
     end
   end
 end
@@ -253,24 +247,15 @@ Given /^there are (\d+) membership_requests with a common (committee|user)$/ do 
   end
 end
 
-When /^I search for the (committee|authority|user|committee) of the (\d+)(?:st|nd|rd|th) membership_request$/ do |field, committee|
+When /^I search for the (user|committee) of the (\d+)(?:st|nd|rd|th) membership_request$/ do |field, committee|
   visit polymorphic_url( [ @common, :membership_requests ] )
   pos = ( committee.to_i - 1 )
   case field
   when 'committee'
     fill_in 'Committee', with: @membership_requests[pos].committee.name
-  when 'authority'
-    fill_in 'Authority', with: @membership_requests[pos].committee.authority.name
   when 'user'
     fill_in 'User', with: @membership_requests[pos].user.net_id
-  when 'committee'
-    fill_in 'Committee',
-      with: create(:enrollment, committee: @membership_requests[pos].committee).committee.name
   end
-end
-
-Then /^I should not see the search field for an? (committee|authority|user|committee)$/ do |field|
-  page.should_not have_field field.titleize
 end
 
 Then /^I should only find the (\d+)(?:st|nd|rd|th) membership_request$/ do |committee|

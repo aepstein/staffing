@@ -90,3 +90,32 @@ Scenario Outline: Reapply on a rejected request
     |staff    |
     |requestor|
 
+Scenario Outline: Search for membership_requests
+  Given I log in as the staff user
+  And there are 4 membership_requests with a common <common>
+  When I search for the <attribute> of the 1st membership_request
+  Then I should not see the search field for a <common>
+  And I should only find the 1st membership_request
+  Examples:
+    |common   |attribute|
+    |user     |committee|
+    |committee|user     |
+
+Scenario: List/delete a membership_requests by last name
+  Given I log in as the admin user
+  And there are 4 membership_requests for a committee by last
+  And I "Destroy" the 3rd membership_request for the committee
+  Then I should see the following membership_requests for the committee:
+    |John Doe10001|
+    |John Doe10002|
+    |John Doe10004|
+
+Scenario: List a membership_requests by first name
+  Given I log in as the staff user
+  And there are 4 membership_requests for a committee by first
+  Then I should see the following membership_requests for the committee:
+    |John10001 Doe|
+    |John10002 Doe|
+    |John10003 Doe|
+    |John10004 Doe|
+

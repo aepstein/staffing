@@ -1,6 +1,6 @@
 <h2><%=h params[:action].titleize %> memberships<%=h @committee ?  " for #{@committee}" : "" %><%=h @user ?  " for #{@user}" : "" %><%=h @position ?  " for #{@position}" : "" %><%=h @authority ?  " for #{@authority}" : "" %></h2>
 
-<%= form_for @q, url: membership_request.fullpath, method: :get do |form| %>
+<%= form_for @q, url: request.fullpath, method: :get do |form| %>
   <% unless @user %>
   <p>
     <%= form.label :user_name_cont,'User' %>

@@ -1,6 +1,6 @@
 <h2>Listing quizzes</h2>
 
-<%= form_for @q, url: membership_request.fullpath, method: :get do |form| %>
+<%= form_for @q, url: request.fullpath, method: :get do |form| %>
 <p>
   <%= form.label :name_cont, 'Name' %>
   <%= form.text_field :name_cont %>

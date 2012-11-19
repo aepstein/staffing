@@ -89,6 +89,11 @@ class MembershipRequest < ActiveRecord::Base
   scope :inactive, lambda {
     where { ( ends_at <= Time.zone.today ) | ( status != 'active' ) } }
   scope :reject_notice_pending, lambda { rejected.no_reject_notice }
+  scope :user_name_cont, lambda { |text|
+    where { |t| t.user_id.in( User.unscoped.select { id }.name_cont( text ) ) }
+  }
+
+  search_methods :user_name_cont
 
   state_machine :status, initial: :active do
     state :closed

@@ -298,10 +298,6 @@ When /^I search for the (position|authority|user|committee) of the (\d+)(?:st|nd
   end
 end
 
-Then /^I should not see the search field for an? (position|authority|user|committee)$/ do |field|
-  page.should_not have_field field.titleize
-end
-
 Then /^I should only find the (\d+)(?:st|nd|rd|th) membership$/ do |position|
   click_button "Search"
   pos = ( position.to_i - 1 )

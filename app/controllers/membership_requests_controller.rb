@@ -19,6 +19,9 @@ class MembershipRequestsController < ApplicationController
   # GET /user/:user_id/membership_requests
   # GET /user/:user_id/membership_requests.xml
   def index
+    @q = @membership_requests.search( params[:q] )
+    @membership_requests = @q.result.page( params[:page] )
+
     unless params[:format] == 'csv'
       @membership_requests = @membership_requests.page( params[:page] )
     end
@@ -199,11 +202,9 @@ class MembershipRequestsController < ApplicationController
     @committee = @membership_request.committee if @membership_request
     @committee = Committee.find params[:committee_id] if params[:committee_id]
     @authority = Authority.find( params[:authority_id] ) if params[:authority_id]
-    unless @membership_request || @authority
-      @user = params[:user_id] ? User.find( params[:user_id] ) : current_user
-    end
+    @user = User.find(params[:user_id]) if params[:user_id]
     if @committee
-      @membership_request ||= @committee.membership_requests.where( user_id: @user.id ).first
+      @membership_request ||= @committee.membership_requests.where( user_id: current_user.id ).first
     end
     @context = @authority || @committee || @user
   end
@@ -219,7 +220,7 @@ class MembershipRequestsController < ApplicationController
     end
     @membership_request = @committee.membership_requests.build
     @membership_request.starts_at ||= @membership.starts_at if @membership
-    @membership_request.user ||= ( @membership ? @membership.user : @user )
+    @membership_request.user ||= current_user
     @membership_request.assign_attributes params[:membership_request]
   end
 
