@@ -109,5 +109,35 @@ EOS
     end
   end
 
+  describe "decline" do
+    let(:membership) { create(:membership, decline_comment: "Why you were *declined*.") }
+    let(:mail) { MembershipMailer.decline_notice( membership ) }
+
+    it "renders correct subject" do
+      membership.stub(:description).and_return("Requested Committee")
+      mail.subject.should eq "Renewal of your appointment to Requested Committee was declined"
+    end
+
+    it "addresses to assignee of membership" do
+      should_be_to_assignee
+    end
+
+    it "addresses from authority effective contact" do
+      should_be_from_effective_contact
+    end
+
+    it "renders the standard body for a membership without enrollments" do
+      both_parts_should_match /Dear #{membership.user.first_name},/
+      both_parts_should_match <<EOS.gsub(/\s+/, " ").strip
+This notice is to inform you that your membership in #{membership.description},
+which began on #{membership.starts_at.to_formatted_s :long_ordinal}, will not be
+renewed beyond the originally scheduled end date of
+#{membership.ends_at.to_formatted_s :long_ordinal}.
+EOS
+      text_part_should_match /Why you were \*declined\*\./
+      html_part_should_match /Why you were <em>declined<\/em>\./
+    end
+  end
+
 end
 
