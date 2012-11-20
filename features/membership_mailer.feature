@@ -15,31 +15,6 @@ Feature: User mailer
     And a committee: "requestable_committee" exists with name: "Cool committee", join_message: "This committee is *cool*.", leave_message: "This committee was *cool*."
     And an enrollment exists with committee: the committee, position: position "requestable_committee", requestable: true
 
-  Scenario Outline: Send leave notice to a user
-    Given a membership exists with position: position "<position>", period: period "focus", user: user "focus"
-    And a leave notice email is sent for the membership
-    Then 1 email should be delivered to user: "focus"
-    And the email should have subject: "Expiration of your appointment to <description>", from: "info@example.org"
-    And the email should contain "Dear Johnny," in the both parts body
-    And the email should contain "This notice is to inform you that your membership in <description>, which began on June 1st, 2008, has expired as of May 31st, 2009." in the both parts body
-    And the email should <authority> contain "We are *very* sad to see you go." in the text part body
-    And the email should <authority> contain "We are <em>very</em> sad to see you go." in the html part body
-    And the email should <committee> contain "This committee was *cool*." in the text part body
-    And the email should <committee> contain "This committee was <em>cool</em>." in the html part body
-    And the email should <committee> contain "Concurrent with your membership, your enrollment in the following committees has also expired:" in the text part body
-    And the email should <committee> contain "Concurrent with your membership, your enrollment in the following committees has also expired:" in the html part body
-    And the email should <cool> contain "This position was *cool*." in the text part body
-    And the email should <cool> contain "This position was <em>cool</em>." in the html part body
-    And the email should <lame> contain "This position was *lame*." in the text part body
-    And the email should <lame> contain "This position was <em>lame</em>." in the html part body
-    And the email should contain "Best regards," in the both parts body
-    And the email should <authority> contain "The Authority" in the both parts body
-    Examples:
-      | position              | description     | authority | committee | cool    | lame     |
-      | requestable_committee | Cool committee  |           |           | not     |          |
-      | no_enrollment         | Orphan position |           | not       | not     | not      |
-      | other_authority       | Other authority | not       | not       | not     | not      |
-
   Scenario Outline: Send decline notice to a user
     Given a membership exists with position: position "<position>", period: period "focus", user: user "focus", decline_comment: "No *membership* for you!"
     And the membership is declined renewal
