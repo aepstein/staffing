@@ -11,23 +11,6 @@ Feature: Request mailer
     And a committee: "requestable" exists with name: "Cool committee", reject_message: "committee is not for *everyone*."
     And an enrollment exists with committee: the committee, position: position "committee", requestable: true
 
-  Scenario: Send reject notice to a user
-    Given a request exists with committee: committee "requestable", user: user "focus"
-    And a user: "admin" exists with admin: true
-    And user: "admin" rejects the request with authority: the authority, message: "Committee is *full*."
-    And a reject notice email is sent for the request
-    Then 1 email should be delivered to user: "focus"
-    And the email should have subject: "Your request for appointment to Cool committee was declined", from: "info@example.org"
-    And the email should contain "Dear Johnny," in the both parts body
-    And the email should contain "This notice is to inform you that your request for appointment to Cool committee has been declined for the following reason(s):" in the both parts body
-    And the email should contain "Committee is *full*." in the text part body
-    And the email should contain "Committee is <em>full</em>." in the html part body
-    And the email should contain "committee is not for *everyone*." in the text part body
-    And the email should contain "committee is not for <em>everyone</em>." in the html part body
-    And the email should contain "Authority is *very* selective." in the text part body
-    And the email should contain "Authority is <em>very</em> selective." in the html part body
-    And the email should contain "The Authority" in the both parts body
-
   Scenario Outline: Send close notice to a user
     Given a request exists with committee: committee "requestable", user: user "focus"
     And a user: "other" exists
