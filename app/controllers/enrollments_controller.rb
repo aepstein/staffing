@@ -1,9 +1,6 @@
 class EnrollmentsController < ApplicationController
   before_filter :initialize_context
   before_filter :setup_breadcrumbs
-  filter_access_to :index, :current, :past, :future do
-    @user ? permitted_to!( :show, @user ) : permitted_to!( :show, @committee )
-  end
 
   # GET /users/:user_id/enrollments/current
   # GET /users/:user_id/enrollments/current.xml
