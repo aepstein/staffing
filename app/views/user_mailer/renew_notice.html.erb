@@ -27,7 +27,7 @@ Our records also indicate you have confirmed you are:
 <% end %>
 
 <p>
-Please take a few moments between now and <%= ( Date.today + 1.week ).to_s :long_ordinal %> to specify your renewal preferences here:
+Please take a few moments between now and <%= ( Time.zone.today + 1.week ).to_s :long_ordinal %> to specify your renewal preferences here:
 <br/>
 &lt;<%= link_to renew_user_memberships_url( @user ), renew_user_memberships_url( @user ) %>&gt;
 </p>
@@ -37,7 +37,7 @@ Once you have recorded your preferences you should not receive additional notice
 </p>
 
 <p>
-Please contact <%= Staffing::Application.app_config['defaults']['authority']['contact_name'] %> <<%= Staffing::Application.app_config['defaults']['authority']['contact_email'] %>> if you have any questions or concerns.  Thank you for your time and your consideration.
+Please contact <%= Staffing::Application.app_config['defaults']['authority']['contact_name'] %> &lt;<a href="mailto:<%= Staffing::Application.app_config['defaults']['authority']['contact_email'] %>"><%= Staffing::Application.app_config['defaults']['authority']['contact_email'] %></a>&gt; if you have any questions or concerns.  Thank you for your time and your consideration.
 </p>
 
 <p>

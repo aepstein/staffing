@@ -14,7 +14,7 @@ Our records also indicate you have confirmed you are:
 <%= render :partial => 'membership', :collection => @user.memberships.renewal_confirmed.uniq %>
 <% end %>
 
-Please take a few moments to adjust and confirm your renewal preferences here:
+Please take a few moments between now and <%= ( Time.zone.today + 1.week ).to_s :long_ordinal %> to specify your renewal preferences here:
 
 <%= renew_user_memberships_url( @user ) %>
 
