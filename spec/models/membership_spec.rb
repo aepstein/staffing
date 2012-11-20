@@ -98,6 +98,32 @@ describe Membership do
 
   end
 
+  context 'description' do
+    let(:membership) { create(:membership) }
+    let(:committee) { create(:enrollment, requestable: true,
+      position: membership.position).committee }
+    let(:membership_request) { create(:membership_request,
+      committee: create(:enrollment, requestable: true,
+        position: membership.position).committee,
+      user: membership.user,
+      memberships: [ membership ] ) }
+
+    it "should return requested committee if membership fulfills request" do
+      membership_request
+      membership.description.should eq membership_request.committee.name
+    end
+
+    it "should return first requestable committee if requestable" do
+      committee
+      membership.reload
+      membership.description.should eq committee.name
+    end
+
+    it "should return position name if no requestable committee associated" do
+      membership.description.should eq membership.position.name
+    end
+  end
+
   context 'ends_within scope' do
 
     let(:membership) { create :membership, starts_at: Time.zone.today - 2.days,

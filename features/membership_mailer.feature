@@ -15,30 +15,6 @@ Feature: User mailer
     And a committee: "requestable_committee" exists with name: "Cool committee", join_message: "This committee is *cool*.", leave_message: "This committee was *cool*."
     And an enrollment exists with committee: the committee, position: position "requestable_committee", requestable: true
 
-  Scenario Outline: Send join notice to a user
-    Given a membership exists with position: position "<position>", period: period "focus", user: user "focus"
-    And a join notice email is sent for the membership
-    Then 1 email should be delivered to user: "focus"
-    And the email should have subject: "Your appointment to <description>", from: "info@example.org"
-    And the email should contain "Dear Johnny," in the both parts body
-    And the email should contain "This notice is to inform you that you have been assigned a membership in <description>, for a term starting on June 1st, 2008 and ending on May 31st, 2009." in the both parts body
-    And the email should <authority> contain "We are *very* pleased to appoint you." in the text part body
-    And the email should <authority> contain "We are <em>very</em> pleased to appoint you." in the html part body
-    And the email should <committee> contain "This committee is *cool*." in the text part body
-    And the email should <committee> contain "This committee is <em>cool</em>." in the html part body
-    And the email should <committee> contain "Concurrent with your appointment to this position, you hold the following committee enrollments:" in the text part body
-    And the email should <cool> contain "This position is *cool*." in the text part body
-    And the email should <cool> contain "This position is <em>cool</em>." in the html part body
-    And the email should <lame> contain "This position is *lame*." in the text part body
-    And the email should <lame> contain "This position is <em>lame</em>." in the html part body
-    And the email should contain "Best regards," in the both parts body
-    And the email should <authority> contain "The Authority" in the both parts body
-    Examples:
-      | position              | description     | authority | committee | cool    | lame     |
-      | requestable_committee | Cool committee  |           |           | not     |          |
-      | no_enrollment         | Orphan position |           | not       | not     | not      |
-      | other_authority       | Other authority | not       | not       | not     | not      |
-
   Scenario Outline: Send leave notice to a user
     Given a membership exists with position: position "<position>", period: period "focus", user: user "focus"
     And a leave notice email is sent for the membership
