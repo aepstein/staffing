@@ -9,16 +9,14 @@ describe MembershipMailer do
     authority: authority,
     join_message: "Welcome to the *position*.",
     leave_message: "Farewell from the *position*.") }
+  let(:enrollment) { create(:enrollment, position: membership.position,
+    votes: 1,
+    title: "member",
+    committee: create(:committee,
+      name: 'Important Committee',
+      join_message: "Welcome to the *committee*.",
+      leave_message: "Farewell from the *committee*.")) }
   let(:membership) { create(:membership, position: position) }
-
-  def should_have_common_enrollment_information
-    create(:enrollment, position: membership.position, votes: 1,
-      title: "member",
-      committee: create(:committee,
-        name: 'Important Committee',
-        join_message: "Welcome to the *committee*.",
-        leave_message: "Farewell from the *committee*."))
-  end
 
   def should_be_to_assignee
       mail.to.should eq([membership.user.email])
@@ -28,6 +26,21 @@ describe MembershipMailer do
     membership.position.authority.stub(:effective_contact_email).and_return("madison@example.com")
     membership.position.authority.stub(:effective_contact_name).and_return("James Madison")
     mail.from.should eq(["madison@example.com"])
+  end
+
+  def should_copy_watchers
+    watcher = create(:membership,
+      position: create(:enrollment, committee: enrollment.committee,
+        membership_notices: true ).position)
+    old_watcher = create(:past_membership,
+      position: create(:enrollment, committee: enrollment.committee,
+        membership_notices: true ).position)
+    non_watcher = create(:membership,
+      position: create(:enrollment, committee: enrollment.committee,
+        membership_notices: false ).position)
+    mail.cc.should include watcher.user.email
+    mail.cc.should_not include old_watcher
+    mail.cc.should_not include non_watcher
   end
 
   describe "join" do
@@ -40,6 +53,10 @@ describe MembershipMailer do
 
     it "addresses to assignee of membership" do
       should_be_to_assignee
+    end
+
+    it "copies the watchers who overlap" do
+      should_copy_watchers
     end
 
     it "addresses from authority effective contact" do
@@ -62,7 +79,7 @@ EOS
     end
 
     it "renders the enrollment information for a membership with enrollments" do
-      should_have_common_enrollment_information
+      enrollment
       both_parts_should_match /you hold the following committee enrollments:/
       both_parts_should_match /member of Important Committee with 1 vote/
       text_part_should_match /Welcome to the \*committee\*\./
@@ -86,6 +103,10 @@ EOS
       should_be_from_effective_contact
     end
 
+    it "copies the watchers who overlap" do
+      should_copy_watchers
+    end
+
     it "renders the standard body for a membership without enrollments" do
       both_parts_should_match /Dear #{membership.user.first_name},/
       both_parts_should_match <<EOS.gsub(/\s+/, " ").strip
@@ -101,7 +122,7 @@ EOS
     end
 
     it "renders the enrollment information for a membership with enrollments" do
-      should_have_common_enrollment_information
+      enrollment
       both_parts_should_match /your enrollment in the following committees has also expired:/
       both_parts_should_match /member of Important Committee/
       text_part_should_match /Farewell from the \*committee\*\./
@@ -120,6 +141,10 @@ EOS
 
     it "addresses to assignee of membership" do
       should_be_to_assignee
+    end
+
+    it "copies the watchers who overlap" do
+      should_copy_watchers
     end
 
     it "addresses from authority effective contact" do
