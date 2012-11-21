@@ -186,16 +186,6 @@ Given /^I search for committees with name "([^"]+)"$/ do |needle|
   click_button "Search"
 end
 
-Given /^I have a (undergrad|no) status$/ do |status|
-  case status
-  when 'no'
-    @current_user.update_column :statuses_mask, 0
-  else
-    @current_user.status = status
-    @current_user.save!
-  end
-end
-
 Given /^the committee is requestable to (any|undergrad|grad|student|no) status$/ do |status|
   @committee = create :committee
   case status
