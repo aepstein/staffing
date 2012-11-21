@@ -106,6 +106,7 @@ When /^I create a position$/ do
   within_fieldset("Designable?") { choose "Yes" }
   within_fieldset("Active?") { choose "Yes" }
   fill_in "Slots", with: "1"
+  fill_in "Minimum slots", with: "1"
   within_fieldset("Statuses") { check "undergrad" }
   fill_in "Name", with: "Popular Committee Member"
   fill_in "Join message", with: "Welcome to *committee*."
@@ -133,6 +134,7 @@ Then /^I should see the new position$/ do
     page.should have_text "Designable? Yes"
     page.should have_text "Active? Yes"
     page.should have_text "Slots: 1"
+    page.should have_text "Minimum slots: 1"
     page.should have_text "undergrad"
     page.should have_text "Name: Popular Committee Member"
     page.should have_text "Welcome to committee."
@@ -161,6 +163,7 @@ When /^I update the position$/ do
   within_fieldset("Designable?") { choose "No" }
   within_fieldset("Active?") { choose "No" }
   fill_in "Slots", with: "2"
+  fill_in "Minimum slots", with: "2"
   within_fieldset("Statuses") { uncheck "undergrad" }
   fill_in "Name", with: "Normal Committee Member"
   fill_in "Join message", with: "Welcome!"
@@ -181,6 +184,7 @@ Then /^I should see the edited position$/ do
     page.should have_text "Designable? No"
     page.should have_text "Active? No"
     page.should have_text "Slots: 2"
+    page.should have_text "Minimum slots: 2"
     page.should have_no_text "undergrad"
     page.should have_text "Name: Normal Committee Member"
     page.should have_text "Welcome!"
