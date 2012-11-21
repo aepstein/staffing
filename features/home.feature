@@ -9,8 +9,8 @@ Feature: Home page
     Then I should <see> the authority
     Examples:
       |relationship        |see    |
-      |admin               |see    |
-      |staff               |see    |
+      |admin               |not see|
+      |staff               |not see|
       |current authority   |see    |
       |current authority_ro|see    |
       |future authority    |see    |
@@ -29,4 +29,16 @@ Feature: Home page
       |current sponsor|rejected |not see|
       |current voter  |started  |not see|
       |past sponsor   |started  |not see|
+
+  Scenario Outline: List committees I can vote on
+    Given an authorization scenario of a committee to which I have a <relationship> relationship
+    When I am on the home page
+    Then I should <see> committee in my voting committees
+    Examples:
+      |relationship    |see        |
+      |admin           |not see any|
+      |current voter   |see the    |
+      |current nonvoter|not see any|
+      |recent voter    |not see any|
+      |pending voter   |not see any|
 

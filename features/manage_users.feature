@@ -6,21 +6,6 @@ Feature: Manage users
   Background:
     Given a user: "admin" exists with admin: true
 
-  Scenario Outline: List committees in which user can vote on user profile page
-    Given a user: "owner" exists
-    And a committee exists with name: "Key committee"
-    And a position exists
-    And an enrollment exists with position: the position, committee: the committee, votes: <votes>
-    And a membership exists with user: the user, position: the position
-    And I log in as user: "owner"
-    Then I should <see> "You may start motions for the following committees:"
-#    And I should <see> "Key committee" within "#voting_committees"
-    And I should <not_see> "You may not start motions for any committee at this time."
-    Examples:
-      | votes | see     | not_see |
-      | 1     | see     | not see |
-      | 0     | not see | see     |
-
   Scenario: List unexpired requests on user profile page
     Given a user: "owner" exists
     And a position: "expired" exists with name: "Expired Position"

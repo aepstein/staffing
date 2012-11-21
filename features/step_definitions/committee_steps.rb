@@ -16,9 +16,20 @@ Given /^I have a (current|recent|pending|past|future) (chair|vicechair|voter|non
   end
 end
 
-Given /^(?:an )authorization scenario of a committee to which I have an? (admin|staff|plain) relationship$/ do |role|
+Given /^(?:an )authorization scenario of a committee to which I have an? (?:(current|recent|pending|past|future) )?(admin|staff|plain|chair|vicechair|voter|nonvoter) relationship$/ do |tense, relationship|
+  role = case relationship
+  when 'admin', 'staff'
+    relationship
+  else
+    'plain'
+  end
   step %{I log in as the #{role} user}
-  @committee = create( :committee )
+  case relationship
+  when 'admin', 'staff', 'plain'
+    @committee = create :committee
+  else
+    step %{I have a #{tense} #{relationship} relationship to the committee}
+  end
 end
 
 Then /^I may( not)? see the committee$/ do |negate|

@@ -12,7 +12,7 @@ You may review membership_requests and update memberships for the following auth
 </p>
 
 <ul>
-<% current_user.authorities.authorized(0).each do |authority| %>
+<% current_user.authorities.prospective.each do |authority| %>
   <%= content_tag :li, id: "authority-#{authority.id}" do %>
     <%= link_to h( authority ), authority %>
     (<%= link_to 'renewable memberships', renewable_authority_memberships_path( authority ) %>)
@@ -56,14 +56,16 @@ You have no motions in process.
 </p>
 <% end %>
 
-<% if Committee.with_permissions_to(:vote).length > 0 %>
+<% if current_user.committees.with_permissions_to(:vote).length > 0 %>
 <p>
 You may start motions for the following committees:
 </p>
 
 <ul id="voting_committees">
-<% Committee.with_permissions_to(:vote).uniq.each do |committee| %>
-<li><%=link_to committee.name, new_committee_motion_path( committee ) %></li>
+<% current_user.committees.with_permissions_to(:vote).uniq.each do |committee| %>
+  <%= content_tag :li, id: "committee-#{committee.id}" do %>
+    <%=link_to committee.name, new_committee_motion_path( committee ) %>
+  <% end %>
 <% end %>
 </ul>
 <% else %>
@@ -73,7 +75,7 @@ You may not start motions for any committee at this time.
 <% end %>
 
 <div id="membership_requests">
-<h3>Your MembershipRequests for Membership</h3>
+<h3>Your Requests for Membership</h3>
 
 <p>
 You have <%= link_to pluralize( current_user.membership_requests.unexpired.length, 'current membership request' ), unexpired_user_membership_requests_path( current_user ) %> and <%= link_to pluralize( current_user.membership_requests.expired.size, 'expired membership request' ), expired_user_membership_requests_path( current_user ) %>.
