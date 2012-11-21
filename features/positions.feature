@@ -2,7 +2,7 @@ Feature: Manage positions
   In order to record positions to associate with positions and users
   As an administrator
   I want to create, modify, list, show, and destroy positions
-@wip
+
 Scenario Outline: Access control
   Given an authorization scenario of a position to which I have a <role> relationship
   Then I <show> see the position

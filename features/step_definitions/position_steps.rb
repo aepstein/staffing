@@ -1,4 +1,4 @@
-Given /^(?:an )authorization scenario of a position to which I have an? (admin|staff|plain) relationship$/ do |tense, relationship|
+Given /^(?:an )authorization scenario of a position to which I have an? (?:(current|past|future|recent|pending) )?(admin|staff|plain|authority|authority_ro|member) relationship$/ do |tense, relationship|
   role = case relationship
   when 'admin', 'staff'
     relationship
@@ -7,6 +7,11 @@ Given /^(?:an )authorization scenario of a position to which I have an? (admin|s
   end
   step %{I log in as the #{role} user}
   @position = create( :position )
+  case relationship
+  when 'admin', 'staff', 'plain'
+  else
+    step %{I have a #{tense} #{relationship} relationship to the position}
+  end
 end
 
 Given /^I have a (current|past|future|recent|pending) (authority|authority_ro|member) relationship to the position$/ do |tense, relationship|
