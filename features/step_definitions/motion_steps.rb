@@ -1,3 +1,11 @@
+Then /^I should (not )?see the motion$/ do |negate|
+  if negate.blank?
+    page.should have_selector "#motion-#{@motion.id}"
+  else
+    page.should have_no_selector "#motion-#{@motion.id}"
+  end
+end
+
 When /^I (adopt|amend|divide|implement|merge|propose|refer|reject|restart|withdraw) the motion$/ do |event|
   @event = event
   case @event
@@ -60,7 +68,7 @@ Then /^I should see confirmation of the event on the motion$/ do
   within("#flash_notice") { page.should have_text "Motion was successfully #{event_description}." }
 end
 
-Given /^(?:an )authorization scenario of (un)?published, (\w+) motion of (sponsored|referred) origin to which I have a (current|past|future) (admin|staff|chair|vicechair|voter|sponsor|nonvoter|nonmember) relationship$/ do |publication, status, origin, tense, relationship|
+Given /^(?:an )authorization scenario of (un)?published, (\w+) motion of (sponsored|referred) origin to which I have a (?:(current|past|future) )?(admin|staff|chair|vicechair|voter|sponsor|nonvoter|nonmember) relationship$/ do |publication, status, origin, tense, relationship|
   Motion.delete_all
   committee_relationship = case relationship
   when 'sponsor'
@@ -78,6 +86,7 @@ Given /^(?:an )authorization scenario of (un)?published, (\w+) motion of (sponso
   else
     'plain'
   end
+  tense = 'current' if tense.blank?
   step %{I log in as the #{role} user}
   step %{I have a #{tense} #{committee_relationship} relationship to the committee}
   @period = create( "#{tense}_period".to_sym, schedule: @committee.schedule )

@@ -31,7 +31,7 @@ You may review membership_requests and update memberships for the following auth
 You have <%= link_to pluralize( current_user.memberships.current.length, 'current membership' ), current_user_memberships_path(current_user) %>, <%= link_to pluralize( current_user.memberships.past.size, 'past membership' ), past_user_memberships_path(current_user) %>, and <%= link_to pluralize( current_user.memberships.future.size, 'future membership' ), future_user_memberships_path(current_user) %>.
 </p>
 
-<% if current_user.memberships.where( :starts_at.lte => Time.zone.today ).count > 0 %>
+<% if current_user.memberships.where { starts_at.lte( Time.zone.today ) }.count > 0 %>
 <p>
 You can specify your <%= link_to 'renewal preferences', renew_user_memberships_path( current_user ) %>.
 </p>
@@ -39,7 +39,7 @@ You can specify your <%= link_to 'renewal preferences', renew_user_memberships_p
 
 <% if current_user.memberships.current.length > 0 %>
 <h4>Current Memberships</h4>
-<%= render :partial => 'memberships/memberships', :object => current_user.memberships.current, :locals => { :user => current_user } %>
+<%= render partial: 'memberships/memberships', object: current_user.memberships.current, locals: { user: current_user } %>
 <% end %>
 
 <h4>Current Motions</h4>
@@ -49,7 +49,7 @@ You can specify your <%= link_to 'renewal preferences', renew_user_memberships_p
 You have the following motions in process:
 </p>
 
-<%= render :partial => 'motions/motions', :object => current_user.motions.current.in_process %>
+<%= render partial: 'motions/motions', object: current_user.motions.current.in_process %>
 <% else %>
 <p>
 You have no motions in process.
