@@ -51,8 +51,6 @@ group :test do
   gem 'capybara', '~> 2.0.0beta2'
   gem 'spork', require: false
   gem 'factory_girl_rails', '~> 3.0', require: false
-  gem 'pickle'
-  gem 'email_spec'
   gem 'launchy'
 end
 

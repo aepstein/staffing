@@ -1,6 +1,31 @@
-Given /^(?:an )authorization scenario of an authority to which I have an? (admin|staff|plain) relationship$/ do |role|
+Then /^I should (not )?see the authority$/ do |negate|
+  if negate.blank?
+    page.should have_selector "#authority-#{@authority.id}"
+  else
+    page.should have_no_selector "#authority-#{@authority.id}"
+  end
+end
+
+Given /^(?:an )authorization scenario of an authority to which I have an? (?:(past|current|future|recent|pending) )?(admin|staff|plain|authority|authority_ro) relationship$/ do |tense, relationship|
+  role = case relationship
+  when 'admin', 'staff', 'plain'
+    relationship
+  else
+    'plain'
+  end
   step %{I log in as the #{role} user}
   @authority = create( :authority )
+  if relationship =~ /^authority/
+    enrollment = if relationship == 'authority'
+      create(:enrollment, votes: 1)
+    else
+      create(:enrollment, votes: 0)
+    end
+    @authority.committee = enrollment.committee
+    @authority.save!
+    @position = enrollment.position
+    step %{I have a #{tense} member relationship to the position}
+  end
 end
 
 Then /^I may( not)? see the authority$/ do |negate|

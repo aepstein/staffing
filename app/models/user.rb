@@ -57,7 +57,7 @@ class User < ActiveRecord::Base
     end
     def authorized( votes = 1 )
       return Authority.all if ( proxy_association.owner.role_symbols & [ :admin, :staff ] ).any?
-      prospective.where { |a| a.committees.enrollments.votes >= votes }
+      prospective.where { |a| a.committees.enrollments.votes.gte( votes ) }
     end
   end
   has_many :designees, inverse_of: :user

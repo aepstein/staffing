@@ -13,14 +13,14 @@ You may review membership_requests and update memberships for the following auth
 
 <ul>
 <% current_user.authorities.authorized(0).each do |authority| %>
-<li>
-<%= link_to h( authority ), authority %>
-(<%= link_to 'renewable memberships', renewable_authority_memberships_path( authority ) %>)
-(<%= link_to 'active membership_requests', active_authority_membership_requests_path( authority ) %>)
-(<%= link_to 'rejected membership_requests', rejected_authority_membership_requests_path( authority ) %>)
-(<%= link_to 'current memberships', current_authority_memberships_path( authority ) %>)
-(<%= link_to 'future memberships', future_authority_memberships_path( authority ) %>)
-</li>
+  <%= content_tag :li, id: "authority-#{authority.id}" do %>
+    <%= link_to h( authority ), authority %>
+    (<%= link_to 'renewable memberships', renewable_authority_memberships_path( authority ) %>)
+    (<%= link_to 'active membership requests', active_authority_membership_requests_path( authority ) %>)
+    (<%= link_to 'rejected membership requests', rejected_authority_membership_requests_path( authority ) %>)
+    (<%= link_to 'current memberships', current_authority_memberships_path( authority ) %>)
+    (<%= link_to 'future memberships', future_authority_memberships_path( authority ) %>)
+  <% end %>
 <% end %>
 </ul>
 
