@@ -72,8 +72,8 @@ class MembershipsController < ApplicationController
     index
   end
 
-  # GET /requests/:request_id/memberships/current
-  # GET /requests/:request_id/memberships/current.xml
+  # GET /membership_requests/:membership_request_id/memberships/current
+  # GET /membership_requests/:membership_request_id/memberships/current.xml
   # GET /positions/:position_id/memberships/current
   # GET /positions/:position_id/memberships/current.xml
   # GET /committees/:committee_id/memberships/current
@@ -89,8 +89,8 @@ class MembershipsController < ApplicationController
     index
   end
 
-  # GET /requests/:request_id/memberships/future
-  # GET /requests/:request_id/memberships/future.xml
+  # GET /membership_requests/:membership_request_id/memberships/future
+  # GET /membership_requests/:membership_request_id/memberships/future.xml
   # GET /positions/:position_id/memberships/future
   # GET /positions/:position_id/memberships/future.xml
   # GET /committees/:committee_id/memberships/future
@@ -106,8 +106,8 @@ class MembershipsController < ApplicationController
     index
   end
 
-  # GET /requests/:request_id/memberships/past
-  # GET /requests/:request_id/memberships/past.xml
+  # GET /membership_requests/:membership_request_id/memberships/past
+  # GET /membership_requests/:membership_request_id/memberships/past.xml
   # GET /positions/:position_id/memberships/past
   # GET /positions/:position_id/memberships/past.xml
   # GET /committees/:committee_id/memberships/past
@@ -123,7 +123,7 @@ class MembershipsController < ApplicationController
     index
   end
 
-  # GET /requests/:request_id/memberships/assignable
+  # GET /membership_requests/:membership_request_id/memberships/assignable
   def assignable
     @memberships = @request.memberships.assignable
     add_breadcrumb "Assignable",
@@ -131,8 +131,8 @@ class MembershipsController < ApplicationController
     index
   end
 
-  # GET /requests/:request_id/memberships
-  # GET /requests/:request_id/memberships.xml
+  # GET /membership_requests/:membership_request_id/memberships
+  # GET /membership_requests/:membership_request_id/memberships.xml
   # GET /positions/:position_id/memberships
   # GET /positions/:position_id/memberships.xml
   # GET /committees/:committee_id/memberships
@@ -230,13 +230,13 @@ class MembershipsController < ApplicationController
     @user = User.find params[:user_id] if params[:user_id]
     @position = Position.find params[:position_id] if params[:position_id]
     @authority = Authority.find params[:authority_id] if params[:authority_id]
-    @request = Request.find params[:request_id] if params[:request_id]
-    if @request
-      @user = @request.user
+    @membership_request = MembershipRequest.find params[:membership_request_id] if params[:membership_request_id]
+    if @membership_request
+      @user = @membership_request.user
     end
     if @membership && @membership.persisted?
       @user ||= @membership.user
-      @request ||= @membership.request
+      @membership_request ||= @membership.membership_request
       @position ||= @membership.position
       @authority ||= @position.authority
     end
