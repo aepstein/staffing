@@ -1,4 +1,4 @@
-Given /^(?:an )authorization scenario of an? (current|expired) membership_request to which I have a(?: (current|recent|pending|future))? (admin|staff|authority|authority_ro|requestor|plain) relationship$/ do |membership_request_tense, relation_tense, relationship|
+Given /^(?:an )authorization scenario of an? (current|expired)(?: (rejected|active|closed))? membership_request to which I have a(?: (current|recent|pending|future))? (admin|staff|authority|authority_ro|requestor|plain) relationship$/ do |membership_request_tense, state, relation_tense, relationship|
   role = case relationship
   when 'admin', 'staff'
     relationship
@@ -22,6 +22,15 @@ Given /^(?:an )authorization scenario of an? (current|expired) membership_reques
   @position = @committee.positions.first
   if %w( authority authority_ro ).include?( relationship )
     step %{I have a #{relation_tense} #{relationship} relationship to the position}
+  end
+  case state
+  when 'rejected'
+    @membership_request.rejected_by_user = create(:user, admin: true)
+    @membership_request.rejected_by_authority = @position.authority
+    @membership_request.rejection_comment = 'Reason for disapproval'
+    @membership_request.reject!
+  when 'closed'
+    @membership_request.close!
   end
 end
 

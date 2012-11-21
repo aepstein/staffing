@@ -42,3 +42,14 @@ Feature: Home page
       |recent voter    |not see any|
       |pending voter   |not see any|
 
+  Scenario Outline: List my active membership requests
+    Given an authorization scenario of an <condition> membership_request to which I have a <relationship> relationship
+    When I am on the home page
+    Then I should <see> membership_request in my active membership requests
+    Examples:
+    |condition       |relationship|see        |
+    |current active  |admin       |not see any|
+    |current active  |requestor   |see the    |
+    |current rejected|requestor   |not see any|
+    |expired active  |requestor   |not see any|
+

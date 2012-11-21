@@ -1,4 +1,5 @@
 <% user ||= false; committee ||= false %>
+<% if membership_requests.any? %>
 <table id="membership-requests">
   <thead>
   <tr>
@@ -16,4 +17,7 @@
     locals: { user: user, committee: committee } %>
   </tbody>
 </table>
+<% else %>
+<p>No membership requests.</p>
+<% end %>
 
