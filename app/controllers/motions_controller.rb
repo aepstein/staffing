@@ -144,7 +144,7 @@ class MotionsController < ApplicationController
       if @motion.restart
         format.html { redirect_to @motion, notice: 'Motion was successfully restarted.' }
         format.xml { head :ok }
-      else
+    else
         format.html { redirect_to @motion, alert: 'Cannot restart the motion.' }
         format.xml { render xml: @motion.errors, status: :unprocessable_entity }
       end
@@ -197,6 +197,26 @@ class MotionsController < ApplicationController
         else
           format.html { render action: "refer" }
           format.xml  { render xml: @motion.errors, status: :unprocessable_entity }
+        end
+      end
+    end
+  end
+
+  # GET /motions/:id/amend
+  # PUT /motions/:id/amend
+  def amend
+    respond_to do |format|
+      if request.method_symbol == :get
+        format.html
+      else
+        @motion.amendment = @motion.referring_motion.build_amendment( params[:amendment] )
+        @amendment = @motion.amendment
+        if @motion.amend
+          format.html { redirect_to(@amendment, notice: 'Motion was successfully amended.') }
+          format.xml  { head :ok }
+        else
+          format.html { render action: "amend" }
+          format.xml  { render xml: @amendment.errors, status: :unprocessable_entity }
         end
       end
     end

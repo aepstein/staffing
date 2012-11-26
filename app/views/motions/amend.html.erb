@@ -1,0 +1,43 @@
+<p>
+Use this form to prepare an amended version of the motion.
+This will create an <em>amendment motion</em> in the committee.
+Once the amendment is adopted, it will be applied to the original motion.
+Specify attachments only if they are to be substituted for or added to the original attachments.
+An amendment must have sponsors.
+</p>
+
+<%= semantic_form_for @amendment, as: :amendment,
+  url: amend_motion_path( @motion ), method: :put do |form| %>
+  <%= render "shared/error_messages", target: form.object %>
+  <%= form.input :name, label: 'Name',
+    hint: 'What should be the new name of the amendment? (Usually best to use the default)' %>
+  <%= form.input :description, hint: 'Briefly describe amended purpose and effect of motion' %>
+  <%= form.input :content, hint: 'Provide the amended text of the motion' %>
+
+  <%= form.inputs for: :sponsorships, name: 'sponsor' do |subform| %>
+    <%= render partial: 'sponsorships/sponsorship_fields', locals: { f: subform } %>
+  <% end %>
+
+  <div class='links'>
+    <p>
+      <%= link_to_add_association 'add sponsorship', form, :sponsorships,
+        partial: 'sponsorships/sponsorship_fields' %>
+    </p>
+  </div>
+
+  <%= form.inputs for: :attachments, name: 'attachment' do |subform| %>
+    <%= render partial: 'attachments/attachment_fields', locals: { f: subform } %>
+  <% end %>
+
+  <div class='links'>
+    <p>
+      <%= link_to_add_association 'add attachment', form, :attachments,
+        partial: 'attachments/attachment_fields' %>
+    </p>
+  </div>
+
+  <%= form.actions do %>
+    <%= form.action :submit, label: 'Amend' %>
+  <% end %>
+<% end %>
+

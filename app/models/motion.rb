@@ -62,10 +62,10 @@ class Motion < ActiveRecord::Base
     dependent: :destroy do
     def build_referee( referral_attributes = {} )
       referral_attributes ||= {}
-      new_motion = build( proxy_association.owner.attributes )
-      new_motion.assign_attributes referral_attributes, as: :referrer
-      new_motion.period ||= new_motion.committee.periods.active if new_motion.committee
-      new_motion
+      build( proxy_association.owner.attributes ) do |new_motion|
+        new_motion.assign_attributes referral_attributes, as: :referrer
+        new_motion.period ||= new_motion.committee.periods.active if new_motion.committee
+      end
     end
 
     def build_amendment( amendment_attributes = {} )
@@ -143,13 +143,14 @@ class Motion < ActiveRecord::Base
         motion.referring_motion.amend!
       end
     end
-    before_transition [ :started, :proposed ] => all - [ :started, :proposed, :implemented ] do |motion|
-      if motion.referring_motion.amended?
-        motion.referring_motion.unamend!
-      end
+    before_transition :proposed => :amended do |motion|
+      motion.amendment.save!
+      motion.amendment.propose!
     end
     before_transition :amended => :proposed do |motion|
-      #TODO apply changes from amendment
+      motion.description = motion.amendment.description
+      motion.content = motion.amendment.content
+      # TODO copy attachments from amendment
     end
     after_transition all => [ :started, :proposed, :referred, :merged, :divided,
       :withdrawn, :adopted, :implemented, :cancelled ] do |motion, transition|
@@ -173,12 +174,15 @@ class Motion < ActiveRecord::Base
 #        end
       end
     end
+    state :amended do
+      validates :amendment, presence: true
+    end
 
     event :propose do
       transition :started => :proposed
     end
     event :adopt do
-      transition :poroposed => :implemented, if: lambda { |m| m.referring_motion.amended? }
+      transition :proposed => :implemented, if: lambda { |m| m.referring_motion && m.referring_motion.amended? }
       transition :proposed => :adopted
     end
     event :amend do
