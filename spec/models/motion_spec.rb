@@ -116,6 +116,33 @@ describe Motion do
     Motion.past.should include @past
   end
 
+  context "amendable_name" do
+    let(:motion) { create :motion, name: 'Original' }
+
+    it "should return first name if there is no conflict" do
+      motion.amendable_name.should eql 'Amend Original #1'
+    end
+
+    it "should return second name if there is a conflict" do
+      create( :motion, committee: motion.committee, period: motion.period,
+        name: motion.amendable_name )
+      motion.amendable_name.should eql 'Amend Original #2'
+    end
+  end
+
+  context "amended motion" do
+    let(:motion) { create(:motion) }
+
+    it "should have a referred_motions.build_amendment method" do
+      amendment = motion.referred_motions.build_amendment
+      amendment.name.should eql motion.amendable_name
+      amendment.content.should eql motion.content
+      amendment.committee.should eql motion.committee
+      amendment.period.should eql motion.period
+      motion.amendment.should eql amendment
+    end
+  end
+
   def setup_temporal_motions
     Motion.delete_all
     committee = create( :committee )

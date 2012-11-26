@@ -10,7 +10,7 @@ class Motion < ActiveRecord::Base
   attr_accessible :name, :content, :description, :complete,
     :referring_motion_id, :sponsorships_attributes, :attachments_attributes,
     :event_date, :event_description,
-    as: [ :admin, :default, :divider, :referrer ]
+    as: [ :admin, :default, :divider, :referrer, :amender ]
   attr_accessible :period_id, as: [ :admin ]
   attr_accessible :referred_motions_attributes, as: [ :divider, :referrer ]
   attr_accessible :committee_name, as: :referrer
@@ -68,6 +68,15 @@ class Motion < ActiveRecord::Base
       new_motion
     end
 
+    def build_amendment( amendment_attributes = {} )
+      proxy_association.owner.amendment = build( proxy_association.owner.attributes ) do |new_motion|
+        new_motion.assign_attributes amendment_attributes, as: :amender
+        new_motion.committee = proxy_association.owner.committee
+        new_motion.period = proxy_association.owner.period
+        new_motion.name = proxy_association.owner.amendable_name
+      end
+    end
+
     def build_divided( instances=false )
       instances ||= (empty? ? 2 : 1 )
       new_motions = []
@@ -120,13 +129,27 @@ class Motion < ActiveRecord::Base
 
   state_machine :status, initial: :started do
 
-    before_transition all => [ :divided, :referred ] do |motion, transition|
+    before_transition all => [ :divided, :referred, :amended ] do |motion, transition|
       motion.referred_motions.select(&:new_record?).each do |new_motion|
         new_motion.watchers << motion.watchers
       end
     end
     before_transition all - :proposed => :proposed do |motion|
       motion.published = true
+    end
+    before_transition :proposed => [ :implemented ] do |motion|
+      if motion.referring_motion.amended?
+        motion.referring_motion.amendment = motion
+        motion.referring_motion.amend!
+      end
+    end
+    before_transition [ :started, :proposed ] => all - [ :started, :proposed, :implemented ] do |motion|
+      if motion.referring_motion.amended?
+        motion.referring_motion.unamend!
+      end
+    end
+    before_transition :amended => :proposed do |motion|
+      #TODO apply changes from amendment
     end
     after_transition all => [ :started, :proposed, :referred, :merged, :divided,
       :withdrawn, :adopted, :implemented, :cancelled ] do |motion, transition|
@@ -155,7 +178,12 @@ class Motion < ActiveRecord::Base
       transition :started => :proposed
     end
     event :adopt do
+      transition :poroposed => :implemented, if: lambda { |m| m.referring_motion.amended? }
       transition :proposed => :adopted
+    end
+    event :amend do
+      transition :proposed => :amended
+      transition :amended => :proposed
     end
     event :merge do
       transition :proposed => :merged
@@ -175,6 +203,9 @@ class Motion < ActiveRecord::Base
     event :reject do
       transition [ :proposed, :adopted ] => :rejected
     end
+    event :unamend do
+      transition :amended => :proposed
+    end
     event :withdraw do
       transition [ :started, :proposed ] => :withdrawn
     end
@@ -183,8 +214,7 @@ class Motion < ActiveRecord::Base
 
   notifiable_events :propose
 
-  attr_accessor :event_date
-  attr_accessor :event_description
+  attr_accessor :event_date, :event_description, :amendment
 
   # Users who should be notified of this motion's progress
   def observers
@@ -222,6 +252,15 @@ class Motion < ActiveRecord::Base
   def mergeable_motions
     committee.motions.with_status( :proposed ).where { |m| m.id.not_eq( id ) }.
       where { |m| m.period_id.eq( period_id ) }
+  end
+
+  # Returns unique amendment name for the motion
+  def amendable_name
+    candidate = "Amend #{name} #1"
+    while committee.motions.where { |m| m.period_id.eq( period_id ) && m.name.eq( candidate ) }.exists? do
+      candidate.gsub!( /#(\d+)$/ ) { "##{$1.to_i + 1}" }
+    end
+    candidate
   end
 
   def to_s(format=nil)
