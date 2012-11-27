@@ -104,6 +104,15 @@ FactoryGirl.define do
     association :meeting_section
     sequence(:name) { |i| "Item #{i}" }
     duration 10
+
+    factory :motion_meeting_item do
+      name nil
+      motion do |item|
+        FactoryGirl.create(:motion, period: item.meeting_section.meeting.period,
+          committee: item.meeting_section.meeting.committee)
+      end
+    end
+
   end
 
   factory :membership do
