@@ -97,7 +97,7 @@ Given /^(?:an )authorization scenario of (un)?published, (\w+) motion of (sponso
   end
 end
 
-Then /^I may( not)? (adopt|divide|implement|merge|propose|refer|reject|restart|withdraw) the motion$/ do |negate, event|
+Then /^I may( not)? (adopt|amend|divide|implement|merge|propose|refer|reject|restart|withdraw) the motion$/ do |negate, event|
   visit(committee_motions_url(@committee))
   if negate.blank?
     within("#motion-#{@motion.id}") { page.should have_text(event.titleize) }

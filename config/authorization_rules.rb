@@ -19,8 +19,8 @@ authorization do
       if_attribute declined_at: is { nil }, starts_at: lte { Time.zone.today },
         renew_until: is_not { nil }, position: { renewable: true }
     end
-    has_permission_on :motions, to: [ :admin, :adopt, :divide, :implement,
-      :merge, :propose, :refer, :reject, :restart, :withdraw ]
+    has_permission_on :motions, to: [ :admin, :adopt, :amend, :divide,
+      :implement, :merge, :propose, :refer, :reject, :restart, :withdraw ]
     has_permission_on :users, to: [ :resume, :staff, :tent ]
     has_permission_on :membership_requests, to: [ :reject, :reactivate ]
 
@@ -130,8 +130,8 @@ authorization do
       if_attribute status: is { 'started' }, referring_motion_id: is_not { nil },
         period: { starts_at: lte { Time.zone.today }, ends_at: gte { Time.zone.today } }
     end
-    has_permission_on :motions, to: [ :adopt, :divide, :merge, :refer, :reject,
-      :restart, :withdraw ], join_by: :and do
+    has_permission_on :motions, to: [ :adopt, :amend, :divide, :merge, :reject,
+      :refer, :restart, :withdraw ], join_by: :and do
       if_permitted_to :vicechair, :committee
       if_attribute status: is { 'proposed' },
         period: { starts_at: lte { Time.zone.today }, ends_at: gte { Time.zone.today } }

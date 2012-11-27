@@ -1,9 +1,9 @@
 class Motion < ActiveRecord::Base
   include CommitteeNameLookup
 
-  EVENTS = [ :propose, :adopt, :merge, :divide, :refer, :implement, :restart,
-    :reject, :withdraw ]
-  EVENTS_PUTONLY = [ :propose, :adopt, :implement, :restart, :reject, :withdraw ]
+  EVENTS = [ :adopt, :amend, :divide, :implement, :merge, :propose, :refer,
+    :reject, :restart, :withdraw ]
+  EVENTS_PUTONLY = [ :adopt, :implement, :propose, :reject, :restart, :withdraw ]
 
   has_paper_trail
 

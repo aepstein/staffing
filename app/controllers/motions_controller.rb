@@ -5,11 +5,11 @@ class MotionsController < ApplicationController
   before_filter :new_referred_motion_from_params, only: [ :refer ]
   before_filter :setup_breadcrumbs
   filter_access_to :new, :create, :edit, :update, :destroy, :show,
-    :adopt, :divide, :implement, :merge, :propose, :refer, :reject,
+    :adopt, :amend, :divide, :implement, :merge, :propose, :refer, :reject,
     :restart, :withdraw,
     attribute_check: true
-  filter_access_to :adopt, :divide, :implement, :merge, :propose, :refer, :reject,
-    :restart, :withdraw do
+  filter_access_to :adopt, :amend, :divide, :implement, :merge, :propose,
+    :refer, :reject, :restart, :withdraw do
     raise Authorization::NotAuthorized unless @motion.status_events.include? action_name.to_sym
     permitted_to! action_name, @motion
   end
@@ -209,7 +209,7 @@ class MotionsController < ApplicationController
       if request.method_symbol == :get
         format.html
       else
-        @motion.amendment = @motion.referring_motion.build_amendment( params[:amendment] )
+        @motion.referred_motions.build_amendment( params[:amendment] )
         @amendment = @motion.amendment
         if @motion.amend
           format.html { redirect_to(@amendment, notice: 'Motion was successfully amended.') }

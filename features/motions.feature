@@ -48,24 +48,28 @@ Scenario Outline: Access control for events
     |nonmember|current|sponsored|   |started  |may not|propose  |
     |admin    |current|sponsored|   |proposed |may not|propose  |
     |staff    |current|sponsored|   |proposed |may    |adopt    |
+    |staff    |current|sponsored|   |proposed |may    |amend    |
     |staff    |current|sponsored|   |proposed |may    |divide   |
     |staff    |current|sponsored|   |proposed |may    |merge    |
     |staff    |current|sponsored|   |proposed |may    |refer    |
     |staff    |current|sponsored|   |proposed |may    |restart  |
     |staff    |current|sponsored|   |proposed |may    |withdraw |
     |vicechair|current|sponsored|   |proposed |may    |adopt    |
+    |vicechair|current|sponsored|   |proposed |may    |amend    |
     |vicechair|current|sponsored|   |proposed |may    |divide   |
     |vicechair|current|sponsored|   |proposed |may    |merge    |
     |vicechair|current|sponsored|   |proposed |may    |refer    |
     |vicechair|current|sponsored|   |proposed |may    |restart  |
     |vicechair|current|sponsored|   |proposed |may    |withdraw |
     |vicechair|past   |sponsored|   |proposed |may not|adopt    |
+    |vicechair|past   |sponsored|   |proposed |may not|amend    |
     |vicechair|past   |sponsored|   |proposed |may not|divide   |
     |vicechair|past   |sponsored|   |proposed |may not|merge    |
     |vicechair|past   |sponsored|   |proposed |may not|refer    |
     |vicechair|past   |sponsored|   |proposed |may not|restart  |
     |vicechair|past   |sponsored|   |proposed |may not|withdraw |
     |sponsor  |current|sponsored|   |proposed |may not|adopt    |
+    |sponsor  |current|sponsored|   |proposed |may not|amend    |
     |sponsor  |current|sponsored|   |proposed |may not|divide   |
     |sponsor  |current|sponsored|   |proposed |may not|merge    |
     |sponsor  |current|sponsored|   |proposed |may not|refer    |
@@ -73,6 +77,7 @@ Scenario Outline: Access control for events
     |sponsor  |current|sponsored|   |proposed |may    |withdraw |
     |sponsor  |past   |sponsored|   |proposed |may not|withdraw |
     |voter    |current|sponsored|   |proposed |may not|adopt    |
+    |voter    |current|sponsored|   |proposed |may not|amend    |
     |voter    |current|sponsored|   |proposed |may not|divide   |
     |voter    |current|sponsored|   |proposed |may not|merge    |
     |voter    |current|sponsored|   |proposed |may not|refer    |
