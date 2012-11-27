@@ -143,6 +143,9 @@ class Motion < ActiveRecord::Base
         motion.referring_motion.amend!
       end
     end
+    before_transition :proposed => [ :rejected, :withdrawn ] do |motion|
+      motion.referring_motion.unamend! if motion.referring_motion.amended?
+    end
     before_transition :proposed => :amended do |motion|
       motion.amendment.save!
       motion.amendment.propose!
