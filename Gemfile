@@ -18,10 +18,10 @@ gem 'declarative_authorization'
 gem 'kaminari'
 gem 'carrierwave'
 gem 'blind_date', '~> 1.0.2'
-gem 'acts_as_list', :git => 'git://github.com/aepstein/acts_as_list.git'
+gem 'acts_as_list', git: 'git://github.com/aepstein/acts_as_list.git'
 gem 'daemons'
 gem 'bluecloth'
-gem 'whenever', :require => false
+gem 'whenever', require: false
 gem 'escape_utils'
 gem 'prawn', '~> 1.0.0rc'
 gem 'prawn-fast-png'
