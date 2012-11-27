@@ -139,7 +139,7 @@ describe Motion do
       motion.content.should eql amendment.content
     end
 
-    it "should unamend a motion on reject", focus: true do
+    it "should unamend a motion on reject" do
       motion.propose!
       amendment
       motion.amend!
