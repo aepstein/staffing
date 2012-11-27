@@ -205,12 +205,12 @@ class MotionsController < ApplicationController
   # GET /motions/:id/amend
   # PUT /motions/:id/amend
   def amend
+    @motion.referred_motions.build_amendment( params[:amendment] )
+    @amendment = @motion.amendment
     respond_to do |format|
       if request.method_symbol == :get
         format.html
       else
-        @motion.referred_motions.build_amendment( params[:amendment] )
-        @amendment = @motion.amendment
         if @motion.amend
           format.html { redirect_to(@amendment, notice: 'Motion was successfully amended.') }
           format.xml  { head :ok }

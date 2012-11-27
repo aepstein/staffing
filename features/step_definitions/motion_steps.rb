@@ -12,8 +12,10 @@ When /^I (adopt|amend|divide|implement|merge|propose|refer|reject|restart|withdr
   when 'adopt'
     Capybara.current_session.driver.submit :put, adopt_motion_url(@motion), {}
   when 'amend'
-    # todo
-    true.should be_false
+    visit(amend_motion_path(@motion))
+    fill_in 'Description', with: 'New description'
+    fill_in 'Content', with: 'New content'
+    click_button 'Amend'
   when 'divide'
     visit(divide_motion_path(@motion))
     click_link 'add dividing motion'

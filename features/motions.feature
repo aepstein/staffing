@@ -152,6 +152,7 @@ Scenario Outline: Motion events with javascript
   Then I should see confirmation of the event on the motion
   Examples:
     |relation |tense  |origin   |pub|status   |event   |
+    |vicechair|current|sponsored|   |proposed |amend   |
     |vicechair|current|sponsored|   |proposed |divide  |
     |vicechair|current|sponsored|   |proposed |merge   |
 
