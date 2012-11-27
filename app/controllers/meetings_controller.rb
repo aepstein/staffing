@@ -97,8 +97,7 @@ class MeetingsController < ApplicationController
   def create
     respond_to do |format|
       if @meeting.save
-        flash[:notice] = 'Meeting was successfully created.'
-        format.html { redirect_to(@meeting) }
+        format.html { redirect_to( @meeting, notice: 'Meeting was successfully created.' ) }
         format.xml  { render xml: @meeting, status: :created, location: @meeting }
       else
         format.html { render action: "new" }
@@ -127,7 +126,8 @@ class MeetingsController < ApplicationController
     @meeting.destroy
 
     respond_to do |format|
-      format.html { redirect_to committee_meetings_url( @meeting.committee ), notice: "Meeting was successfully destroyed." }
+      format.html { redirect_to( committee_meetings_url( @meeting.committee ),
+        notice: "Meeting was successfully destroyed." ) }
       format.xml  { head :ok }
     end
   end
