@@ -91,9 +91,19 @@ FactoryGirl.define do
   factory :meeting_motion do
     association :meeting
     motion do
-#      meeting.reload
       association :motion, committee: meeting.committee
     end
+  end
+
+  factory :meeting_section do
+    association :meeting
+    sequence(:name) { |i| "Section #{i}" }
+  end
+
+  factory :meeting_item do
+    association :meeting_section
+    sequence(:name) { |i| "Item #{i}" }
+    duration 10
   end
 
   factory :membership do

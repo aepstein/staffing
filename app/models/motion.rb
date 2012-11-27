@@ -23,7 +23,8 @@ class Motion < ActiveRecord::Base
   belongs_to :referring_motion, inverse_of: :referred_motions,
     class_name: 'Motion'
 
-  has_many :sponsorships, inverse_of: :motion do
+  has_many :meeting_items, inverse_of: :motion, dependent: :destroy
+  has_many :sponsorships, inverse_of: :motion, dependent: :destroy do
     # Build and return a sponsorship if provided user is allowed
     # Otherwise, return nil
     def populate_for( user )

@@ -8,6 +8,7 @@ class Meeting < ActiveRecord::Base
   belongs_to :period, inverse_of: :meetings
 
   has_many :meeting_motions, inverse_of: :meeting, dependent: :destroy
+  has_many :meeting_sections, inverse_of: :meeting, dependent: :destroy
   has_many :motions, through: :meeting_motions do
     # Allowed motions are in same committee and period as the meeting
     def allowed
