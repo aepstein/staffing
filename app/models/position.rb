@@ -48,23 +48,23 @@ class Position < ActiveRecord::Base
     end
 
     def build_for_authorization
-      membership = build
-      membership.period ||= proxy_association.owner.schedule.periods.active
-      membership.period ||= proxy_association.owner.schedule.periods.first
-      if membership.period
-        membership.starts_at ||= membership.period.starts_at
-        membership.ends_at ||= membership.period.ends_at
+      build do |membership|
+        membership.period ||= proxy_association.owner.schedule.periods.active
+        membership.period ||= proxy_association.owner.schedule.periods.first
+        if membership.period
+          membership.starts_at ||= membership.period.starts_at
+          membership.ends_at ||= membership.period.ends_at
+        end
       end
-      membership
     end
 
     private
 
     def start_unassigned(starts_at, period)
-      membership = build
-      membership.starts_at = starts_at
-      membership.period = period
-      membership
+      build do |membership|
+        membership.starts_at = starts_at
+        membership.period = period
+      end
     end
   end
   has_many :users, through: :memberships do
