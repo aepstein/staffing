@@ -10,13 +10,20 @@ When /^I (adopt|amend|divide|implement|merge|propose|refer|reject|restart|withdr
   @event = event
   case @event
   when 'adopt'
-    Capybara.current_session.driver.submit :put, adopt_motion_url(@motion), {}
+    visit(adopt_motion_path(@motion))
+    fill_in 'Adopt date', with: @motion.period.ends_at.to_formatted_s(:rfc822)
+    fill_in 'Event description', with: 'event details'
+    click_button 'Adopt'
   when 'amend'
     visit(amend_motion_path(@motion))
+    fill_in 'Amend date', with: @motion.period.ends_at.to_formatted_s(:rfc822)
+    fill_in 'Event description', with: 'event details'
     fill_in 'Description', with: 'New description'
     fill_in 'Content', with: 'New content'
     click_button 'Amend'
   when 'divide'
+    fill_in 'Divide date', with: @motion.period.ends_at.to_formatted_s(:rfc822)
+    fill_in 'Event description', with: 'event details'
     visit(divide_motion_path(@motion))
     click_link 'add dividing motion'
     fill_in 'Name', with: 'Charter amendment'
@@ -24,27 +31,43 @@ When /^I (adopt|amend|divide|implement|merge|propose|refer|reject|restart|withdr
     fill_in 'Content', with: 'Whereas and resolved'
     click_button 'Divide'
   when 'implement'
-    Capybara.current_session.driver.submit :put, adopt_motion_url(@motion), {}
+    visit(implement_motion_path(@motion))
+    fill_in 'Implement date', with: @motion.period.ends_at.to_formatted_s(:rfc822)
+    fill_in 'Event description', with: 'event details'
+    click_button 'Implement'
   when 'merge'
     create :motion, committee: @motion.committee, period: @motion.period,
       name: 'Target', published: true, status: 'proposed'
     visit(merge_motion_path(@motion))
+    fill_in 'Merge date', with: @motion.period.ends_at.to_formatted_s(:rfc822)
+    fill_in 'Event description', with: 'event details'
     select 'Target', from: 'Motion'
     click_button 'Merge'
   when 'propose'
-    Capybara.current_session.driver.submit :put, propose_motion_url(@motion), {}
+    visit(propose_motion_path(@motion))
+    fill_in 'Propose date', with: @motion.period.ends_at.to_formatted_s(:rfc822)
+    fill_in 'Event description', with: 'event details'
+    click_button 'Propose'
   when 'refer'
     other_committee = create( :committee, schedule: @committee.schedule )
     visit(refer_motion_path(@motion))
+    fill_in 'Refer date', with: @motion.period.ends_at.to_formatted_s(:rfc822)
+    fill_in 'Event description', with: 'event details'
     fill_in 'Committee', with: other_committee.name
     fill_in 'Name', with: "#{@motion.name} referred"
     click_button 'Refer'
   when 'reject'
-    Capybara.current_session.driver.submit :put, reject_motion_url(@motion), {}
+    visit(reject_motion_path(@motion))
+    fill_in 'Reject date', with: @motion.period.ends_at.to_formatted_s(:rfc822)
+    fill_in 'Event description', with: 'event details'
+    click_button 'Reject'
   when 'restart'
     Capybara.current_session.driver.submit :put, restart_motion_url(@motion), {}
   when 'withdraw'
-    Capybara.current_session.driver.submit :put, withdraw_motion_url(@motion), {}
+    visit(withdraw_motion_path(@motion))
+    fill_in 'Withdraw date', with: @motion.period.ends_at.to_formatted_s(:rfc822)
+    fill_in 'Event description', with: 'event details'
+    click_button 'Withdraw'
   end
 end
 
@@ -68,6 +91,11 @@ Then /^I should see confirmation of the event on the motion$/ do
   @motion.reload
   @motion.status.should eql new_status
   within("#flash_notice") { page.should have_text "Motion was successfully #{event_description}." }
+  unless @event == 'restart'
+    final_event = @motion.motion_events.last
+    final_event.occurrence.should eql @motion.period.ends_at
+    final_event.description.should eql 'event details'
+  end
 end
 
 Given /^(?:an )authorization scenario of (un)?published, (\w+) motion of (sponsored|referred) origin to which I have a (?:(current|past|future) )?(admin|staff|chair|vicechair|voter|sponsor|nonvoter|nonmember) relationship$/ do |publication, status, origin, tense, relationship|

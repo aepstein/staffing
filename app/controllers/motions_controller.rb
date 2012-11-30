@@ -102,10 +102,10 @@ class MotionsController < ApplicationController
     respond_to do |format|
       if @motion.save
         format.html { redirect_to @motion, notice: 'Motion was successfully created.' }
-        format.xml  { render :xml => @motion, :status => :created, :location => @motion }
+        format.xml  { render xml: @motion, status: :created, location: @motion }
       else
-        format.html { render :action => "new" }
-        format.xml  { render :xml => @motion.errors, :status => :unprocessable_entity }
+        format.html { render action: "new" }
+        format.xml  { render xml: @motion.errors, status: :unprocessable_entity }
       end
     end
   end
@@ -124,15 +124,21 @@ class MotionsController < ApplicationController
     end
   end
 
+  # GET /motions/:id/propose
   # PUT /motions/:id/propose
   def propose
     respond_to do |format|
-      if @motion.propose
-        format.html { redirect_to @motion, notice: 'Motion was successfully proposed.' }
-        format.xml { head :ok }
+      if request.method_symbol == :get
+        format.html { render action: :propose }
       else
-        format.html { redirect_to @motion, alert: 'Cannot propose the motion.' }
-        format.xml { render xml: @motion.errors, status: :unprocessable_entity }
+        @motion.assign_attributes params[:motion], as: :eventor
+        if @motion.propose
+          format.html { redirect_to(@motion, notice: 'Motion was successfully proposed.') }
+          format.xml  { head :ok }
+        else
+          format.html { render action: :propose }
+          format.xml  { render xml: @motion.errors, status: :unprocessable_entity }
+        end
       end
     end
   end
@@ -144,22 +150,28 @@ class MotionsController < ApplicationController
       if @motion.restart
         format.html { redirect_to @motion, notice: 'Motion was successfully restarted.' }
         format.xml { head :ok }
-    else
+      else
         format.html { redirect_to @motion, alert: 'Cannot restart the motion.' }
         format.xml { render xml: @motion.errors, status: :unprocessable_entity }
       end
     end
   end
 
+  # GET /motions/:id/withdraw
   # PUT /motions/:id/withdraw
   def withdraw
     respond_to do |format|
-      if @motion.withdraw
-        format.html { redirect_to @motion, notice: 'Motion was successfully withdrawn.' }
-        format.xml { head :ok }
+      if request.method_symbol == :get
+        format.html { render action: :withdraw }
       else
-        format.html { redirect_to @motion, alert: 'Cannot withdraw the motion.' }
-        format.xml { render xml: @motion.errors, status: :unprocessable_entity }
+        @motion.assign_attributes params[:motion], as: :eventor
+        if @motion.withdraw
+          format.html { redirect_to(@motion, notice: 'Motion was successfully withdrawn.') }
+          format.xml  { head :ok }
+        else
+          format.html { render action: :withdraw }
+          format.xml  { render xml: @motion.errors, status: :unprocessable_entity }
+        end
       end
     end
   end
@@ -167,7 +179,9 @@ class MotionsController < ApplicationController
   # GET /motions/:id/merge - form where user selects motion to which this motion is to be merged
   # PUT /motions/:id/merge - do actual merge
   def merge
-    @motion_merger = @motion.build_terminal_motion_merger(params[:motion_merger])
+    @motion_merger = @motion.build_terminal_motion_merger do |merger|
+      merger.assign_attributes params[:motion_merger], as: :merger
+    end
     respond_to do |format|
       if request.method_symbol == :get
         format.html { render action: :merge }
@@ -194,7 +208,7 @@ class MotionsController < ApplicationController
         if @motion.refer
           format.html { redirect_to(@referred_motion, notice: 'Motion was successfully referred.') }
           format.xml  { head :ok }
-        else
+      else
           format.html { render action: "refer" }
           format.xml  { render xml: @motion.errors, status: :unprocessable_entity }
         end
@@ -243,40 +257,58 @@ class MotionsController < ApplicationController
   end
 
   # PUT /motions/:id/adopt
+  # GET /motions/:id/adopt
   def adopt
     respond_to do |format|
-      if @motion.adopt
-        format.html { redirect_to @motion, notice: 'Motion was successfully adopted.' }
-        format.xml { head :ok }
+      if request.method_symbol == :get
+        format.html { render action: :adopt }
       else
-        format.html { redirect_to @motion, alert: 'Cannot adopt the motion.' }
-        format.xml { render xml: @motion.errors, status: :unprocessable_entity }
+        @motion.assign_attributes params[:motion], as: :eventor
+        if @motion.adopt
+          format.html { redirect_to(@motion, notice: 'Motion was successfully adopted.') }
+          format.xml  { head :ok }
+        else
+          format.html { render action: :adopt }
+          format.xml  { render xml: @motion.errors, status: :unprocessable_entity }
+        end
       end
     end
   end
 
   # PUT /motions/:id/implement
+  # GET /motions/:id/implement
   def implement
     respond_to do |format|
-      if @motion.implement
-        format.html { redirect_to @motion, notice: 'Motion was successfully implemented.' }
-        format.xml { head :ok }
+      if request.method_symbol == :get
+        format.html { render action: :implement }
       else
-        format.html { redirect_to @motion, alert: 'Cannot implement the motion.' }
-        format.xml { render xml: @motion.errors, status: :unprocessable_entity }
+        @motion.assign_attributes params[:motion], as: :eventor
+        if @motion.implement
+          format.html { redirect_to(@motion, notice: 'Motion was successfully implemented.') }
+          format.xml  { head :ok }
+        else
+          format.html { render action: :implement }
+          format.xml  { render xml: @motion.errors, status: :unprocessable_entity }
+        end
       end
     end
   end
 
   # PUT /motions/:id/reject
+  # GET /motions/:id/reject
   def reject
     respond_to do |format|
-      if @motion.reject
-        format.html { redirect_to @motion, notice: 'Motion was successfully rejected.' }
-        format.xml { head :ok }
+      if request.method_symbol == :get
+        format.html { render action: :reject }
       else
-        format.html { redirect_to @motion, alert: 'Cannot reject the motion.' }
-        format.xml { render xml: @motion.errors, status: :unprocessable_entity }
+        @motion.assign_attributes params[:motion], as: :eventor
+        if @motion.reject
+          format.html { redirect_to(@motion, notice: 'Motion was successfully rejected.') }
+          format.xml  { head :ok }
+        else
+          format.html { render action: :reject }
+          format.xml  { render xml: @motion.errors, status: :unprocessable_entity }
+        end
       end
     end
   end

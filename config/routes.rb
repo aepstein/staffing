@@ -79,7 +79,8 @@ Staffing::Application.routes.draw do
   end
   resources :motions, except: [ :new, :create ] do
     member do
-      get :amend, :divide, :merge, :refer
+      get :adopt, :amend, :divide, :implement, :merge, :propose, :refer,
+        :reject, :withdraw
       put :adopt, :amend, :divide, :implement, :merge, :propose, :refer,
         :reject, :restart, :withdraw
     end

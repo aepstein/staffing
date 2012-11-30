@@ -1,9 +1,12 @@
 class MotionMerger < ActiveRecord::Base
-  attr_accessible :merged_motion_id, :motion_id
+  attr_accessible :merged_motion_id, :motion_id, as: [ :default, :merger ]
+  attr_accessible :merged_motion_attributes, as: [ :merger ]
   attr_readonly :merged_motion_id, :motion_id
 
   belongs_to :merged_motion, class_name: 'Motion', inverse_of: :terminal_motion_merger
   belongs_to :motion, inverse_of: :motion_mergers
+
+  accepts_nested_attributes_for :merged_motion
 
   validates :merged_motion, presence: true, on: :create
   validates :merged_motion_id, uniqueness: true, on: :create

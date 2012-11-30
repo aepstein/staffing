@@ -3,7 +3,8 @@ class Motion < ActiveRecord::Base
 
   EVENTS = [ :adopt, :amend, :divide, :implement, :merge, :propose, :refer,
     :reject, :restart, :withdraw ]
-  EVENTS_PUTONLY = [ :adopt, :implement, :propose, :reject, :restart, :withdraw ]
+#  EVENTS_PUTONLY = [ :adopt, :implement, :propose, :reject, :restart, :withdraw ]
+  EVENTS_PUTONLY = [ :restart ]
 
   has_paper_trail
 
@@ -11,8 +12,10 @@ class Motion < ActiveRecord::Base
     :referring_motion_id, :sponsorships_attributes, :attachments_attributes,
     :event_date, :event_description,
     as: [ :admin, :default, :divider, :referrer, :amender ]
+  attr_accessible :event_date, :event_description, as: [ :eventor, :merger ]
   attr_accessible :period_id, as: [ :admin ]
-  attr_accessible :referred_motions_attributes, as: [ :divider, :referrer ]
+  attr_accessible :referring_motion_attributes, as: [ :referrer ]
+  attr_accessible :referred_motions_attributes, as: [ :divider ]
   attr_accessible :committee_name, as: :referrer
   attr_readonly :committee_id, :period_id
 
@@ -103,6 +106,7 @@ class Motion < ActiveRecord::Base
   accepts_nested_attributes_for :attachments, allow_destroy: true
   accepts_nested_attributes_for :sponsorships, allow_destroy: true
   accepts_nested_attributes_for :referred_motions
+  accepts_nested_attributes_for :referring_motion
 
   delegate :periods, :period_ids, to: :committee
 
@@ -145,7 +149,7 @@ class Motion < ActiveRecord::Base
       end
     end
     before_transition :proposed => [ :rejected, :withdrawn ] do |motion|
-      motion.referring_motion.unamend! if motion.referring_motion.amended?
+      motion.referring_motion.unamend! if motion.referring_motion && motion.referring_motion.amended?
     end
     before_transition :proposed => :amended do |motion|
       motion.amendment.save!
@@ -157,7 +161,7 @@ class Motion < ActiveRecord::Base
       # TODO copy attachments from amendment
     end
     after_transition all => [ :started, :proposed, :referred, :merged, :divided,
-      :withdrawn, :adopted, :implemented, :cancelled ] do |motion, transition|
+      :withdrawn, :adopted, :implemented, :rejected ] do |motion, transition|
       motion.motion_events.create!(
         event: transition.event.to_s,
         description: motion.event_description,
@@ -169,7 +173,7 @@ class Motion < ActiveRecord::Base
     end
 
     state :proposed, :referred, :merged, :divided, :withdrawn, :adopted,
-      :implemented, :cancelled
+      :implemented, :rejected
 
     state :started do
       validate do |motion|

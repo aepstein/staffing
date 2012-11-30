@@ -11,6 +11,11 @@ Use this form to merge the motion to another motion proposed before the same com
 <%= semantic_form_for @motion_merger, as: :motion_merger,
   url: merge_motion_path( @motion_merger.merged_motion ),
   method: :put do |form| %>
+
+  <%= form.inputs for: :merged_motion do |merged_motion_fields| %>
+    <%= render partial: 'motions/event_fields', object: merged_motion_fields %>
+  <% end %>
+
   <%= form.inputs do %>
     <%= form.input :motion, as: :select,
       collection: @motion_merger.merged_motion.mergeable_motions,

@@ -136,14 +136,17 @@ Scenario Outline: Motion events without javascript
   When I <event> the motion
   Then I should see confirmation of the event on the motion
   Examples:
-    |relation |tense  |origin   |pub|status   |event   |
-    |sponsor  |current|sponsored|un |started  |propose |
-    |vicechair|current|referred |   |started  |propose |
-    |sponsor  |current|sponsored|   |proposed |withdraw|
-    |vicechair|current|sponsored|   |proposed |adopt   |
-    |vicechair|current|sponsored|   |proposed |merge   |
-    |vicechair|current|sponsored|   |proposed |restart |
-    |vicechair|current|sponsored|   |proposed |refer   |
+    |relation |tense  |origin   |pub|status   |event    |
+    |sponsor  |current|sponsored|un |started  |propose  |
+    |vicechair|current|referred |   |started  |propose  |
+    |sponsor  |current|sponsored|   |proposed |withdraw |
+    |vicechair|current|sponsored|   |proposed |adopt    |
+    |vicechair|current|sponsored|   |proposed |merge    |
+    |vicechair|current|sponsored|   |proposed |restart  |
+    |vicechair|current|sponsored|   |proposed |refer    |
+    |staff    |current|sponsored|   |adopted  |implement|
+    |vicechair|current|sponsored|   |proposed |reject   |
+    |vicechair|current|sponsored|   |proposed |withdraw |
 
 @javascript
 Scenario Outline: Motion events with javascript
