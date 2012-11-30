@@ -28,17 +28,13 @@ class Position < ActiveRecord::Base
       unless proxy_association.owner.schedule.periods.include? period
         raise ArgumentError, "Period must be in current schedule"
       end
-      previous_vacancies = nil
       memberships = vacancies_for_period( period ).inject([]) do |memo, point|
-        if previous_vacancies.nil?
-          point.last.times { memo << start_unassigned( point.first, period ) }
-        elsif previous_vacancies < point.last
-          (point.last - previous_vacancies).times { memo << start_unassigned(point.first, period) }
-        elsif previous_vacancies > 0 && previous_vacancies > point.last
-          (previous_vacancies - point.last).times { memo.pop.save! validate: false }
+        if memo.length < point.last
+          (point.last - memo.length).times { memo << start_unassigned(point.first, period) }
+        elsif memo.length > point.last
+          [memo.length, (memo.length - point.last)].min.times { memo.pop.save! validate: false }
         end
         memo.each { |membership| membership.ends_at = point.first }
-        previous_vacancies = ( point.last > 0 ? point.last : 0 )
         memo
       end
       # Save without validation -- method should produce valid memberships
@@ -52,23 +48,23 @@ class Position < ActiveRecord::Base
     end
 
     def build_for_authorization
-      membership = build
-      membership.period ||= proxy_association.owner.schedule.periods.active
-      membership.period ||= proxy_association.owner.schedule.periods.first
-      if membership.period
-        membership.starts_at ||= membership.period.starts_at
-        membership.ends_at ||= membership.period.ends_at
+      build do |membership|
+        membership.period ||= proxy_association.owner.schedule.periods.active
+        membership.period ||= proxy_association.owner.schedule.periods.first
+        if membership.period
+          membership.starts_at ||= membership.period.starts_at
+          membership.ends_at ||= membership.period.ends_at
+        end
       end
-      membership
     end
 
     private
 
     def start_unassigned(starts_at, period)
-      membership = build
-      membership.starts_at = starts_at
-      membership.period = period
-      membership
+      build do |membership|
+        membership.starts_at = starts_at
+        membership.period = period
+      end
     end
   end
   has_many :users, through: :memberships do
