@@ -23,7 +23,6 @@ When /^I (adopt|amend|divide|implement|merge|propose|refer|reject|restart|withdr
     click_button 'Amend'
   when 'divide'
     visit(divide_motion_path(@motion))
-    save_and_open_page
     fill_in 'Divide date', with: @motion.period.ends_at.to_formatted_s(:db)
     fill_in 'Event description', with: 'event details'
     click_link 'add dividing motion'
