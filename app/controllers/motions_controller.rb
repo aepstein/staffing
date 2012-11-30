@@ -249,8 +249,8 @@ class MotionsController < ApplicationController
           format.html { redirect_to(@motion, notice: 'Motion was successfully divided.') }
           format.xml  { head :ok }
         else
-          format.html { render :action => "divide" }
-          format.xml  { render :xml => @motion.errors, status: :unprocessable_entity }
+          format.html { render action: "divide" }
+          format.xml  { render xml: @motion.errors, status: :unprocessable_entity }
         end
       end
     end
@@ -351,6 +351,7 @@ class MotionsController < ApplicationController
 
   def new_referred_motion_from_params
     @referred_motion = @motion.referred_motions.build_referee( params[:referred_motion] )
+    @motion.event_date, @motion.event_description = @referred_motion.event_date, @referred_motion.event_description
   end
 
   def setup_breadcrumbs

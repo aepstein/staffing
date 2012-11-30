@@ -3,7 +3,6 @@ class Motion < ActiveRecord::Base
 
   EVENTS = [ :adopt, :amend, :divide, :implement, :merge, :propose, :refer,
     :reject, :restart, :withdraw ]
-#  EVENTS_PUTONLY = [ :adopt, :implement, :propose, :reject, :restart, :withdraw ]
   EVENTS_PUTONLY = [ :restart ]
 
   has_paper_trail
@@ -81,20 +80,13 @@ class Motion < ActiveRecord::Base
       end
     end
 
-    def build_divided( instances=false )
-      instances ||= (empty? ? 2 : 1 )
-      new_motions = []
-      new_attributes = proxy_association.owner.attributes
-      %w( committee_id id position created_at updated_at ).each { |attribute| new_attributes.delete attribute }
-      instances.times do |i|
-        new_attributes[:name] = "#{proxy_association.owner.name} (#{proxy_association.owner.id}-#{i})"
-        new_motion = build new_attributes
-        new_motion.committee = proxy_association.owner.committee
-        new_motion.published = true
-        new_motion.period = proxy_association.owner.period
-        new_motions << new_motion
+    def prepare_divided
+      each do |motion|
+        next unless motion.new_record?
+        motion.committee = @motion.committee
+        motion.published = true
+        motion.period = @motion.period
       end
-      new_motions
     end
   end
 
@@ -106,7 +98,6 @@ class Motion < ActiveRecord::Base
   accepts_nested_attributes_for :attachments, allow_destroy: true
   accepts_nested_attributes_for :sponsorships, allow_destroy: true
   accepts_nested_attributes_for :referred_motions
-  accepts_nested_attributes_for :referring_motion
 
   delegate :periods, :period_ids, to: :committee
 
@@ -118,18 +109,10 @@ class Motion < ActiveRecord::Base
   validates :committee, presence: true
   validates :event_date, timeliness: { allow_blank: true, type: :date }
 
-#  before_validation :add_to_list_bottom, :on => :create
   before_create do |motion|
     if motion.referring_motion && motion.referring_motion.published?
       motion.published = true
     end
-    if motion.referee? && !motion.referring_motion.referred?
-      motion.referring_motion.lock!
-      motion.referring_motion.refer!
-    end
-  end
-  after_create do |motion|
-    motion.referring_motion.save! if motion.referee?
   end
 
   state_machine :status, initial: :started do
@@ -152,7 +135,6 @@ class Motion < ActiveRecord::Base
       motion.referring_motion.unamend! if motion.referring_motion && motion.referring_motion.amended?
     end
     before_transition :proposed => :amended do |motion|
-      motion.amendment.save!
       motion.amendment.propose!
     end
     before_transition :amended => :proposed do |motion|
@@ -228,6 +210,17 @@ class Motion < ActiveRecord::Base
 
   attr_accessor :event_date, :event_description, :amendment
 
+  # Populate the event date with
+  # * most meeting when scheduled, if any
+  # * most recent past meeting occurring same period, if any
+  # * today if period is current
+  # TODO - behavior depends on the action:
+  # * some actions don't require meetings so meeting-based default doesn't make
+  #   sense
+  def populate_event_date
+    # TODO
+  end
+
   # Users who should be notified of this motion's progress
   def observers
     ( watchers + committee.observers ).uniq
@@ -247,12 +240,6 @@ class Motion < ActiveRecord::Base
   # Motion has been referred from another committee
   def referee?
     return true if referring_motion && ( referring_motion.committee != committee )
-    false
-  end
-
-  # Motion originates from a divided motion
-  def divisee?
-    return true if referring_motion && ( referring_motion.committee == committee )
     false
   end
 
@@ -284,7 +271,7 @@ class Motion < ActiveRecord::Base
     when :numbered
       "R. #{position}: #{name}"
     else
-      name
+      name? ? name : super()
     end
   end
 

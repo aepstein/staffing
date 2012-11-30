@@ -46,7 +46,15 @@ describe Motion do
     def divided_motions
       divided = create(:motion)
       divided.propose!
-      divided.referred_motions.build_divided
+      2.times do |i|
+        divided.referred_motions.build do |divisee|
+          divisee.name = "Divided motion #{i}"
+          divisee.content = "some content"
+          divisee.committee = divided.committee
+          divisee.published = true
+          divisee.period = divided.period
+        end
+      end
       divided.divide!
       divided.referred_motions.length.should eql 2
       divided.referred_motions
@@ -64,37 +72,6 @@ describe Motion do
 
     let(:amendment) {  motion.referred_motions.build_amendment }
 
-    it 'should change status to referred when referred motion is created' do
-      motion.propose!
-      referee = motion.referred_motions.build_referee(
-        committee_name: create(:committee, schedule: motion.committee.schedule ).name
-      )
-      referee.save!
-      motion.reload
-      motion.status.should eql 'referred'
-    end
-
-    it 'should have a referred? method that indicates if it is referred' do
-      motion.referred?.should be_false
-      referee = referee_motion
-      referee.referred?.should be_false
-      referee.referring_motion.referred?.should be_true
-      divisee = divided_motions.first
-      divisee.referred?.should be_false
-      divisee.referring_motion.referred?.should be_false
-    end
-
-    it 'should have a divided? method that indicates if it is divided' do
-      motion.divided?.should be_false
-      divisee = divided_motions.first
-      divisee.reload
-      divisee.divided?.should be_false
-      divisee.referring_motion.divided?.should be_true
-      referee = referee_motion
-      referee.divided?.should be_false
-      referee.referring_motion.divided?.should be_false
-    end
-
     it 'should have a referee? method that indicates if it originates from a referred motion' do
       motion.referee?.should be_false
       divisee = divided_motions.first
@@ -103,16 +80,6 @@ describe Motion do
       referee = referee_motion
       referee.referee?.should be_true
       referee.referring_motion.referee?.should be_false
-    end
-
-    it 'should have a divisee? method that indicates if it originates from a divided motion' do
-      motion.divisee?.should be_false
-      divisee = divided_motions.first
-      divisee.divisee?.should be_true
-      divisee.referring_motion.divisee?.should be_false
-      referee = referee_motion
-      referee.divisee?.should be_false
-      referee.referring_motion.divisee?.should be_false
     end
 
     it "should have a working build_amendment method" do

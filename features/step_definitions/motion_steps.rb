@@ -16,15 +16,16 @@ When /^I (adopt|amend|divide|implement|merge|propose|refer|reject|restart|withdr
     click_button 'Adopt'
   when 'amend'
     visit(amend_motion_path(@motion))
-    fill_in 'Amend date', with: @motion.period.ends_at.to_formatted_s(:rfc822)
+    fill_in 'Amend date', with: @motion.period.ends_at.to_formatted_s(:db)
     fill_in 'Event description', with: 'event details'
     fill_in 'Description', with: 'New description'
     fill_in 'Content', with: 'New content'
     click_button 'Amend'
   when 'divide'
-    fill_in 'Divide date', with: @motion.period.ends_at.to_formatted_s(:rfc822)
-    fill_in 'Event description', with: 'event details'
     visit(divide_motion_path(@motion))
+    save_and_open_page
+    fill_in 'Divide date', with: @motion.period.ends_at.to_formatted_s(:db)
+    fill_in 'Event description', with: 'event details'
     click_link 'add dividing motion'
     fill_in 'Name', with: 'Charter amendment'
     fill_in 'Description', with: 'This is a big change'
@@ -39,7 +40,7 @@ When /^I (adopt|amend|divide|implement|merge|propose|refer|reject|restart|withdr
     create :motion, committee: @motion.committee, period: @motion.period,
       name: 'Target', published: true, status: 'proposed'
     visit(merge_motion_path(@motion))
-    fill_in 'Merge date', with: @motion.period.ends_at.to_formatted_s(:rfc822)
+    fill_in 'Merge date', with: @motion.period.ends_at.to_formatted_s(:db)
     fill_in 'Event description', with: 'event details'
     select 'Target', from: 'Motion'
     click_button 'Merge'
@@ -91,7 +92,7 @@ Then /^I should see confirmation of the event on the motion$/ do
   @motion.reload
   @motion.status.should eql new_status
   within("#flash_notice") { page.should have_text "Motion was successfully #{event_description}." }
-  unless @event == 'restart'
+  unless %w( restart amend ).include?( @event )
     final_event = @motion.motion_events.last
     final_event.occurrence.should eql @motion.period.ends_at
     final_event.description.should eql 'event details'

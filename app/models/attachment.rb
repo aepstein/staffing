@@ -5,6 +5,8 @@ class Attachment < ActiveRecord::Base
 
   belongs_to :attachable, polymorphic: true
 
+  has_paper_trail
+
   mount_uploader :document, DocumentUploader
 
   validates :attachable, presence: true

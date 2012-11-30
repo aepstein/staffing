@@ -1,6 +1,6 @@
 <%= content_tag :p do %>
-Use this form to divide a motion into several <em>dividing motions</em>.
-These motions will be considered in the same committee in which this motion is proposed.
+  Use this form to divide a motion into several <em>dividing motions</em>.
+  These motions will be considered in the same committee in which this motion is proposed.
 <% end %>
 
 <%= content_tag :h3, 'Motion to be divided' %>
@@ -9,9 +9,9 @@ These motions will be considered in the same committee in which this motion is p
 
 <%= content_tag :h3, 'Dividing motions' %>
 
-<%= content_tag :div, id: "referred_motions" do %>
-  <%= semantic_form_for @motion, url: divide_motion_path( @motion ),
-    method: :put do |form| %>
+<%= content_tag( :div, id: "referred_motions" ) do %>
+  <%= semantic_form_for( @motion, url: divide_motion_path( @motion ),
+    method: :put ) do |form| %>
       <%= form.inputs do %>
         <%= render partial: 'motions/event_fields', object: form %>
       <% end %>
@@ -21,15 +21,15 @@ These motions will be considered in the same committee in which this motion is p
           locals: { role: :divider, committee: @motion.committee, f: subform } %>
       <% end %>
 
-      <%= content_tag :div, class: 'links' do %>
-        <%= content_tag :p %>
+      <%= content_tag( :div, class: 'links' ) do %>
+        <%= content_tag :p do %>
           <%= link_to_add_association 'add dividing motion', form, :referred_motions,
             render_options: { locals: { role: :divider, committee: @motion.committee } } %>
         <% end %>
       <% end %> <!-- .links -->
 
     <%= form.actions do %>
-    <%= form.action :submit, label: 'Divide' %>
+      <%= form.action :submit, label: 'Divide' %>
     <% end %>
   <% end %>
 <% end %> <!-- #referred_motions -->

@@ -157,7 +157,7 @@ When /^I attempt to create a (past|current|future|pending|recent) membership as 
   end
   visit new_position_membership_url(@position)
   fill_in 'User', with: @candidate.name(:net_id)
-  select @period.to_s, from: "Period"
+  select @period.to_s.strip.squeeze(" "), from: "Period"
   fill_in 'Starts at', with: @starts_at.to_s(:rfc822)
   fill_in 'Ends at', with: @ends_at.to_s(:rfc822)
   fill_in "Designee for Important Committee", with: @designee.name(:net_id)
