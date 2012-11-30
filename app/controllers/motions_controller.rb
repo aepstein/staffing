@@ -287,7 +287,7 @@ class MotionsController < ApplicationController
     @motion.destroy
 
     respond_to do |format|
-      format.html { redirect_to committee_motions_url @motion.committee }
+      format.html { redirect_to committee_motions_url( @motion.committee, notice: 'Motion was successfully destroyed.' ) }
       format.xml  { head :ok }
     end
   end
