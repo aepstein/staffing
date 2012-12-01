@@ -17,13 +17,11 @@ class Meeting < ActiveRecord::Base
     end
   end
 
+  accepts_nested_attributes_for :meeting_sections
+
   mount_uploader :audio, MeetingAudioUploader
   mount_uploader :editable_minutes, MeetingEditableMinutesUploader
   mount_uploader :published_minutes, MeetingPublishableMinutesUploader
-
-  accepts_nested_attributes_for :meeting_motions,
-    reject_if: proc { |a| a['motion_name'].blank? },
-    allow_destroy: true
 
   validates :committee, presence: true
   validates :period, presence: true

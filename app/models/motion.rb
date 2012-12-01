@@ -51,8 +51,8 @@ class Motion < ActiveRecord::Base
   has_and_belongs_to_many :watchers, class_name: 'User',
     join_table: 'motions_watchers'
   has_many :attachments, as: :attachable, dependent: :destroy
-  has_many :meeting_motions, dependent: :destroy
-  has_many :meetings, through: :meeting_motions
+  has_many :meeting_items, dependent: :destroy, inverse_of: :motion
+  has_many :meetings, through: :meeting_items
   has_many :motion_events, dependent: :destroy, inverse_of: :motion
   has_one :terminal_motion_merger, inverse_of: :merged_motion, dependent: :destroy,
     class_name: 'MotionMerger', foreign_key: :merged_motion_id

@@ -1,5 +1,6 @@
 class MeetingItem < ActiveRecord::Base
   belongs_to :meeting_section, inverse_of: :meeting_items
+  belongs_to :meeting, through: :meeting_section
   belongs_to :motion, inverse_of: :meeting_items
   attr_accessible :description, :duration, :name, :position
 
