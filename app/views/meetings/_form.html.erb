@@ -1,23 +1,14 @@
-  <%= render "shared/error_messages", :target => form.object %>
+  <%= render "shared/error_messages", target: form.object %>
   <%= form.inputs do %>
     <% unless form.object.persisted? %>
-      <%= form.input :period, :collection => form.object.committee.schedule.periods %>
+      <%= form.input :period, collection: form.object.committee.schedule.periods %>
     <% end %>
-    <%= form.input :starts_at, :as => :date_time_picker %>
-    <%= form.input :ends_at, :as => :date_time_picker %>
+    <%= form.input :starts_at, as: :date_time_picker %>
+    <%= form.input :ends_at, as: :date_time_picker %>
     <%= form.input :location %>
-    <%= form.input :audio, :as => :file %>
-    <%= form.input :editable_minutes, :as => :file %>
-    <%= form.input :published_minutes, :as => :file %>
-    <%= form.semantic_fields_for :meeting_motions do |subform| %>
-      <%= subform.inputs do %>
-        <%= render :partial => 'meeting_motions/form', :object => subform %>
-        <% if subform.object.persisted? %>
-          <%= subform.input :_destroy, :label => "Remove motion", :as => :boolean,
-            :hint => "Check to remove this motion from the meeting" %>
-        <% end %>
-      <% end %>
-    <% end %>
+    <%= form.input :audio, as: :file %>
+    <%= form.input :editable_minutes, as: :file %>
+    <%= form.input :published_minutes, as: :file %>
   <% end %>
   <%= form.actions %>
 

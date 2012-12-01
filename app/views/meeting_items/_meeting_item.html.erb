@@ -1,0 +1,9 @@
+<%= content_tag :li do %>
+  <% if meeting_item.motion -%>
+  <%= link_to meeting_item.motion %>
+  <% else -%>
+  <%= meeting_item.name %>
+  <% end -%>
+  (<%= pluralize meeting_item.duration, 'minute' %>)
+<% end %>
+

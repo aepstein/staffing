@@ -1,0 +1,8 @@
+<% if meeting_items.any? -%>
+  <%= content_tag :ol, class: 'meeting-items' do %>
+  <%= render partial: 'meeting_items/meeting_item', collection: meeting_items %>
+  <% end %>
+<% else -%>
+  <%= content_tag :p, "No items." %>
+<% end -%>
+

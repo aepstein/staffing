@@ -31,9 +31,8 @@
   <b>Published minutes?</b> <%= @meeting.published_minutes.blank? ? 'No' : link_to( 'Yes', "#{root_path}#{@meeting.published_minutes.url}" )  %>
 </p>
 
-<p>
-  <b>Motions:</b> <%= @meeting.motions.map(&:name).join(', ') %>
-</p>
+<%= render partial: 'meeting_sections/meeting_sections', object: @meeting.meeting_sections %>
+
 </div> <!-- #meeting-<%= @meeting.id %> -->
 
 <p>

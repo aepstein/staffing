@@ -1,15 +1,14 @@
 class Meeting < ActiveRecord::Base
   attr_accessible :period_id, :committee_id, :audio, :editable_minutes,
     :published_minutes, :starts_at, :ends_at, :location, :published,
-    :meeting_motions_attributes
+    :meeting_sections_attributes
   attr_readonly :period_id, :committee_id
 
   belongs_to :committee, inverse_of: :meetings
   belongs_to :period, inverse_of: :meetings
 
-  has_many :meeting_motions, inverse_of: :meeting, dependent: :destroy
   has_many :meeting_sections, inverse_of: :meeting, dependent: :destroy
-  has_many :motions, through: :meeting_motions do
+  has_many :motions, through: :meeting_sections do
     # Allowed motions are in same committee and period as the meeting
     def allowed
       return [] unless proxy_association.owner.committee && proxy_association.owner.period_id?
