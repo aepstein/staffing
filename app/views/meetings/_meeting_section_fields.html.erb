@@ -1,5 +1,5 @@
 <%= content_tag :div, class: 'nested-fields' do %>
-  <%= f.inputs do %>
+  <%= f.inputs name: 'Meeting Section' do %>
     <%= f.input :name %>
     <%= f.input :position, as: :hidden %>
     <%= f.input :meeting_items, as: :cocoon, ordered_by: :position %>

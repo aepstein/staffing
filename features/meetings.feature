@@ -34,8 +34,8 @@ Scenario Outline: Access control
     |plain   |   |current      |current     |may    |may not|may not|may not|
     |plain   |   |pending      |current     |may    |may not|may not|may not|
 
+@javascript
 Scenario Outline: Create/edit a meeting
-  Given I log in as the staff user
   When I create a meeting as <role>
   Then I should see the new meeting
   When I update the meeting

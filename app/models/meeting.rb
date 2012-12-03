@@ -17,7 +17,7 @@ class Meeting < ActiveRecord::Base
     end
   end
 
-  accepts_nested_attributes_for :meeting_sections
+  accepts_nested_attributes_for :meeting_sections, allow_destroy: true
 
   mount_uploader :audio, MeetingAudioUploader
   mount_uploader :editable_minutes, MeetingEditableMinutesUploader

@@ -2,7 +2,8 @@ class MeetingItem < ActiveRecord::Base
   belongs_to :meeting_section, inverse_of: :meeting_items
   has_one :meeting, through: :meeting_section
   belongs_to :motion, inverse_of: :meeting_items
-  attr_accessible :description, :duration, :name, :position, :motion_name
+  attr_accessible :description, :duration, :name, :position, :motion_name,
+    :_destroy
 
   default_scope order { [ meeting_section_id, position ] }
 

@@ -1,5 +1,5 @@
 class MeetingSection < ActiveRecord::Base
-  attr_accessible :name, :position, :meeting_items_attributes
+  attr_accessible :name, :position, :meeting_items_attributes, :_destroy
 
   belongs_to :meeting, inverse_of: :meeting_sections
 

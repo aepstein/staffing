@@ -97,13 +97,22 @@ When /^I create a meeting as (staff|chair)$/ do |relationship|
   @current_period = create(:current_period, schedule: @committee.schedule)
   visit(new_committee_meeting_path(@committee))
   if relationship == 'staff'
-    select @current_period.to_s, from: "Period"
+    select @current_period.to_s.strip.squeeze(" "), from: "Period"
   end
   @start = Time.zone.now + 1.day
   @end = (Time.zone.now + 1.day) + 1.hour
-  fill_in "Starts at", with: "#{@start.to_s :rfc822}"
-  fill_in "Ends at", with: "#{@end.to_s :rfc822}"
+  fill_in "Starts at", with: "#{@start.strftime DateTimePickerInput::DEFAULT_FORMAT}"
+  fill_in "Ends at", with: "#{@end.strftime DateTimePickerInput::DEFAULT_FORMAT}"
   fill_in "Location", with: "Green Room"
+  click_link 'Add Meeting Section'
+  within_fieldset("Meeting Section") do
+    fill_in "Name", with: "New Business"
+    click_link "Add Meeting Item"
+    within_fieldset("Meeting Item") do
+      fill_in "Name", with: "Presentation on Campus Master Plan"
+      fill_in "Duration", with: 10
+    end
+  end
   click_button 'Create'
   @meeting = Meeting.find( URI.parse(current_url).path.match(/[\d]+$/)[0].to_i )
 end
@@ -119,6 +128,8 @@ Then /^I should see the new meeting$/ do
     page.should have_text "Audio? No"
     page.should have_text "Editable minutes? No"
     page.should have_text "Published minutes? No"
+    page.should have_text "New Business"
+    page.should have_text "Presentation on Campus Master Plan"
   end
 end
 
@@ -126,12 +137,13 @@ When /^I update the meeting$/ do
   @start += 1.hour
   @end += 1.hour
   visit(edit_meeting_path(@meeting))
-  fill_in "Starts at", with: "#{@start.to_s :rfc822}"
-  fill_in "Ends at", with: "#{@end.to_s :rfc822}"
+  fill_in "Starts at", with: "#{@start.strftime DateTimePickerInput::DEFAULT_FORMAT}"
+  fill_in "Ends at", with: "#{@end.strftime DateTimePickerInput::DEFAULT_FORMAT}"
   fill_in "Location", with: "Red Room"
   attach_file "Audio", File.expand_path("spec/assets/audio.mp3")
   attach_file "Editable minutes", temporary_file("minutes.doc",20.bytes)
   attach_file "Published minutes", temporary_file("minutes.pdf",20.bytes)
+  click_link "Remove Meeting Section"
   click_button 'Update'
 end
 
@@ -144,6 +156,8 @@ Then /^I should see the edited meeting$/ do
     page.should have_text "Audio? Yes"
     page.should have_text "Editable minutes? Yes"
     page.should have_text "Published minutes? Yes"
+    page.should have_no_text "New Business"
+    page.should have_no_text "Presentation on Campus Master Plan"
   end
 end
 
