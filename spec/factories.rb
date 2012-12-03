@@ -91,6 +91,7 @@ FactoryGirl.define do
   factory :meeting_section do
     association :meeting
     sequence(:name) { |i| "Section #{i}" }
+    sequence(:position) { |i| i }
   end
 
   factory :meeting_section_template do
@@ -107,6 +108,7 @@ FactoryGirl.define do
     association :meeting_section
     sequence(:name) { |i| "Item #{i}" }
     duration 10
+    sequence(:position) { |i| i }
 
     factory :motion_meeting_item do
       name nil
