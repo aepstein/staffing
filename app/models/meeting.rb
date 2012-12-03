@@ -7,7 +7,21 @@ class Meeting < ActiveRecord::Base
   belongs_to :committee, inverse_of: :meetings
   belongs_to :period, inverse_of: :meetings
 
-  has_many :meeting_sections, inverse_of: :meeting, dependent: :destroy
+  has_many :meeting_sections, inverse_of: :meeting, dependent: :destroy do
+    def populate
+      return unless template && length == 0
+      template.meeting_section_templates.each do |section_template|
+        section = build( section_template.populable_attributes )
+        section_template.meeting_item_templates.each do |item_template|
+          section.meeting_items.build( item_template.populable_attributes )
+        end
+      end
+    end
+
+    def template
+      proxy_association.owner.committee.meeting_template
+    end
+  end
   has_many :motions, through: :meeting_sections do
     # Allowed motions are in same committee and period as the meeting
     def allowed

@@ -36,5 +36,21 @@ describe MeetingItemTemplate do
     meeting_item_template.duration = 0
     meeting_item_template.save.should be_false
   end
+
+  context "populable attributes" do
+
+    let(:meeting_item_template) { create( :meeting_item_template,
+      duration: 100, description: 'a special item' ) }
+    let(:populable_attributes) { meeting_item_template.populable_attributes }
+
+    it "should return expected values" do
+      meeting_item_template.populable_attributes.should eql(
+       { name: meeting_item_template.name,
+         duration: meeting_item_template.duration,
+         description: meeting_item_template.description,
+         position: meeting_item_template.position } )
+    end
+  end
+
 end
 

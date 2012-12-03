@@ -31,5 +31,18 @@ describe MeetingSectionTemplate do
       name: meeting_section_template.name )
     duplicate.save.should be_false
   end
+
+  context "populable attributes" do
+
+    let(:meeting_section_template) { create :meeting_section_template }
+    let(:populable_attributes) { meeting_section_template.populable_attributes }
+
+    it "should return expected values" do
+      meeting_section_template.populable_attributes.should eql(
+        { name: meeting_section_template.name,
+          position: meeting_section_template.position } )
+    end
+  end
+
 end
 

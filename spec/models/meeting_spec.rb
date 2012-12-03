@@ -96,12 +96,45 @@ describe Meeting do
     @meeting.motions.allowed.should_not include same_committee
   end
 
+  context "meeting sections" do
+    let(:meeting_template) { create(:meeting_item_template, duration: 100,
+      description: 'unusual').meeting_section_template.meeting_template }
+    let(:meeting) { create(:meeting, committee: create( :committee, meeting_template: meeting_template )) }
+
+    context "populate" do
+      it "should populate a meeting's sections if it is empty" do
+        meeting.meeting_sections.populate
+        meeting.save!
+        section = meeting.meeting_sections.first
+        section_template = meeting_template.meeting_section_templates.first
+        section.name.should eql section_template.name
+        section.position.should eql section_template.position
+        item = section.meeting_items.first
+        item_template = section_template.meeting_item_templates.first
+        item.name.should eql item_template.name
+        item.duration.should eql item_template.duration
+        item.description.should eql item_template.description
+        item.position.should eql item_template.position
+      end
+
+      it "should not populate if the meeting already has a section" do
+        section = meeting.meeting_sections.build name: 'Unusual Structure', position: 1
+        meeting.meeting_sections.populate
+        meeting.save!
+        meeting.meeting_sections.length.should eql 1
+        meeting.meeting_sections.should include section
+        section.name.should eql 'Unusual Structure'
+        section.meeting_items.should be_empty
+      end
+    end
+  end
+
   def setup_past_and_future
     @meeting.starts_at = Time.zone.now
     @meeting.ends_at = Time.zone.now + 1.hour
     @meeting.save!
-    @past = create(:meeting, :starts_at => Time.zone.now - 1.week)
-    @future = create(:meeting, :starts_at => Time.zone.now + 1.week)
+    @past = create(:meeting, starts_at: Time.zone.now - 1.week)
+    @future = create(:meeting, starts_at: Time.zone.now + 1.week)
   end
 end
 

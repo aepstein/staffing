@@ -17,6 +17,11 @@ class MeetingItemTemplate < ActiveRecord::Base
 
   default_scope order { [ meeting_section_template_id, position ] }
 
+  def populable_attributes
+    { name: name, duration: duration, description: description,
+      position: position }
+  end
+
   def to_s; name? ? name : super; end
 end
 
