@@ -128,11 +128,15 @@ class Motion < ActiveRecord::Base
     before_transition :proposed => [ :implemented ] do |motion|
       if motion.referring_motion.amended?
         motion.referring_motion.amendment = motion
+        motion.referring_motion.event_date = motion.event_date
+        motion.referring_motion.event_description = motion.event_description
         motion.referring_motion.amend!
       end
     end
     before_transition :proposed => [ :rejected, :withdrawn ] do |motion|
-      motion.referring_motion.unamend! if motion.referring_motion && motion.referring_motion.amended?
+      if motion.referring_motion && motion.referring_motion.amended?
+        motion.referring_motion.unamend!
+      end
     end
     before_transition :proposed => :amended do |motion|
       motion.amendment.propose!
