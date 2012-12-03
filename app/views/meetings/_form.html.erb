@@ -9,6 +9,7 @@
     <%= form.input :audio, as: :file %>
     <%= form.input :editable_minutes, as: :file %>
     <%= form.input :published_minutes, as: :file %>
+    <%= form.input :meeting_sections, as: :cocoon, ordered_by: :position %>
   <% end %>
   <%= form.actions %>
 

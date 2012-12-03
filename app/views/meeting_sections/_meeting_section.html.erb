@@ -1,4 +1,5 @@
 <%= content_tag :li do %>
+  <%= meeting_section.name %>
   <%= render partial: 'meeting_items/meeting_items', object: meeting_section.meeting_items %>
 <% end %>
 

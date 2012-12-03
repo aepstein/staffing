@@ -1,10 +1,10 @@
 class MeetingItem < ActiveRecord::Base
   belongs_to :meeting_section, inverse_of: :meeting_items
-  belongs_to :meeting, through: :meeting_section
+  has_one :meeting, through: :meeting_section
   belongs_to :motion, inverse_of: :meeting_items
-  attr_accessible :description, :duration, :name, :position
+  attr_accessible :description, :duration, :name, :position, :motion_name
 
-  acts_as_list scope: :meeting_section_id
+  default_scope order { [ meeting_section_id, position ] }
 
   validates :meeting_section, presence: true
   validates :name, uniqueness: { scope: :meeting_section_id }, allow_blank: true
@@ -13,11 +13,26 @@ class MeetingItem < ActiveRecord::Base
   validates :motion_id, uniqueness: { scope: :meeting_section_id }, allow_blank: true
   validate :name_or_motion_must_be_present
 
+  before_validation do |item|
+    item.name = nil if item.name.blank?
+  end
+
   delegate :meeting, to: :meeting_section, allow_nil: true
 
   def allowed_motions
     return [] unless meeting
     meeting.motions.allowed
+  end
+
+  def motion_name=(n)
+    return nil unless meeting
+    self.motion = meeting.motions.allowed.find_by_name( n )
+    n
+  end
+
+  def motion_name
+    return nil unless motion
+    motion.name
   end
 
   protected

@@ -8,7 +8,7 @@ GIT
 
 GIT
   remote: git://assembly.cornell.edu/git/cornell-assemblies-rails.git
-  revision: ea0664028e5fcff831ecbad1f3f49de58608e9a1
+  revision: e837f5b4c1efc83d2502ad9ae4c169b0637eed8b
   specs:
     cornell-assemblies-rails (0.0.2)
       bcrypt-ruby (~> 3.0)
@@ -87,7 +87,7 @@ GEM
     childprocess (0.3.6)
       ffi (~> 1.0, >= 1.0.6)
     chronic (0.8.0)
-    cocoon (1.1.0)
+    cocoon (1.1.1)
     coffee-rails (3.2.2)
       coffee-script (>= 2.2.0)
       railties (~> 3.2.0)
@@ -143,9 +143,9 @@ GEM
     http_parser.rb (0.5.3)
     i18n (0.6.1)
     journey (1.0.4)
-    jquery-rails (2.1.3)
-      railties (>= 3.1.0, < 5.0)
-      thor (~> 0.14)
+    jquery-rails (2.1.4)
+      railties (>= 3.0, < 5.0)
+      thor (>= 0.14, < 2.0)
     json (1.7.5)
     kaminari (0.14.1)
       actionpack (>= 3.0.0)
@@ -161,7 +161,7 @@ GEM
       mime-types (~> 1.16)
       treetop (~> 1.4.8)
     mime-types (1.19)
-    multi_json (1.3.7)
+    multi_json (1.4.0)
     multipart-post (1.1.5)
     mysql2 (0.3.11)
     net-ldap (0.3.1)
@@ -247,7 +247,7 @@ GEM
       rubyzip
     simple_oauth (0.1.9)
     spork (0.9.2)
-    sprockets (2.2.1)
+    sprockets (2.2.2)
       hike (~> 1.2)
       multi_json (~> 1.0)
       rack (~> 1.0)
