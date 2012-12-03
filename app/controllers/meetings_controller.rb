@@ -1,6 +1,7 @@
 class MeetingsController < ApplicationController
   before_filter :initialize_context
   before_filter :new_meeting_from_params, only: [ :new, :create ]
+  before_filter :populate_meeting_sections, only: [ :new, :edit ]
   before_filter :initialize_index, only: [ :current, :past, :future, :index ]
   before_filter :setup_breadcrumbs
   filter_access_to :new, :create, :edit, :update, :destroy, :show,
@@ -153,6 +154,10 @@ class MeetingsController < ApplicationController
     @committee ||= @meeting.committee if @meeting
     @committee ||= @motion.committee if @motion
     @context = @motion || @committee
+  end
+
+  def populate_meeting_sections
+    @meeting.meeting_sections.populate
   end
 
   def setup_breadcrumbs
