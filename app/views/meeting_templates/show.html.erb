@@ -1,0 +1,20 @@
+<div id="meeting-template-<%= @meeting_template.id %>">
+<p>
+  <b>Meeting template name:</b> <%=h @meeting_template.name %>
+</p>
+
+<h3>Meeting Section Templates</h3>
+
+<%= render partial: 'meeting_section_templates/meeting_section_templates',
+  object: @meeting_template.meeting_section_templates,
+  locals: { meeting_template: @meeting_template } %>
+
+</div> <!-- #meeting-template-<%= @meeting_template.id %> -->
+
+<p>
+<% if permitted_to? :edit, @meeting_template -%>
+<%= link_to 'Edit', edit_meeting_template_path(@meeting_template) %> |
+<% end %>
+<%= link_to 'Back', meeting_templates_path %>
+</p>
+

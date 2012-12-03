@@ -1,0 +1,9 @@
+<%= content_tag :div, class: 'nested-fields' do %>
+  <%= f.inputs name: 'Meeting Section Template' do %>
+    <%= f.input :name %>
+    <%= f.input :position, as: :hidden %>
+    <%= f.input :meeting_item_templates, as: :cocoon, ordered_by: :position %>
+    <%= link_to_remove_association 'Remove Meeting Section Template', f %>
+  <% end %>
+<% end %>
+

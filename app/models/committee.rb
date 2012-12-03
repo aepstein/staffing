@@ -12,11 +12,13 @@ class Committee < ActiveRecord::Base
   scope :inactive, where { active.not_eq( true ) }
 
   attr_accessible :name, :description, :join_message, :leave_message, :brand_id,
-    :requestable, :public_url, :schedule_id, :reject_message, :active,
-    :contact_name, :contact_email, :enrollments_attributes
+    :requestable, :public_url, :meeting_template_id, :schedule_id,
+    :reject_message, :active, :contact_name, :contact_email,
+    :enrollments_attributes
 
   belongs_to :schedule, inverse_of: :committees
   belongs_to :brand, inverse_of: :committees
+  belongs_to :meeting_template, inverse_of: :committees
   has_many :periods, through: :schedule do
     def active; current.first; end
   end

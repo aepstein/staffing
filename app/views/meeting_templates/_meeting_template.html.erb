@@ -1,0 +1,7 @@
+  <%= table_row_tag true, false, { id: "meeting-template-#{meeting_template.id}" } do %>
+    <td><%=h meeting_template.name %></td>
+    <td><%= link_to 'Show', meeting_template %></td>
+    <td><%= link_to( 'Edit', edit_meeting_template_path(meeting_template) ) if permitted_to? :edit, meeting_template %></td>
+    <td><%= link_to( 'Destroy', meeting_template, data: { confirm: 'Are you sure?' }, method: :delete ) if permitted_to? :destroy, meeting_template %></td>
+  <% end %>
+

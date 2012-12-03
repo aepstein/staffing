@@ -20,6 +20,10 @@
 </p>
 
 <p>
+  <b>Meeting template:</b> <%=h @committee.meeting_template %>
+</p>
+
+<p>
   <b>Brand:</b> <%= @committee.brand ? link_to(@committee.brand.name, brand_path( @committee.brand )) : 'No' %>
 </p>
 

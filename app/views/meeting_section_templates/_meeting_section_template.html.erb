@@ -1,0 +1,6 @@
+<%= content_tag :li do %>
+<%= meeting_section_template.name %>
+<%= render partial: 'meeting_item_templates/meeting_item_templates',
+  object: meeting_section_template.meeting_item_templates %>
+<% end %>
+

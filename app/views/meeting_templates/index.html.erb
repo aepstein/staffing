@@ -1,0 +1,28 @@
+<h2>Listing meeting_templates</h2>
+
+<%= form_for @q, url: request.fullpath, method: :get do |form| %>
+<p>
+  <%= form.label :name_cont, 'Name' %>
+  <%= form.text_field :name_cont %>
+  <%= form.submit "Search" %>
+</p>
+<% end %>
+
+<p>
+<%= paginate @meeting_templates %>
+</p>
+
+<%= render partial: "meeting_templates/meeting_templates", object: @meeting_templates %>
+
+<p>
+<%= paginate @meeting_templates %>
+</p>
+
+<hr />
+
+<p>
+<% if permitted_to? :create, :meeting_templates %>
+<%= link_to 'New meeting template', new_meeting_template_path %>
+<% end %>
+</p>
+

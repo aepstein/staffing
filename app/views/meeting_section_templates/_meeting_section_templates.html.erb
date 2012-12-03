@@ -1,0 +1,9 @@
+<% if meeting_section_templates.any? %>
+  <%= content_tag :ol, class: 'meeting-sections' do %>
+    <%= render partial: 'meeting_section_templates/meeting_section_template',
+      collection: meeting_section_templates %>
+  <% end %>
+<% else %>
+<%= content_tag :p, "No meeting section templates." %>
+<% end %>
+

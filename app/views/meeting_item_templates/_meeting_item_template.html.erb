@@ -1,0 +1,6 @@
+<%= content_tag :li do %>
+<%= meeting_item_template.name %>
+(<%= meeting_item_template.duration? ? pluralize(meeting_item_template.duration.minutes, 'minute') : 'No duration' %>)
+<%= meeting_item_template.description %>
+<% end %>
+

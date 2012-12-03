@@ -1,0 +1,10 @@
+<h2>New meeting template</h2>
+
+<%= semantic_form_for(@meeting_template) do |f| %>
+  <%= render partial: 'form', object: f %>
+<% end %>
+
+<p>
+<%= link_to 'Back', meeting_templates_path %>
+</p>
+

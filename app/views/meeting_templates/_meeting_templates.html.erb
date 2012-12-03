@@ -1,0 +1,15 @@
+<% if meeting_templates.any? %>
+<table id="meeting-templates">
+  <thead>
+  <tr>
+    <th>Name</th>
+  </tr>
+  </thead>
+  <tbody>
+  <%= render partial: 'meeting_templates/meeting_template', collection: meeting_templates %>
+  </tbody>
+</table>
+<% else %>
+<p>No meeting_templates.</p>
+<% end %>
+

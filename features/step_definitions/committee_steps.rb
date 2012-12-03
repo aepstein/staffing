@@ -85,12 +85,15 @@ When /^I create an committee$/ do
   create :schedule, name: 'Semester'
   create :brand, name: 'Prestigious'
   create :brand, name: 'Silly'
+  create :meeting_template, name: 'Informal'
+  create :meeting_template, name: 'Elaborate'
   create :position, name: 'Member of Committee'
   visit(new_committee_path)
   fill_in "Name", with: "Important Committee"
   fill_in "Contact name", with: "Officials"
   fill_in "Contact email", with: "officials@example.com"
   select "Annual", from: "Schedule"
+  select "Informal", from: "Meeting template"
   select "Prestigious", from: "Brand"
   within_fieldset('Active?') { choose 'No' }
   fill_in "Join message", with: "Welcome to *committee*."
@@ -115,6 +118,7 @@ Then /^I should see the new committee$/ do
     page.should have_text "Contact email: officials@example.com"
     page.should have_text "Active? No"
     page.should have_text "Schedule: Annual"
+    page.should have_text "Meeting template: Informal"
     page.should have_text "Brand: Prestigious"
     page.should have_text "Welcome to committee."
     page.should have_text "You were dropped from the committee."
@@ -139,6 +143,7 @@ When /^I update the committee$/ do
   fill_in "Contact email", with: "boss@example.com"
   within_fieldset('Active?') { choose "Yes" }
   select "Semester", from: "Schedule"
+  select "Elaborate", from: "Meeting template"
   select "Silly", from: "Brand"
   fill_in "Join message", with: "Welcome message"
   fill_in "Leave message", with: "Farewell message"
@@ -155,6 +160,7 @@ Then /^I should see the edited committee$/ do
     page.should have_text "Contact email: boss@example.com"
     page.should have_text "Active? Yes"
     page.should have_text "Schedule: Semester"
+    page.should have_text "Meeting template: Elaborate"
     page.should have_text "Brand: Silly"
     page.should have_text "Welcome message"
     page.should have_text "Farewell message"

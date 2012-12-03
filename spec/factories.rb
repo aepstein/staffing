@@ -93,6 +93,16 @@ FactoryGirl.define do
     sequence(:name) { |i| "Section #{i}" }
   end
 
+  factory :meeting_section_template do
+    association :meeting_template
+    sequence(:name) { |i| "Meeting Section Template #{i}" }
+    sequence(:position) { |i| i }
+  end
+
+  factory :meeting_template do
+    sequence(:name) { |i| "Meeting Template #{i}" }
+  end
+
   factory :meeting_item do
     association :meeting_section
     sequence(:name) { |i| "Item #{i}" }
@@ -105,7 +115,12 @@ FactoryGirl.define do
           committee: item.meeting_section.meeting.committee)
       end
     end
+  end
 
+  factory :meeting_item_template do
+    association :meeting_section_template
+    sequence(:name) { |i| "Meeting Item Template #{i}" }
+    sequence(:position) { |i| i }
   end
 
   factory :membership do
