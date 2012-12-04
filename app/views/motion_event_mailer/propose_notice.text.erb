@@ -1,10 +1,6 @@
 Dear <%= @motion.users.map(&:first_name).listify %>,
 
-This is a confirmation that on <%= @motion_event.occurrence.to_s :long_ordinal %> you proposed <%= @motion.to_s(:numbered) %> for consideration by <%= @motion.committee %>.
-
-<% if @motion.committee.managers.any? %>
-<%= @motion.committee.managers.map(&:name).listify(joiner: 'and') %> <% @motion.committee.managers.length > 1 ? 'have' : 'has' %> been notified of this proposal and will schedule it for a meeting or otherwise act on it in accordance with the rules of the committee.
-<% end %>
+<%= @motion.to_s(:numbered) %> was proposed on <%= @motion_event.occurrence.to_s :long_ordinal %> for consideration by <%= @motion.committee %>.
 
 Since the motion is proposed, you are not permitted to make additional changes as sponsor.  Changes may only be made by the managers in accordance with the rules of the committee.  You may view the motion here:
 

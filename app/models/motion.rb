@@ -231,15 +231,25 @@ class Motion < ActiveRecord::Base
     # TODO
   end
 
-  # Users who should be notified of this motion's progress
-  def observers
-    ( watchers + committee.observers ).uniq
-  end
-
-  # Emails of observers OR default observer email if no observers are available
-  def observer_emails
-    observers.map(&:to_email) +
-      Staffing::Application.app_config['defaults']['observer_email']
+  def emails_for(population, options = { include_referrers: false })
+    include_referrers = options.delete :include_referrers
+    users = case population
+    when :sponsors
+      self.users
+    when :watchers
+      committee.watchers
+    when :monitors
+      committee.memberships.current.with_roles('monitors')
+    when :vicechairs
+      committee.memberships.current.with_roles('vicechair')
+    when :chairs
+      committee.memberships.current.with_roles('chair')
+    end
+    out = users.map(&:to_email)
+    if referring_motion && include_referrers
+      out += referring_motion.emails_for( population, include_referrers )
+    end
+    out.uniq
   end
 
   def tense

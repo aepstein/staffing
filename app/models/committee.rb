@@ -49,6 +49,9 @@ class Committee < ActiveRecord::Base
       out.map { |user, titles| [ user.name, titles.uniq.join(', '),
         ( user.portrait? ? user.portrait.small.path : nil ) ] }
     end
+    def with_roles( *roles )
+      where { |m| m.enrollments.id.in( Enrollment.with_roles( roles ).select { id } ) }
+    end
   end
   has_many :requestable_enrollments, class_name: 'Enrollment',
     conditions: { requestable: true }
@@ -61,17 +64,6 @@ class Committee < ActiveRecord::Base
 
   validates :name, presence: true, uniqueness: true
   validates :schedule, presence: true
-
-  # People who should be notified of progress on business items
-  def observers
-    ( watchers + managers ).uniq
-  end
-
-  # Emails of observers OR default observer email if no observers are available
-  def observer_emails
-    observers.map(&:to_email) +
-      Staffing::Application.app_config['defaults']['observer_email']
-  end
 
   def effective_contact_name
     return contact_name if contact_name?
