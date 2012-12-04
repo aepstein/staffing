@@ -14,5 +14,16 @@ class MotionEvent < ActiveRecord::Base
 #  end
 
   scope :ordered, lambda { order { [ occurrence, created_at ] } }
+  scope :occurred_since, lambda { |since| where { occurrence.gte( since ) } }
+  scope :no_notice, where { notice_sent_at.eq( nil ) }
+  scope :no_notice_since, lambda { |since|
+    where { notice_sent_at.eq( nil ) || notice_sent_at.lte( since ) }
+  }
+
+  def send_notice!
+    MotionEventMailer.send( "#{event}_notice", self ).deliver
+    self.update_attributes( { notice_sent_at: Time.zone.now },
+      without_protection: true )
+  end
 end
 

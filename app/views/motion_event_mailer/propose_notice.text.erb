@@ -1,27 +1,15 @@
-<p>
 Dear <%= @motion.users.map(&:first_name).listify %>,
-</p>
 
-<p>
-This is a confirmation that you have proposed <%= @motion.to_s(:numbered) %> for consideration by <%= @motion.committee %>.
-</p>
+This is a confirmation that on <%= @motion_event.occurrence.to_s :long_ordinal %> you proposed <%= @motion.to_s(:numbered) %> for consideration by <%= @motion.committee %>.
 
 <% if @motion.committee.managers.any? %>
-<p>
 <%= @motion.committee.managers.map(&:name).listify(joiner: 'and') %> <% @motion.committee.managers.length > 1 ? 'have' : 'has' %> been notified of this proposal and will schedule it for a meeting or otherwise act on it in accordance with the rules of the committee.
-</p>
 <% end %>
 
-<p>
 Since the motion is proposed, you are not permitted to make additional changes as sponsor.  Changes may only be made by the managers in accordance with the rules of the committee.  You may view the motion here:
-</p>
 
-<p>
 <%= motion_url(@motion) %>
-</p>
 
-<p>
-<%= @motion.effective_contact_name %><br/>
+<%= @motion.effective_contact_name %>
 <%= @motion.effective_contact_email %>
-</p>
 
