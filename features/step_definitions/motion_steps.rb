@@ -228,7 +228,7 @@ When /^I create a motion as (voter|staff)$/ do |relationship|
   @committee.update_attributes name: 'Powerful Committee'
   visit(new_committee_motion_path(@committee))
   if relationship == 'staff'
-    select @period.to_s, from: 'Period'
+    select @period.to_s.strip.squeeze(" "), from: 'Period'
     fill_in "Sponsor", with: "#{@sponsor.net_id}"
   else
     within("form") { page.should have_no_text('Period') }
