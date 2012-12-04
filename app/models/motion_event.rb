@@ -1,11 +1,13 @@
 class MotionEvent < ActiveRecord::Base
   belongs_to :motion, inverse_of: :motion_events
-  attr_accessible :description, :occurrence, :event
+  belongs_to :user, inverse_of: :motion_events
+  attr_accessible :description, :occurrence, :event, :user
   attr_readonly :event
 
   validates :motion, presence: true
   validates :occurrence, presence: true
   validates :event, presence: true
+  validates :user, presence: true
 # TODO
 #  validate do |motion_event|
 #    if motion_event.occurrence && motion_event.meeting &&

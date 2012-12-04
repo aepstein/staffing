@@ -139,6 +139,7 @@ class Motion < ActiveRecord::Base
       end
     end
     before_transition :proposed => :amended do |motion|
+      motion.amendment.event_user = motion.event_user
       motion.amendment.propose!
     end
     before_transition :amended => :proposed do |motion|
@@ -151,7 +152,8 @@ class Motion < ActiveRecord::Base
       motion.motion_events.create!(
         event: transition.event.to_s,
         description: motion.event_description,
-        occurrence: motion.event_date.blank? ? Time.zone.today : motion.event_date
+        occurrence: motion.event_date.blank? ? Time.zone.today : motion.event_date,
+        user: motion.event_user
       )
     end
     after_transition all => [ :merged ] do |motion|
@@ -212,7 +214,7 @@ class Motion < ActiveRecord::Base
 
   notifiable_events :propose
 
-  attr_accessor :event_date, :event_description, :amendment
+  attr_accessor :event_date, :event_description, :event_user, :amendment
 
   # Populate the event date with
   # * most meeting when scheduled, if any

@@ -205,6 +205,7 @@ FactoryGirl.define do
     association :motion, status: 'proposed'
     occurrence { Time.zone.today }
     event { 'propose' }
+    association :user
   end
 
   factory :motion_merger do

@@ -12,6 +12,7 @@ class MotionsController < ApplicationController
     :refer, :reject, :restart, :withdraw do
     raise Authorization::NotAuthorized unless @motion.status_events.include? action_name.to_sym
     permitted_to! action_name, @motion
+    @motion.event_user = current_user
   end
   before_filter :status_check, except: [ :new, :create, :edit, :update,
     :show, :destroy, :allowed, :past, :current, :proposed, :index ]

@@ -23,5 +23,10 @@ describe MotionEvent do
     event.save.should be_false
   end
 
+  it "should not save without a user" do
+    event.user = nil
+    event.save.should be_false
+  end
+
 end
 

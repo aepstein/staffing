@@ -13,6 +13,7 @@ class User < ActiveRecord::Base
 
   default_scope lambda { ordered }
 
+  has_many :motion_events, inverse_of: :user, dependent: :restrict
   has_many :memberships, inverse_of: :user do
     # Return memberships a user is authorized to review
     # User must have voting membership with future end date in committee of
