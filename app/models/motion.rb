@@ -107,7 +107,8 @@ class Motion < ActiveRecord::Base
   validates :period, presence: true, inclusion: { if: :committee,
     in: lambda { |motion| motion.committee.schedule.periods } }
   validates :committee, presence: true
-  validates :event_date, timeliness: { allow_blank: true, type: :date }
+  validates :event_date, timeliness: { allow_blank: true, if: :period, type: :date,
+    on_or_after: :period_starts_at, on_or_before: lambda { Time.zone.today } }
 
   before_create do |motion|
     if motion.referring_motion && motion.referring_motion.published?
@@ -213,6 +214,11 @@ class Motion < ActiveRecord::Base
   notifiable_events :propose
 
   attr_accessor :event_date, :event_description, :amendment
+
+  def period_starts_at
+    return nil unless period
+    period.starts_at
+  end
 
   # Populate the event date with
   # * most meeting when scheduled, if any

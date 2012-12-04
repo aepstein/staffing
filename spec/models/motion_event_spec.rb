@@ -22,5 +22,15 @@ describe MotionEvent do
     event.event = nil
     event.save.should be_false
   end
+
+  it "should not save with an occurrence before the motion's period start" do
+    event.occurrence = event.motion.period.starts_at - 1.day
+    event.save.should be_false
+  end
+
+  it "should not save with an occurrence after today" do
+    event.occurrence = Time.zone.today + 1.day
+    event.save.should be_false
+  end
 end
 

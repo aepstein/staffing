@@ -37,6 +37,21 @@ describe Motion do
       motion.save.should be_false
     end
 
+    it "should not save with an event date before period start" do
+      motion.event_date = motion.period.starts_at - 1.day
+      motion.save.should be_false
+    end
+
+    it "should not save with an event date after today" do
+      motion.event_date = Time.zone.today + 1.day
+      motion.save.should be_false
+    end
+
+    it "should not save with an invalid event date" do
+      motion.event_date = 'blah'
+      motion.save.should be_false
+    end
+
   end
 
   context 'referred motions' do

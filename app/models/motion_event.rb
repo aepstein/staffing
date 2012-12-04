@@ -5,7 +5,10 @@ class MotionEvent < ActiveRecord::Base
   attr_readonly :event
 
   validates :motion, presence: true
-  validates :occurrence, presence: true
+  validates :occurrence, presence: true, timeliness: {
+    type: :date, on_or_after: :period_starts_at,
+    on_or_before: lambda { Time.zone.today }, if: :motion
+  }
   validates :event, presence: true
 # TODO
 #  validate do |motion_event|
@@ -20,6 +23,8 @@ class MotionEvent < ActiveRecord::Base
   scope :no_notice_since, lambda { |since|
     where { notice_sent_at.eq( nil ) || notice_sent_at.lte( since ) }
   }
+
+  delegate :period_starts_at, to: :motion
 
   def send_notice!
     MotionEventMailer.send( "#{event}_notice", self ).deliver
