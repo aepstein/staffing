@@ -108,6 +108,12 @@ authorization do
       if_attribute status: is { 'started' },
         period: { starts_at: lte { Time.zone.today }, ends_at: gte { Time.zone.today } }
     end
+    has_permission_on :motions, to: :watch do
+      if_attribute published: true, watchers: does_not_contain { user }
+    end
+    has_permission_on :motions, to: :unwatch do
+      if_attribute watchers: contains { user }
+    end
     has_permission_on :motions, to: :show do
       if_attribute published: true
       if_attribute sponsorships: { user_id: is { user.id } }

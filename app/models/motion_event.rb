@@ -7,7 +7,6 @@ class MotionEvent < ActiveRecord::Base
   validates :motion, presence: true
   validates :occurrence, presence: true
   validates :event, presence: true
-  validates :user, presence: true
 # TODO
 #  validate do |motion_event|
 #    if motion_event.occurrence && motion_event.meeting &&

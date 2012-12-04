@@ -6,13 +6,12 @@ class MotionsController < ApplicationController
   before_filter :setup_breadcrumbs
   filter_access_to :new, :create, :edit, :update, :destroy, :show,
     :adopt, :amend, :divide, :implement, :merge, :propose, :refer, :reject,
-    :restart, :withdraw,
+    :restart, :unwatch, :watch, :withdraw,
     attribute_check: true
   filter_access_to :adopt, :amend, :divide, :implement, :merge, :propose,
     :refer, :reject, :restart, :withdraw do
     raise Authorization::NotAuthorized unless @motion.status_events.include? action_name.to_sym
     permitted_to! action_name, @motion
-    @motion.event_user = current_user
   end
   before_filter :status_check, except: [ :new, :create, :edit, :update,
     :show, :destroy, :allowed, :past, :current, :proposed, :index ]
@@ -122,6 +121,24 @@ class MotionsController < ApplicationController
         format.html { render :action => "edit" }
         format.xml  { render :xml => @motion.errors, :status => :unprocessable_entity }
       end
+    end
+  end
+
+  # PUT /motions/:id/watch
+  def watch
+    respond_to do |format|
+      @motion.watchers << current_user
+      format.html { redirect_to @motion, notice: 'You are now watching the motion.' }
+      format.xml { head :ok }
+    end
+  end
+
+  # PUT /motions/:id/unwatch
+  def unwatch
+    respond_to do |format|
+      @motion.watchers.delete current_user
+      format.html { redirect_to @motion, notice: 'You are no longer watching the motion.' }
+      format.xml { head :ok }
     end
   end
 

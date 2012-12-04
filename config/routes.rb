@@ -83,7 +83,7 @@ Staffing::Application.routes.draw do
       get :adopt, :amend, :divide, :implement, :merge, :propose, :refer,
         :reject, :withdraw
       put :adopt, :amend, :divide, :implement, :merge, :propose, :refer,
-        :reject, :restart, :withdraw
+        :reject, :restart, :unwatch, :watch, :withdraw
     end
     resources :users, only: [ :index ] do
       collection do

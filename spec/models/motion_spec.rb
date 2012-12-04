@@ -45,7 +45,6 @@ describe Motion do
 
     def divided_motions
       divided = create(:motion)
-      divided.event_user = create(:user)
       divided.propose!
       2.times do |i|
         divided.referred_motions.build do |divisee|
@@ -62,7 +61,7 @@ describe Motion do
     end
 
     def referee_motion
-      referred = create(:motion, event_user: create(:user))
+      referred = create(:motion)
       referred.propose!
       motion = referred.referred_motions.build_referee(
         committee_name: create(:committee, schedule: referred.committee.schedule ).name
@@ -84,7 +83,6 @@ describe Motion do
     end
 
     it "should have a working build_amendment method" do
-      motion.event_user = create(:user)
       motion.propose!
       amendment.name.should eql "Amend #{motion.name} #1"
       amendment.description.should eql motion.description
@@ -92,7 +90,6 @@ describe Motion do
     end
 
     it "should apply adopted amendment changes to amended motion" do
-      motion.event_user = create(:user)
       motion.propose!
       amendment.description = 'Different description'
       amendment.content = 'Different content'
@@ -110,13 +107,11 @@ describe Motion do
     end
 
     it "should unamend a motion on reject" do
-      motion.event_user = create(:user)
       motion.propose!
       amendment
       motion.amend!
       motion.reload
       motion.status.should eql 'amended'
-      amendment.event_user = create(:user)
       amendment.reject!
       motion.reload
       motion.status.should eql 'proposed'

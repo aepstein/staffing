@@ -4,8 +4,6 @@ describe MotionMerger do
 
   let (:merger) { build( :motion_merger ) }
 
-  before(:each) { merger.merged_motion.event_user = create(:user) }
-
   it "should create a new instance given valid attributes" do
     merger.save!
   end

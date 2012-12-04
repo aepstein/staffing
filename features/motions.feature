@@ -34,7 +34,7 @@ Scenario Outline: Access control
     |nonmember|current|referred |un |started |may not|may not|may not|may not|
     |nonmember|current|sponsored|un |started |may not|may not|may not|may not|
     |nonmember|current|sponsored|   |started |may    |may not|may not|may not|
-
+@wip
 Scenario Outline: Access control for events
   Given an authorization scenario of <pub>published, <status> motion of <origin> origin to which I have a <tense> <relation> relationship
   Then I <permit> <event> the motion
@@ -46,6 +46,9 @@ Scenario Outline: Access control for events
     |sponsor  |current|sponsored|un |started  |may    |propose  |
     |sponsor  |past   |sponsored|un |started  |may not|propose  |
     |nonmember|current|sponsored|   |started  |may not|propose  |
+    |admin    |current|sponsored|un |started  |may not|watch    |
+    |nonmember|current|sponsored|   |started  |may    |watch    |
+    |admin    |current|sponsored|   |started  |may not|unwatch  |
     |admin    |current|sponsored|   |proposed |may not|propose  |
     |staff    |current|sponsored|   |proposed |may    |adopt    |
     |staff    |current|sponsored|   |proposed |may    |amend    |

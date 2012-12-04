@@ -11,6 +11,7 @@
 <% if permitted_to? :edit, @motion -%>
 <%= link_to 'Edit', edit_motion_path(@motion) %> |
 <% end -%>
+<%= link_to_watch_toggle( @motion ) %> |
 <%= nested_index @motion, :users, %w( allowed ) %> |
 <%= nested_index @motion, :meetings, %w( past current future ) %> |
 <%= link_to "Back to #{@motion.committee}", committee_motions_path(@motion.committee) %>

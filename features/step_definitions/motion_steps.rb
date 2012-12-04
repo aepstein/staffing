@@ -84,13 +84,20 @@ Then /^I should see confirmation of the event on the motion$/ do
     when 'restart'; 'started'
     when 'withdraw'; 'withdrawn'
   end
-  event_description = case @event
-    when 'restart'; 'restarted'
-    else; new_status
-  end
   @motion.reload
   @motion.status.should eql new_status
-  within("#flash_notice") { page.should have_text "Motion was successfully #{event_description}." }
+  within("#flash_notice") do
+    case @event
+    when 'restart'
+      page.should have_text "Motion was successfully restarted."
+    when 'watch'
+      page.should have_text "You are now watching the motion."
+    when 'unwatch'
+      page.should have_text "You are no longer watching the motion."
+    else
+      page.should have_text "Motion was successfully #{event_description}."
+    end
+  end
   unless %w( restart amend ).include?( @event )
     final_event = @motion.motion_events.last
     final_event.occurrence.should eql @motion.period.ends_at
@@ -127,7 +134,7 @@ Given /^(?:an )authorization scenario of (un)?published, (\w+) motion of (sponso
   end
 end
 
-Then /^I may( not)? (adopt|amend|divide|implement|merge|propose|refer|reject|restart|withdraw) the motion$/ do |negate, event|
+Then /^I may( not)? (adopt|amend|divide|implement|merge|propose|refer|reject|restart|(?:un)?watch|withdraw) the motion$/ do |negate, event|
   visit(committee_motions_url(@committee))
   if negate.blank?
     within("#motion-#{@motion.id}") { page.should have_text(event.titleize) }
@@ -136,7 +143,7 @@ Then /^I may( not)? (adopt|amend|divide|implement|merge|propose|refer|reject|res
       within("#motion-#{@motion.id}") { page.should have_no_text(event.titleize) }
     end
   end
-  if %w( divide merge ).include?( event )
+  unless Motion::EVENTS_PUTONLY.include?( event.to_sym )
     visit(send("#{event}_motion_path", @motion))
     step %{I should#{negate} be authorized}
   end
