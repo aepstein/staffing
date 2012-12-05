@@ -23,6 +23,8 @@
     hint: 'How many votes does the member control in the committee? 0 if non-voting.' %>
   <%= f.input :requestable, as: :radio, label: "Requestable?",
     hint: 'Can this committee and position be accessed through the application process?' %>
+  <%= f.input :roles, as: :check_boxes, collection: Enrollment::ROLES,
+    hint: 'What special roles for the committee are associated with assignment to this position?' %>
   <%= f.input :membership_notices, as: :radio, label: "Membership notices?",
     hint: 'Should enrolled user be copied on notices regarding membership changes?' %>
   <%= f.input :manager, as: :radio, label: "Manager?",

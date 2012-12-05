@@ -1,7 +1,7 @@
 class Enrollment < ActiveRecord::Base
   ROLES = %w( chair vicechair monitor )
   attr_accessible :committee_id, :committee_name, :position_name, :position_id,
-    :title, :votes, :requestable, :membership_notices, :manager
+    :title, :votes, :requestable, :roles
   attr_readonly :committee_id, :position_id
 
   belongs_to :position, inverse_of: :enrollments
@@ -20,12 +20,6 @@ class Enrollment < ActiveRecord::Base
       map { |role| sift :role_mask_contains, role }.reduce(&:|)
     }
   }
-  scope :membership_notices, lambda {
-    ActiveSupport::Deprecation.warn(
-      "membership_notices() is deprecated and will be removed from future releases, use with_roles('monitor') instead.",
-      caller )
-    with_roles('monitor')
-  }
   scope :requestable, where { requestable.eq(true) }
   scope :unrequestable, where { requestable.not_eq(true) }
 
@@ -38,7 +32,8 @@ class Enrollment < ActiveRecord::Base
   include CommitteeNameLookup, PositionNameLookup
 
   def roles=(roles)
-    roles.reduce(0) { |mask,role| mask += ( ROLES.index(role) ? 2**ROLES.index(role) : 0 ) }
+    self.roles_mask = roles.reduce(0) { |mask,role| mask += ( ROLES.index(role) ? 2**ROLES.index(role) : 0 ) }
+    roles
   end
 
   def roles

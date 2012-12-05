@@ -28,12 +28,6 @@ class Committee < ActiveRecord::Base
   has_many :motions, inverse_of: :committee, dependent: :destroy
   has_many :membership_requests, inverse_of: :committee
   has_many :enrollments, inverse_of: :committee, dependent: :destroy
-  has_many :member_watcher_enrollments, conditions: { membership_notices: true },
-    class_name: 'Enrollment'
-  has_many :member_watchers, through: :member_watcher_enrollments, source: :users
-  has_many :manager_enrollments, conditions: { manager: true },
-    class_name: 'Enrollment'
-  has_many :managers, through: :manager_enrollments, source: :users
   has_and_belongs_to_many :watchers, class_name: 'User',
     join_table: 'committees_watchers'
   has_many :positions, through: :enrollments
@@ -48,9 +42,6 @@ class Committee < ActiveRecord::Base
       end
       out.map { |user, titles| [ user.name, titles.uniq.join(', '),
         ( user.portrait? ? user.portrait.small.path : nil ) ] }
-    end
-    def with_roles( *roles )
-      where { |m| m.enrollments.id.in( Enrollment.with_roles( roles ).select { id } ) }
     end
   end
   has_many :requestable_enrollments, class_name: 'Enrollment',

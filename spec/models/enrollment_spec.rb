@@ -31,5 +31,12 @@ describe Enrollment do
     @enrollment.save.should be_false
   end
 
+  context "roles" do
+    it "should set roles correctly when roles array is supplied" do
+      @enrollment.roles = %w( chair )
+      @enrollment.roles.should eq %w( chair )
+    end
+  end
+
 end
 

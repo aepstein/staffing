@@ -239,7 +239,7 @@ class Motion < ActiveRecord::Base
     when :watchers
       committee.watchers
     when :monitors
-      committee.memberships.current.with_roles('monitors')
+      committee.memberships.current.with_roles('monitor')
     when :vicechairs
       committee.memberships.current.with_roles('vicechair')
     when :chairs

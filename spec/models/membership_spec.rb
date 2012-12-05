@@ -438,36 +438,30 @@ describe Membership do
 
   end
 
-  context "watchers" do
-    let(:committee) { create :committee }
-    let(:membership) { create :membership,
-      position: create( :enrollment, committee: committee ).position }
-    let(:watcher_membership) { create( :membership, position: create( :enrollment,
-      committee: committee, membership_notices: true ).position ) }
-    let(:watcher) { watcher_membership.user }
+  context "peers relation" do
+    let(:committee) { create(:committee) }
+    let(:membership) { create(:membership, position: create(:enrollment, committee: committee).position) }
+    let(:peer) { create(:membership) }
+    let(:peer_enrollment) { create(:enrollment, position: peer.position, committee: committee) }
 
-    it "should return qualifying watchers" do
-      membership.watchers.should include watcher
+    before(:each) { peer_enrollment }
+
+    it "should include valid peer" do
+      membership.peers.should include peer
+      membership.peers.should_not include membership
     end
 
-    it "should not include non-watcher peers" do
-      watcher_membership.position.enrollments.first.update_attribute :membership_notices, false
-      membership.watchers.should_not include watcher
+    it "should not include non-overlapping peer" do
+      peer.update_column :starts_at, Time.zone.today
+      membership.update_column :ends_at, Time.zone.today - 1.day
+      membership.peers.should_not include peer
     end
 
-    it "should not include watchers from other committees" do
-      watcher_membership.destroy
-      watcher = create( :membership, position: create( :enrollment,
-        membership_notices: true ).position ).user
-      membership.watchers.should be_empty
-    end
-
-    it "should not include temporally non-overlapping watchers" do
-      membership.ends_at -= 1.month
-      membership.save!
-      watcher_membership.starts_at = membership.ends_at + 1.day
-      watcher_membership.save!
-      membership.watchers.should_not include watcher
+    it "should support with_roles scope" do
+      membership.peers.with_roles('chair').should be_empty
+      peer_enrollment.roles = %w( chair )
+      peer_enrollment.save!
+      membership.peers.with_roles('chair').should include peer
     end
   end
 

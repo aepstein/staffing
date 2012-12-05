@@ -44,7 +44,13 @@ authorization do
     end
     has_permission_on :committees, to: :chair do
       if_attribute enrollments: {
-        manager: is { true },
+        roles: contains { 'chair' },
+        position_id: is_in { user.memberships.current.map(&:position_id) },
+        votes: gt { 0 } }
+    end
+    has_permission_on :committees, to: :vicechair do
+      if_attribute enrollments: {
+        roles: contains { 'vicechair' },
         position_id: is_in { user.memberships.current.map(&:position_id) },
         votes: gt { 0 } }
     end

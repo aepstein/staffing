@@ -28,19 +28,27 @@ describe MembershipMailer do
     mail.from.should eq(["madison@example.com"])
   end
 
-  def should_copy_watchers
-    watcher = create(:membership,
-      position: create(:enrollment, committee: enrollment.committee,
-        membership_notices: true ).position)
-    old_watcher = create(:past_membership,
-      position: create(:enrollment, committee: enrollment.committee,
-        membership_notices: true ).position)
-    non_watcher = create(:membership,
-      position: create(:enrollment, committee: enrollment.committee,
-        membership_notices: false ).position)
-    mail.cc.should include watcher.user.email
-    mail.cc.should_not include old_watcher
-    mail.cc.should_not include non_watcher
+  def should_copy_monitors
+    monitor = create(:membership)
+    create(:enrollment, committee: enrollment.committee, roles: %w( monitor ),
+      position: monitor.position )
+    pro_monitor = create(:membership, starts_at: ( Time.zone.today + 1.day ) )
+    create(:enrollment, committee: enrollment.committee, roles: %w( monitor ),
+      position: pro_monitor.position)
+    no_overlap_monitor = create(:future_membership)
+    create(:enrollment, committee: enrollment.committee,
+      position: no_overlap_monitor.position, roles: %w( monitor ) )
+    old_monitor = create(:membership, ends_at: ( Time.zone.today - 1.day ))
+    create(:enrollment, committee: enrollment.committee, roles: %w( monitor ),
+      position: old_monitor.position )
+    non_monitor = create(:membership)
+    create(:enrollment, committee: enrollment.committee, roles: %w( vicechair ),
+      position: non_monitor.position )
+    mail.cc.should include monitor.user.email
+    mail.cc.should include pro_monitor.user.email
+    mail.cc.should_not include old_monitor.user.email
+    mail.cc.should_not include no_overlap_monitor.user.email
+    mail.cc.should_not include non_monitor.user.email
   end
 
   describe "join" do
@@ -55,8 +63,8 @@ describe MembershipMailer do
       should_be_to_assignee
     end
 
-    it "copies the watchers who overlap" do
-      should_copy_watchers
+    it "copies the monitors who overlap" do
+      should_copy_monitors
     end
 
     it "addresses from authority effective contact" do
@@ -103,8 +111,8 @@ EOS
       should_be_from_effective_contact
     end
 
-    it "copies the watchers who overlap" do
-      should_copy_watchers
+    it "copies the monitors who overlap" do
+      should_copy_monitors
     end
 
     it "renders the standard body for a membership without enrollments" do
@@ -143,8 +151,8 @@ EOS
       should_be_to_assignee
     end
 
-    it "copies the watchers who overlap" do
-      should_copy_watchers
+    it "copies the monitors who overlap" do
+      should_copy_monitors
     end
 
     it "addresses from authority effective contact" do

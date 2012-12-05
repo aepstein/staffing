@@ -8,8 +8,7 @@
     <td><%=h enrollment.title %></td>
     <td><%=h enrollment.votes %></td>
     <td><%= enrollment.requestable? ? 'Yes' : 'No' %></td>
-    <td><%= enrollment.membership_notices? ? 'Yes' : 'No' %></td>
-    <td><%= enrollment.manager? ? 'Yes' : 'No' %></td>
+    <td><%= enrollment.roles.join ', ' %></td>
 ></td>
   <% end %>
 

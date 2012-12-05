@@ -61,6 +61,13 @@ class Membership < ActiveRecord::Base
     end
   end
   has_many :committees, through: :enrollments
+  # Peer memberships overlap this membership and share at least one committee
+  # The membership must be persisted in order to use this relation
+  has_many :peers, through: :committees, source: :memberships, uniq: true,
+    conditions: Proc.new {
+    [ "memberships.starts_at <= ? AND memberships.ends_at >= ? AND memberships.id <> ?",
+      ends_at, starts_at, id ]
+  }
   has_many :membership_requests, through: :position do
     def overlapping
       overlap( proxy_association.owner.starts_at, proxy_association.owner.ends_at )
@@ -69,12 +76,6 @@ class Membership < ActiveRecord::Base
   end
   has_many :users, through: :membership_requests, source: :user do
     def assignable; User.assignable_to( proxy_association.owner.position ); end
-  end
-  has_many :watcher_users, through: :committees, source: :member_watchers, uniq: true do
-    def overlapping
-      merge( Membership.unscoped.overlap proxy_association.owner.starts_at,
-        proxy_association.owner.ends_at )
-    end
   end
 
   # Memberships that could be renewed by assigning the user to this membership:
@@ -168,6 +169,10 @@ class Membership < ActiveRecord::Base
   }
   scope :renewal_declined, lambda { where { declined_at.not_eq( nil ) } }
   scope :renewal_undeclined, lambda { where { declined_at.eq( nil ) } }
+  # Can only use this one if memberships are tied to enrollments
+  scope :with_roles, lambda { |*roles|
+    where { |m| m.enrollments.id.in( Enrollment.unscoped.with_roles(roles).select { id } ) }
+  }
 
   search_methods :user_name_cont
 
@@ -263,9 +268,6 @@ class Membership < ActiveRecord::Base
   def context
     membership_request || position || raise( "No context is possible" )
   end
-
-  # Identify users who should be copied on notices related to this membership
-  def watchers; watcher_users.overlapping; end
 
   def description
     return membership_request.committee.to_s if membership_request
