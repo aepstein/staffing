@@ -217,7 +217,12 @@ class Motion < ActiveRecord::Base
   attr_reader :event_date
 
   def event_date=(date)
-    @event_date = date.is_a?(String) ? Date.parse(date) : date
+    @event_date = if date.is_a?(String)
+      d = Time.zone.parse(date)
+      d.blank? ? d : d.to_date
+    else
+      date
+    end
   end
 
   def period_starts_at
