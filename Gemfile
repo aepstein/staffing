@@ -31,6 +31,7 @@ gem 'cornell-assemblies-rails',
 gem 'cornell-assemblies-branding',
   git: 'git://assembly.cornell.edu/git/cornell-assemblies-branding.git'
 gem 'decent_exposure'
+gem 'valium'
 group :assets do
   gem 'sass-rails'
   gem 'coffee-rails'

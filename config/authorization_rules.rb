@@ -44,14 +44,12 @@ authorization do
     end
     has_permission_on :committees, to: :chair do
       if_attribute enrollments: {
-        roles: contains { 'chair' },
-        position_id: is_in { user.memberships.current.map(&:position_id) },
+        id: is_in { user.enrollments.current.with_roles('chair').value_of(:id) },
         votes: gt { 0 } }
     end
     has_permission_on :committees, to: :vicechair do
       if_attribute enrollments: {
-        roles: contains { 'vicechair' },
-        position_id: is_in { user.memberships.current.map(&:position_id) },
+        id: is_in { user.enrollments.current.with_roles('vicechair').value_of(:id) },
         votes: gt { 0 } }
     end
     has_permission_on :meetings, to: :show do

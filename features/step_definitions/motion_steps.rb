@@ -11,19 +11,19 @@ When /^I (adopt|amend|divide|implement|merge|propose|refer|reject|restart|withdr
   case @event
   when 'adopt'
     visit(adopt_motion_path(@motion))
-    fill_in 'Adopt date', with: @motion.period.ends_at.to_formatted_s(:rfc822)
+    fill_in 'Adopt date', with: Time.zone.today.to_formatted_s(:db)
     fill_in 'Event description', with: 'event details'
     click_button 'Adopt'
   when 'amend'
     visit(amend_motion_path(@motion))
-    fill_in 'Amend date', with: @motion.period.ends_at.to_formatted_s(:db)
+    fill_in 'Amend date', with: Time.zone.today.to_formatted_s(:db)
     fill_in 'Event description', with: 'event details'
     fill_in 'Description', with: 'New description'
     fill_in 'Content', with: 'New content'
     click_button 'Amend'
   when 'divide'
     visit(divide_motion_path(@motion))
-    fill_in 'Divide date', with: @motion.period.ends_at.to_formatted_s(:db)
+    fill_in 'Divide date', with: Time.zone.today.to_formatted_s(:db)
     fill_in 'Event description', with: 'event details'
     click_link 'add dividing motion'
     fill_in 'Name', with: 'Charter amendment'
@@ -32,40 +32,40 @@ When /^I (adopt|amend|divide|implement|merge|propose|refer|reject|restart|withdr
     click_button 'Divide'
   when 'implement'
     visit(implement_motion_path(@motion))
-    fill_in 'Implement date', with: @motion.period.ends_at.to_formatted_s(:rfc822)
+    fill_in 'Implement date', with: Time.zone.today.to_formatted_s(:db)
     fill_in 'Event description', with: 'event details'
     click_button 'Implement'
   when 'merge'
     create :motion, committee: @motion.committee, period: @motion.period,
       name: 'Target', published: true, status: 'proposed'
     visit(merge_motion_path(@motion))
-    fill_in 'Merge date', with: @motion.period.ends_at.to_formatted_s(:db)
+    fill_in 'Merge date', with: Time.zone.today.to_formatted_s(:db)
     fill_in 'Event description', with: 'event details'
     select 'Target', from: 'Motion'
     click_button 'Merge'
   when 'propose'
     visit(propose_motion_path(@motion))
-    fill_in 'Propose date', with: @motion.period.ends_at.to_formatted_s(:rfc822)
+    fill_in 'Propose date', with: Time.zone.today.to_formatted_s(:db)
     fill_in 'Event description', with: 'event details'
     click_button 'Propose'
   when 'refer'
     other_committee = create( :committee, schedule: @committee.schedule )
     visit(refer_motion_path(@motion))
-    fill_in 'Refer date', with: @motion.period.ends_at.to_formatted_s(:rfc822)
+    fill_in 'Refer date', with: Time.zone.today.to_formatted_s(:db)
     fill_in 'Event description', with: 'event details'
     fill_in 'Committee', with: other_committee.name
     fill_in 'Name', with: "#{@motion.name} referred"
     click_button 'Refer'
   when 'reject'
     visit(reject_motion_path(@motion))
-    fill_in 'Reject date', with: @motion.period.ends_at.to_formatted_s(:rfc822)
+    fill_in 'Reject date', with: Time.zone.today.to_formatted_s(:db)
     fill_in 'Event description', with: 'event details'
     click_button 'Reject'
   when 'restart'
     Capybara.current_session.driver.submit :put, restart_motion_url(@motion), {}
   when 'withdraw'
     visit(withdraw_motion_path(@motion))
-    fill_in 'Withdraw date', with: @motion.period.ends_at.to_formatted_s(:rfc822)
+    fill_in 'Withdraw date', with: Time.zone.today.to_formatted_s(:db)
     fill_in 'Event description', with: 'event details'
     click_button 'Withdraw'
   end
@@ -95,12 +95,12 @@ Then /^I should see confirmation of the event on the motion$/ do
     when 'unwatch'
       page.should have_text "You are no longer watching the motion."
     else
-      page.should have_text "Motion was successfully #{event_description}."
+      page.should have_text "Motion was successfully #{new_status}."
     end
   end
   unless %w( restart amend ).include?( @event )
     final_event = @motion.motion_events.last
-    final_event.occurrence.should eql @motion.period.ends_at
+    final_event.occurrence.should eql Time.zone.today
     final_event.description.should eql 'event details'
   end
 end
@@ -116,10 +116,8 @@ Given /^(?:an )authorization scenario of (un)?published, (\w+) motion of (sponso
     relationship
   end
   role = case relationship
-  when 'admin'
-    'admin'
-  when 'staff'
-    'staff'
+  when 'admin', 'staff'
+    relationship
   else
     'plain'
   end

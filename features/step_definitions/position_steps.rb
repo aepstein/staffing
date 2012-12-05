@@ -28,7 +28,7 @@ Given /^I have a (current|past|future|recent|pending) (authority|authority_ro|me
   period = case tense
   when 'recent', 'pending'
     create(:current_period, schedule: position.schedule)
-  else
+else
     create("#{tense}_period".to_sym, schedule: position.schedule)
   end
   @authority_membership = case tense
@@ -117,8 +117,10 @@ When /^I create a position$/ do
   fill_in "Title", with: "Voting Member"
   fill_in "Votes", with: "1"
   within_fieldset("Requestable?") { choose 'Yes' }
-  within_fieldset("Membership notices?") { choose 'Yes' }
-  within_fieldset("Manager?") { choose 'Yes' }
+  within_fieldset("Roles") do
+    within("li:nth-of-type(1)") { check 'chair' }
+    check 'monitor'
+  end
   click_button 'Create'
   @position = Position.find( URI.parse(current_url).path.match(/[\d]+$/)[0].to_i )
 end
@@ -147,8 +149,7 @@ Then /^I should see the new position$/ do
     enrollment = @position.enrollments.first
     within("tr#enrollment-#{enrollment.id}") do
       within("td:nth-of-type(4)") { page.should have_text "Yes" }
-      within("td:nth-of-type(5)") { page.should have_text "Yes" }
-      within("td:nth-of-type(6)") { page.should have_text "Yes" }
+      within("td:nth-of-type(5)") { page.should have_text "chair, monitor" }
     end
   end
 end

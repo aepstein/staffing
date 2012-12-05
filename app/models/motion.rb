@@ -213,7 +213,12 @@ class Motion < ActiveRecord::Base
 
   notifiable_events :propose
 
-  attr_accessor :event_date, :event_description, :amendment
+  attr_accessor :event_description, :amendment
+  attr_reader :event_date
+
+  def event_date=(date)
+    @event_date = date.is_a?(String) ? Date.parse(date) : date
+  end
 
   def period_starts_at
     return nil unless period

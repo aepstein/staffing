@@ -5,7 +5,7 @@ Given /^I have a (current|recent|pending|past|future) (chair|vicechair|voter|non
     create "#{tense}_membership".to_sym, position: position, user: @current_user
     enrollment = case relationship
     when 'chair', 'vicechair'
-      create :enrollment, manager: true, committee: @committee, position: position
+      create :enrollment, roles: [ relationship ], committee: @committee, position: position
     when 'voter'
       create :enrollment, votes: 1, committee: @committee, position: position
     when 'nonvoter'
@@ -104,8 +104,10 @@ When /^I create an committee$/ do
   fill_in "Title", with: "Voting Member"
   fill_in "Votes", with: "1"
   within_fieldset("Requestable?") { choose 'Yes' }
-  within_fieldset("Membership notices?") { choose 'Yes' }
-  within_fieldset("Manager?") { choose 'Yes' }
+  within_fieldset("Roles") do
+    within("li:nth-of-type(1)") { check 'chair' }
+    check 'monitor'
+  end
   click_button 'Create'
   @committee = Committee.find( URI.parse(current_url).path.match(/[\d]+$/)[0].to_i )
 end
@@ -130,8 +132,7 @@ Then /^I should see the new committee$/ do
     enrollment = @committee.enrollments.first
     within("tr#enrollment-#{enrollment.id}") do
       within("td:nth-of-type(4)") { page.should have_text "Yes" }
-      within("td:nth-of-type(5)") { page.should have_text "Yes" }
-      within("td:nth-of-type(6)") { page.should have_text "Yes" }
+      within("td:nth-of-type(5)") { page.should have_text "chair, monitor" }
     end
   end
 end

@@ -287,6 +287,8 @@ GEM
       multi_json (~> 1.0, >= 1.0.2)
     validates_timeliness (3.0.14)
       timeliness (~> 0.3.6)
+    valium (0.5.0)
+      activerecord (>= 3.0.2)
     websocket (1.0.3)
     whenever (0.8.0)
       activesupport (>= 2.3.4)
@@ -340,4 +342,5 @@ DEPENDENCIES
   therubyracer
   uglifier
   validates_timeliness
+  valium
   whenever
