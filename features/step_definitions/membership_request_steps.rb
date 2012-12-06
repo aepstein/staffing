@@ -134,11 +134,18 @@ When /^I fill in basic fields for the membership_request$/ do
 end
 
 When /^I create a membership_request for the committee$/ do
-  @quiz.questions << create(:question, name: 'Favorite color', content: 'What is your favority color?', disposition: 'string')
-  @quiz.questions << create(:question, name: 'Capital of Assyria', content: 'What is the capital of Assyria?')
-  @quiz.questions << create(:question, name: 'Qualified', content: 'Are you qualified?', disposition: 'boolean')
+  @questions = [ create( :quiz_question, position: 3, quiz: @quiz,
+    question: create(:question, name: 'Favorite color',
+      content: 'What is your favority color?', disposition: 'string')),
+  create( :quiz_question, position: 2, quiz: @quiz,
+    question: create(:question, name: 'Capital of Assyria',
+      content: 'What is the capital of Assyria?')),
+  create( :quiz_question, position: 1, quiz: @quiz,
+    question: create(:question, name: 'Qualified',
+      content: 'Are you qualified?', disposition: 'boolean')) ]
   visit new_committee_membership_request_url(@committee)
   step %{I fill in basic fields for the membership_request}
+  # TODO: Assure order of questions is observed
   fill_in 'Favorite color', with: '*bl*ue'
   fill_in 'Capital of Assyria', with: '*Da*mascus'
   within_fieldset('Qualified?') { choose 'Yes' }
@@ -161,17 +168,22 @@ Then /^I should see the new membership_request$/ do
     page.should have_text "User: #{@current_user.name(:net_id)}"
     page.should have_text "Desired start date: #{@starts.to_formatted_s(:long_ordinal)}"
     page.should have_text "Desired end date: #{@ends.to_formatted_s(:long_ordinal)}"
-    page.should have_text "What is your favority color? blue"
-    page.should have_text "Damascus"
-    page.should have_text "Are you qualified? Yes"
+    within("ol#answers") do
+      within("li:nth-of-type(3)") { page.should have_text "What is your favority color? blue" }
+      within("li:nth-of-type(2)") { page.should have_text "Damascus" }
+      within("li:nth-of-type(1)") { page.should have_text "Are you qualified? Yes" }
+    end
   end
 end
 
 When /^I update the membership_request$/ do
+  @questions[0].update_column :position, 1
+  @questions[2].update_column :position, 3
   visit edit_membership_request_url(@membership_request)
   @starts += 1.day
   @ends -= 1.day
   step %{I fill in basic fields for the membership_request}
+  # TODO: Assure order of questions is observed
   fill_in 'Favorite color', with: 'yellow'
   fill_in 'Capital of Assyria', with: 'Carthage'
   within_fieldset('Qualified?') { choose 'No' }
@@ -183,9 +195,11 @@ Then /^I should see the updated membership_request$/ do
   within("#membership-request-#{@membership_request.id}") do
     page.should have_text "Desired start date: #{@starts.to_formatted_s(:long_ordinal)}"
     page.should have_text "Desired end date: #{@ends.to_formatted_s(:long_ordinal)}"
-    page.should have_text "What is your favority color? yellow"
-    page.should have_text "Carthage"
-    page.should have_text "Are you qualified? No"
+    within("ol#answers") do
+      within("li:nth-of-type(1)") { page.should have_text "What is your favority color? yellow" }
+      within("li:nth-of-type(2)") { page.should have_text "Carthage" }
+      within("li:nth-of-type(3)") { page.should have_text "Are you qualified? No" }
+    end
   end
 end
 

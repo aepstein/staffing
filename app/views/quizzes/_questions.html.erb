@@ -1,0 +1,8 @@
+<% if questions.any? %>
+  <%= content_tag :ol, id: "questions" do %>
+    <%= render partial: 'quizzes/question', collection: questions %>
+  <% end %>
+<% else %>
+  <%= content_tag :p, "No questions." %>
+<% end %>
+

@@ -52,8 +52,14 @@ Then /^I may( not)? destroy the quiz$/ do |negate|
 end
 
 When /^I create a quiz$/ do
+  create(:question, name: 'An Interesting Question')
+  create(:question, name: 'The Dull Question')
   visit(new_quiz_path)
   fill_in "Name", with: "Generic"
+  click_link 'Add Quiz Question'
+  within_fieldset("New Question") do
+    select 'An Interesting Question', from: "Question"
+  end
   click_button 'Create'
   @quiz = Quiz.find( URI.parse(current_url).path.match(/[\d]+$/)[0].to_i )
 end
@@ -62,12 +68,16 @@ Then /^I should see the new quiz$/ do
   within( "#flash_notice" ) { page.should have_text( "Quiz was successfully created." ) }
   within( "#quiz-#{@quiz.id}" ) do
     page.should have_text "Name: Generic"
+    within("#questions") do
+      page.should have_text "An Interesting Question"
+    end
   end
 end
 
 When /^I update the quiz$/ do
   visit(edit_quiz_path(@quiz))
   fill_in "Name", with: "Specialized"
+  click_link "Remove Question"
   click_button 'Update'
 end
 
@@ -75,6 +85,7 @@ Then /^I should see the edited quiz$/ do
   within('#flash_notice') { page.should have_text( "Quiz was successfully updated." ) }
   within("#quiz-#{@quiz.id}") do
     page.should have_text "Name: Specialized"
+    page.should have_text "No questions."
   end
 end
 

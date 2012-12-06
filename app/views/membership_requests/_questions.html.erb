@@ -1,0 +1,9 @@
+<% if questions.any? %>
+  <%= content_tag :ol, id: "answers" do %>
+    <%= render partial: 'membership_requests/question', collection: questions,
+      locals: { membership_request: membership_request } %>
+  <% end %>
+<% else %>
+  <%= content_tag :p, 'No pertinent questions.' %>
+<% end %>
+

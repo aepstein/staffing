@@ -1,4 +1,4 @@
-require File.expand_path(File.dirname(__FILE__) + '/../spec_helper')
+require 'spec_helper'
 
 describe MembershipRequest do
   before(:each) do
@@ -53,7 +53,9 @@ describe MembershipRequest do
 
   it  'should have an questions method that returns only questions in the quiz of requestable if it is a position' do
     allowed = create(:question)
-    @membership_request.requestable_positions.first.quiz.questions << allowed
+    create(:quiz_question, quiz: @membership_request.requestable_positions.first.quiz,
+      question: allowed, position: 1 )
+    @membership_request.requestable_positions.first.quiz.association(:questions).reset
     unallowed = create(:question)
     @membership_request.questions.size.should eql 1
     @membership_request.questions.should include allowed
@@ -67,9 +69,14 @@ describe MembershipRequest do
     unallowed = create(:question, :name => 'unallowed')
     other = create(:question, :name => 'other')
 
-    allowed_quiz = create(:quiz, :questions => [ allowed ])
-    unallowed_quiz = create(:quiz, :questions => [ unallowed ])
-    other_quiz = create(:quiz, :questions => [ allowed, unallowed, other ])
+    allowed_quiz = create(:quiz)
+    create(:quiz_question, quiz: allowed_quiz, question: allowed, position: 1)
+    unallowed_quiz = create(:quiz)
+    create(:quiz_question, quiz: unallowed_quiz, question: unallowed, position: 1)
+    other_quiz = create(:quiz)
+    create(:quiz_question, quiz: other_quiz, question: allowed, position: 1)
+    create(:quiz_question, quiz: other_quiz, question: unallowed, position: 2)
+    create(:quiz_question, quiz: other_quiz, question: other, position: 3)
 
     allowed_position = create(:position, :statuses => ['undergrad'], :quiz => allowed_quiz)
     unallowed_position_status = create(:position, :statuses => ['grad'], :quiz => unallowed_quiz)
@@ -99,8 +106,16 @@ describe MembershipRequest do
     questions = [ unanswered_local, unanswered_global, answered_local, answered_global ]
     answered_questions = [ answered_local, answered_global ]
 
-    short_quiz = create(:quiz, :questions => answered_questions)
-    full_quiz = create(:quiz, :questions => questions)
+    short_quiz = create(:quiz)
+    answered_questions.inject(1) do |i, question|
+      create(:quiz_question, quiz: short_quiz, question: question, position: i)
+      i + 1
+    end
+    full_quiz = create(:quiz)
+    questions.inject(1) do |i, question|
+      create(:quiz_question, quiz: full_quiz, question: question, position: i)
+      i + 1
+    end
 
     less_recent = generate_answered_membership_request user, short_quiz, 'less recent answer'
     sleep 1

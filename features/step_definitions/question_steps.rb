@@ -52,14 +52,11 @@ Then /^I may( not)? destroy the question$/ do |negate|
 end
 
 When /^I create a question$/ do
-  create :quiz, name: "Colors"
-  create :quiz, name: "Birds"
   visit(new_question_path)
   fill_in "Name", with: "Favorite color"
   fill_in "Content", with: "What is your favorite color?"
   select "Text Box", from: "Disposition"
   within_fieldset("Global?") { choose "Yes" }
-  within_fieldset("Quizzes") { check "Colors" }
   click_button 'Create'
   @question = Question.find( URI.parse(current_url).path.match(/[\d]+$/)[0].to_i )
 end
@@ -70,10 +67,6 @@ Then /^I should see the new question$/ do
     page.should have_text "Name: Favorite color"
     page.should have_text "What is your favorite color?"
     page.should have_text "Text Box"
-    within("ul#quizzes li") do
-      page.should have_text "Colors"
-      page.should have_no_text "Desserts"
-    end
   end
 end
 
@@ -83,7 +76,6 @@ When /^I update the question$/ do
   fill_in "Content", with: "What is your favorite dessert?"
   select "Yes/No", from: "Disposition"
   within_fieldset("Global?") { choose "No" }
-  within_fieldset("Quizzes") { uncheck "Colors" }
   click_button 'Update'
 end
 
@@ -94,8 +86,6 @@ Then /^I should see the edited question$/ do
     page.should have_text "What is your favorite dessert?"
     page.should have_text "Disposition: Yes/No"
     page.should have_text "Global? No"
-    page.should have_no_selector "ul#quizzes"
-    page.should have_text "No quizzes."
   end
 end
 

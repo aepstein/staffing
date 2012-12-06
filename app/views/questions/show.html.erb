@@ -17,17 +17,6 @@
   <b>Global?</b> <%= @question.global? ? 'Yes' : 'No' %>
 </p>
 
-<h3>Quizzes</h3>
-
-<% if @question.quizzes.any? -%>
-<ul id="quizzes">
-<% @question.quizzes.each do |quiz| -%>
-<li><%= link_to h(quiz), quiz %></li>
-<% end -%>
-</ul>
-<% else %>
-<p>No quizzes.</p>
-<% end -%>
 </div> <!-- #question-<%= @question.id %> -->
 
 <p>

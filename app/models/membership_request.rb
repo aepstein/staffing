@@ -1,6 +1,8 @@
 class MembershipRequest < ActiveRecord::Base
   notifiable_events :reject, :close
 
+  has_paper_trail
+
   attr_accessible :starts_at, :ends_at, :new_position, :answers_attributes,
     :user_attributes
   attr_accessible :rejected_by_authority_id, :rejection_comment, as: :rejector
@@ -31,6 +33,9 @@ class MembershipRequest < ActiveRecord::Base
       end
       # Return the populated answers
       population
+    end
+    def for_question( question )
+      select { |answer| answer.question_id == question.id }.first
     end
     protected
     def populated_question_ids; map(&:question_id); end
@@ -148,8 +153,11 @@ class MembershipRequest < ActiveRecord::Base
   accepts_nested_attributes_for :user
 
   def questions
-    Question.joins { quizzes }.uniq.where { |q| q.quizzes.id.in(
-      requestable_positions.assignable.scoped.select { quiz_id } ) }
+    QuizQuestion.includes { question }.order { [ quiz_id, position ] }.
+      group { question_id }.
+      where { |q| q.quiz_id.in(
+        requestable_positions.assignable.scoped.select { quiz_id } ) }.
+      map(&:question)
   end
 
   def authorities

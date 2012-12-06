@@ -55,17 +55,9 @@
   <b>Answers:</b>
 </p>
 
-<% @membership_request.answers(:include => [:question]).
-   where { |t| t.question_id.in(
-     @membership_request.questions.except(:select).select { id }
-   ) }.each do |answer| %>
-  <% if answer.question.disposition == 'boolean' %>
-  <%=markdown( answer.question.content + " #{answer.content == 'true' ? 'Yes' : 'No'}" ) %>
-  <% else %>
-  <%=markdown answer.question.content %>
-  <%=markdown answer.content %>
-  <% end %>
-<% end %>
+<%= render partial: 'membership_requests/questions',
+  object: @membership_request.questions,
+  locals: { membership_request: @membership_request } %>
 
 <p>
   <b>Resume?</b> <%= @membership_request.user.resume.blank? ? 'No' :  link_to('Yes', resume_user_path( @membership_request.user, :format => :pdf ) ) %>

@@ -2,6 +2,8 @@
 <p>
   <b>Name:</b> <%=h @quiz.name %>
 </p>
+
+<%= render partial: 'quizzes/questions', object: @quiz.questions %>
 </div> <!-- #quiz-<%= @quiz.id %> -->
 
 

@@ -5,7 +5,9 @@ FactoryGirl.define do
     association :membership_request
     question do |a|
       a.association( :question,
-        :quizzes => [a.membership_request.requestable_positions.assignable.first.quiz] )
+        quiz_questions: [ FactoryGirl.build(:quiz_question,
+          quiz: a.membership_request.requestable_positions.assignable.first.quiz,
+          question: nil) ] )
     end
     content 'blue'
   end
@@ -235,6 +237,12 @@ FactoryGirl.define do
 
   factory :quiz do
     sequence(:name) { |n| "Quiz #{n}" }
+  end
+
+  factory :quiz_question do
+    association(:quiz)
+    association(:question)
+    position 1
   end
 
   factory :schedule do

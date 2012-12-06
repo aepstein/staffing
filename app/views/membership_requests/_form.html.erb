@@ -10,14 +10,15 @@
     <%= form.input :new_position, as: :select, collection: form.object.new_position_options, label: 'Move to',
       hint: 'Select the position among your unexpired membership_requests that reflects '+
       'your level of preference for this committee or position.' %>
-    <% form.object.answers.each do |answer| %>
-      <% if form.object.new_record? || form.object.questions.include?( answer.question ) %>
+    <% form.object.questions.each do |question| %>
+      <% if answer = form.object.answers.for_question( question ) %>
         <%= form.semantic_fields_for :answers, answer do |subform| %>
           <%= subform.input( :question_id, as: :hidden ) if subform.object.new_record? %>
           <%= render_question subform %>
         <% end %>
       <% end %>
     <% end %>
+
     <%= form.semantic_fields_for :user do |subform| %>
       <%= subform.input :resume, as: :file,
         hint: 'You may optionally provide a resume (pdf only). This resume will appear in all your membership membership_requests.' %>

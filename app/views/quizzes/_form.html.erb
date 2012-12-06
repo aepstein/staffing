@@ -1,6 +1,7 @@
   <%= render "shared/error_messages", target: form.object %>
   <%= form.inputs do %>
-  <%= form.input :name %>
+    <%= form.input :name %>
+    <%= form.input :quiz_questions, as: :cocoon, ordered_by: :position %>
   <% end %>
   <%= form.actions %>
 

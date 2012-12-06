@@ -15,7 +15,7 @@ Scenario Outline: Access control
     |staff|may    |may    |may    |may not|
     |plain|may not|may not|may not|may not|
 
-
+@javascript
 Scenario: Create/edit a quiz
   Given I log in as the staff user
   When I create a quiz
