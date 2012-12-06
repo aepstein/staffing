@@ -16,15 +16,15 @@ class Motion < ActiveRecord::Base
   attr_accessible :referring_motion_attributes, as: [ :referrer ]
   attr_accessible :referred_motions_attributes, as: [ :divider ]
   attr_accessible :committee_name, as: :referrer
-  attr_readonly :committee_id, :period_id
-
-  acts_as_list scope: [ :period_id, :committee_id ]
+  attr_readonly :committee_id, :period_id, :position
 
   belongs_to :period, inverse_of: :motions
   belongs_to :committee, inverse_of: :motions
   belongs_to :referring_motion, inverse_of: :referred_motions,
     class_name: 'Motion'
 
+  has_many :peers, through: :committee, source: :motions,
+    conditions: Proc.new { { period_id: period_id } }
   has_many :meeting_items, inverse_of: :motion, dependent: :destroy
   has_many :sponsorships, inverse_of: :motion, dependent: :destroy do
     # Build and return a sponsorship if provided user is allowed
@@ -103,17 +103,34 @@ class Motion < ActiveRecord::Base
 
   validates :name, presence: true, uniqueness: {
     scope: [ :period_id, :committee_id ] }
-  validates :position, uniqueness: { scope: [ :period_id, :committee_id ] }
   validates :period, presence: true, inclusion: { if: :committee,
     in: lambda { |motion| motion.committee.schedule.periods } }
   validates :committee, presence: true
   validates :event_date, timeliness: { allow_blank: true, if: :period, type: :date,
     on_or_after: :period_starts_at, on_or_before: lambda { Time.zone.today } }
+  # No validation on position -- this will be handled automatically
 
   before_create do |motion|
     if motion.referring_motion && motion.referring_motion.published?
       motion.published = true
     end
+    motion.peers.lock
+    motion.position = motion.peers.scoped.reset.count + 1
+  end
+  # Lock the list of motions for the period during destroy
+  before_destroy do |motion|
+    motion.peers.lock
+    motion.position = Motion.scoped.reset.where { |m| m.id.eq( motion.id ) }.
+      value_of(:position).first
+  end
+  # After destroy reposition subsequent items accordingly
+  after_destroy do |motion|
+    motion.peers.scoped.reset.where { |m| m.position.gt( motion.position ) }.
+      update_all( "position = position - 1" )
+  end
+
+  def lock_list
+    motion.committee.motions.where { |m| }
   end
 
   state_machine :status, initial: :started do

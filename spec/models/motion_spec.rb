@@ -47,11 +47,37 @@ describe Motion do
       motion.save.should be_false
     end
 
-    it "should not save with an invalid event date" do
-      motion.event_date = 'blah'
-      motion.save.should be_false
+  end
+
+  context "position" do
+    let(:motion) { create :motion }
+    let(:past) { motion.committee.schedule.association(:periods).reset &&
+      create( :past_period, schedule: motion.committee.schedule ) }
+
+    it "should be 1 for the first item, 2 for the next" do
+      motion.position.should eql 1
+      create(:motion, committee: motion.committee, period: motion.period).position.should eql 2
     end
 
+    it "should be 1 for a different period" do
+      create(:motion, committee: motion.committee, period: past).position.should eql 1
+    end
+
+    it "should reposition subsequent items for same committee/period on destroy" do
+      create(:motion, committee: motion.committee, period: past)
+      motions = 2.times.inject([]) do |memo|
+        create(:motion, committee: motion.committee, period: past)
+        memo << create(:motion, committee: motion.committee, period: motion.period)
+      end
+      motions.map(&:position).should eql [2,3]
+      motions.first.destroy
+      motions.last.reload
+      motions.last.position.should eql 2
+      motion.reload
+      motion.position.should eql 1
+      motion.committee.motions.where { |m| m.period_id.eq( past.id ) }.
+        value_of(:position).should eql [1,2,3]
+    end
   end
 
   context 'referred motions' do
