@@ -39,7 +39,7 @@ authorization do
     end
     has_permission_on :committees, to: :vote do
       if_attribute enrollments: {
-        position_id: is_in { user.memberships.current.map(&:position_id) },
+        position_id: is_in { user.memberships.current.value_of(:position_id) },
         votes: gt { 0 } }
     end
     has_permission_on :committees, to: :chair do
@@ -56,7 +56,7 @@ authorization do
       if_attribute published: is { true }
       if_attribute ends_at: lt { Time.zone.now }
       if_attribute committee: { enrollments: { position_id: is_in { user.memberships.
-        where { ends_at.gte( Time.zone.today ) }.map(&:position_id) } } }
+        where { ends_at.gte( Time.zone.today ) }.value_of(:position_id) } } }
     end
     has_permission_on :meetings, to: :manage, join_by: :and do
       if_permitted_to :vicechair, :committee
