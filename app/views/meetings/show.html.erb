@@ -39,6 +39,7 @@
 <% if permitted_to? :edit, @meeting -%>
 <%= link_to 'Edit', edit_meeting_path(@meeting) %> |
 <% end -%>
+<%= link_to 'Agenda', agenda_meeting_path(@meeting, format: :pdf) %> |
 <%= link_to "Back to #{@meeting.committee}", committee_meetings_path(@meeting.committee) %>
 </p>
 
