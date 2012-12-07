@@ -136,30 +136,30 @@ Scenario: List/delete a motion
   | Motion 1 |
 
 Scenario Outline: Motion events without javascript
-  Given an authorization scenario of <pub>published, <status> motion of <origin> origin to which I have a <tense> <relation> relationship
+  Given an authorization scenario of a <tense> <pub>published, <status> motion of <origin> origin to which I have a <relationship> relationship
   When I <event> the motion
   Then I should see confirmation of the event on the motion
   Examples:
-    |relation |tense  |origin   |pub|status   |event    |
-    |sponsor  |current|sponsored|un |started  |propose  |
-    |vicechair|current|referred |   |started  |propose  |
-    |sponsor  |current|sponsored|   |proposed |withdraw |
-    |vicechair|current|sponsored|   |proposed |adopt    |
-    |vicechair|current|sponsored|   |proposed |merge    |
-    |vicechair|current|sponsored|   |proposed |restart  |
-    |vicechair|current|sponsored|   |proposed |refer    |
-    |staff    |current|sponsored|   |adopted  |implement|
-    |vicechair|current|sponsored|   |proposed |reject   |
-    |vicechair|current|sponsored|   |proposed |withdraw |
+    |relationship     |tense  |origin   |pub|status  |event    |
+    |current sponsor  |current|sponsored|un |started |propose  |
+    |current vicechair|current|referred |   |started |propose  |
+    |current sponsor  |current|sponsored|   |proposed|withdraw |
+    |current vicechair|current|sponsored|   |proposed|adopt    |
+    |current vicechair|current|sponsored|   |proposed|merge    |
+    |current vicechair|current|sponsored|   |proposed|restart  |
+    |current vicechair|current|sponsored|   |proposed|refer    |
+    |staff            |current|sponsored|   |adopted |implement|
+    |current vicechair|current|sponsored|   |proposed|reject   |
+    |current vicechair|current|sponsored|   |proposed|withdraw |
 
 @javascript
 Scenario Outline: Motion events with javascript
-  Given an authorization scenario of <pub>published, <status> motion of <origin> origin to which I have a <tense> <relation> relationship
+  Given an authorization scenario of a <tense> <pub>published, <status> motion of <origin> origin to which I have a <relationship> relationship
   When I <event> the motion
   Then I should see confirmation of the event on the motion
   Examples:
-    |relation |tense  |origin   |pub|status   |event   |
-    |vicechair|current|sponsored|   |proposed |amend   |
-    |vicechair|current|sponsored|   |proposed |divide  |
-    |vicechair|current|sponsored|   |proposed |merge   |
+    |relationship     |tense  |origin   |pub|status   |event   |
+    |current vicechair|current|sponsored|   |proposed |amend   |
+    |current vicechair|current|sponsored|   |proposed |divide  |
+    |current vicechair|current|sponsored|   |proposed |merge   |
 
