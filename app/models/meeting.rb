@@ -63,18 +63,18 @@ class Meeting < ActiveRecord::Base
     case style
     when :file
       if starts_at && committee
-        "#{starts_at.to_s :number}-#{committee.to_s :file}"
+        return "#{starts_at.to_s :number}-#{committee.name :file}"
       end
     when :editable_minutes_file
-      "#{@meeting.to_s :file}-editable_minutes.#{@meeting.editable_minutes.extension}"
+      return "#{@meeting.to_s :file}-editable_minutes.#{@meeting.editable_minutes.extension}"
     when :published_minutes_file
-      "#{@meeting.to_s :file}-published_minutes.#{@meeting.published_minutes.extension}"
+      return "#{@meeting.to_s :file}-published_minutes.#{@meeting.published_minutes.extension}"
     when :audio_file
-      "#{@meeting.to_s :file}-audio.#{@meeting.audio.extension}"
+      return "#{@meeting.to_s :file}-audio.#{@meeting.audio.extension}"
     else
       return starts_at.to_s :us_ordinal if starts_at?
     end
-    super
+    super()
   end
 
   private

@@ -9,8 +9,19 @@ class MeetingsController < ApplicationController
   filter_access_to :index, :current, :past, :future do
     true
   end
-  filter_access_to :editable_minutes, :published_minutes, :audio do
+  filter_access_to :editable_minutes, :published_minutes, :audio, :agenda do
     permitted_to! :show
+  end
+
+  # GET /meetings/:id/agenda.pdf
+  def agenda
+    respond_to do |format|
+      format.pdf do
+        report = MeetingAgendaReport.new( @meeting )
+        send_data report.to_pdf, filename: "#{@meeting.to_s :file}-agenda.pdf",
+          type: 'application/pdf', disposition: 'inline'
+      end
+    end
   end
 
   # GET /meetings/:id/editable_minutes.(doc|odt|tex|txt)

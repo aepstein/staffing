@@ -60,4 +60,11 @@ Scenario: List/delete a meeting
     |01 Jan 2004 09:00|
     |01 Jan 2003 09:00|
     |01 Jan 2001 09:00|
+@wip
+Scenario Outline: Reports for meeting
+  Given a report scenario of a current published meeting of a committee to which I have a <relationship> relationship
+  When I download the <type> report for the meeting
+  Examples:
+    |relationship |type      |
+    |staff        |agenda pdf|
 

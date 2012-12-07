@@ -54,7 +54,7 @@ Scenario Outline: List requestable committees
 
 Scenario Outline: Reports for committee
   Given a report scenario of a committee to which I have a <relationship> relationship
-  When I download the <type> report
+  When I download the <type> report for the committee
   Examples:
     |relationship |type       |
     |staff        |members csv|

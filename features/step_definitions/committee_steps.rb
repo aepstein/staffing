@@ -241,7 +241,7 @@ Given /^a report scenario of a committee to which I have a (?:(current|past|futu
   create :membership, position: create( :enrollment, committee: @committee ).position
 end
 
-When /^I download the (members (?:csv|pdf)|tents pdf|emplid csv) report$/ do |type|
+When /^I download the (members (?:csv|pdf)|tents pdf|emplid csv) report for the committee$/ do |type|
   VectorUploader.enable_processing = true
   create :brand
   VectorUploader.enable_processing = false

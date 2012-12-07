@@ -21,7 +21,7 @@ gem 'blind_date', '~> 1.0.2'
 gem 'acts_as_list', git: 'git://github.com/aepstein/acts_as_list.git'
 gem 'daemons'
 gem 'bluecloth'
-gem 'whenever', require: false
+gem 'whenever', '~> 0.7.3', require: false
 gem 'escape_utils'
 gem 'prawn', '~> 1.0.0rc'
 gem 'prawn-fast-png'

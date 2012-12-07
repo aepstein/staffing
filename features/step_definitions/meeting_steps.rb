@@ -198,3 +198,18 @@ When /^I search for meetings with period "([^"]+)"$/ do |needle|
   click_button "Search"
 end
 
+Given /^a report scenario (of an? (?:current|recent|pending|future|past) (?:un)?published meeting of a committee to which I have a (?:(?:current|recent|pending) )?(?:admin|staff|chair|vicechair|voter|nonvoter|plain) relationship)$/ do |authorization_scenario|
+  step %{an authorization scenario #{authorization_scenario}}
+  create(:meeting_item, meeting_section: create(:meeting_section, meeting: @meeting))
+end
+
+When /^I download the ((?:agenda) (?:pdf)) report for the meeting$/ do |type|
+  VectorUploader.enable_processing = true
+  create :brand
+  VectorUploader.enable_processing = false
+  case type
+  when 'agenda pdf'
+    visit(agenda_meeting_url(@meeting, format: :pdf))
+  end
+end
+
