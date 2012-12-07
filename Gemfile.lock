@@ -21,12 +21,6 @@ GIT
       rails3-jquery-autocomplete (~> 1.0)
       railties (~> 3.2)
 
-GIT
-  remote: git://github.com/aepstein/acts_as_list.git
-  revision: a8ef871532c74bf012533d4b0331559acb5abb4e
-  specs:
-    acts_as_list (0.1.4)
-
 GEM
   remote: http://rubygems.org/
   specs:
@@ -58,6 +52,7 @@ GEM
     activesupport (3.2.9)
       i18n (~> 0.6)
       multi_json (~> 1.0)
+    acts_as_list (0.1.9)
     addressable (2.3.2)
     arel (3.0.2)
     bcrypt-ruby (3.0.1)
@@ -300,11 +295,11 @@ PLATFORMS
   ruby
 
 DEPENDENCIES
-  acts_as_list!
+  acts_as_list (~> 0.1.9)
   blind_date (~> 1.0.2)
   bluecloth
   capistrano
-  capybara (~> 2.0.0beta2)
+  capybara (~> 2.0)
   carrierwave
   coffee-rails
   cornell-assemblies-branding!

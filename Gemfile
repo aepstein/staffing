@@ -18,7 +18,7 @@ gem 'declarative_authorization'
 gem 'kaminari'
 gem 'carrierwave'
 gem 'blind_date', '~> 1.0.2'
-gem 'acts_as_list', git: 'git://github.com/aepstein/acts_as_list.git'
+gem 'acts_as_list', '~> 0.1.9'
 gem 'daemons'
 gem 'bluecloth'
 gem 'whenever', '~> 0.7.3', require: false
@@ -49,7 +49,7 @@ group :test do
   gem 'test-unit', require: false
   gem 'cucumber-rails', require: false
   gem 'database_cleaner', require: false
-  gem 'capybara', '~> 2.0.0beta2'
+  gem 'capybara', '~> 2.0'
   gem 'spork', require: false
   gem 'factory_girl_rails', '~> 3.0', require: false
   gem 'launchy'
