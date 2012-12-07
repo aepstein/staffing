@@ -21,7 +21,7 @@ gem 'blind_date', '~> 1.0.2'
 gem 'acts_as_list', '~> 0.1.9'
 gem 'daemons'
 gem 'bluecloth'
-gem 'whenever', '~> 0.7.3', require: false
+gem 'whenever', require: false
 gem 'escape_utils'
 gem 'prawn', '~> 1.0.0rc'
 gem 'prawn-fast-png'
