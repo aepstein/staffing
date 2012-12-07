@@ -1,4 +1,4 @@
-Given /^(?:an )authorization scenario of an? (current|recent|pending|future|past|historic) membership to which I have a (current|recent|pending|future) (admin|staff|authority|authority_ro|member|plain) relationship$/ do |member_tense, relation_tense, relationship|
+Given /^(?:an )authorization scenario of an? (current|recent|pending|future|past|historic) membership to which I have a (?:(current|recent|pending|future) )?(admin|staff|authority|authority_ro|member|plain) relationship$/ do |member_tense, relation_tense, relationship|
   role = case relationship
   when 'admin', 'staff'
     relationship
@@ -117,7 +117,7 @@ Then /^I may( not)? decline the membership$/ do |negate|
   step %{I should#{negate} be authorized}
 end
 
-When /^I attempt to create a (past|current|future|pending|recent) membership as (current|pending|future) (staff|authority)$/ do |member_tense, relation_tense, relation|
+When /^I attempt to create a (past|current|future|pending|recent) membership as (?:(current|pending|future) )?(staff|authority)$/ do |member_tense, relation_tense, relation|
   role = case relation
   when 'staff'
     'staff'
@@ -202,44 +202,6 @@ Then /^I should see the edited membership$/ do
     page.should have_text("Starts at: #{@starts_at.to_formatted_s(:us_ordinal)}")
     page.should have_text("Ends at: #{@ends_at.to_formatted_s(:us_ordinal)}")
     page.should have_text("Designee for Important Committee: #{@candidate.name(:net_id)}")
-  end
-end
-
-Given /^I have a referred membership as (vicechair|staff)$/ do |relationship|
-  role = case relationship
-  when 'staff'
-    'staff'
-  else
-    'plain'
-  end
-  position_relationship = case relationship
-  when 'staff'
-    'nonmember'
-  else
-    relationship
-  end
-  step %{I log in as the #{role} user}
-  step %{I have a current #{position_relationship} relationship to the position}
-  @membership = create( :referred_membership, position: @position )
-  create(:attachment, attachable: @membership, description: "Sample employee ids")
-end
-
-When /^I update the referred membership$/ do
-  visit(edit_membership_path(@membership))
-  fill_in "Name", with: "Referred membership"
-  fill_in "Description", with: "This is different"
-  fill_in "Content", with: "Whereas and resolved"
-  click_link "remove attachment"
-  click_button "Update"
-end
-
-Then /^I should see the updated referred membership$/ do
-  within('#flash_notice') { page.should have_text("Membership was successfully updated.") }
-  within("#membership-#{@membership.id}") do
-    page.should have_text("Name: Referred membership")
-    page.should have_text("This is different")
-    page.should have_text("Whereas and resolved")
-    page.should have_no_text("Sample employee ids")
   end
 end
 
