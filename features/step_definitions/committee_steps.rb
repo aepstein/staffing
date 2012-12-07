@@ -218,25 +218,26 @@ Then /^I may( not)? request membership in the committee$/ do |negate|
   end
 end
 
-Given /^a report scenario of a committee to which I have a (current|past|future) (admin|staff|chair|vicechair|voter|nonvoter|nonmember) relationship$/ do |tense, relationship|
+Given /^a report scenario of a committee to which I have a (?:(current|past|future) )?(admin|staff|chair|vicechair|voter|nonvoter|plain) relationship$/ do |tense, relationship|
   committee_relationship = case relationship
+  when 'admin', 'staff', 'plain'
+    nil
   when 'sponsor'
     'voter'
-  when 'admin', 'staff'
-    'nonmember'
   else
     relationship
   end
   role = case relationship
-  when 'admin'
-    'admin'
-  when 'staff'
-    'staff'
+  when 'admin', 'staff'
+    relationship
   else
     'plain'
   end
   step %{I log in as the #{role} user}
-  step %{I have a #{tense} #{committee_relationship} relationship to the committee}
+  @committee = create :committee
+  if committee_relationship
+    step %{I have a #{tense} #{committee_relationship} relationship to the committee}
+  end
   create :membership, position: create( :enrollment, committee: @committee ).position
 end
 

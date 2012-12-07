@@ -53,12 +53,12 @@ Scenario Outline: List requestable committees
     |no       |no       |may not|
 
 Scenario Outline: Reports for committee
-  Given a report scenario of a committee to which I have a <tense> <role> relationship
+  Given a report scenario of a committee to which I have a <relationship> relationship
   When I download the <type> report
   Examples:
-    |tense  |role |type       |
-    |current|staff|members csv|
-    |current|staff|members pdf|
-    |current|staff|tents pdf  |
-    |current|staff|emplid csv |
+    |relationship |type       |
+    |staff        |members csv|
+    |staff        |members pdf|
+    |staff        |tents pdf  |
+    |staff        |emplid csv |
 
