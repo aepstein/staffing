@@ -37,8 +37,8 @@ group :assets do
   gem 'coffee-rails'
   gem 'uglifier'
   gem 'execjs'
-#  gem 'therubyracer'
-#  gem 'libv8', '~> 3.11.8'
+  gem 'therubyracer', '~> 0.10.1'
+  gem 'libv8', '~> 3.3.10'
 end
 group :development, :test do
   gem 'rspec-rails'
