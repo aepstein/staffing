@@ -1,46 +1,17 @@
 # Renders PDF membership directory
-class MembershipReport < Prawn::Document
-  include CustomFonts
-
+class MembershipReport < AbstractCommitteeReport
   attr_accessor :memberships
   attr_accessor :voting_memberships
   attr_accessor :nonvoting_memberships
-  attr_accessor :committee
   attr_accessor :as_of
 
-  LETTERHEAD_CONTACT_OFFSET = 698
-  attr_accessor :letterhead_contact_offset
-
   def initialize(committee, as_of)
-    self.committee = committee
     self.as_of = as_of
     self.memberships ||= committee.memberships.as_of(as_of).except(:order).
       includes(:user).order('users.last_name ASC, users.first_name ASC')
     self.voting_memberships ||= memberships.where('enrollments.votes > 0')
     self.nonvoting_memberships ||= memberships.where('enrollments.votes = 0')
-    include_palatino
-    super( page_size: 'LETTER' )
-  end
-
-  def draw_letterhead
-    brand = committee.brand || Brand.first
-    image brand.logo.letterhead.store_path, height: 72
-    font 'Palatino' do
-      text_box '109 Day Hall', size: 11, at: [360, 720]
-      text_box 'Ithaca, NY 14853', size: 11, at: [360, 709]
-      draw_letterhead_contact 'p', '607.255.3175'
-      draw_letterhead_contact 'f', '607.255.2182'
-      draw_letterhead_contact 'e', 'assembly@cornell.edu'
-      draw_letterhead_contact 'w', 'http://assembly.cornell.edu'
-    end
-  end
-
-  def draw_letterhead_contact( letter, content )
-    self.letterhead_contact_offset ||= LETTERHEAD_CONTACT_OFFSET
-    text_box "#{letter}.", size: 9, at: [360, letterhead_contact_offset],
-      width: 18
-    text_box content, size: 9, at: [378, letterhead_contact_offset]
-    self.letterhead_contact_offset -= 9
+    super( committee, page_size: 'LETTER' )
   end
 
   def rowify_memberships(memberships)
