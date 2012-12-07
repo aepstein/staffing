@@ -4,35 +4,35 @@ Feature: Manage meetings
   I want to create, modify, list, show, and destroy meetings
 
 Scenario Outline: Access control
-  Given an authorization scenario of a <meeting_tense> <pub>published meeting of a committee to which I have a <member_tense> <role> relationship
+  Given an authorization scenario of a <tense> <pub>published meeting of a committee to which I have a <relationship> relationship
   Then I <show> see the meeting
   And I <create> create meetings
   And I <update> update the meeting
   And I <destroy> destroy the meeting
   Examples:
-    |role    |pub|meeting_tense|member_tense|show   |create |update |destroy|
-    |admin   |un |current      |current     |may    |may    |may    |may    |
-    |admin   |un |past         |current     |may    |may    |may    |may    |
-    |admin   |un |future       |current     |may    |may    |may    |may    |
-    |staff   |un |current      |current     |may    |may    |may    |may    |
-    |staff   |un |past         |current     |may    |may    |may    |may not|
-    |staff   |un |future       |current     |may    |may    |may    |may not|
-    |chair   |un |current      |current     |may    |may    |may    |may    |
-    |chair   |un |recent       |current     |may    |may    |may    |may    |
-    |chair   |un |pending      |current     |may    |may    |may    |may    |
-    |chair   |un |current      |recent      |may not|may not|may not|may not|
-    |chair   |un |current      |recent      |may not|may not|may not|may not|
-    |chair   |un |current      |pending     |may    |may not|may not|may not|
-    |voter   |un |current      |current     |may    |may not|may not|may not|
-    |voter   |un |pending      |current     |may    |may not|may not|may not|
-    |voter   |un |pending      |pending     |may    |may not|may not|may not|
-    |nonvoter|un |current      |current     |may    |may not|may not|may not|
-    |nonvoter|un |pending      |current     |may    |may not|may not|may not|
-    |nonvoter|un |pending      |pending     |may    |may not|may not|may not|
-    |plain   |un |current      |current     |may not|may not|may not|may not|
-    |plain   |un |recent       |current     |may    |may not|may not|may not|
-    |plain   |   |current      |current     |may    |may not|may not|may not|
-    |plain   |   |pending      |current     |may    |may not|may not|may not|
+    |relationship    |pub|tense  |show   |create |update |destroy|
+    |admin           |un |current|may    |may    |may    |may    |
+    |admin           |un |past   |may    |may    |may    |may    |
+    |admin           |un |future |may    |may    |may    |may    |
+    |staff           |un |current|may    |may    |may    |may    |
+    |staff           |un |past   |may    |may    |may    |may not|
+    |staff           |un |future |may    |may    |may    |may not|
+    |current chair   |un |current|may    |may    |may    |may    |
+    |current chair   |un |recent |may    |may    |may    |may    |
+    |current chair   |un |pending|may    |may    |may    |may    |
+    |recent chair    |un |current|may not|may not|may not|may not|
+    |recent chair    |un |current|may not|may not|may not|may not|
+    |pending chair   |un |current|may    |may not|may not|may not|
+    |current voter   |un |current|may    |may not|may not|may not|
+    |current voter   |un |pending|may    |may not|may not|may not|
+    |pending voter   |un |pending|may    |may not|may not|may not|
+    |current nonvoter|un |current|may    |may not|may not|may not|
+    |current nonvoter|un |pending|may    |may not|may not|may not|
+    |pending nonvoter|un |pending|may    |may not|may not|may not|
+    |plain           |un |current|may not|may not|may not|may not|
+    |plain           |un |recent |may    |may not|may not|may not|
+    |plain           |   |current|may    |may not|may not|may not|
+    |plain           |   |pending|may    |may not|may not|may not|
 
 @javascript
 Scenario Outline: Create/edit a meeting

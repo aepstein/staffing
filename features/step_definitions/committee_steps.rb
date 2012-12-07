@@ -1,18 +1,13 @@
-Given /^I have a (current|recent|pending|past|future) (chair|vicechair|voter|nonvoter|nonmember) relationship to the committee$/ do |tense, relationship|
-  @committee = create :committee
-  if relationship != 'nonmember'
-    position = create :position
-    create "#{tense}_membership".to_sym, position: position, user: @current_user
-    enrollment = case relationship
-    when 'chair', 'vicechair'
-      create :enrollment, roles: [ relationship ], committee: @committee, position: position
-    when 'voter'
-      create :enrollment, votes: 1, committee: @committee, position: position
-    when 'nonvoter'
-      create :enrollment, votes: 0, committee: @committee, position: position
-    else
-      nil
-    end
+Given /^I have a (current|recent|pending|past|future) (chair|vicechair|voter|nonvoter) relationship to the committee$/ do |tense, relationship|
+  position = create :position
+  create "#{tense}_membership".to_sym, position: position, user: @current_user
+  case relationship
+  when 'chair', 'vicechair'
+    create :enrollment, roles: [ relationship ], committee: @committee, position: position
+  when 'voter'
+    create :enrollment, votes: 1, committee: @committee, position: position
+  when 'nonvoter'
+    create :enrollment, votes: 0, committee: @committee, position: position
   end
 end
 
@@ -24,9 +19,10 @@ Given /^(?:an )authorization scenario of a committee to which I have an? (?:(cur
     'plain'
   end
   step %{I log in as the #{role} user}
+  @committee = create :committee
   case relationship
   when 'admin', 'staff', 'plain'
-    @committee = create :committee
+    nil
   else
     step %{I have a #{tense} #{relationship} relationship to the committee}
   end

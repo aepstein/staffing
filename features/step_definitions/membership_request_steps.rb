@@ -1,4 +1,4 @@
-Given /^(?:an )authorization scenario of an? (current|expired)(?: (rejected|active|closed))? membership_request to which I have a(?: (current|recent|pending|future))? (admin|staff|authority|authority_ro|requestor|plain) relationship$/ do |membership_request_tense, state, relation_tense, relationship|
+Given /^(?:an )authorization scenario of an? (current|expired)(?: (rejected|active|closed))? membership request to which I have a(?: (current|recent|pending|future))? (admin|staff|authority|authority_ro|requestor|plain) relationship$/ do |membership_request_tense, state, relation_tense, relationship|
   role = case relationship
   when 'admin', 'staff'
     relationship
@@ -34,7 +34,7 @@ Given /^(?:an )authorization scenario of an? (current|expired)(?: (rejected|acti
   end
 end
 
-Then /^I may( not)? create membership_requests for the committee$/ do |negate|
+Then /^I may( not)? create membership requests for the committee$/ do |negate|
   if negate.blank?
     visit(new_committee_membership_request_url(@committee))
     step %{I should be authorized}
@@ -42,13 +42,13 @@ Then /^I may( not)? create membership_requests for the committee$/ do |negate|
     step %{I should be authorized}
   else
     visit(new_committee_membership_request_url(@committee))
-    step %{I fill in basic fields for the membership_request}
+    step %{I fill in basic fields for the membership request}
     click_button 'Create'
     step %{I should see the creator error message}
   end
 end
 
-Then /^I may( not)? update the membership_request$/ do |negate|
+Then /^I may( not)? update the membership request$/ do |negate|
   Capybara.current_session.driver.submit :put, membership_request_url(@membership_request), {}
   step %{I should#{negate} be authorized}
   visit(edit_membership_request_url(@membership_request))
@@ -63,7 +63,7 @@ Then /^I may( not)? update the membership_request$/ do |negate|
   end
 end
 
-Then /^I may( not)? destroy the membership_request$/ do |negate|
+Then /^I may( not)? destroy the membership request$/ do |negate|
   visit(committee_membership_requests_url(@committee))
   if negate.blank?
     within("#membership-request-#{@membership_request.id}") { page.should have_text('Destroy') }
@@ -74,7 +74,7 @@ Then /^I may( not)? destroy the membership_request$/ do |negate|
   step %{I should#{negate} be authorized}
 end
 
-Then /^I may( not)? see the membership_request$/ do |negate|
+Then /^I may( not)? see the membership request$/ do |negate|
   visit(membership_request_url(@membership_request))
   step %{I should#{negate} be authorized}
   visit(committee_membership_requests_url(@committee))
@@ -85,7 +85,7 @@ Then /^I may( not)? see the membership_request$/ do |negate|
   end
 end
 
-Then /^I may( not)? reject the membership_request$/ do |negate|
+Then /^I may( not)? reject the membership request$/ do |negate|
   visit(committee_membership_requests_url(@committee))
   if negate.blank?
     within("#membership-request-#{@membership_request.id}") { page.should have_text('Reject') }
@@ -100,7 +100,7 @@ Then /^I may( not)? reject the membership_request$/ do |negate|
   step %{I should#{negate} be authorized}
 end
 
-Then /^I may( not)? reactivate the membership_request$/ do |negate|
+Then /^I may( not)? reactivate the membership request$/ do |negate|
   visit(committee_membership_requests_url(@committee))
   if negate.blank?
     within("#membership-request-#{@membership_request.id}") { page.should have_text('Reactivate') }
@@ -113,7 +113,7 @@ Then /^I may( not)? reactivate the membership_request$/ do |negate|
   step %{I should#{negate} be authorized}
 end
 
-Given /^(?:an? )?(#{User::STATUSES.join '|'}|(?:every|any|no)(?:one|body)) may create membership_requests for the committee$/ do |status|
+Given /^(?:an? )?(#{User::STATUSES.join '|'}|(?:every|any|no)(?:one|body)) may create membership requests for the committee$/ do |status|
   @committee = create(:committee)
   @enrollment = case status
   when /^(every|any)/
@@ -126,14 +126,14 @@ Given /^(?:an? )?(#{User::STATUSES.join '|'}|(?:every|any|no)(?:one|body)) may c
   @quiz = @enrollment.position.quiz
 end
 
-When /^I fill in basic fields for the membership_request$/ do
+When /^I fill in basic fields for the membership request$/ do
   @starts ||= Time.zone.today
   @ends ||= @starts + 2.years
   fill_in 'Desired start date', with: @starts.to_s(:rfc822)
   fill_in 'Desired end date', with: @ends.to_s(:rfc822)
 end
 
-When /^I create a membership_request for the committee$/ do
+When /^I create a membership request for the committee$/ do
   @questions = [ create( :quiz_question, position: 3, quiz: @quiz,
     question: create(:question, name: 'Favorite color',
       content: 'What is your favority color?', disposition: 'string')),
@@ -161,7 +161,7 @@ Then /^I should( not)? see the creator error message$/ do |negate|
   end
 end
 
-Then /^I should see the new membership_request$/ do
+Then /^I should see the new membership request$/ do
   step %{I should not see the creator error message}
   within("#membership-request-#{@membership_request.id}") do
     page.should have_text "Committee: #{@committee.name}"
@@ -176,13 +176,13 @@ Then /^I should see the new membership_request$/ do
   end
 end
 
-When /^I update the membership_request$/ do
+When /^I update the membership request$/ do
   @questions[0].update_column :position, 1
   @questions[2].update_column :position, 3
   visit edit_membership_request_url(@membership_request)
   @starts += 1.day
   @ends -= 1.day
-  step %{I fill in basic fields for the membership_request}
+  step %{I fill in basic fields for the membership request}
   # TODO: Assure order of questions is observed
   fill_in 'Favorite color', with: 'yellow'
   fill_in 'Capital of Assyria', with: 'Carthage'
@@ -190,7 +190,7 @@ When /^I update the membership_request$/ do
   click_button 'Update'
 end
 
-Then /^I should see the updated membership_request$/ do
+Then /^I should see the updated membership request$/ do
   within('#flash_notice') { page.should have_text("Membership request was successfully updated.") }
   within("#membership-request-#{@membership_request.id}") do
     page.should have_text "Desired start date: #{@starts.to_formatted_s(:long_ordinal)}"
@@ -203,7 +203,7 @@ Then /^I should see the updated membership_request$/ do
   end
 end
 
-Given /^I have a referred membership_request as (vicechair|staff)$/ do |relationship|
+Given /^I have a referred membership request as (vicechair|staff)$/ do |relationship|
   role = case relationship
   when 'staff'
     'staff'
@@ -212,17 +212,20 @@ Given /^I have a referred membership_request as (vicechair|staff)$/ do |relation
   end
   committee_relationship = case relationship
   when 'staff'
-    'nonmembership_request'
+    nil
   else
     relationship
   end
   step %{I log in as the #{role} user}
-  step %{I have a current #{committee_relationship} relationship to the committee}
+  @committee = create :committee
+  if committee_relationship
+    step %{I have a current #{committee_relationship} relationship to the committee}
+  end
   @membership_request = create( :referred_membership_request, committee: @committee )
   create(:attachment, attachable: @membership_request, description: "Sample employee ids")
 end
 
-When /^I update the referred membership_request$/ do
+When /^I update the referred membership request$/ do
   visit(edit_membership_request_path(@membership_request))
   fill_in "Name", with: "Referred membership_request"
   fill_in "Description", with: "This is different"
@@ -231,7 +234,7 @@ When /^I update the referred membership_request$/ do
   click_button "Update"
 end
 
-Then /^I should see the updated referred membership_request$/ do
+Then /^I should see the updated referred membership request$/ do
   within('#flash_notice') { page.should have_text("Request was successfully updated.") }
   within("#membership-request-#{@membership_request.id}") do
     page.should have_text("Name: Referred membership_request")
@@ -241,7 +244,7 @@ Then /^I should see the updated referred membership_request$/ do
   end
 end
 
-Given /^there are (\d+) membership_requests for a committee by (last|first)$/ do |quantity, column|
+Given /^there are (\d+) membership requests for a committee by (last|first)$/ do |quantity, column|
   @committee = create(:requestable_committee)
   @membership_requests = quantity.to_i.downto(1).map do |i|
     case column
@@ -253,7 +256,7 @@ Given /^there are (\d+) membership_requests for a committee by (last|first)$/ do
   end
 end
 
-Given /^there are (\d+) membership_requests with a common (committee|user)$/ do |quantity, common|
+Given /^there are (\d+) membership requests with a common (committee|user)$/ do |quantity, common|
   @common = case common
   when 'committee'
     create(:requestable_committee)
@@ -270,7 +273,7 @@ Given /^there are (\d+) membership_requests with a common (committee|user)$/ do 
   end
 end
 
-When /^I search for the (user|committee) of the (\d+)(?:st|nd|rd|th) membership_request$/ do |field, committee|
+When /^I search for the (user|committee) of the (\d+)(?:st|nd|rd|th) membership request$/ do |field, committee|
   visit polymorphic_url( [ @common, :membership_requests ] )
   pos = ( committee.to_i - 1 )
   case field
@@ -281,7 +284,7 @@ When /^I search for the (user|committee) of the (\d+)(?:st|nd|rd|th) membership_
   end
 end
 
-Then /^I should only find the (\d+)(?:st|nd|rd|th) membership_request$/ do |committee|
+Then /^I should only find the (\d+)(?:st|nd|rd|th) membership request$/ do |committee|
   click_button "Search"
   pos = ( committee.to_i - 1 )
   needle = @membership_requests[pos].id
@@ -293,33 +296,33 @@ Then /^I should only find the (\d+)(?:st|nd|rd|th) membership_request$/ do |comm
   end
 end
 
-Given /^I "(.+)" the (\d+)(?:st|nd|rd|th) membership_request for the committee$/ do |text, membership_request|
+Given /^I "(.+)" the (\d+)(?:st|nd|rd|th) membership request for the committee$/ do |text, membership_request|
   visit(committee_membership_requests_path(@committee))
   within("table > tbody > tr:nth-child(#{membership_request.to_i})") do
     click_link "#{text}"
   end
 end
 
-Then /^I should see the following membership_requests for the committee:$/ do |table|
+Then /^I should see the following membership requests for the committee:$/ do |table|
   visit(committee_membership_requests_path(@committee))
   table.diff! tableish( 'table#membership-requests > tbody > tr', 'td' )
 end
 
-Given /^the membership_request is rejected$/ do
+Given /^the membership request is rejected$/ do
   @membership_request.rejected_by_authority = @position.authority
   @membership_request.rejected_by_user = create(:user, admin: true)
   @membership_request.rejection_comment = "Membership *denied*."
   @membership_request.reject!
 end
 
-When /^I reject the membership_request$/ do
+When /^I reject the membership request$/ do
   visit reject_membership_request_url(@membership_request)
   select @membership_request.authorities.first.to_s, from: 'Authority'
   fill_in "Comment", with: "No *membership* for you!"
   click_button "Reject"
 end
 
-Then /^I should see the rejected membership_request$/ do
+Then /^I should see the rejected membership request$/ do
   @membership_request.reload
   within("#flash_notice") { page.should have_text( "Membership request was successfully rejected." ) }
   within("#membership-request-#{@membership_request.id}") do
@@ -331,20 +334,20 @@ Then /^I should see the rejected membership_request$/ do
   end
 end
 
-When /^I reactivate the membership_request$/ do
+When /^I reactivate the membership request$/ do
   Capybara.current_session.driver.submit :put, reactivate_membership_request_url(@membership_request), {}
 end
 
-When /^I touch the membership_request$/ do
+When /^I touch the membership request$/ do
   Capybara.current_session.driver.submit :put, membership_request_url(@membership_request), {}
 end
 
-Then /^the membership_request should be active$/ do
+Then /^the membership request should be active$/ do
   @membership_request.reload
   @membership_request.active?.should be_true
 end
 
-Then /^I should see the reactivated membership_request$/ do
+Then /^I should see the reactivated membership request$/ do
   within("#flash_notice") { page.should have_text "Membership request was successfully reactivated." }
 end
 
@@ -360,14 +363,14 @@ Then /^I should see the (close|reject) notice is sent$/ do |notice|
   end
 end
 
-When /^I move the (\d+)rd membership_request to the position of the (\d+)st membership_request$/ do |from, to|
+When /^I move the (\d+)rd membership request to the position of the (\d+)st membership request$/ do |from, to|
   step %{I log in as the staff user}
   visit edit_membership_request_url @membership_requests[from.to_i - 1]
   select @membership_requests[to.to_i - 1].committee.name, from: 'Move to'
   click_button 'Update'
 end
 
-Then /^the membership_requests should have the following positions:$/ do |table|
+Then /^the membership requests should have the following positions:$/ do |table|
   table.diff! @membership_requests.map { |r| r.reload; [ r.position.to_s ] }
 end
 

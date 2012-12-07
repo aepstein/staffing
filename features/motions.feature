@@ -4,106 +4,106 @@ Feature: Manage motions
   I want to create, modify, list, show, and destroy motions
 
 Scenario Outline: Access control
-  Given an authorization scenario of <pub>published, <status> motion of <origin> origin to which I have a <tense> <relation> relationship
+  Given an authorization scenario of a <tense> <pub>published, <status> motion of <origin> origin to which I have a <relationship> relationship
   Then I <show> see the motion
   And I <create> create motions for the committee
   And I <update> update the motion
   And I <destroy> destroy the motion
   Examples:
-    |relation |tense  |origin   |pub|status  |show   |create |update |destroy|
-    |admin    |current|sponsored|un |started |may    |may    |may    |may    |
-    |admin    |current|sponsored|   |proposed|may    |may    |may    |may    |
-    |admin    |past   |sponsored|un |started |may    |may    |may    |may    |
-    |admin    |future |sponsored|un |started |may    |may    |may    |may    |
-    |staff    |current|sponsored|un |started |may    |may    |may    |may not|
-    |staff    |past   |sponsored|un |started |may    |may    |may    |may not|
-    |staff    |future |sponsored|un |started |may    |may    |may    |may not|
-    |vicechair|current|referred |un |started |may    |may    |may    |may not|
-    |vicechair|current|sponsored|un |started |may not|may    |may not|may not|
-    |vicechair|past   |sponsored|un |started |may not|may not|may not|may not|
-    |nonvoter |current|sponsored|un |started |may not|may not|may not|may not|
-    |sponsor  |current|referred |un |started |may    |may    |may    |may not|
-    |sponsor  |current|sponsored|un |started |may    |may    |may    |may not|
-    |sponsor  |current|sponsored|un |proposed|may    |may    |may not|may not|
-    |sponsor  |past   |sponsored|un |started |may    |may not|may not|may not|
-    |voter    |current|referred |un |started |may not|may    |may not|may not|
-    |voter    |current|sponsored|un |started |may not|may    |may not|may not|
-    |voter    |past   |sponsored|un |started |may not|may not|may not|may not|
-    |nonvoter |current|referred |un |started |may not|may not|may not|may not|
-    |nonvoter |current|sponsored|un |started |may not|may not|may not|may not|
-    |nonmember|current|referred |un |started |may not|may not|may not|may not|
-    |nonmember|current|sponsored|un |started |may not|may not|may not|may not|
-    |nonmember|current|sponsored|   |started |may    |may not|may not|may not|
+    |relationship     |tense  |origin   |pub|status  |show   |create |update |destroy|
+    |admin            |current|sponsored|un |started |may    |may    |may    |may    |
+    |admin            |current|sponsored|   |proposed|may    |may    |may    |may    |
+    |admin            |past   |sponsored|un |started |may    |may    |may    |may    |
+    |admin            |future |sponsored|un |started |may    |may    |may    |may    |
+    |staff            |current|sponsored|un |started |may    |may    |may    |may not|
+    |staff            |past   |sponsored|un |started |may    |may    |may    |may not|
+    |staff            |future |sponsored|un |started |may    |may    |may    |may not|
+    |current vicechair|current|referred |un |started |may    |may    |may    |may not|
+    |current vicechair|current|sponsored|un |started |may not|may    |may not|may not|
+    |past vicechair   |past   |sponsored|un |started |may not|may not|may not|may not|
+    |current nonvoter |current|sponsored|un |started |may not|may not|may not|may not|
+    |current sponsor  |current|referred |un |started |may    |may    |may    |may not|
+    |current sponsor  |current|sponsored|un |started |may    |may    |may    |may not|
+    |current sponsor  |current|sponsored|un |proposed|may    |may    |may not|may not|
+    |past sponsor     |past   |sponsored|un |started |may    |may not|may not|may not|
+    |current voter    |current|referred |un |started |may not|may    |may not|may not|
+    |current voter    |current|sponsored|un |started |may not|may    |may not|may not|
+    |past voter       |past   |sponsored|un |started |may not|may not|may not|may not|
+    |current nonvoter |current|referred |un |started |may not|may not|may not|may not|
+    |current nonvoter |current|sponsored|un |started |may not|may not|may not|may not|
+    |plain            |current|referred |un |started |may not|may not|may not|may not|
+    |plain            |current|sponsored|un |started |may not|may not|may not|may not|
+    |plain            |current|sponsored|   |started |may    |may not|may not|may not|
 
 Scenario Outline: Access control for events
-  Given an authorization scenario of <pub>published, <status> motion of <origin> origin to which I have a <tense> <relation> relationship
+  Given an authorization scenario of a <tense> <pub>published, <status> motion of <origin> origin to which I have a <relationship> relationship
   Then I <permit> <event> the motion
   Examples:
-    |relation |tense  |origin   |pub|status   |permit |event    |
-    |staff    |current|sponsored|un |started  |may    |propose  |
-    |vicechair|current|sponsored|   |started  |may not|propose  |
-    |vicechair|current|referred |   |started  |may    |propose  |
-    |sponsor  |current|sponsored|un |started  |may    |propose  |
-    |sponsor  |past   |sponsored|un |started  |may not|propose  |
-    |nonmember|current|sponsored|   |started  |may not|propose  |
-    |admin    |current|sponsored|un |started  |may not|watch    |
-    |nonmember|current|sponsored|   |started  |may    |watch    |
-    |admin    |current|sponsored|   |started  |may not|unwatch  |
-    |admin    |current|sponsored|   |proposed |may not|propose  |
-    |staff    |current|sponsored|   |proposed |may    |adopt    |
-    |staff    |current|sponsored|   |proposed |may    |amend    |
-    |staff    |current|sponsored|   |proposed |may    |divide   |
-    |staff    |current|sponsored|   |proposed |may    |merge    |
-    |staff    |current|sponsored|   |proposed |may    |refer    |
-    |staff    |current|sponsored|   |proposed |may    |restart  |
-    |staff    |current|sponsored|   |proposed |may    |withdraw |
-    |vicechair|current|sponsored|   |proposed |may    |adopt    |
-    |vicechair|current|sponsored|   |proposed |may    |amend    |
-    |vicechair|current|sponsored|   |proposed |may    |divide   |
-    |vicechair|current|sponsored|   |proposed |may    |merge    |
-    |vicechair|current|sponsored|   |proposed |may    |refer    |
-    |vicechair|current|sponsored|   |proposed |may    |restart  |
-    |vicechair|current|sponsored|   |proposed |may    |withdraw |
-    |vicechair|past   |sponsored|   |proposed |may not|adopt    |
-    |vicechair|past   |sponsored|   |proposed |may not|amend    |
-    |vicechair|past   |sponsored|   |proposed |may not|divide   |
-    |vicechair|past   |sponsored|   |proposed |may not|merge    |
-    |vicechair|past   |sponsored|   |proposed |may not|refer    |
-    |vicechair|past   |sponsored|   |proposed |may not|restart  |
-    |vicechair|past   |sponsored|   |proposed |may not|withdraw |
-    |sponsor  |current|sponsored|   |proposed |may not|adopt    |
-    |sponsor  |current|sponsored|   |proposed |may not|amend    |
-    |sponsor  |current|sponsored|   |proposed |may not|divide   |
-    |sponsor  |current|sponsored|   |proposed |may not|merge    |
-    |sponsor  |current|sponsored|   |proposed |may not|refer    |
-    |sponsor  |current|sponsored|   |proposed |may not|restart  |
-    |sponsor  |current|sponsored|   |proposed |may    |withdraw |
-    |sponsor  |past   |sponsored|   |proposed |may not|withdraw |
-    |voter    |current|sponsored|   |proposed |may not|adopt    |
-    |voter    |current|sponsored|   |proposed |may not|amend    |
-    |voter    |current|sponsored|   |proposed |may not|divide   |
-    |voter    |current|sponsored|   |proposed |may not|merge    |
-    |voter    |current|sponsored|   |proposed |may not|refer    |
-    |voter    |current|sponsored|   |proposed |may not|restart  |
-    |voter    |current|sponsored|   |proposed |may not|withdraw |
-    |staff    |current|sponsored|   |adopted  |may    |implement|
-    |staff    |current|sponsored|   |adopted  |may    |reject   |
-    |staff    |current|sponsored|   |adopted  |may    |refer    |
-    |vicechair|current|sponsored|   |adopted  |may not|implement|
-    |vicechair|current|sponsored|   |adopted  |may not|reject   |
-    |vicechair|current|sponsored|   |adopted  |may not|refer    |
-    |chair    |current|sponsored|   |adopted  |may    |refer    |
-    |chair    |past   |sponsored|   |adopted  |may not|refer    |
-    |sponsor  |current|sponsored|   |adopted  |may not|implement|
-    |sponsor  |current|sponsored|   |adopted  |may not|reject   |
-    |sponsor  |current|sponsored|   |adopted  |may not|refer    |
-    |staff    |current|sponsored|   |withdrawn|may    |restart  |
-    |sponsor  |current|sponsored|   |withdrawn|may    |restart  |
-    |sponsor  |past   |sponsored|   |withdrawn|may not|restart  |
-    |vicechair|current|sponsored|   |withdrawn|may not|restart  |
-    |admin    |current|sponsored|   |rejected |may not|restart  |
-    |admin    |current|sponsored|   |merged   |may not|restart  |
-    |admin    |current|sponsored|   |divided  |may not|restart  |
+    |relationship     |tense  |origin   |pub|status   |permit |event    |
+    |staff            |current|sponsored|un |started  |may    |propose  |
+    |current vicechair|current|sponsored|   |started  |may not|propose  |
+    |current vicechair|current|referred |   |started  |may    |propose  |
+    |current sponsor  |current|sponsored|un |started  |may    |propose  |
+    |past sponsor     |past   |sponsored|un |started  |may not|propose  |
+    |plain            |current|sponsored|   |started  |may not|propose  |
+    |admin            |current|sponsored|un |started  |may not|watch    |
+    |plain            |current|sponsored|   |started  |may    |watch    |
+    |admin            |current|sponsored|   |started  |may not|unwatch  |
+    |admin            |current|sponsored|   |proposed |may not|propose  |
+    |staff            |current|sponsored|   |proposed |may    |adopt    |
+    |staff            |current|sponsored|   |proposed |may    |amend    |
+    |staff            |current|sponsored|   |proposed |may    |divide   |
+    |staff            |current|sponsored|   |proposed |may    |merge    |
+    |staff            |current|sponsored|   |proposed |may    |refer    |
+    |staff            |current|sponsored|   |proposed |may    |restart  |
+    |staff            |current|sponsored|   |proposed |may    |withdraw |
+    |current vicechair|current|sponsored|   |proposed |may    |adopt    |
+    |current vicechair|current|sponsored|   |proposed |may    |amend    |
+    |current vicechair|current|sponsored|   |proposed |may    |divide   |
+    |current vicechair|current|sponsored|   |proposed |may    |merge    |
+    |current vicechair|current|sponsored|   |proposed |may    |refer    |
+    |current vicechair|current|sponsored|   |proposed |may    |restart  |
+    |current vicechair|current|sponsored|   |proposed |may    |withdraw |
+    |past vicechair   |past   |sponsored|   |proposed |may not|adopt    |
+    |past vicechair   |past   |sponsored|   |proposed |may not|amend    |
+    |past vicechair   |past   |sponsored|   |proposed |may not|divide   |
+    |past vicechair   |past   |sponsored|   |proposed |may not|merge    |
+    |past vicechair   |past   |sponsored|   |proposed |may not|refer    |
+    |past vicechair   |past   |sponsored|   |proposed |may not|restart  |
+    |past vicechair   |past   |sponsored|   |proposed |may not|withdraw |
+    |current sponsor  |current|sponsored|   |proposed |may not|adopt    |
+    |current sponsor  |current|sponsored|   |proposed |may not|amend    |
+    |current sponsor  |current|sponsored|   |proposed |may not|divide   |
+    |current sponsor  |current|sponsored|   |proposed |may not|merge    |
+    |current sponsor  |current|sponsored|   |proposed |may not|refer    |
+    |current sponsor  |current|sponsored|   |proposed |may not|restart  |
+    |current sponsor  |current|sponsored|   |proposed |may    |withdraw |
+    |past sponsor     |past   |sponsored|   |proposed |may not|withdraw |
+    |current voter    |current|sponsored|   |proposed |may not|adopt    |
+    |current voter    |current|sponsored|   |proposed |may not|amend    |
+    |current voter    |current|sponsored|   |proposed |may not|divide   |
+    |current voter    |current|sponsored|   |proposed |may not|merge    |
+    |current voter    |current|sponsored|   |proposed |may not|refer    |
+    |current voter    |current|sponsored|   |proposed |may not|restart  |
+    |current voter    |current|sponsored|   |proposed |may not|withdraw |
+    |staff            |current|sponsored|   |adopted  |may    |implement|
+    |staff            |current|sponsored|   |adopted  |may    |reject   |
+    |staff            |current|sponsored|   |adopted  |may    |refer    |
+    |current vicechair|current|sponsored|   |adopted  |may not|implement|
+    |current vicechair|current|sponsored|   |adopted  |may not|reject   |
+    |current vicechair|current|sponsored|   |adopted  |may not|refer    |
+    |current chair    |current|sponsored|   |adopted  |may    |refer    |
+    |past chair       |past   |sponsored|   |adopted  |may not|refer    |
+    |current sponsor  |current|sponsored|   |adopted  |may not|implement|
+    |current sponsor  |current|sponsored|   |adopted  |may not|reject   |
+    |current sponsor  |current|sponsored|   |adopted  |may not|refer    |
+    |staff            |current|sponsored|   |withdrawn|may    |restart  |
+    |current sponsor  |current|sponsored|   |withdrawn|may    |restart  |
+    |past sponsor     |past   |sponsored|   |withdrawn|may not|restart  |
+    |current vicechair|current|sponsored|   |withdrawn|may not|restart  |
+    |admin            |current|sponsored|   |rejected |may not|restart  |
+    |admin            |current|sponsored|   |merged   |may not|restart  |
+    |admin            |current|sponsored|   |divided  |may not|restart  |
 
 @javascript
 Scenario Outline: Create/edit a sponsored motion

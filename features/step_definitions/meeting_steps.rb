@@ -1,20 +1,21 @@
-Given /^(?:an )authorization scenario of an? (current|recent|pending|future|past) (un)?published meeting of a committee to which I have a (current|recent|pending) (admin|staff|chair|vicechair|voter|nonvoter|plain) relationship$/ do |meeting_tense, unpub, member_tense, relationship|
+Given /^(?:an )authorization scenario of an? (current|recent|pending|future|past) (un)?published meeting of a committee to which I have a (?:(current|recent|pending) )?(admin|staff|chair|vicechair|voter|nonvoter|plain) relationship$/ do |meeting_tense, unpub, member_tense, relationship|
   committee_relationship = case relationship
   when 'admin', 'staff', 'plain'
-    'nonmember'
+    nil
   else
     relationship
   end
   role = case relationship
-  when 'admin'
-    'admin'
-  when 'staff'
-    'staff'
+  when 'admin', 'staff'
+    relationship
   else
     'plain'
   end
   step %{I log in as the #{role} user}
-  step %{I have a #{member_tense} #{committee_relationship} relationship to the committee}
+  @committee = create :committee
+  if committee_relationship
+    step %{I have a #{member_tense} #{committee_relationship} relationship to the committee}
+  end
   case meeting_tense
   when 'recent', 'pending', 'current'
     @period = create( :current_period, schedule: @committee.schedule )
@@ -87,12 +88,15 @@ When /^I create a meeting as (staff|chair)$/ do |relationship|
   end
   committee_relationship = case relationship
   when 'staff'
-    'nonmember'
+    nil
   else
     relationship
   end
   step %{I log in as the #{role} user}
-  step %{I have a current #{committee_relationship} relationship to the committee}
+  @committee = create :committee
+  if committee_relationship
+    step %{I have a current #{committee_relationship} relationship to the committee}
+  end
   @past_period = create(:past_period, schedule: @committee.schedule)
   @current_period = create(:current_period, schedule: @committee.schedule)
   visit(new_committee_meeting_path(@committee))

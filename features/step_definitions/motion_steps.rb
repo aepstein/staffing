@@ -105,13 +105,13 @@ Then /^I should see confirmation of the event on the motion$/ do
   end
 end
 
-Given /^(?:an )authorization scenario of (un)?published, (\w+) motion of (sponsored|referred) origin to which I have a (?:(current|past|future) )?(admin|staff|chair|vicechair|voter|sponsor|nonvoter|nonmember) relationship$/ do |publication, status, origin, tense, relationship|
+Given /^(?:an )authorization scenario of a (current|future|past) (un)?published, (\w+) motion of (sponsored|referred) origin to which I have a (?:(current|past|future) )?(admin|staff|chair|vicechair|voter|sponsor|nonvoter|plain) relationship$/ do |motion_tense, publication, status, origin, tense, relationship|
   Motion.delete_all
   committee_relationship = case relationship
+  when 'admin', 'staff', 'plain'
+    nil
   when 'sponsor'
     'voter'
-  when 'admin', 'staff'
-    'nonmember'
   else
     relationship
   end
@@ -121,10 +121,12 @@ Given /^(?:an )authorization scenario of (un)?published, (\w+) motion of (sponso
   else
     'plain'
   end
-  tense = 'current' if tense.blank?
   step %{I log in as the #{role} user}
-  step %{I have a #{tense} #{committee_relationship} relationship to the committee}
-  @period = create( "#{tense}_period".to_sym, schedule: @committee.schedule )
+  @committee = create :committee
+  if committee_relationship
+    step %{I have a #{tense} #{committee_relationship} relationship to the committee}
+  end
+  @period = create( "#{motion_tense}_period".to_sym, schedule: @committee.schedule )
   @motion = create "#{origin}_motion".to_sym, committee: @committee,
     period: @period, status: status, published: publication.blank?
   if relationship == 'sponsor'
@@ -206,13 +208,21 @@ When /^I create a motion as (voter|staff)$/ do |relationship|
   end
   committee_relationship = case relationship
   when 'staff'
-    'nonmember'
+    nil
   else
     relationship
   end
   step %{I log in as the #{role} user}
-  step %{I have a current #{committee_relationship} relationship to the committee}
-  if committee_relationship == 'nonmember'
+  @committee = create :committee
+  if committee_relationship
+    step %{I have a current #{committee_relationship} relationship to the committee}
+    @sponsor = @current_user
+    @current_user.update_attributes first_name: 'George', last_name: 'Washington'
+    @alternate_sponsor = create( :membership,
+      position: create( :enrollment, committee: @committee, votes: 1 ).position,
+      user: create( :user, net_id: 'zzz1', first_name: 'John', last_name: 'Adams' ) ).user
+    @period = @committee.periods.active
+  else
     sponsor_membership = create( :past_membership,
       position: create( :enrollment, committee: @committee, votes: 1 ).position,
       user: create( :user, net_id: 'zzz2', first_name: 'George', last_name: 'Washington' ) )
@@ -222,13 +232,6 @@ When /^I create a motion as (voter|staff)$/ do |relationship|
       position: create( :enrollment, committee: @committee, votes: 1 ).position,
       period: @period,
       user: create( :user, net_id: 'zzz1', first_name: 'John', last_name: 'Adams' ) ).user
-  else
-    @sponsor = @current_user
-    @current_user.update_attributes first_name: 'George', last_name: 'Washington'
-    @alternate_sponsor = create( :membership,
-      position: create( :enrollment, committee: @committee, votes: 1 ).position,
-      user: create( :user, net_id: 'zzz1', first_name: 'John', last_name: 'Adams' ) ).user
-    @period = @committee.periods.active
   end
   @committee.update_attributes name: 'Powerful Committee'
   visit(new_committee_motion_path(@committee))
@@ -297,12 +300,15 @@ Given /^I have a referred motion as (vicechair|staff)$/ do |relationship|
   end
   committee_relationship = case relationship
   when 'staff'
-    'nonmember'
+    nil
   else
     relationship
   end
   step %{I log in as the #{role} user}
-  step %{I have a current #{committee_relationship} relationship to the committee}
+  @committee = create :committee
+  if committee_relationship
+    step %{I have a current #{committee_relationship} relationship to the committee}
+  end
   @motion = create( :referred_motion, committee: @committee )
   create(:attachment, attachable: @motion, description: "Sample employee ids")
 end
