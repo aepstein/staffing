@@ -36,6 +36,10 @@ class MeetingItem < ActiveRecord::Base
     motion.name
   end
 
+  def display_name
+    motion ? motion.to_s(:numbered) : name
+  end
+
   protected
 
   def name_or_motion_must_be_present

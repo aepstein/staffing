@@ -129,10 +129,6 @@ class Motion < ActiveRecord::Base
       update_all( "position = position - 1" )
   end
 
-  def lock_list
-    motion.committee.motions.where { |m| }
-  end
-
   state_machine :status, initial: :started do
 
     before_transition all => [ :divided, :referred, :amended ] do |motion, transition|
