@@ -1,5 +1,5 @@
 <%= content_tag :div, class: 'nested-fields' do %>
-  <%= f.inputs name: ( f.object.persisted? ? f.object.question.name : 'New Question' ) do %>
+  <%= f.inputs name: sortable_label( ( f.object.persisted? ? f.object.question.name : 'New Question' ) ) do %>
     <% if f.object.new_record? %>
       <%= f.input :question, collection: Question.all %>
     <% end %>
