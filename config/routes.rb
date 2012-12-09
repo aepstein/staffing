@@ -121,7 +121,7 @@ Staffing::Application.routes.draw do
       get :resume, :tent
     end
     collection do
-      get :import_empl_id
+      get :admin, :import_empl_id, :staff
       put :do_import_empl_id
     end
     resources :committees, only: [] do

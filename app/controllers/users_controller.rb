@@ -1,10 +1,10 @@
 class UsersController < ApplicationController
   before_filter :require_user, :initialize_context
-  before_filter :initialize_index, only: [ :index, :allowed ]
+  before_filter :initialize_index, only: [ :admin, :index, :allowed, :staff ]
   before_filter :new_user_from_params, only: [ :new, :create ]
   filter_access_to :new, :create, :edit, :update, :destroy, :show, :tent,
     attribute_check: true
-  filter_access_to :import_empl_id, :do_import_empl_id do
+  filter_access_to :admin, :import_empl_id, :do_import_empl_id, :staff do
     permitted_to! :staff, :users
   end
   before_filter :setup_breadcrumbs, except: [ :profile ]
@@ -35,6 +35,16 @@ class UsersController < ApplicationController
   def allowed
     @users = @users.allowed
     add_breadcrumb "Allowed", polymorphic_path([ :allowed, @context, :users ])
+    index
+  end
+
+  def staff
+    @users = @users.where { staff.eq( true ) }
+    index
+  end
+
+  def admin
+    @users = @users.where { admin.eq( true ) }
     index
   end
 
