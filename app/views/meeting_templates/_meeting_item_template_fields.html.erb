@@ -1,5 +1,5 @@
 <%= content_tag :div, class: 'nested-fields' do %>
-  <%= f.inputs name: 'Meeting Item Template' do %>
+  <%= f.inputs name: sortable_label( 'Meeting Item Template' ) do %>
     <%= f.input :name %>
     <%= f.input :duration %>
     <%= f.input :description %>

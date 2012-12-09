@@ -12,5 +12,10 @@ module ApplicationHelper
     out.html_safe
   end
 
+  def sortable_label( label )
+    ( content_tag(:span, '', class: 'ui-icon ui-icon-arrowthick-2-n-s',
+      style: 'float: left;') + label ).html_safe
+  end
+
 end
 
