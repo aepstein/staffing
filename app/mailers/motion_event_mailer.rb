@@ -1,7 +1,7 @@
 class MotionEventMailer < ActionMailer::Base
   helper :application
-  helper_method :vicechairs, :chairs, :sponsors, :motion, :event
-  attr_accessor :motion, :event
+  helper_method :vicechairs, :chairs, :sponsors, :motion, :event, :recipients
+  attr_accessor :motion, :event, :recipients
 
   def event_notice(e)
     initialize_context e
@@ -9,8 +9,9 @@ class MotionEventMailer < ActionMailer::Base
   end
 
   def propose_notice
+    self.recipients = vicechairs
     mail(
-      to: vicechairs.map(&:email),
+      to: recipients.map(&:email),
       cc: sponsors.map(&:email),
       from: motion.effective_contact_email,
       subject: "#{motion.to_s :full} proposed",
@@ -19,11 +20,13 @@ class MotionEventMailer < ActionMailer::Base
   end
 
   def restart_notice
+    self.recipients = sponsors
     mail(
-      to: motion.users.map(&:to_email),
-      cc: motion.observer_emails,
-      from: motion.effective_contact_name_and_email,
-      subject: "#{motion.to_s :full} restarted"
+      to: recipients.map(&:email),
+      cc: vicechairs.map(&:email),
+      from: motion.effective_contact_email,
+      subject: "#{motion.to_s :full} restarted",
+      template_name: 'restart_notice'
     )
   end
 
