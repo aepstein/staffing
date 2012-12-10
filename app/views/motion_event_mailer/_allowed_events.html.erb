@@ -1,0 +1,13 @@
+<% allowed_events = motion.status_paths.events.map(&:to_s) %>
+<% if allowed_events.any? %>
+<p>
+You may <%= allowed_events.listify(joiner: 'or') %> the motion here:
+</p>
+
+<p>
+<%= motion_url(motion) %>
+</p>
+<% else %>
+<p>No further actions are allowed or required regarding the motion.</p>
+<% end %>
+

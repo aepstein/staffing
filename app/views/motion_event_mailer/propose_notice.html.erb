@@ -1,21 +1,4 @@
 <p>
-Dear <%= vicechairs.map(&:first_name).listify %>,
-</p>
-
-<p>
 <% if motion.sponsored? %><%= motion.users.map(&:name).listify %> proposed <%= motion.to_s(:numbered) %><% else %><%= motion.to_s(:numbered) %> was proposed<% end %> on <%= event.occurrence.to_s :long_ordinal %> for consideration by <%= motion.committee %>.
-</p>
-
-<p>
-You may <%= motion.status_paths.events.map(&:to_s).listify(joiner: 'or') %> the motion here:
-</p>
-
-<p>
-<%= motion_url(motion) %>
-</p>
-
-<p>
-<%= motion.effective_contact_name %><br/>
-<%= motion.effective_contact_email %>
 </p>
 
