@@ -51,8 +51,6 @@ class Committee < ActiveRecord::Base
 
   accepts_nested_attributes_for :enrollments, allow_destroy: true
 
-  delegate :effective_contact_name_and_email, to: :committee
-
   validates :name, presence: true, uniqueness: true
   validates :schedule, presence: true
 

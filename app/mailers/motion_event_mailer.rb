@@ -1,19 +1,24 @@
 class MotionEventMailer < ActionMailer::Base
   helper :application
+  helper_method :vicechairs, :chairs, :sponsors, :motion, :event
   attr_accessor :motion, :event
 
-  def propose_notice(e)
+  def event_notice(e)
     initialize_context e
+    send "#{e.event}_notice"
+  end
+
+  def propose_notice
     mail(
-      to: motion.users.map(&:to_email),
-      cc: motion.observer_emails,
-      from: motion.effective_contact_name_and_email,
-      subject: "#{motion.to_s :full} proposed"
+      to: vicechairs.map(&:email),
+      cc: sponsors.map(&:email),
+      from: motion.effective_contact_email,
+      subject: "#{motion.to_s :full} proposed",
+      template_name: 'propose_notice'
     )
   end
 
-  def restart_notice(e)
-    initialize_context e
+  def restart_notice
     mail(
       to: motion.users.map(&:to_email),
       cc: motion.observer_emails,
@@ -22,8 +27,7 @@ class MotionEventMailer < ActionMailer::Base
     )
   end
 
-  def withdraw_notice(e)
-    initialize_context e
+  def withdraw_notice
     mail(
       to: motion.users.map(&:to_email),
       cc: motion.observer_emails,
@@ -32,8 +36,7 @@ class MotionEventMailer < ActionMailer::Base
     )
   end
 
-  def divide_notice(e)
-    initialize_context e
+  def divide_notice
     mail(
       to: motion.users.map(&:to_email),
       cc: motion.observer_emails,
@@ -42,8 +45,7 @@ class MotionEventMailer < ActionMailer::Base
     )
   end
 
-  def merge_notice(e)
-    initialize_context e
+  def merge_notice
     mail(
       to: motion.users.map(&:to_email),
       cc: motion.observer_emails,
@@ -52,8 +54,7 @@ class MotionEventMailer < ActionMailer::Base
     )
   end
 
-  def reject_notice(e)
-    initialize_context e
+  def reject_notice
     mail(
       to: motion.users.map(&:to_email),
       cc: motion.observer_emails,
@@ -62,8 +63,7 @@ class MotionEventMailer < ActionMailer::Base
     )
   end
 
-  def adopt_notice(e)
-    initialize_context e
+  def adopt_notice
     mail(
       to: motion.users.map(&:to_email),
       cc: motion.observer_emails,
@@ -72,8 +72,7 @@ class MotionEventMailer < ActionMailer::Base
     )
   end
 
-  def implement_notice(e)
-    initialize_context e
+  def implement_notice
     mail(
       to: motion.users.map(&:to_email),
       cc: motion.observer_emails,
@@ -82,8 +81,7 @@ class MotionEventMailer < ActionMailer::Base
     )
   end
 
-  def refer_notice(e)
-    initialize_context e
+  def refer_notice
     mail(
       to: motion.users.map(&:to_email),
       cc: motion.observer_emails,
@@ -93,6 +91,21 @@ class MotionEventMailer < ActionMailer::Base
   end
 
   protected
+
+  def sponsors
+    @sponsors ||= motion.users
+  end
+
+  def vicechairs
+    return @vicechairs if @vicechairs
+    @vicechairs = motion.users_for(:vicechairs)
+    return @vicechairs if @vicechairs.length > 0
+    @vicechairs = chairs
+  end
+
+  def chairs
+    @chairs ||= motion.users_for(:chairs)
+  end
 
   def initialize_context(e)
     self.event = e

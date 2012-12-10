@@ -229,6 +229,11 @@ class Motion < ActiveRecord::Base
   attr_accessor :event_description, :amendment
   attr_reader :event_date
 
+  delegate :effective_contact_name_and_email, :effective_contact_email,
+    :effective_contact_name, to: :committee
+
+  def sponsored?; sponsorships.any?; end
+
   def event_date=(date)
     @event_date = if date.is_a?(String)
       d = Time.zone.parse(date)
@@ -254,7 +259,7 @@ class Motion < ActiveRecord::Base
     # TODO
   end
 
-  def emails_for(population, options = { include_referrers: false })
+  def users_for( population, options = { include_referrers: false } )
     include_referrers = options.delete :include_referrers
     users = case population
     when :sponsors
@@ -262,17 +267,21 @@ class Motion < ActiveRecord::Base
     when :watchers
       committee.watchers
     when :monitors
-      committee.memberships.current.with_roles('monitor')
+      User.where { |u| u.id.in( committee.memberships.current.with_roles('monitor').select { user_id } ) }
     when :vicechairs
-      committee.memberships.current.with_roles('vicechair')
+      User.where { |u| u.id.in( committee.memberships.current.with_roles('vicechair').select { user_id } ) }
     when :chairs
-      committee.memberships.current.with_roles('chair')
+      User.where { |u| u.id.in( committee.memberships.current.with_roles('chair').select { user_id } ) }
     end
-    out = users.map(&:to_email)
+    out = users
     if referring_motion && include_referrers
-      out += referring_motion.emails_for( population, include_referrers )
+      out += referring_motion.users_for( population, include_referrers )
     end
     out.uniq
+  end
+
+  def emails_for( population, options = { include_referrers: false } )
+    users_for( population, options ).map(&:to_email)
   end
 
   def tense

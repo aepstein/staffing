@@ -1,11 +1,11 @@
-Dear <%= @motion.users.map(&:first_name).listify %>,
+Dear <%= vicechairs.map(&:first_name).listify %>,
 
-<%= @motion.to_s(:numbered) %> was proposed on <%= @motion_event.occurrence.to_s :long_ordinal %> for consideration by <%= @motion.committee %>.
+<% if motion.sponsored? %><%= motion.users.map(&:name).listify %> proposed <%= motion.to_s(:numbered) %><% else %><%= motion.to_s(:numbered) %> was proposed<% end %> on <%= event.occurrence.to_s :long_ordinal %> for consideration by <%= motion.committee %>.
 
-Since the motion is proposed, you are not permitted to make additional changes as sponsor.  Changes may only be made by the managers in accordance with the rules of the committee.  You may view the motion here:
+You may <%= motion.status_paths.events.map(&:to_s).listify(joiner: 'or') %> the motion here:
 
-<%= motion_url(@motion) %>
+<%= motion_url(motion) %>
 
-<%= @motion.effective_contact_name %>
-<%= @motion.effective_contact_email %>
+<%= motion.effective_contact_name %>
+<%= motion.effective_contact_email %>
 
