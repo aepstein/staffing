@@ -15,12 +15,12 @@ class AbstractCommitteeReport < Prawn::Document
     brand = committee.brand || Brand.first
     image brand.logo.letterhead.store_path, height: 72
     font 'Palatino' do
-      text_box '109 Day Hall', size: 11, at: [360, 720]
-      text_box 'Ithaca, NY 14853', size: 11, at: [360, 709]
-      draw_letterhead_contact 'p', '607.255.3175'
-      draw_letterhead_contact 'f', '607.255.2182'
-      draw_letterhead_contact 'e', 'assembly@cornell.edu'
-      draw_letterhead_contact 'w', 'http://assembly.cornell.edu'
+      text_box Staffing::Application.app_config['defaults']['contact']['address_1'], size: 11, at: [360, 720]
+      text_box Staffing::Application.app_config['defaults']['contact']['address_2'], size: 11, at: [360, 709]
+      draw_letterhead_contact 'p', Staffing::Application.app_config['defaults']['contact']['phone']
+      draw_letterhead_contact 'f', Staffing::Application.app_config['defaults']['contact']['fax']
+      draw_letterhead_contact 'e', Staffing::Application.app_config['defaults']['contact']['email']
+      draw_letterhead_contact 'w', Staffing::Application.app_config['defaults']['contact']['web']
     end
   end
 

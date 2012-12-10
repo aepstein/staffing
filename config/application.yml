@@ -4,6 +4,13 @@ development:
     authority:
       contact_name: 'Office of the Assemblies'
       contact_email: 'assembly@cornell.edu'
+    contact:
+      phone: '6072553175'
+      fax: '6072552182'
+      email: 'assembly@cornell.edu'
+      web: 'http://assembly.cornell.edu'
+      address_1: '109 Day Hall'
+      address_2: 'Ithaca, NY 14853'
     observer_email: 'staff@assembly.cornell.edu'
 
 test:
@@ -12,6 +19,13 @@ test:
     authority:
       contact_name: 'The Authority'
       contact_email: 'info@example.org'
+    contact:
+      phone: '6072553175'
+      fax: '6072552182'
+      email: 'assembly@cornell.edu'
+      web: 'http://assembly.cornell.edu'
+      address_1: '109 Day Hall'
+      address_2: 'Ithaca, NY 14853'
     observer_email: 'observer@example.org'
 
 production:
@@ -20,5 +34,12 @@ production:
     authority:
       contact_name: 'Office of the Assemblies'
       contact_email: 'assembly@cornell.edu'
+    contact:
+      phone: '6072553175'
+      fax: '6072552182'
+      email: 'assembly@cornell.edu'
+      web: 'http://assembly.cornell.edu'
+      address_1: '109 Day Hall'
+      address_2: 'Ithaca, NY 14853'
     observer_email: 'staff@assembly.cornell.edu'
 
