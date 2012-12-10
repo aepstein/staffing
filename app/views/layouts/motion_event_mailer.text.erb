@@ -2,6 +2,10 @@
 
 <%= yield %>
 
+<% if motion.referring_motion_id %>
+The motion is <%= referred_motion_description motion %>.
+
+<% end %>
 <%= render partial: "allowed_events" %>
 
 <%= motion.effective_contact_name %>

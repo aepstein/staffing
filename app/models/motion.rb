@@ -259,8 +259,8 @@ class Motion < ActiveRecord::Base
     # TODO
   end
 
-  def users_for( population, options = { include_referrers: false } )
-    include_referrers = options.delete :include_referrers
+  def users_for( population, options = {} )
+    include_referrers = options.delete :include_referrers || false
     users = case population
     when :sponsors
       self.users
@@ -273,15 +273,14 @@ class Motion < ActiveRecord::Base
     when :chairs
       User.where { |u| u.id.in( committee.memberships.current.with_roles('chair').select { user_id } ) }
     end
-    out = users
     if referring_motion && include_referrers
-      out += referring_motion.users_for( population, include_referrers )
+      users += referring_motion.users_for( population, include_referrers: include_referrers )
     end
-    out.uniq
+    users.uniq
   end
 
   def emails_for( population, options = { include_referrers: false } )
-    users_for( population, options ).map(&:to_email)
+    users_for( population, options ).map(&:email)
   end
 
   def tense

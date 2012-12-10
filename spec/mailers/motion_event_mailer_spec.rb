@@ -7,6 +7,24 @@ shared_examples "to sponsor" do
   end
 end
 
+shared_context "referred motion" do
+  let(:motion) { create(:referred_motion, name: 'Do something important', committee: committee) }
+  let(:referring_sponsor) { motion.referring_motion.users.first }
+end
+
+shared_examples "to referring sponsor" do
+  it "should address the sponsor as the recipient" do
+    mail.to.should include referring_sponsor.email
+    both_parts_should_match /Dear #{referring_sponsor.first_name},/
+  end
+end
+
+shared_examples "from referring sponsor" do
+  it "should address the referring sponsor as the recipient" do
+    mail.cc.should include referring_sponsor.email
+  end
+end
+
 shared_context "with chair and no vicechair" do
   before(:each) { chair }
 end
@@ -58,6 +76,12 @@ shared_examples "layout" do
     mail.from.should include committee.effective_contact_email
     both_parts_should_match /#{committee.effective_contact_name}/
     both_parts_should_match /#{committee.effective_contact_email}/
+  end
+end
+
+shared_examples "referral" do
+  it "should describe referring motion correctly and copying referring motion sponsors" do
+    both_parts_should_match /The motion is a referral of #{motion.referring_motion.to_s :full}./
   end
 end
 
@@ -115,9 +139,10 @@ describe MotionEventMailer do
       end
 
       context "referred" do
-        let(:motion) { create(:referred_motion, name: 'Do something important', committee: committee) }
-
+        include_context "referred motion"
         include_examples "propose"
+        include_examples "referral"
+        include_examples "from referring sponsor"
 
         it "should attribute propose action to nobody" do
           both_parts_should_match /#{motion.to_s :numbered} was proposed on/

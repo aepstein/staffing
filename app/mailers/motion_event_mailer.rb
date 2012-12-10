@@ -98,7 +98,7 @@ class MotionEventMailer < ActionMailer::Base
   protected
 
   def sponsors
-    @sponsors ||= motion.users
+    @sponsors ||= motion.users_for(:sponsors, include_referrers: true)
   end
 
   def vicechairs
