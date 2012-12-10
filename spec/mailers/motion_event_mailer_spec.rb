@@ -77,6 +77,14 @@ shared_examples "restart" do
   end
 end
 
+shared_examples "withdraw" do
+  it "should have common elements of withdraw notice" do
+    mail.subject.should eq "#{motion.to_s :full} withdrawn"
+    both_parts_should_match /You withdrew #{motion.to_s :numbered} from consideration by #{motion.committee} on #{motion_event.occurrence.to_s :long_ordinal}./
+    both_parts_should_match /You may [\w\,\s]+ the motion here:/
+  end
+end
+
 describe MotionEventMailer do
   include MailerSpecHelpers
   let(:committee) { create(:committee, name: "Busy Committee") }
@@ -132,5 +140,22 @@ describe MotionEventMailer do
       include_examples "restart"
     end
   end
+
+
+  context "withdraw" do
+    let(:status) { "withdrawn" }
+    let(:event) { "withdraw" }
+
+    include_examples "to sponsor"
+    include_examples "from vicechair"
+
+    context "standard" do
+      before(:each) { vicechair }
+
+      include_examples "layout"
+      include_examples "withdraw"
+    end
+  end
+
 end
 

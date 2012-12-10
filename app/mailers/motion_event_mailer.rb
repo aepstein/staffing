@@ -31,11 +31,13 @@ class MotionEventMailer < ActionMailer::Base
   end
 
   def withdraw_notice
+    self.recipients = sponsors
     mail(
-      to: motion.users.map(&:to_email),
-      cc: motion.observer_emails,
-      from: motion.effective_contact_name_and_email,
-      subject: "#{motion.to_s :full} withdrawn"
+      to: recipients.map(&:email),
+      cc: vicechairs.map(&:email),
+      from: motion.effective_contact_email,
+      subject: "#{motion.to_s :full} withdrawn",
+      template_name: 'withdraw_notice'
     )
   end
 
