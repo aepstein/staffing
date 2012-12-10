@@ -40,7 +40,7 @@ Then /^I may( not)? create membership requests for the committee$/ do |negate|
     step %{I should be authorized}
     Capybara.current_session.driver.submit :post, committee_membership_requests_url(@committee), {}
     step %{I should be authorized}
-  else
+else
     visit(new_committee_membership_request_url(@committee))
     step %{I fill in basic fields for the membership request}
     click_button 'Create'
@@ -144,7 +144,7 @@ When /^I create a membership request for the committee$/ do
     question: create(:question, name: 'Qualified',
       content: 'Are you qualified?', disposition: 'boolean')) ]
   visit new_committee_membership_request_url(@committee)
-  step %{I fill in basic fields for the membership_request}
+  step %{I fill in basic fields for the membership request}
   # TODO: Assure order of questions is observed
   fill_in 'Favorite color', with: '*bl*ue'
   fill_in 'Capital of Assyria', with: '*Da*mascus'

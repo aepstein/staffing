@@ -200,9 +200,9 @@ class MembershipRequest < ActiveRecord::Base
 
   def insert_at_new_position
     return if new_position.blank? || new_position == position
-    pos = new_position
+    pos = new_position.to_i
     self.new_position = nil
-    insert_at pos
+    insert_at pos if pos > 0
   end
 
 end
