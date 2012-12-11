@@ -33,5 +33,17 @@ describe Committee do
     emails.should include designee.membership.user.name :email
   end
 
+  context "contact attributes" do
+    let(:committee) { create(:committee, brand: create(:brand, phone: '2125551212')) }
+    let(:attributes) { committee.contact_attributes }
+
+    it "should return defaults except where overridden" do
+      Brand.contact_attributes[:phone].should_not eql '2125551212'
+      attributes[:phone].should eql '2125551212'
+      attributes[:fax].should eql '6072552182'
+      attributes[:address_2].should be_nil
+    end
+  end
+
 end
 

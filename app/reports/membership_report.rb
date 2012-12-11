@@ -38,6 +38,7 @@ class MembershipReport < AbstractCommitteeReport
 
   def to_pdf
     draw_letterhead
+    move_down 24
     text "#{committee} Members as of #{as_of.to_s :long_ordinal}",
       align: :center, size: 16
     if as_of != Time.zone.today

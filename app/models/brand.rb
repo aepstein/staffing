@@ -1,5 +1,5 @@
 class Brand < ActiveRecord::Base
-  CONTACT_ATTRIBUTES = [ :phone, :fax, :email, :web, :address_1, :address2,
+  CONTACT_ATTRIBUTES = [ :phone, :fax, :email, :web, :address_1, :address_2,
     :city, :state, :zip ]
 
   attr_accessible :name, :logo, :phone, :fax, :email, :web, :address_1,
@@ -14,6 +14,16 @@ class Brand < ActiveRecord::Base
   validates :name, presence: true, uniqueness: true
   validates :logo, presence: true, integrity: true
 
+  # Default system-wide contact attributes
+  def self.contact_attributes
+    defaults = Staffing::Application.app_config['defaults']['contact']
+    CONTACT_ATTRIBUTES.inject({}) do |memo, attribute|
+      memo[ attribute ] = defaults[ attribute.to_s ] unless defaults[ attribute.to_s ].blank?
+      memo
+    end
+  end
+
+  # Brand-specific contact attributes
   def contact_attributes
     CONTACT_ATTRIBUTES.inject({}) do |memo, attribute|
       memo[ attribute ] = send( attribute ) unless send( attribute ).blank?
