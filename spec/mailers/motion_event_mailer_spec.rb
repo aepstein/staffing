@@ -109,6 +109,14 @@ shared_examples "withdraw" do
   end
 end
 
+shared_examples "reject" do
+  it "should have common elements of reject notice" do
+    mail.subject.should eq "#{motion.to_s :full} rejected"
+    both_parts_should_match /#{motion.to_s :numbered} was rejected by #{motion.committee} on #{motion_event.occurrence.to_s :long_ordinal}./
+    both_parts_should_match /No further actions are allowed or required regarding the motion./
+  end
+end
+
 describe MotionEventMailer do
   include MailerSpecHelpers
   let(:committee) { create(:committee, name: "Busy Committee") }
@@ -166,7 +174,6 @@ describe MotionEventMailer do
     end
   end
 
-
   context "withdraw" do
     let(:status) { "withdrawn" }
     let(:event) { "withdraw" }
@@ -179,6 +186,21 @@ describe MotionEventMailer do
 
       include_examples "layout"
       include_examples "withdraw"
+    end
+  end
+
+  context "reject" do
+    let(:status) { "rejected" }
+    let(:event) { "reject" }
+
+    include_examples "to sponsor"
+    include_examples "from vicechair"
+
+    context "standard" do
+      before(:each) { vicechair }
+
+      include_examples "layout"
+      include_examples "reject"
     end
   end
 

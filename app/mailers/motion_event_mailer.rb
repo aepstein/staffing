@@ -41,6 +41,17 @@ class MotionEventMailer < ActionMailer::Base
     )
   end
 
+  def reject_notice
+    self.recipients = sponsors
+    mail(
+      to: recipients.map(&:email),
+      cc: vicechairs.map(&:email),
+      from: motion.effective_contact_email,
+      subject: "#{motion.to_s :full} rejected",
+      template_name: 'reject_notice'
+    )
+  end
+
   def divide_notice
     mail(
       to: motion.users.map(&:to_email),
@@ -56,15 +67,6 @@ class MotionEventMailer < ActionMailer::Base
       cc: motion.observer_emails,
       from: motion.effective_contact_name_and_email,
       subject: "#{motion.to_s :full} merged"
-    )
-  end
-
-  def reject_notice
-    mail(
-      to: motion.users.map(&:to_email),
-      cc: motion.observer_emails,
-      from: motion.effective_contact_name_and_email,
-      subject: "#{motion.to_s :full} rejected"
     )
   end
 
