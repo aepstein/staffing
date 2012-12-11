@@ -32,7 +32,7 @@ class UsersResumesToCarrierwave < ActiveRecord::Migration
         end
         # Clean up empty directories in old tree (up to prefix)
         while old_path.sub!( /\/[^\/]+$/, '' ) != prefix do
-          Dir.rmdir old_path if Dir["#{old_path}/*"].empty?
+          Dir.rmdir old_path if Dir.exists?(old_path) && Dir["#{old_path}/*"].empty?
         end
       end
       say Dir["#{prefix}/resumes/*/*/*/original/*.pdf"].length.to_s + " orphaned resume files left untouched"
