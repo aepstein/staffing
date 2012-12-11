@@ -10,7 +10,9 @@ development:
       email: 'assembly@cornell.edu'
       web: 'http://assembly.cornell.edu'
       address_1: '109 Day Hall'
-      address_2: 'Ithaca, NY 14853'
+      city: 'Ithaca'
+      state: 'NY'
+      zip: '14853'
     observer_email: 'staff@assembly.cornell.edu'
 
 test:
@@ -25,7 +27,9 @@ test:
       email: 'assembly@cornell.edu'
       web: 'http://assembly.cornell.edu'
       address_1: '109 Day Hall'
-      address_2: 'Ithaca, NY 14853'
+      city: 'Ithaca'
+      state: 'NY'
+      zip: '14853'
     observer_email: 'observer@example.org'
 
 production:
@@ -40,6 +44,8 @@ production:
       email: 'assembly@cornell.edu'
       web: 'http://assembly.cornell.edu'
       address_1: '109 Day Hall'
-      address_2: 'Ithaca, NY 14853'
+      city: 'Ithaca'
+      state: 'NY'
+      zip: '14853'
     observer_email: 'staff@assembly.cornell.edu'
 
