@@ -115,6 +115,11 @@ When /^I create a meeting as (staff|chair)$/ do |relationship|
     within_fieldset("Meeting Item") do
       fill_in "Name", with: "Presentation on Campus Master Plan"
       fill_in "Duration", with: 10
+      click_link "Add Attachment"
+      within_fieldset("Attachment") do
+        attach_file 'Attachment document', File.expand_path('spec/assets/empl_ids.csv')
+        fill_in 'Attachment description', with: 'Sample employee ids'
+      end
     end
   end
   click_button 'Create'
@@ -134,6 +139,7 @@ Then /^I should see the new meeting$/ do
     page.should have_text "Published minutes? No"
     page.should have_text "New Business"
     page.should have_text "Presentation on Campus Master Plan"
+    page.should have_text "Sample employee ids"
   end
 end
 
@@ -162,6 +168,7 @@ Then /^I should see the edited meeting$/ do
     page.should have_text "Published minutes? Yes"
     page.should have_no_text "New Business"
     page.should have_no_text "Presentation on Campus Master Plan"
+    page.should have_no_text "Sample employee ids"
   end
 end
 

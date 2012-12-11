@@ -1,10 +1,12 @@
-<%= content_tag :div,
-  class: "nested-fields #{f.object.persisted? ? 'sponsorship' : 'new-sponsorship'}" do %>
-<%= f.input :user_name, as: :autocomplete, label: "Sponsor",
-  url: ( f.object.motion.persisted? ? allowed_motion_users_path( f.object.motion, format: :json ) : users_path( format: :json ) ),
-  input_html: { readonly: ( f.object.persisted? ? true : false ) } %>
-<li>
-<%= link_to_remove_association 'remove sponsorship', f %>
-</li>
+<%= content_tag :div, class: "nested-fields" do %>
+  <%= f.inputs( name: "#{f.object.persisted? ? f.object.user.name : 'New Sponsorship'}" ) do %>
+    <% if f.object.new_record? %>
+      <%= f.input :user_name, as: :autocomplete, label: "Sponsor",
+        url: ( f.object.motion.persisted? ? allowed_motion_users_path( f.object.motion, format: :json ) : users_path( format: :json ) ) %>
+    <% end %>
+    <%= content_tag :li do %>
+      <%= link_to_remove_association 'Remove Sponsorship', f %>
+    <% end %>
+  <% end %>
 <% end %>
 
