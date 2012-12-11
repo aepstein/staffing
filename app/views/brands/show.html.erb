@@ -4,6 +4,25 @@
 </p>
 
 <p><b>Logo:</b> <%=image_tag thumb_brand_path(@brand, format: :png) %></p>
+
+<p><b>Phone:</b> <%= @brand.phone? ? @brand.phone.to_phone(:pretty) : nil %></p>
+
+<p><b>Fax:</b> <%= @brand.fax? ? @brand.fax.to_phone(:pretty) : nil %></p>
+
+<p><b>Web:</b> <%= @brand.web? ? link_to(@brand.web, @brand.web) : nil %></p>
+
+<p><b>Email:</b> <%= @brand.email %></p>
+
+<p><b>Address Line 1:</b> <%= @brand.address_1 %></p>
+
+<p><b>Address Line 2:</b> <%= @brand.address_2 %></p>
+
+<p><b>City:</b> <%= @brand.city %></p>
+
+<p><b>State:</b> <%= @brand.state %></p>
+
+<p><b>Zip:</b> <%= @brand.zip %></p>
+
 </div>
 
 <p>

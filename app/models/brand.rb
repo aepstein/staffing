@@ -1,5 +1,9 @@
 class Brand < ActiveRecord::Base
-  attr_accessible :name, :logo
+  CONTACT_ATTRIBUTES = [ :phone, :fax, :email, :web, :address_1, :address2,
+    :city, :state, :zip ]
+
+  attr_accessible :name, :logo, :phone, :fax, :email, :web, :address_1,
+    :address_2, :city, :state, :zip
 
   default_scope order( 'brands.name ASC' )
 
@@ -9,6 +13,13 @@ class Brand < ActiveRecord::Base
 
   validates :name, presence: true, uniqueness: true
   validates :logo, presence: true, integrity: true
+
+  def contact_attributes
+    CONTACT_ATTRIBUTES.inject({}) do |memo, attribute|
+      memo[ attribute ] = send( attribute ) unless send( attribute ).blank?
+      memo
+    end
+  end
 
   def name(style=nil)
     case style
