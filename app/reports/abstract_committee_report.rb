@@ -3,7 +3,8 @@ class AbstractCommitteeReport < Prawn::Document
 
   attr_accessor :committee
   attr_accessor :letterhead_contact_offset
-  LETTERHEAD_CONTACT_OFFSET = 698
+  LETTERHEAD_CONTACT_OFFSET = 720
+  LETTERHEAD_TEXT_START = 324
 
   def initialize(committee, options = {})
     self.committee = committee
@@ -11,25 +12,42 @@ class AbstractCommitteeReport < Prawn::Document
     super( options.merge( { page_size: 'LETTER' } ) )
   end
 
+  def contact_attributes
+    @contact_attributes ||= committee.contact_attributes
+  end
+
+  def letterhead_height
+    self.letterhead_contact_offset ||= LETTERHEAD_CONTACT_OFFSET
+    LETTERHEAD_CONTACT_OFFSET - letterhead_contact_offset
+  end
+
   def draw_letterhead
     brand = committee.brand || Brand.first
-    image brand.logo.letterhead.store_path, height: 72
+    image brand.logo.letterhead.store_path, height: 72, at: [ 0,720 ]
     font 'Palatino' do
-      text_box Staffing::Application.app_config['defaults']['contact']['address_1'], size: 11, at: [360, 720]
-      text_box Staffing::Application.app_config['defaults']['contact']['address_2'], size: 11, at: [360, 709]
-      draw_letterhead_contact 'p', Staffing::Application.app_config['defaults']['contact']['phone']
-      draw_letterhead_contact 'f', Staffing::Application.app_config['defaults']['contact']['fax']
-      draw_letterhead_contact 'e', Staffing::Application.app_config['defaults']['contact']['email']
-      draw_letterhead_contact 'w', Staffing::Application.app_config['defaults']['contact']['web']
+      draw_letterhead_address contact_attributes[:address_1]
+      draw_letterhead_address contact_attributes[:address_2] if contact_attributes[:address_2]
+      draw_letterhead_address "#{contact_attributes[:city]}, #{contact_attributes[:state]} #{contact_attributes[:zip]}"
+      draw_letterhead_contact 'p', contact_attributes[:phone].to_phone(:dotty)
+      draw_letterhead_contact 'f', contact_attributes[:fax].to_phone(:dotty)
+      draw_letterhead_contact 'e', contact_attributes[:email]
+      draw_letterhead_contact 'w', contact_attributes[:web]
     end
+    move_down [ 72, letterhead_height ].max
+  end
+
+  def draw_letterhead_address( text )
+    self.letterhead_contact_offset ||= LETTERHEAD_CONTACT_OFFSET
+    text_box text, size: 11, at: [ LETTERHEAD_TEXT_START, letterhead_contact_offset ]
+    self.letterhead_contact_offset -= 13
   end
 
   def draw_letterhead_contact( letter, content )
     self.letterhead_contact_offset ||= LETTERHEAD_CONTACT_OFFSET
-    text_box "#{letter}.", size: 9, at: [360, letterhead_contact_offset],
+    text_box "#{letter}.", size: 9, at: [LETTERHEAD_TEXT_START, letterhead_contact_offset],
       width: 18
-    text_box content, size: 9, at: [378, letterhead_contact_offset]
-    self.letterhead_contact_offset -= 9
+    text_box content, size: 9, at: [LETTERHEAD_TEXT_START + 18, letterhead_contact_offset]
+    self.letterhead_contact_offset -= 10
   end
 end
 

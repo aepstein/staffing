@@ -107,6 +107,11 @@ class MeetingsController < ApplicationController
   # POST /committees/:committee_id/meetings
   # POST /committees/:committee_id/meetings.xml
   def create
+    @meeting.meeting_sections.each do |section|
+      section.meeting_items.each do |item|
+        item.attachments.each { |attachment| attachment.attachable = item }
+      end
+    end
     respond_to do |format|
       if @meeting.save
         format.html { redirect_to( @meeting, notice: 'Meeting was successfully created.' ) }

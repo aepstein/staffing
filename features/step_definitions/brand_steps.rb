@@ -55,6 +55,15 @@ When /^I create an brand$/ do
   visit(new_brand_url)
   fill_in 'Name', with: 'SA brand'
   attach_file 'Logo', File.expand_path('spec/assets/logo.eps')
+  fill_in 'Phone', with: "6075551000"
+  fill_in 'Fax', with: "2125551000"
+  fill_in 'Web', with: "http://example.org"
+  fill_in 'Email', with: 'info@example.org'
+  fill_in 'Address Line 1', with: '500 Day Hall'
+  fill_in 'Address Line 2', with: 'Cornell University'
+  fill_in 'City', with: 'Ithaca'
+  fill_in 'State', with: 'NY'
+  fill_in 'Zip', with: '14850'
   click_button 'Create'
   @brand = Brand.find( URI.parse(current_url).path.match(/[\d]+$/)[0].to_i )
 end
@@ -63,12 +72,30 @@ Then /^I should see the new brand$/ do
   within( "#flash_notice" ) { page.should have_text( "Brand was successfully created." ) }
   within( "#brand-#{@brand.id}" ) do
     page.should have_text 'Name: SA brand'
+    page.should have_text 'Phone: (607) 555-1000'
+    page.should have_text 'Fax: (212) 555-1000'
+    page.should have_text 'Web: http://example.org'
+    page.should have_text 'Email: info@example.org'
+    page.should have_text 'Address Line 1: 500 Day Hall'
+    page.should have_text 'Address Line 2: Cornell University'
+    page.should have_text 'City: Ithaca'
+    page.should have_text 'State: NY'
+    page.should have_text 'Zip: 14850'
   end
 end
 
 When /^I update the brand$/ do
   visit(edit_brand_url(@brand))
   fill_in 'Name', with: 'SA alternative'
+  fill_in 'Phone', with: "5551001"
+  fill_in 'Fax', with: "2125551001"
+  fill_in 'Web', with: "http://example.com"
+  fill_in 'Email', with: 'info@example.com'
+  fill_in 'Address Line 1', with: '500 Night Hall'
+  fill_in 'Address Line 2', with: 'Cornell College'
+  fill_in 'City', with: 'Des Moines'
+  fill_in 'State', with: 'IA'
+  fill_in 'Zip', with: '45505'
   click_button 'Update'
 end
 
@@ -76,6 +103,15 @@ Then /^I should see the edited brand$/ do
   within('#flash_notice') { page.should have_text( "Brand was successfully updated." ) }
   within("#brand-#{@brand.id}") do
     page.should have_text 'Name: SA alternative'
+    page.should have_text 'Phone: (607) 555-1001'
+    page.should have_text 'Fax: (212) 555-1001'
+    page.should have_text 'Web: http://example.com'
+    page.should have_text 'Email: info@example.com'
+    page.should have_text 'Address Line 1: 500 Night Hall'
+    page.should have_text 'Address Line 2: Cornell College'
+    page.should have_text 'City: Des Moines'
+    page.should have_text 'State: IA'
+    page.should have_text 'Zip: 45505'
   end
 end
 

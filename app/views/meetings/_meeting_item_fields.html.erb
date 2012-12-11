@@ -5,6 +5,7 @@
     <%= f.input :duration, hint: "How many minutes are allocated to this item?" %>
     <%= f.input :description, hint: "Any additional comments to add specific to this listing." %>
     <%= f.input :position, as: :hidden %>
+    <%= f.input :attachments, as: :cocoon %>
     <%= link_to_remove_association 'Remove Meeting Item', f %>
   <% end %>
 <% end %>

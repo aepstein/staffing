@@ -7,29 +7,8 @@
     <%= form.input :period, collection: form.object.committee.schedule.periods,
       hint: 'For what period is the motion sponsored' %>
     <% end %>
-
-    <%= form.inputs for: :sponsorships, name: 'sponsor' do |subform| %>
-      <%= render partial: 'sponsorships/sponsorship_fields', locals: { f: subform } %>
-    <% end %>
-
-    <div class='links'>
-      <p>
-        <%= link_to_add_association 'add sponsorship', form, :sponsorships,
-          partial: 'sponsorships/sponsorship_fields' %>
-      </p>
-    </div>
-
-    <%= form.inputs for: :attachments, name: 'attachment' do |subform| %>
-      <%= render partial: 'attachments/attachment_fields', locals: { f: subform } %>
-    <% end %>
-
-    <div class='links'>
-      <p>
-        <%= link_to_add_association 'add attachment', form, :attachments,
-          partial: 'attachments/attachment_fields' %>
-      </p>
-    </div>
-
+    <%= form.input :sponsorships, as: :cocoon %>
+    <%= form.input :attachments, as: :cocoon %>
   <% end %>
   <%= form.actions %>
 

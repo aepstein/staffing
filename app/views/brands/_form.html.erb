@@ -1,7 +1,25 @@
-  <%= render "shared/error_messages", :target => form.object %>
+  <%= render "shared/error_messages", target: form.object %>
   <%= form.inputs do %>
-  <%= form.input :name %>
-  <%= form.input :logo, :as => :file %>
+    <%= form.input :name %>
+    <%= form.input :logo, as: :file %>
+    <%= form.input :phone,
+      hint: "#{will_override_default_contact :phone}" %>
+    <%= form.input :fax,
+      hint: "#{will_override_default_contact :fax}" %>
+    <%= form.input :email,
+      hint: "#{will_override_default_contact :email}" %>
+    <%= form.input :web,
+      hint: "#{will_override_default_contact :web}" %>
+    <%= form.input :address_1, label: "Address Line 1",
+      hint: "#{will_override_default_contact :address_1}" %>
+    <%= form.input :address_2, label: "Address Line 2",
+      hint: "#{will_override_default_contact :address_2}" %>
+    <%= form.input :city,
+      hint: "#{will_override_default_contact :city}" %>
+    <%= form.input :state,
+      hint: "#{will_override_default_contact :state}" %>
+    <%= form.input :zip,
+      hint: "#{will_override_default_contact :zip}" %>
   <% end %>
   <%= form.actions %>
 

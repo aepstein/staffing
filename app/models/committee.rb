@@ -54,6 +54,11 @@ class Committee < ActiveRecord::Base
   validates :name, presence: true, uniqueness: true
   validates :schedule, presence: true
 
+  def contact_attributes
+    return Brand.contact_attributes unless brand
+    Brand.contact_attributes.merge( brand.contact_attributes )
+  end
+
   def effective_contact_name
     return contact_name if contact_name?
     Staffing::Application.app_config['defaults']['authority']['contact_name']

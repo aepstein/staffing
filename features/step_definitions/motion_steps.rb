@@ -244,9 +244,11 @@ When /^I create a motion as (voter|staff)$/ do |relationship|
   fill_in 'Name', with: 'Charter amendment'
   fill_in 'Description', with: 'This is a *big* change.'
   fill_in 'Content', with: '*Whereas* and *Resolved*'
-  click_link 'add attachment'
-  attach_file 'Attachment document', File.expand_path('spec/assets/empl_ids.csv')
-  fill_in 'Attachment description', with: 'Sample employee ids'
+  click_link 'Add Attachment'
+  within_fieldset "Attachment" do
+    attach_file 'Attachment document', File.expand_path('spec/assets/empl_ids.csv')
+    fill_in 'Attachment description', with: 'Sample employee ids'
+  end
   click_button 'Create'
   @motion = Motion.find( URI.parse(current_url).path.match(/[\d]+$/)[0].to_i )
   @motion.update_column :published, true
@@ -270,12 +272,12 @@ When /^I update the motion$/ do
   fill_in "Name", with: "Charter change"
   fill_in "Description", with: "This is a big change."
   fill_in "Content", with: "Whereas and Finally Resolved"
-  click_link "remove sponsorship"
-  click_link "add sponsorship"
-  within(".new-sponsorship") do
+  click_link "Remove Sponsorship"
+  click_link "Add Sponsorship"
+  within_fieldset("New Sponsorship") do
     fill_in "Sponsor", with: "#{@alternate_sponsor.net_id}"
   end
-  click_link "remove attachment"
+  click_link "Remove Attachment"
   click_button "Update"
 end
 
