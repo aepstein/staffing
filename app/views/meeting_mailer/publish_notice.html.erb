@@ -1,0 +1,10 @@
+<p style="text-align: center;">
+AGENDA
+<%= meeting.committee %>
+<%= meeting.starts_at.to_date.to_s :long_ordinal %>
+<%= meeting.to_s :time %>
+<%= meeting.location %>
+</p>
+
+<%= render partial: 'meeting_sections/meeting_sections', object: meeting.meeting_sections %>
+

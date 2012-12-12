@@ -65,6 +65,8 @@ class Meeting < ActiveRecord::Base
       if starts_at && committee
         return "#{starts_at.to_s :number}-#{committee.name :file}"
       end
+    when :time
+      return "#{meeting.starts_at.to_formatted_s(:us_time)} - #{meeting.ends_at.to_formatted_s(:us_time)}"
     when :editable_minutes_file
       return "#{@meeting.to_s :file}-editable_minutes.#{@meeting.editable_minutes.extension}"
     when :published_minutes_file

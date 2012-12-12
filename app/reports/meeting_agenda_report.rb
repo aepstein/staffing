@@ -33,8 +33,7 @@ class MeetingAgendaReport < AbstractCommitteeReport
     text committee.name, align: :center, size: 12
     text meeting.starts_at.to_date.to_formatted_s(:long_ordinal),
       align: :center, size: 12
-    text meeting.starts_at.to_formatted_s(:us_time) + " - " +
-      meeting.ends_at.to_formatted_s(:us_time), align: :center, size: 12
+    text meeting.to_s(:time), align: :center, size: 12
     text meeting.location, align: :center, size: 12
     move_down 24
     font 'Helvetica', size: 12 do
