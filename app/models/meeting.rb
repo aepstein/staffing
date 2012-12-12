@@ -52,6 +52,27 @@ class Meeting < ActiveRecord::Base
   scope :current, lambda { where { (starts_at >= Time.zone.today.to_time) &
     ( ends_at <= ( Time.zone.today.to_time + 1.day ) ) } }
 
+  # Extract enclosures
+  def attachments(reload = false)
+    return @attachments unless reload || @attachments.nil?
+    @attachments = {}
+    meeting_sections.each do |section|
+      section.meeting_items.each do |item|
+        @attachments[ item ] = item.enclosures.to_a
+      end
+    end
+    @attachments
+  end
+
+  def attachment_index( attachment )
+    attachments.values.flatten.index( attachment ) + 1
+  end
+
+  def reload
+    @attachments = nil
+    super
+  end
+
   def tense
     return nil unless starts_at && ends_at
     return :past if ends_at < Time.zone.today
@@ -66,7 +87,7 @@ class Meeting < ActiveRecord::Base
         return "#{starts_at.to_s :number}-#{committee.name :file}"
       end
     when :time
-      return "#{meeting.starts_at.to_formatted_s(:us_time)} - #{meeting.ends_at.to_formatted_s(:us_time)}"
+      return "#{starts_at.to_formatted_s(:us_time)} - #{ends_at.to_formatted_s(:us_time)}"
     when :editable_minutes_file
       return "#{@meeting.to_s :file}-editable_minutes.#{@meeting.editable_minutes.extension}"
     when :published_minutes_file

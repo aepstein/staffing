@@ -1,2 +1,2 @@
-  <%= (meeting_item_counter + 1).to_roman.downcase %> <% if meeting_item.motion %><%= meeting_item.motion %><% else %><%= meeting_item.name %><% end %> (<%= pluralize meeting_item.duration, 'minute' %>)
+  <%= (meeting_item_counter + 1).to_roman.downcase %>. <% if meeting_item.motion %><%= meeting_item.motion %><% else %><%= meeting_item.name %><% end %> (<%= pluralize meeting_item.duration, 'minute' %>)<%= footnotes_for_meeting_item_attachments( meeting, meeting_item, format: :text ) %>
 

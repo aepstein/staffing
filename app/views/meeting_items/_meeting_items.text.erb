@@ -1,5 +1,6 @@
 <% if meeting_items.any? %>
-<%= render partial: 'meeting_items/meeting_item', collection: meeting_items %>
+<%= render partial: 'meeting_items/meeting_item', collection: meeting_items,
+  locals: { meeting: meeting } %>
 <% else %>
   No items.
 <% end %>

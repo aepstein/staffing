@@ -31,7 +31,10 @@
   <b>Published minutes?</b> <%= @meeting.published_minutes.blank? ? 'No' : link_to( 'Yes', "#{root_path}#{@meeting.published_minutes.url}" )  %>
 </p>
 
-<%= render partial: 'meeting_sections/meeting_sections', object: @meeting.meeting_sections %>
+<%= render partial: 'meeting_sections/meeting_sections',
+  object: @meeting.meeting_sections, locals: { meeting: @meeting } %>
+
+<%= footnotes_for_meeting_attachments @meeting %>
 
 </div> <!-- #meeting-<%= @meeting.id %> -->
 

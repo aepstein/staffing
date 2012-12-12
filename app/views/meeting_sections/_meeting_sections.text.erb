@@ -1,5 +1,6 @@
 <% if meeting_sections.any? %>
-<%= render partial: 'meeting_sections/meeting_section', collection: meeting_sections %>
+<%= render partial: 'meeting_sections/meeting_section',
+  collection: meeting_sections, locals: { meeting: meeting } %>
 <% else %>
 No sections.
 <% end %>

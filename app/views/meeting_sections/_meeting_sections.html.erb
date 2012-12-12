@@ -1,6 +1,7 @@
 <% if meeting_sections.any? %>
   <%= content_tag :ol, class: 'meeting-sections', id: 'meeting-sections' do %>
-    <%= render partial: 'meeting_sections/meeting_section', collection: meeting_sections %>
+    <%= render partial: 'meeting_sections/meeting_section',
+      collection: meeting_sections, locals: { meeting: meeting } %>
   <% end %>
 <% else %>
   <%= content_tag :p, 'No sections.' %>

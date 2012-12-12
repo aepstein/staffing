@@ -28,6 +28,11 @@ class MeetingItem < ActiveRecord::Base
     meeting.motions.allowed
   end
 
+  def enclosures
+    return motion.attachments if motion
+    attachments
+  end
+
   def motion_name=(n)
     return nil unless meeting
     self.motion = meeting.motions.allowed.find_by_name( n )
@@ -41,6 +46,21 @@ class MeetingItem < ActiveRecord::Base
 
   def display_name
     motion ? motion.to_s(:numbered) : name
+  end
+
+  def to_s(format = nil)
+    case format
+    when :file
+      to_s.strip.downcase.gsub(/[^a-z0-9]/,'-').squeeze('-')
+    else
+      if name?
+        name
+      elsif motion_name
+        motion_name
+      else
+        super()
+      end
+    end
   end
 
   protected

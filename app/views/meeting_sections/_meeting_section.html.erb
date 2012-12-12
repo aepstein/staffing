@@ -1,5 +1,6 @@
 <%= content_tag :li do %>
   <%= meeting_section.name %>
-  <%= render partial: 'meeting_items/meeting_items', object: meeting_section.meeting_items %>
+  <%= render partial: 'meeting_items/meeting_items',
+    object: meeting_section.meeting_items, locals: { meeting: meeting } %>
 <% end %>
 

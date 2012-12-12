@@ -5,10 +5,6 @@
   <%= meeting_item.name %>
   <% end -%>
   (<%= pluralize meeting_item.duration, 'minute' %>)
-  <% if meeting_item.motion %>
-  <%= render partial: 'attachments/attachments', object: meeting_item.motion.attachments %>
-  <% else %>
-  <%= render partial: 'attachments/attachments', object: meeting_item.attachments %>
-  <% end %>
+  <%= footnotes_for_meeting_item_attachments( meeting, meeting_item ) %>
 <% end %>
 
