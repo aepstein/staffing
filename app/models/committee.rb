@@ -12,7 +12,7 @@ class Committee < ActiveRecord::Base
   scope :inactive, where { active.not_eq( true ) }
 
   attr_accessible :name, :description, :join_message, :leave_message, :brand_id,
-    :requestable, :public_url, :meeting_template_id, :schedule_id,
+    :requestable, :public_url, :publish_email, :meeting_template_id, :schedule_id,
     :reject_message, :active, :contact_name, :contact_email,
     :enrollments_attributes
 
