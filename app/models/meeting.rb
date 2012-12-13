@@ -108,7 +108,7 @@ class Meeting < ActiveRecord::Base
         return "#{starts_at.to_s :number}-#{committee.name :file}"
       end
     when :time
-      return "#{starts_at.to_formatted_s(:us_time)} - #{ends_at.to_formatted_s(:us_time)}"
+      return "#{starts_at.to_formatted_s(:us_time)} - #{ends_at.to_formatted_s(:us_time)}".strip
     when :editable_minutes_file
       return "#{@meeting.to_s :file}-editable_minutes.#{@meeting.editable_minutes.extension}"
     when :published_minutes_file

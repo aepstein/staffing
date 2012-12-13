@@ -26,6 +26,7 @@ module MeetingsHelper
 
   def footnotes_for_meeting_attachments( meeting, options = {} )
     format = options[:format] || :html
+    absolute = options[:absolute] || false
     attachments = meeting.attachments.values.flatten.
       map { |f|  }
     items = meeting.attachments.values.flatten.map { |attachment|
@@ -47,7 +48,11 @@ module MeetingsHelper
     when :html
       anchor = content_tag :a, '', name: "footnote-#{index}"
       link = if linked_attachments.blank? || linked_attachments.include?( attachment )
-        link_to attachment_url(attachment), attachment_url(attachment)
+        if absolute
+          link_to attachment_url(attachment), attachment_url(attachment)
+        else
+          link_to attachment_path(attachment), attachment_path(attachment)
+        end
       else
         attached_file = meeting.attachment_filename(attachment)
         link_to attached_file, attachments[attached_file].url

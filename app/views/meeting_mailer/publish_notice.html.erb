@@ -1,15 +1,15 @@
 <p style="text-align: center;">
-AGENDA
-<%= meeting.committee %>
-<%= meeting.starts_at.to_date.to_s :long_ordinal %>
-<%= meeting.to_s :time %>
+AGENDA<br/>
+<%= meeting.committee %><br/>
+<%= meeting.starts_at.to_date.to_s :long_ordinal %><br/>
+<%= meeting.to_s :time %><br/>
 <%= meeting.location %>
 </p>
 
-<%= render partial: 'meeting_sections/meeting_sections', object: meeting.meeting_sections %>
+<%= render partial: 'meeting_sections/meeting_sections', object: meeting.meeting_sections, locals: { absolute: true } %>
 
 <% if meeting.attachments.values.flatten.any? %>
-<%= footnotes_for_meeting_attachments( meeting ) %>
+<%= footnotes_for_meeting_attachments( meeting, absolute: true ) %>
 <% else %>
 <p>No attachments.</p>
 <% end %>

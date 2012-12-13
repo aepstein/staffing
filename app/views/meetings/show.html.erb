@@ -34,7 +34,11 @@
 <%= render partial: 'meeting_sections/meeting_sections',
   object: @meeting.meeting_sections, locals: { meeting: @meeting } %>
 
+<% if @meeting.attachments.values.flatten.any? %>
 <%= footnotes_for_meeting_attachments @meeting %>
+<% else %>
+<p>No attachments.</p>
+<% end %>
 
 </div> <!-- #meeting-<%= @meeting.id %> -->
 

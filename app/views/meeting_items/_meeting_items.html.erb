@@ -1,7 +1,7 @@
 <% if meeting_items.any? -%>
-  <%= content_tag :ol, class: 'meeting-items' do %>
+  <%= content_tag :ol, style: "list-style-type: lower-roman;", class: 'meeting-items' do %>
   <%= render partial: 'meeting_items/meeting_item', collection: meeting_items,
-    locals: { meeting: meeting } %>
+    locals: { meeting: meeting, absolute: absolute } %>
   <% end %>
 <% else -%>
   <%= content_tag :p, "No items." %>
