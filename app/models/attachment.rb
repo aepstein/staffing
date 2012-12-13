@@ -20,7 +20,7 @@ class Attachment < ActiveRecord::Base
     when :file
       ( attachable.to_s(:file) + '-' +
       description.strip.downcase.gsub(/[^a-z0-9]/,'-').squeeze('-') )[0..240] +
-      File.extname( document.filename )
+      File.extname( document.path )
     else
       "#{attachable} #{description}"
     end

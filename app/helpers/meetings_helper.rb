@@ -49,7 +49,8 @@ module MeetingsHelper
       link = if linked_attachments.blank? || linked_attachments.include?( attachment )
         link_to attachment_url(attachment), attachment_url(attachment)
       else
-        link_to "#{index}_#{attachment.to_s}", attachments["#{index}_#{attachment.to_s(:file)}"].url
+        attached_file = meeting.attachment_filename(attachment)
+        link_to attached_file, attachments[attached_file].url
       end
       content_tag :li, "#{anchor}#{attachment.description} [#{link}]".html_safe, id: "footnote-#{index}"
     else

@@ -68,6 +68,10 @@ class Meeting < ActiveRecord::Base
     attachments.values.flatten.index( attachment ) + 1
   end
 
+  def attachment_filename( attachment )
+    "#{attachment_index(attachment)}_#{attachment.to_s :file}"
+  end
+
   def reload
     @attachments = nil
     super
