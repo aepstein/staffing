@@ -4,7 +4,7 @@ class MeetingsController < ApplicationController
   before_filter :populate_meeting_sections, only: [ :new, :edit ]
   before_filter :initialize_index, only: [ :current, :past, :future, :index ]
   before_filter :setup_breadcrumbs
-  filter_access_to :new, :create, :edit, :update, :destroy, :show,
+  filter_access_to :new, :create, :edit, :update, :destroy, :show, :publish,
     attribute_check: true
   filter_access_to :index, :current, :past, :future do
     true
@@ -20,6 +20,27 @@ class MeetingsController < ApplicationController
         report = MeetingAgendaReport.new( @meeting )
         send_data report.to_pdf, filename: "#{@meeting.to_s :file}-agenda.pdf",
           type: 'application/pdf', disposition: 'inline'
+      end
+    end
+  end
+
+  # GET /meetings/:id/publish
+  # PUT /meetings/:id/publish
+  def publish
+    respond_to do |format|
+      if request.method_symbol == :get
+        @meeting.publish_defaults
+        format.html { render action: :publish }
+      else
+        @meeting.assign_attributes params[:meeting], as: :publisher
+        @meeting.publish_from = current_user.email
+        if @meeting.publish
+          format.html { redirect_to(@meeting, notice: 'Meeting was successfully published.') }
+          format.xml  { head :ok }
+        else
+          format.html { render action: :publish, alert: 'You must specify a recipient.' }
+          format.xml  { render xml: @meeting.errors, status: :unprocessable_entity }
+        end
       end
     end
   end

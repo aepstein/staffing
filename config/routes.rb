@@ -50,7 +50,8 @@ Staffing::Application.routes.draw do
   resources :meeting_templates
   resources :meetings, except: [ :new, :create ] do
     member do
-      get :editable_minutes, :published_minutes, :audio, :agenda
+      get :editable_minutes, :published_minutes, :audio, :agenda, :publish
+      put :publish
     end
     collection do
       get :past, :current, :future

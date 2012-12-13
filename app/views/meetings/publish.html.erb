@@ -1,0 +1,14 @@
+<h2>Publish <%= @meeting %></h2>
+
+<p>Use this page to generate an email notice on your behalf to a recipient with the agenda and attachments for the meeting.</p>
+
+<%= semantic_form_for @meeting, url: publish_meeting_path(@meeting), method: :put do |form| %>
+  <%= form.inputs do %>
+  <%= form.input :publish_to, label: 'To', hint: 'To what address will this be published?' %>
+  <% end %>
+
+  <%= form.actions do %>
+  <%= form.action :submit, label: 'Publish' %>
+  <% end %>
+<% end %>
+

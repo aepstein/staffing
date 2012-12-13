@@ -68,3 +68,8 @@ Scenario Outline: Reports for meeting
     |relationship |type      |
     |staff        |agenda pdf|
 
+Scenario: Publish a meeting
+  Given an authorization scenario of a current unpublished meeting of a committee to which I have a current chair relationship
+  When I publish the meeting
+  Then I should see the published meeting
+

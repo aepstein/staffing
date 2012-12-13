@@ -2,7 +2,10 @@ class Meeting < ActiveRecord::Base
   attr_accessible :period_id, :committee_id, :audio, :editable_minutes,
     :published_minutes, :starts_at, :ends_at, :location, :published,
     :meeting_sections_attributes
+  attr_accessible :publish_to, as: :publisher
   attr_readonly :period_id, :committee_id
+
+  attr_accessor :publish_to, :publish_from
 
   belongs_to :committee, inverse_of: :meetings
   belongs_to :period, inverse_of: :meetings
@@ -70,6 +73,20 @@ class Meeting < ActiveRecord::Base
 
   def attachment_filename( attachment )
     "#{attachment_index(attachment)}_#{attachment.to_s :file}"
+  end
+
+  def publish_defaults
+    self.publish_to = committee.publish_email
+  end
+
+  def publish
+    if publish_to
+      MeetingMailer.publish_notice( self, to: publish_to, from: publish_from ).deliver
+      true
+    else
+      errors.add :publish_to, 'may not be blank'
+      false
+    end
   end
 
   def reload

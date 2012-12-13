@@ -220,3 +220,13 @@ When /^I download the ((?:agenda) (?:pdf)) report for the meeting$/ do |type|
   end
 end
 
+When /^I publish the meeting$/ do
+  visit(publish_meeting_url(@meeting))
+  fill_in "To", with: "info@example.org"
+  click_button "Publish"
+end
+
+Then /^I should see the published meeting$/ do
+  within("#flash_notice") { page.should have_text "Meeting was successfully published." }
+end
+

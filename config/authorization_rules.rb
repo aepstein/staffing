@@ -19,6 +19,7 @@ authorization do
       if_attribute declined_at: is { nil }, starts_at: lte { Time.zone.today },
         renew_until: is_not { nil }, position: { renewable: true }
     end
+    has_permission_on :meetings, to: :publish
     has_permission_on :motions, to: [ :admin, :adopt, :amend, :divide,
       :implement, :merge, :propose, :refer, :reject, :restart, :withdraw ]
     has_permission_on :users, to: [ :resume, :staff, :tent ]
@@ -58,7 +59,7 @@ authorization do
       if_attribute committee: { enrollments: { position_id: is_in { user.memberships.
         where { ends_at.gte( Time.zone.today ) }.value_of(:position_id) } } }
     end
-    has_permission_on :meetings, to: :manage, join_by: :and do
+    has_permission_on :meetings, to: [:manage, :publish], join_by: :and do
       if_permitted_to :vicechair, :committee
       if_attribute period: { starts_at: lte { Time.zone.today },
         ends_at: gte { Time.zone.today } }
