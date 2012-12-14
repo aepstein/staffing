@@ -52,6 +52,17 @@ class MotionEventMailer < ActionMailer::Base
     )
   end
 
+  def amend_notice
+    self.recipients = vicechairs
+    mail(
+      to: recipients.map(&:email),
+      cc: sponsors.map(&:email),
+      from: motion.effective_contact_email,
+      subject: "#{motion.to_s :full} amended",
+      template_name: 'amend_notice'
+    )
+  end
+
   def divide_notice
     mail(
       to: motion.users.map(&:to_email),
