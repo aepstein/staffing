@@ -75,6 +75,11 @@ class MotionsController < ApplicationController
     respond_to do |format|
       format.html # show.html.erb
       format.xml  { render :xml => @motion }
+      format.pdf do
+        report = MotionReport.new( @motion )
+        send_data report.to_pdf, filename: "#{@motion.to_s :file}.pdf",
+          type: 'application/pdf', disposition: 'inline'
+      end
     end
   end
 
