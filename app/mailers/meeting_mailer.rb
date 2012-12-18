@@ -9,16 +9,20 @@ class MeetingMailer < ActionMailer::Base
     self.meeting = meeting
     to = options.delete :to
     from = options.delete :from
+    add_attachments
     mail( to: to, from: from,
       subject: "#{meeting.committee} Meeting on #{meeting.starts_at.to_date.to_s :long_ordinal}" )
-    add_attachments
   end
 
   def add_attachments
     enclosures = meeting.attachments.values.flatten.
       reject { |attachment| linked_attachments.include?(attachment) }
     enclosures.each do |attachment|
-      attachments[meeting.attachment_filename(attachment)] = attachment.document.read
+      if attachment.instance_of?( Motion )
+        attachments[meeting.attachment_filename(attachment)] = MotionReport.new( attachment ).to_pdf
+      else
+        attachments[meeting.attachment_filename(attachment)] = attachment.document.read
+      end
     end
   end
 
@@ -27,6 +31,7 @@ class MeetingMailer < ActionMailer::Base
   def linked_attachments
     @linked_attachments ||= []
     meeting.attachments.values.flatten.
+      reject { |attachment| attachment.instance_of?( Motion ) }.
       sort { |x,y| x.document.size <=> y.document.size }.
       reduce(0) do |size, attachment|
       if ( size + attachment.document.size ) > THRESHOLD

@@ -2,7 +2,7 @@ module MeetingsHelper
   # Generates footnotes for selected attachment
   def footnotes_for_meeting_item_attachments( meeting, meeting_item, options = {} )
     format = options[:format] || :html
-    footnotes = meeting_item.attachments.
+    footnotes = meeting_item.enclosures.
       map { |a| footnote_for_meeting_item_attachment( meeting, a, options) }.
       join(",")
     case format
@@ -26,7 +26,6 @@ module MeetingsHelper
 
   def footnotes_for_meeting_attachments( meeting, options = {} )
     format = options[:format] || :html
-    absolute = options[:absolute] || false
     attachments = meeting.attachments.values.flatten.
       map { |f|  }
     items = meeting.attachments.values.flatten.map { |attachment|
@@ -41,17 +40,19 @@ module MeetingsHelper
   end
 
   def footnote_for_meeting_attachment( meeting, attachment, options = {} )
-    linked_attachments = options.delete :linked_attachments
-    format = options.delete( :format ) || :html
+    linked_attachments = options[:linked_attachments]
+    format = options[:format] || :html
+    absolute = options[:absolute] || false
     index = meeting.attachment_index( attachment )
     case format
     when :html
       anchor = content_tag :a, '', name: "footnote-#{index}"
-      link = if linked_attachments.blank? || linked_attachments.include?( attachment )
+      link = if linked_attachments.nil? || linked_attachments.include?( attachment )
+        link_options = attachment.instance_of?( Motion ) ? { format: :pdf } : { }
         if absolute
-          link_to attachment_url(attachment), attachment_url(attachment)
+          link_to polymorphic_url(attachment, link_options), polymorphic_url(attachment, link_options)
         else
-          link_to attachment_path(attachment), attachment_path(attachment)
+          link_to polymorphic_path(attachment, link_options), polymorphic_path(attachment, link_options)
         end
       else
         attached_file = meeting.attachment_filename(attachment)

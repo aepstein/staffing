@@ -6,10 +6,12 @@ AGENDA<br/>
 <%= meeting.location %>
 </p>
 
-<%= render partial: 'meeting_sections/meeting_sections', object: meeting.meeting_sections, locals: { absolute: true } %>
+<%= render partial: 'meeting_sections/meeting_sections',
+  object: meeting.meeting_sections, locals: { absolute: true } %>
 
 <% if meeting.attachments.values.flatten.any? %>
-<%= footnotes_for_meeting_attachments( meeting, absolute: true ) %>
+<%= footnotes_for_meeting_attachments( meeting, absolute: true,
+  linked_attachments: linked_attachments ) %>
 <% else %>
 <p>No attachments.</p>
 <% end %>

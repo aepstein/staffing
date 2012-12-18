@@ -29,7 +29,7 @@ class MeetingItem < ActiveRecord::Base
   end
 
   def enclosures
-    return motion.attachments if motion
+    return [ motion ] + motion.attachments.to_a if motion
     attachments
   end
 

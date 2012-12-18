@@ -55,6 +55,8 @@ class MotionReport < AbstractCommitteeReport
       else
         draw_line_numbers first_line_at, cursor
       end
+      number_pages "Page <page> of <total>", align: :center, style: :italic,
+        size: 10, width: 540, at: [ 0, 0 ]
     end
     render
   end

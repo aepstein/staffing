@@ -72,7 +72,9 @@ class Meeting < ActiveRecord::Base
   end
 
   def attachment_filename( attachment )
-    "#{attachment_index(attachment)}_#{attachment.to_s :file}"
+    base = "#{attachment_index(attachment)}_#{attachment.to_s :file}"
+    return "#{base}.pdf" if attachment.instance_of?( Motion )
+    base
   end
 
   def publish_defaults

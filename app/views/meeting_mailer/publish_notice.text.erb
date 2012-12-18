@@ -5,7 +5,8 @@ AGENDA
 <%= meeting.location %>
 <%= render partial: 'meeting_sections/meeting_sections', object: meeting.meeting_sections %>
 <% if meeting.attachments.values.flatten.any? %>
-<%= footnotes_for_meeting_attachments( meeting, format: :text ) %>
+<%= footnotes_for_meeting_attachments( meeting, format: :text,
+  linked_attachments: linked_attachments ) %>
 <% else %>
 No attachments.
 <% end %>
