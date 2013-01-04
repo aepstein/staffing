@@ -36,14 +36,16 @@ Scenario Outline: Access control
 
 @javascript
 Scenario Outline: Create/edit a meeting
-  When I create a meeting as <role>
-  Then I should see the new meeting
+  When I create a meeting with a <item> item as <role>
+  Then I should see the new meeting with the <item> item
   When I update the meeting
   Then I should see the edited meeting
   Examples:
-    |role |
-    |staff|
-    |chair|
+    |item  |role |
+    |named |staff|
+    |motion|staff|
+    |named |chair|
+    |motion|chair|
 
 Scenario: Search meetings
   Given I log in as the staff user

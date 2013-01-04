@@ -1,10 +1,9 @@
 class MeetingItem < ActiveRecord::Base
   belongs_to :meeting_section, inverse_of: :meeting_items
-  has_one :meeting, through: :meeting_section
   belongs_to :motion, inverse_of: :meeting_items
   has_many :attachments, as: :attachable, dependent: :destroy
-  attr_accessible :description, :duration, :name, :position, :motion_name,
-    :_destroy, :attachments_attributes
+  attr_accessible :description, :duration, :name, :position, :motion_id,
+    :motion_name, :_destroy, :attachments_attributes
 
   default_scope order { [ meeting_section_id, position ] }
 
@@ -21,11 +20,15 @@ class MeetingItem < ActiveRecord::Base
     item.name = nil if item.name.blank?
   end
 
-  delegate :meeting, to: :meeting_section, allow_nil: true
+  def meeting
+    ActiveSupport::Deprecation.warn( "meeting() is deprecated and may be removed " +
+      "from future releases, use meeting_section.meeting() instead.", caller )
+    meeting_section.meeting
+  end
 
   def allowed_motions
-    return [] unless meeting
-    meeting.motions.allowed
+    return [] unless meeting_section && meeting_section.meeting
+    meeting_section.meeting.motions.allowed
   end
 
   def enclosures
@@ -33,15 +36,17 @@ class MeetingItem < ActiveRecord::Base
     attachments
   end
 
+  # Accepts motion optionally prefixed with R. #:
   def motion_name=(n)
-    return nil unless meeting
-    self.motion = meeting.motions.allowed.find_by_name( n )
+    return nil unless meeting_section && meeting_section.meeting && meeting_section.meeting.committee
+    self.motion = meeting.committee.motions.find_by_name(
+      n.slice( /^(?:R\. \d+\: )?(.*)/, 1 ) )
     n
   end
 
   def motion_name
     return nil unless motion
-    motion.name
+    motion.to_s(:numbered)
   end
 
   def display_name

@@ -1,6 +1,6 @@
 <%= content_tag :li do %>
   <% if meeting_item.motion -%>
-  <%= link_to meeting_item.motion, (absolute ? motion_url(meeting_item.motion) : motion_path(meeting_item.motion)) %>
+  <%= link_to meeting_item.motion.to_s(:numbered), (absolute ? motion_url(meeting_item.motion) : motion_path(meeting_item.motion)) %>
   <% else -%>
   <%= meeting_item.name %>
   <% end -%>

@@ -79,7 +79,7 @@ Then /^I may( not)? destroy the meeting$/ do |negate|
   step %{I should#{negate} be authorized}
 end
 
-When /^I create a meeting as (staff|chair)$/ do |relationship|
+When /^I create a meeting with a (named|motion) item as (staff|chair)$/ do |item, relationship|
   role = case relationship
   when 'staff'
     relationship
@@ -99,6 +99,8 @@ When /^I create a meeting as (staff|chair)$/ do |relationship|
   end
   @past_period = create(:past_period, schedule: @committee.schedule)
   @current_period = create(:current_period, schedule: @committee.schedule)
+  @motion = create(:motion, name: "Get Something Done",
+    committee: @committee, period: @current_period, status: 'proposed' )
   visit(new_committee_meeting_path(@committee))
   if relationship == 'staff'
     select @current_period.to_s.strip.squeeze(" "), from: "Period"
@@ -113,21 +115,25 @@ When /^I create a meeting as (staff|chair)$/ do |relationship|
     fill_in "Name", with: "New Business"
     click_link "Add Meeting Item"
     within_fieldset("Meeting Item") do
-      fill_in "Name", with: "Presentation on Campus Master Plan"
-      fill_in "Duration", with: 10
-      click_link "Add Attachment"
-      within_fieldset("Attachment") do
-        attach_file 'Attachment document', File.expand_path('spec/assets/empl_ids.csv')
-        fill_in 'Attachment description', with: 'Sample employee ids'
+      if item == 'named'
+        fill_in "Name", with: "Presentation on Campus Master Plan"
+        click_link "Add Attachment"
+        within_fieldset("Attachment") do
+          attach_file 'Attachment document', File.expand_path('spec/assets/empl_ids.csv')
+          fill_in 'Attachment description', with: 'Sample employee ids'
+        end
+      else
+        select "R. 1: Get Something Done", from: "Motion"
       end
+      fill_in "Duration", with: 10
     end
   end
   click_button 'Create'
-  @meeting = Meeting.find( URI.parse(current_url).path.match(/[\d]+$/)[0].to_i )
 end
 
-Then /^I should see the new meeting$/ do
+Then /^I should see the new meeting with the (named|motion) item$/ do |item|
   within( "#flash_notice" ) { page.should have_text( "Meeting was successfully created." ) }
+  @meeting = Meeting.find( URI.parse(current_url).path.match(/[\d]+$/)[0].to_i )
   within( "#meeting-#{@meeting.id}" ) do
     page.should have_text "Committee: #{@committee.name}"
     page.should have_text "Period: #{@current_period}"
@@ -138,8 +144,12 @@ Then /^I should see the new meeting$/ do
     page.should have_text "Editable minutes? No"
     page.should have_text "Published minutes? No"
     page.should have_text "New Business"
-    page.should have_text "Presentation on Campus Master Plan"
-    page.should have_text "Sample employee ids"
+    if item == 'named'
+      page.should have_text "Presentation on Campus Master Plan"
+      page.should have_text "Sample employee ids"
+    else
+      page.should have_text "R. 1: Get Something Done"
+    end
   end
 end
 
@@ -169,6 +179,7 @@ Then /^I should see the edited meeting$/ do
     page.should have_no_text "New Business"
     page.should have_no_text "Presentation on Campus Master Plan"
     page.should have_no_text "Sample employee ids"
+    page.should have_no_text "R. 1: Get Something Done"
   end
 end
 

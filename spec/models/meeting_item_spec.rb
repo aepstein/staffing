@@ -29,6 +29,9 @@ describe MeetingItem do
 
     context "with motion" do
       let(:meeting_item) { build :motion_meeting_item }
+      let(:other_motion) { create(:motion,
+        committee: meeting_item.motion.committee,
+        period: meeting_item.motion.period) }
 
       it "should save with valid attributes" do
         meeting_item.save!
@@ -44,6 +47,16 @@ describe MeetingItem do
         duplicate = build( :motion_meeting_item, motion: meeting_item.motion,
           meeting_section: meeting_item.meeting_section )
         duplicate.save.should be_false
+      end
+
+      it "should set motion from plain name" do
+        meeting_item.motion_name = other_motion.name
+        meeting_item.motion.should eql other_motion
+      end
+
+      it "should set motion from R: #: name" do
+        meeting_item.motion_name = other_motion.to_s(:numbered)
+        meeting_item.motion.should eql other_motion
       end
     end
   end

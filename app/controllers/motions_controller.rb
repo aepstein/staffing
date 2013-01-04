@@ -13,8 +13,6 @@ class MotionsController < ApplicationController
     raise Authorization::NotAuthorized unless @motion.status_events.include? action_name.to_sym
     permitted_to! action_name, @motion
   end
-  before_filter :status_check, except: [ :new, :create, :edit, :update,
-    :show, :destroy, :allowed, :past, :current, :proposed, :index ]
 
   # GET /meetings/:meeting_id/motions/allowed
   # GET /meetings/:meeting_id/motions/allowed.xml
@@ -63,9 +61,9 @@ class MotionsController < ApplicationController
     @motions = @search.result.ordered.page( params[:page] )
 
     respond_to do |format|
-      format.html { render :action => 'index' } # index.html.erb
-      format.json { render :action => 'index' } # index.json.erb
-      format.xml  { render :xml => @motions }
+      format.html { render action: 'index' } # index.html.erb
+      format.json { render json: @motions.map { |m| m.to_s(:numbered) } }
+      format.xml  { render xml: @motions }
     end
   end
 
@@ -364,6 +362,7 @@ class MotionsController < ApplicationController
     @motions = @committee.motions if @committee
     @motions = @user.motions if @user
     @motions = @meeting.motions if @meeting
+    @motions = @motions.where( period_id: params[:period_id] ) if params[:period_id]
   end
 
   def new_motion_from_params
@@ -398,9 +397,6 @@ class MotionsController < ApplicationController
     if @motion && @motion.persisted?
       add_breadcrumb @motion, motion_path(@motion)
     end
-  end
-
-  def status_check
   end
 end
 

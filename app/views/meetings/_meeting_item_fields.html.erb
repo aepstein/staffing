@@ -1,7 +1,14 @@
 <%= content_tag :div, class: 'nested-fields' do %>
   <%= f.inputs name: sortable_label( 'Meeting Item' ) do %>
+    <% unless f.object.motion_name.present? %>
     <%= f.input :name, hint: "If not associated with a motion, provide name and leave motion blank." %>
-    <%= f.input :motion_name, hint: "If associated with a motion, specify motion and leave name blank." %>
+    <% end %>
+    <% unless f.object.name.present? %>
+    <%= f.input :motion, as: :select, label: 'Motion',
+      collection: Hash[ *f.object.meeting_section.meeting.committee.motions.
+        map { |m| [ m.to_s(:numbered), m.id  ] }.flatten ],
+      hint: "If associated with a motion, specify motion and leave name blank." %>
+    <% end %>
     <%= f.input :duration, hint: "How many minutes are allocated to this item?" %>
     <%= f.input :description, hint: "Any additional comments to add specific to this listing." %>
     <%= f.input :position, as: :hidden %>
