@@ -320,7 +320,7 @@ When /^I update the referred motion$/ do
   fill_in "Name", with: "Referred motion"
   fill_in "Description", with: "This is different"
   fill_in "Content", with: "Whereas and resolved"
-  click_link "remove attachment"
+  click_link "Remove Attachment"
   click_button "Update"
 end
 
