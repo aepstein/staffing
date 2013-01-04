@@ -39,7 +39,7 @@ class MeetingItem < ActiveRecord::Base
   # Accepts motion optionally prefixed with R. #:
   def motion_name=(n)
     return nil unless meeting_section && meeting_section.meeting && meeting_section.meeting.committee
-    self.motion = meeting.committee.motions.find_by_name(
+    self.motion = meeting_section.meeting.committee.motions.find_by_name(
       n.slice( /^(?:R\. \d+\: )?(.*)/, 1 ) )
     n
   end
