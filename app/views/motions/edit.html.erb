@@ -1,11 +1,6 @@
 <h2>Editing motion for <%=h @motion.committee %></h2>
 
-<%= semantic_form_for(@motion) do |f| %>
+<%= simple_form_for(@motion) do |f| %>
   <%= render partial: 'form', object: f %>
 <% end %>
-
-<p>
-<%= link_to 'Show', @motion %> |
-<%= link_to "Back to #{h @motion.committee}", committee_motions_path( @motion.committee ) %>
-</p>
 

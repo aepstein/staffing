@@ -1,6 +1,6 @@
 <h2>New brand</h2>
 
-<%= semantic_form_for(@brand, :html => { :multipart => true } ) do |f| %>
+<%= simple_form_for(@brand, :html => { :multipart => true } ) do |f| %>
   <%= render :partial => 'form', :object => f %>
 <% end %>
 

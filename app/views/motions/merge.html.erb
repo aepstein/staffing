@@ -8,22 +8,18 @@ Use this form to merge the motion to another motion proposed before the same com
 
 <h3>Motion to which it will be merged</h3>
 
-<%= semantic_form_for @motion_merger, as: :motion_merger,
+<%= simple_form_for @motion_merger, as: :motion_merger,
   url: merge_motion_path( @motion_merger.merged_motion ),
   method: :put do |form| %>
 
-  <%= form.inputs for: :merged_motion do |merged_motion_fields| %>
+  <%= form.simple_fields_for: :merged_motion do |merged_motion_fields| %>
     <%= render partial: 'motions/event_fields', object: merged_motion_fields %>
   <% end %>
 
-  <%= form.inputs do %>
-    <%= form.input :motion, as: :select,
-      collection: @motion_merger.merged_motion.mergeable_motions,
-      hint: 'What motion should this motion be merged into?' %>
-  <% end %>
+  <%= form.association :motion, as: :select,
+    collection: @motion_merger.merged_motion.mergeable_motions,
+    hint: 'What motion should this motion be merged into?' %>
 
-  <%= form.actions do %>
-    <%= form.action :submit, label: "Merge" %>
-  <% end %>
+  <%= form.button :wrapped, label: "Merge", cancel: motion_path(@motion_merger.motion) %>
 <% end %>
 

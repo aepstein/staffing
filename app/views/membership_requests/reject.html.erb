@@ -1,6 +1,6 @@
 <h2>Reject <%=h @membership_request.user.name %> for <%=h @membership_request.committee %></h2>
 
-<%= semantic_form_for(@membership_request, url: reject_membership_request_path(@membership_request),
+<%= simple_form_for(@membership_request, url: reject_membership_request_path(@membership_request),
   html: { method: :put } ) do |form| %>
   <%= form.inputs do %>
     <%= form.input :rejected_by_authority, as: :select, label: 'Authority',

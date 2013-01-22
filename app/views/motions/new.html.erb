@@ -1,11 +1,6 @@
 <h2>New motion for <%= @motion.committee %></h2>
 
-<%= semantic_form_for( @motion, :html => { :multipart => true },
-  :url => committee_motions_path(@motion.committee) ) do |f| %>
-  <%= render :partial => 'form', :object => f %>
+<%= simple_form_for( @motion, url: committee_motions_path(@motion.committee) ) do |f| %>
+  <%= render partial: 'form', object: f %>
 <% end %>
-
-<p>
-<%= link_to 'Back', committee_motions_path(@motion.committee) %>
-</p>
 

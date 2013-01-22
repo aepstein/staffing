@@ -1,9 +1,9 @@
 <%= table_row_tag do %>
   <td><%=h requestable %></td>
   <% if current_user.requestables.include? requestable %>
-  <td><%= link_to 'Edit MembershipRequest', edit_polymorphic_path( current_user.membership_requests.select { |r| r.requestable == requestable }.first ) %></td>
+  <td><%= link_to 'Edit', edit_polymorphic_path( current_user.membership_requests.select { |r| r.requestable == requestable }.first ) %></td>
   <% else %>
-  <td><%= link_to 'New MembershipRequest', new_polymorphic_path( [ requestable, :membership_request ] ) %></td>
+  <td><%= link_to 'New', new_polymorphic_path( [ requestable, :membership_request ] ) %></td>
   <% end %>
 <% end %>
 

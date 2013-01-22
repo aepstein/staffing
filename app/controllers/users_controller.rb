@@ -112,14 +112,6 @@ class UsersController < ApplicationController
     end
   end
 
-  # GET /profile
-  def profile
-    respond_to do |format|
-      format.html # profile.html.erb
-    end
-  end
-
-
   # GET /users/new
   # GET /users/new.xml
   def new

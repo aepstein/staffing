@@ -1,15 +1,13 @@
-  <%= render "shared/error_messages", target: form.object %>
-  <%= form.inputs do %>
-    <% unless form.object.persisted? %>
-      <%= form.input :period, collection: form.object.committee.schedule.periods %>
-    <% end %>
-    <%= form.input :starts_at, as: :date_time_picker %>
-    <%= form.input :ends_at, as: :date_time_picker %>
-    <%= form.input :location %>
-    <%= form.input :audio, as: :file %>
-    <%= form.input :editable_minutes, as: :file %>
-    <%= form.input :published_minutes, as: :file %>
-    <%= form.input :meeting_sections, as: :cocoon, ordered_by: :position %>
-  <% end %>
-  <%= form.actions %>
+<%= render "shared/error_messages", target: form.object %>
+<% unless form.object.persisted? %>
+  <%= form.input :period, collection: form.object.committee.schedule.periods %>
+<% end %>
+<%= form.input :starts_at, as: :date_time_picker %>
+<%= form.input :ends_at, as: :date_time_picker %>
+<%= form.input :location %>
+<%= form.input :audio, as: :file %>
+<%= form.input :editable_minutes, as: :file %>
+<%= form.input :published_minutes, as: :file %>
+<%= form.input :meeting_sections, as: :cocoon, ordered_by: :position %>
+<%= form.button :wrapped, cancel: meetings_path %>
 

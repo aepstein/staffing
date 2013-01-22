@@ -1,6 +1,6 @@
 <h2>New membership_request of <%=h @membership_request.user.name %> for <%=h @membership_request.committee %></h2>
 
-<%= semantic_form_for( @membership_request,
+<%= simple_form_for( @membership_request,
   url: polymorphic_path([ @membership_request.committee, :membership_requests ]),
   html: { multipart: true } ) do |f| %>
   <%= render :partial => 'form', :object => f %>

@@ -161,8 +161,8 @@ Staffing::Application.routes.draw do
 
   match 'login', to: 'user_sessions#new', as: 'login'
   match 'logout', to: 'user_sessions#destroy', as: 'logout'
-  match 'profile', to: 'users#profile', as: 'profile'
+  match 'home', to: 'home#home', as: 'home'
 
-  root to: 'users#profile'
+  root to: 'home#home'
 end
 

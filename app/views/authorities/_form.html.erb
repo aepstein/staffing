@@ -1,13 +1,11 @@
-  <%= render "shared/error_messages", :target => form.object %>
-  <%= form.inputs do %>
+  <%= render "shared/error_messages", target: form.object %>
   <%= form.input :name %>
-  <%= form.input :committee_name, :as => :autocomplete, :label => 'Committee',
-    :url => committees_path( :format => :json ),
-    :hint => "Specify the committee, if any, whose members should be able to read " +
+  <%= form.input :committee_name, as: :autocomplete, label: 'Committee',
+    url: committees_path( format: :json ),
+    hint: "Specify the committee, if any, whose members should be able to read " +
     "and comment on membership_requests under this authority." %>
   <%= form.input :join_message %>
   <%= form.input :leave_message %>
   <%= form.input :reject_message %>
-  <% end %>
-  <%= form.actions %>
+  <%= form.button :wrapped, cancel: authorities_path %>
 

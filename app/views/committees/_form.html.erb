@@ -1,5 +1,4 @@
   <%= render "shared/error_messages", target: form.object %>
-  <%= form.inputs do %>
   <%= form.input :name %>
   <%= form.input :contact_name,
     hint: 'What is the name that should appear in from for messages regarding this committee?' %>
@@ -14,20 +13,6 @@
   <%= form.input :join_message %>
   <%= form.input :leave_message %>
   <%= form.input :reject_message %>
-  <% end %>
-
-  <%= form.inputs for: :enrollments, name: 'enrollment' do |subform| %>
-    <%= render partial: 'enrollments/enrollment_fields', locals: { f: subform,
-      committee: form.object } %>
-  <% end %>
-
-  <div class='links'>
-    <p>
-      <%= link_to_add_association 'add enrollment', form, :enrollments,
-        partial: 'enrollments/enrollment_fields',
-        render_options: { locals: { committee: form.object } } %>
-    </p>
-  </div>
-
-  <%= form.actions %>
+  <%= form.input :enrollments, as: :cocoon %>
+  <%= form.button :wrapped, cancel: committees_path %>
 

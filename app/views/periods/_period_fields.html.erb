@@ -1,9 +1,6 @@
-<div class="nested-fields">
+<%= content_tag :div, class: "nested-fields" do %>
   <%= f.input :starts_at, as: :date_picker %>
   <%= f.input :ends_at, as: :date_picker %>
-
-  <p>
-  <%= link_to_remove_association 'remove period', f %>
-  </p>
-</div>
+  <%=content_tag :p, link_to_remove_association( 'Remove Period', f ) %>
+<% end %>
 

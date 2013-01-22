@@ -6,7 +6,7 @@ Use this form to decline renewal of the membership described below.
 
 <%= render partial: 'memberships/detail', locals: { membership: @membership } %>
 
-<%= semantic_form_for(@membership, as: :membership,
+<%= simple_form_for(@membership, as: :membership,
   url: decline_membership_path( @membership ), method: :put ) do |form| %>
   <%= render "shared/error_messages", target: form.object %>
   <%= form.inputs do %>

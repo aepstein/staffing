@@ -1,6 +1,6 @@
 <h2>New question</h2>
 
-<%= semantic_form_for(@question) do |f| %>
+<%= simple_form_for(@question) do |f| %>
   <%= render :partial => 'form', :object => f %>
 <% end %>
 
