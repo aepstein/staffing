@@ -1,14 +1,14 @@
-<h2>Welcome, <%= current_user.first_name %></h2>
+<h1>Welcome, <%= current_user.first_name %></h1>
 
 <p>
 <%= link_to 'Click here', edit_user_path( current_user ) %> to update your personal and contact information.  If you are not <%=h current_user.name %>, please close the web browser completely and log in using your own credentials.
 </p>
 
 <% if current_user.authorities.authorized(0).length > 0 -%>
-<h3>Your Authorities</h3>
+<h2>Your Authorities</h2>
 
 <p>
-You may review membership_requests and update memberships for the following authorities:
+You may review membership requests and update memberships for the following authorities:
 </p>
 
 <ul>
@@ -25,7 +25,7 @@ You may review membership_requests and update memberships for the following auth
 </ul>
 
 <% end -%>
-<h3>Your Memberships</h3>
+<h2>Your Memberships</h2>
 
 <p>
 You have <%= link_to pluralize( current_user.memberships.current.length, 'current membership' ), current_user_memberships_path(current_user) %>, <%= link_to pluralize( current_user.memberships.past.size, 'past membership' ), past_user_memberships_path(current_user) %>, and <%= link_to pluralize( current_user.memberships.future.size, 'future membership' ), future_user_memberships_path(current_user) %>.
@@ -75,7 +75,7 @@ You may not start motions for any committee at this time.
 <% end %>
 
 <div id="membership_requests">
-<h3>Your Requests for Membership</h3>
+<h2>Your Requests for Membership</h2>
 
 <p>
 You have <%= link_to pluralize( current_user.membership_requests.unexpired.count, 'current membership request' ), unexpired_user_membership_requests_path( current_user ) %> and <%= link_to pluralize( current_user.membership_requests.expired.count, 'expired membership request' ), expired_user_membership_requests_path( current_user ) %>.

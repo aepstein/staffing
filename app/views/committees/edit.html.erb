@@ -1,11 +1,6 @@
-<h2>Editing committee</h2>
+<h1>Editing committee <%= committee.name %></h1>
 
-<%= simple_form_for(@committee) do |f| %>
-  <%= render :partial => 'form', :object => f %>
+<%= simple_form_for(committee) do |f| %>
+  <%= render partial: 'form', object: f %>
 <% end %>
-
-<p>
-<%= link_to 'Show', @committee %> |
-<%= link_to 'Back', committees_path %>
-</p>
 

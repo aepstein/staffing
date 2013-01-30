@@ -2,24 +2,14 @@ module UserTentReports
 
   module InstanceMethods
 
-    def render_user_tent_reports
-      context ||= @committee
-      context ||= @user
+    def render_user_tent_reports( tents )
       respond_to do |format|
-        format.html { render layout: 'tent' }
         format.pdf do
-          report = UserTentReport.new( @tents, @brand )
-          send_data report.to_pdf, :filename => "#{context.name :file}-tent.pdf",
-            :type => 'application/pdf', :disposition => 'inline'
+          report = UserTentReport.new( tents, brand )
+          send_data report.to_pdf, filename: "#{(committee || user).name :file}-tent.pdf",
+            type: 'application/pdf', disposition: 'inline'
         end
       end
-    end
-
-    private
-
-    def initialize_user_tent_context
-      @brand = @committee.brand if @committee
-      @brand = Brand.find params[:brand_id] if params[:brand_id]
     end
   end
 
@@ -27,7 +17,13 @@ module UserTentReports
   end
 
   def self.included(receiver)
-    receiver.before_filter :initialize_user_tent_context
+    receiver.send( :expose, :brand ) do
+      if params[:brand_id]
+        Brand.find params[:brand_id]
+      else
+        Brand.first
+      end
+    end
     receiver.extend         ClassMethods
     receiver.send :include, InstanceMethods
   end

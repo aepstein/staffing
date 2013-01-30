@@ -1,6 +1,6 @@
-<h2><%= params[:action].titleize %> committees<%= @user ? " for #{h(@user)}" : "" %></h2>
+<h1><%= params[:action].titleize %> committees<%= user ? " for #{h(user)}" : "" %></h1>
 
-<%= form_for @q, :url => request.fullpath, :method => :get do |form| %>
+<%= form_for q, url: request.fullpath, method: :get do |form| %>
 <p>
   <%= form.label :name_cont, 'Name' %>
   <%= form.text_field :name_cont %>
@@ -8,16 +8,12 @@
 </p>
 <% end %>
 
-<p>
-<%= paginate @committees %>
-</p>
+<%= paginate committees %>
 
-<%= render :partial => "committees/committees", :object => @committees,
-:locals => { :user => ( @user ? @user : false ) } %>
+<%= render :partial => "committees/committees", :object => committees,
+:locals => { :user => ( user ? user : false ) } %>
 
-<p>
-<%= paginate @committees %>
-</p>
+<%= paginate committees %>
 
 <hr />
 

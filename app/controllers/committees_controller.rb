@@ -1,34 +1,55 @@
 class CommitteesController < ApplicationController
-  before_filter :require_user, :initialize_context
-  before_filter :new_committee_from_params, :only => [ :new, :create ]
-  filter_access_to :new, :create, :edit, :update, :destroy, :show, :index,
-    :tents, :members
-  filter_access_to :requestable do
-    permitted_to!( :show, @user )
+  before_filter :require_user
+  expose :as_of do
+    begin
+      if params[:as_of]
+        return Date.parse( params[:as_of] )
+      end
+    rescue ArgumentError
+      flash[:error] = 'Invalid date supplied for report.'
+    end
+    Time.zone.today
   end
-  before_filter :setup_breadcrumbs
+  expose :user { User.find params[:user_id] if params[:user_id] }
+  expose :q_scope do
+    scope = user.committees.requestable if request.action_name == 'requestable'
+    scope ||= user.committees.scoped if user
+    scope ||= Committee.scoped
+  end
+  expose :q do
+    q_scope.search( params[:term] ? { name_cont: params[:term] } : params[:q] )
+  end
+  expose :committees do
+    q.result.ordered.page(params[:page])
+  end
+  expose :committee
+  filter_access_to :new, :create, :edit, :update, :destroy, :show, :index,
+    :tents, :members, load_method: :committee
+  filter_access_to :requestable do
+    permitted_to!( :show, user )
+  end
 
   # GET /users/:user_id/committees/requestable
   # GET /users/:user_id/committees/requestable.xml
   def requestable
-    @committees = @user.committees.requestable
-    index
+    respond_to do |format|
+      format.html { render action: 'index' }
+      format.json { json: committees }
+    end
   end
 
   # GET /committees/:id/tents.pdf
   include UserTentReports
   def tents
-#    @context = @committee
-    @tents = @committee.memberships.tents @as_of
-    render_user_tent_reports
+    render_user_tent_reports committee.memberships.tents( as_of )
   end
 
   # GET /committees/:id/members.pdf
   def members
     respond_to do |format|
       format.pdf do
-        report = MembershipReport.new( @committee, @as_of )
-        send_data report.to_pdf, filename: "#{@committee.name :file}-members.pdf",
+        report = MembershipReport.new( committee, as_of )
+        send_data report.to_pdf, filename: "#{committee.name :file}-members.pdf",
           type: 'application/pdf', disposition: 'inline'
       end
     end
@@ -38,60 +59,23 @@ class CommitteesController < ApplicationController
   def empl_ids
     respond_to do |format|
       format.pdf do
-        report = EmplIdReport.new( @committee, @as_of )
-        send_data report.to_pdf, filename: "#{@committee.name :file}-empl_ids.pdf",
+        report = EmplIdReport.new( committee, as_of )
+        send_data report.to_pdf, filename: "#{committee.name :file}-empl_ids.pdf",
           type: 'application/pdf', disposition: 'inline'
       end
     end
-  end
-
-  # GET /committees
-  # GET /committees.xml
-  def index
-    @committees ||= Committee.scoped
-    @q = @committees.search( params[:term] ? { :name_cont => params[:term] } : params[:q] )
-    @committees = @q.result.ordered.page( params[:page] )
-
-    respond_to do |format|
-      format.html { render :action => 'index' }
-      format.json # index.json.erb
-      format.xml  { render :xml => @committees }
-    end
-  end
-
-  # GET /committees/1
-  # GET /committees/1.xml
-  def show
-    respond_to do |format|
-      format.html # show.html.erb
-      format.xml  { render :xml => @committee }
-    end
-  end
-
-  # GET /committees/new
-  # GET /committees/new.xml
-  def new
-    respond_to do |format|
-      format.html # new.html.erb
-      format.xml  { render :xml => @committee }
-    end
-  end
-
-  # GET /committees/1/edit
-  def edit
   end
 
   # POST /committees
   # POST /committees.xml
   def create
     respond_to do |format|
-      if @committee.save
-        flash[:notice] = 'Committee was successfully created.'
-        format.html { redirect_to(@committee) }
-        format.xml  { render :xml => @committee, :status => :created, :location => @committee }
+      if committee.save
+        format.html { redirect_to(committee, flash: { success: "Committee created." }) }
+        format.xml  { render xml: committee, status: :created, location: committee }
       else
-        format.html { render :action => "new" }
-        format.xml  { render :xml => @committee.errors, :status => :unprocessable_entity }
+        format.html { render action: "new" }
+        format.xml  { render xml: committee.errors, status: :unprocessable_entity }
       end
     end
   end
@@ -100,13 +84,12 @@ class CommitteesController < ApplicationController
   # PUT /committees/1.xml
   def update
     respond_to do |format|
-      if @committee.update_attributes(params[:committee])
-        flash[:notice] = 'Committee was successfully updated.'
-        format.html { redirect_to(@committee) }
+      if committee.save
+        format.html { redirect_to(committee, flash: { success: "Committee updated." }) }
         format.xml  { head :ok }
       else
-        format.html { render :action => "edit" }
-        format.xml  { render :xml => @committee.errors, :status => :unprocessable_entity }
+        format.html { render action: "edit" }
+        format.xml  { render xml: committee.errors, status: :unprocessable_entity }
       end
     end
   end
@@ -114,41 +97,12 @@ class CommitteesController < ApplicationController
   # DELETE /committees/1
   # DELETE /committees/1.xml
   def destroy
-    @committee.destroy
+    committee.destroy
 
     respond_to do |format|
-      format.html { redirect_to(committees_url, notice: "Committee was successfully destroyed.") }
+      format.html { redirect_to(committees_url, flash: { success: "Committee was successfully destroyed." } ) }
       format.xml  { head :ok }
     end
   end
-
-  private
-
-  def initialize_context
-    @committee = Committee.find params[:id] if params[:id]
-    @user = User.find params[:user_id] if params[:user_id]
-    begin
-      if params[:as_of]
-        return @as_of = Date.parse( params[:as_of] )
-      end
-    rescue ArgumentError
-      flash[:error] = 'Invalid date supplied for report.'
-      return redirect_to @committee
-    end
-    @as_of = Time.zone.today
-  end
-
-  def new_committee_from_params
-    @committee = Committee.new( params[:committee] )
-  end
-
-  def setup_breadcrumbs
-    add_breadcrumb @user.name, user_path( @user ) if @user
-    add_breadcrumb 'Committees', committees_path
-    if @committee && @committee.persisted?
-      add_breadcrumb @committee.name, committee_path( @committee )
-    end
-  end
-
 end
 
