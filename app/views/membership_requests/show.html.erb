@@ -1,54 +1,54 @@
-<%= content_tag :div, id: "membership-request-#{@membership_request.id}" do %>
+<%= content_tag :div, id: "membership-request-#{membership_request.id}" do %>
 <p>
-  <b>Committee:</b> <%=h @membership_request.committee %>
+  <b>Committee:</b> <%=h membership_request.committee %>
 </p>
 
 <p>
-  <b>Status:</b> <%=raw @membership_request.status %>
+  <b>Status:</b> <%=raw membership_request.status %>
 </p>
 
-<% if @membership_request.rejected? %>
+<% if membership_request.rejected? %>
 <p>
-  <b>Rejected at:</b> <%=h @membership_request.rejected_at.to_formatted_s :us_ordinal %>
-</p>
-
-<p>
-  <b>Rejected by authority:</b> <%=h @membership_request.rejected_by_authority %>
+  <b>Rejected at:</b> <%=h membership_request.rejected_at.to_formatted_s :us_ordinal %>
 </p>
 
 <p>
-  <b>Rejected by user:</b> <%=h @membership_request.rejected_by_user.name(:net_id) %>
+  <b>Rejected by authority:</b> <%=h membership_request.rejected_by_authority %>
 </p>
 
 <p>
-  <b>Reject notice at:</b> <%=h @membership_request.reject_notice_at? ? @membership_request.reject_notice_at.to_s( :us_ordinal ) : "None sent." %>
+  <b>Rejected by user:</b> <%=h membership_request.rejected_by_user.name(:net_id) %>
+</p>
+
+<p>
+  <b>Reject notice at:</b> <%=h membership_request.reject_notice_at? ? membership_request.reject_notice_at.to_s( :us_ordinal ) : "None sent." %>
 </p>
 
 <p>
   <b>Rejection comment:</b>
 </p>
 
-<%=markdown @membership_request.rejection_comment %>
+<%=markdown membership_request.rejection_comment %>
 <% end %>
 
 <p>
-  <b>User:</b> <%=h @membership_request.user.name(:net_id) %>
+  <b>User:</b> <%=h membership_request.user.name(:net_id) %>
 </p>
 
 <p>
-  <b>Netid:</b> <%=h @membership_request.user.net_id %>
+  <b>Netid:</b> <%=h membership_request.user.net_id %>
 </p>
 
 <p>
-  <b>Email:</b> <%=h @membership_request.user.email %>
+  <b>Email:</b> <%=h membership_request.user.email %>
 </p>
 
 <p>
-  <b>Desired start date:</b> <%=h @membership_request.starts_at.to_formatted_s(:long_ordinal) %>
+  <b>Desired start date:</b> <%=h membership_request.starts_at.to_formatted_s(:long_ordinal) %>
 </p>
 
 <p>
-  <b>Desired end date:</b> <%=h @membership_request.ends_at.to_formatted_s(:long_ordinal) %>
+  <b>Desired end date:</b> <%=h membership_request.ends_at.to_formatted_s(:long_ordinal) %>
 </p>
 
 <p>
@@ -56,19 +56,19 @@
 </p>
 
 <%= render partial: 'membership_requests/questions',
-  object: @membership_request.questions,
-  locals: { membership_request: @membership_request } %>
+  object: membership_request.questions,
+  locals: { membership_request: membership_request } %>
 
 <p>
-  <b>Resume?</b> <%= @membership_request.user.resume.blank? ? 'No' :  link_to('Yes', resume_user_path( @membership_request.user, :format => :pdf ) ) %>
+  <b>Resume?</b> <%= membership_request.user.resume.blank? ? 'No' :  link_to('Yes', resume_user_path( membership_request.user, :format => :pdf ) ) %>
 </p>
-<% end %><!-- #membership-request-<%= @membership_request.id %> -->
+<% end %><!-- #membership-request-<%= membership_request.id %> -->
 
 <p>
-<% if permitted_to?( :edit, @membership_request ) -%>
-<%= link_to 'Edit', edit_membership_request_path(@membership_request) %> |
+<% if permitted_to?( :edit, membership_request ) -%>
+<%= link_to 'Edit', edit_membership_request_path(membership_request) %> |
 <% end -%>
-<%= link_to 'List Memberships', membership_request_memberships_path(@membership_request) %> |
-<%= link_to 'Back', polymorphic_path( [@membership_request.committee, :membership_requests] ) %>
+<%= link_to 'List Memberships', membership_request_memberships_path(membership_request) %> |
+<%= link_to 'Back', polymorphic_path( [membership_request.committee, :membership_requests] ) %>
 </p>
 
