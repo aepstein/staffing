@@ -1,11 +1,6 @@
-<h2>Editing meeting template</h2>
+<h1>Editing meeting template</h1>
 
-<%= simple_form_for(@meeting_template) do |f| %>
+<%= simple_form_for(meeting_template) do |f| %>
   <%= render partial: 'form', object: f %>
 <% end %>
-
-<p>
-<%= link_to 'Show', @meeting_template %> |
-<%= link_to 'Back', meeting_templates_path %>
-</p>
 

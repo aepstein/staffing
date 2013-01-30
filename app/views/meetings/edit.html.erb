@@ -1,11 +1,6 @@
-<h2>Editing meeting for <%=h @meeting.committee %></h2>
+<h1>Editing meeting of <%=h meeting.committee %></h1>
 
-<%= simple_form_for( @meeting, :html => { :multipart => true } ) do |f| %>
-  <%= render :partial => 'form', :object => f %>
+<%= simple_form_for( meeting, html: { multipart: true } ) do |f| %>
+  <%= render partial: 'form', object: f %>
 <% end %>
-
-<p>
-<%= link_to 'Show', @meeting %> |
-<%= link_to "Back to #{@meeting.committee}", committee_meetings_path( @meeting.committee ) %>
-</p>
 

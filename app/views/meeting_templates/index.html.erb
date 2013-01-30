@@ -1,6 +1,6 @@
-<h2>Listing meeting_templates</h2>
+<h1>Listing meeting templates</h1>
 
-<%= form_for @q, url: request.fullpath, method: :get do |form| %>
+<%= form_for q, url: request.fullpath, method: :get do |form| %>
 <p>
   <%= form.label :name_cont, 'Name' %>
   <%= form.text_field :name_cont %>
@@ -8,15 +8,11 @@
 </p>
 <% end %>
 
-<p>
-<%= paginate @meeting_templates %>
-</p>
+<%=paginate meeting_templates %>
 
-<%= render partial: "meeting_templates/meeting_templates", object: @meeting_templates %>
+<%= render partial: "meeting_templates/meeting_templates", object: meeting_templates %>
 
-<p>
-<%= paginate @meeting_templates %>
-</p>
+<%=paginate meeting_templates %>
 
 <hr />
 

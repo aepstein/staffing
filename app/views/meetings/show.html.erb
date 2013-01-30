@@ -1,52 +1,52 @@
-<div id="meeting-<%= @meeting.id %>">
+<div id="meeting-<%= meeting.id %>">
 <p>
-  <b>Committee:</b> <%= @meeting.committee %>
+  <b>Committee:</b> <%= meeting.committee %>
 </p>
 
 <p>
-  <b>Period:</b> <%= @meeting.period %>
+  <b>Period:</b> <%= meeting.period %>
 </p>
 
 <p>
-  <b>Starts at:</b> <%= @meeting.starts_at.to_formatted_s :long_ordinal %>
+  <b>Starts at:</b> <%= meeting.starts_at.to_formatted_s :long_ordinal %>
 </p>
 
 <p>
-  <b>Ends at:</b> <%= @meeting.ends_at.to_formatted_s :long_ordinal %>
+  <b>Ends at:</b> <%= meeting.ends_at.to_formatted_s :long_ordinal %>
 </p>
 
 <p>
-  <b>Location:</b> <%= @meeting.location %>
+  <b>Location:</b> <%= meeting.location %>
 </p>
 
 <p>
-  <b>Audio?</b> <%= @meeting.audio.blank? ? 'No' : link_to( 'Yes', "#{root_path}#{@meeting.audio.url}" )  %>
+  <b>Audio?</b> <%= meeting.audio.blank? ? 'No' : link_to( 'Yes', "#{root_path}#{meeting.audio.url}" )  %>
 </p>
 
 <p>
-  <b>Editable minutes?</b> <%= @meeting.editable_minutes.blank? ? 'No' : link_to( 'Yes', "#{root_path}#{@meeting.editable_minutes.url}" )  %>
+  <b>Editable minutes?</b> <%= meeting.editable_minutes.blank? ? 'No' : link_to( 'Yes', "#{root_path}#{meeting.editable_minutes.url}" )  %>
 </p>
 
 <p>
-  <b>Published minutes?</b> <%= @meeting.published_minutes.blank? ? 'No' : link_to( 'Yes', "#{root_path}#{@meeting.published_minutes.url}" )  %>
+  <b>Published minutes?</b> <%= meeting.published_minutes.blank? ? 'No' : link_to( 'Yes', "#{root_path}#{meeting.published_minutes.url}" )  %>
 </p>
 
 <%= render partial: 'meeting_sections/meeting_sections',
-  object: @meeting.meeting_sections, locals: { meeting: @meeting } %>
+  object: meeting.meeting_sections, locals: { meeting: meeting } %>
 
-<% if @meeting.attachments.values.flatten.any? %>
-<%= footnotes_for_meeting_attachments @meeting %>
+<% if meeting.attachments.values.flatten.any? %>
+<%= footnotes_for_meeting_attachments meeting %>
 <% else %>
 <p>No attachments.</p>
 <% end %>
 
-</div> <!-- #meeting-<%= @meeting.id %> -->
+</div> <!-- #meeting-<%= meeting.id %> -->
 
 <p>
-<% if permitted_to? :edit, @meeting -%>
-<%= link_to 'Edit', edit_meeting_path(@meeting) %> |
+<% if permitted_to? :edit, meeting -%>
+<%= link_to 'Edit', edit_meeting_path(meeting) %> |
 <% end -%>
-<%= link_to 'Agenda', agenda_meeting_path(@meeting, format: :pdf) %> |
-<%= link_to "Back to #{@meeting.committee}", committee_meetings_path(@meeting.committee) %>
+<%= link_to 'Agenda', agenda_meeting_path(meeting, format: :pdf) %> |
+<%= link_to "Back to #{meeting.committee}", committee_meetings_path(meeting.committee) %>
 </p>
 
