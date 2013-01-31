@@ -26,9 +26,9 @@
   </tr>
   </thead>
   <tbody>
-<%= render :partial => "memberships/membership", :collection => memberships,
-  :locals => { :user => user, :committee => committee, :position => position,
-    :membership_request => membership_request } %>
+<%= render partial: "memberships/membership", collection: memberships,
+  locals: { user: user, committee: committee, position: position,
+    membership_request: membership_request } %>
   </tbody>
 </table>
 

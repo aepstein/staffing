@@ -1,68 +1,61 @@
-<div id="membership-<%= @membership.id %>">
-<%=render partial: 'memberships/detail', locals: { membership: @membership } %>
+<div id="membership-<%= membership.id %>">
+<%=render partial: 'memberships/detail', locals: { membership: membership } %>
 
-<% if @membership.membership_request %>
+<% if membership.membership_request %>
 <p>
-  <b>MembershipRequest:</b> <%=link_to 'Yes', @membership.membership_request %>
+  <b>MembershipRequest:</b> <%=link_to 'Yes', membership.membership_request %>
 </p>
 <% end %>
 
-<% if @membership.declined_at? %>
+<% if membership.declined_at? %>
 <p>
-  <b>Renewal declined at: </b> <%= @membership.declined_at.to_formatted_s( :long_ordinal ) %>
+  <b>Renewal declined at: </b> <%= membership.declined_at.to_formatted_s( :long_ordinal ) %>
 </p>
 
 <p>
-  <b>Renewal declined by: </b> <%= @membership.declined_by_user.name(:net_id) %>
+  <b>Renewal declined by: </b> <%= membership.declined_by_user.name(:net_id) %>
 </p>
 
 <p>
   <b>Renewal declined comment:</b>
 </p>
 
-<%=markdown @membership.decline_comment %>
+<%=markdown membership.decline_comment %>
 <% end %>
 
-<% if @membership.renewed_by_membership %>
+<% if membership.renewed_by_membership %>
 <p>
-  <b>Renewed by membership:</b> <%=link_to @membership.renewed_by_membership, @membership.renewed_by_membership %>
+  <b>Renewed by membership:</b> <%=link_to membership.renewed_by_membership, membership.renewed_by_membership %>
 </p>
 <% end %>
 
-<% if @membership.renewed_memberships.any? %>
+<% if membership.renewed_memberships.any? %>
 <p>
 <b>Renewed memberships:</b>
 </p>
 
-<%=render partial: 'memberships', object: @membership.renewed_memberships,
-  locals: { user: @membership.user } %>
+<%=render partial: 'memberships', object: membership.renewed_memberships,
+  locals: { user: membership.user } %>
 <% end %>
 
-<% if @membership.join_notice_at? %>
+<% if membership.join_notice_at? %>
 <p>
-  <b>Join notice at:</b> <%=h @membership.join_notice_at.to_formatted_s( :long_ordinal ) %>
+  <b>Join notice at:</b> <%=h membership.join_notice_at.to_formatted_s( :long_ordinal ) %>
 </p>
 
 <% end %>
 
-<% if @membership.leave_notice_at? %>
+<% if membership.leave_notice_at? %>
 <p>
-  <b>Leave notice at:</b> <%=h @membership.leave_notice_at.to_formatted_s( :long_ordinal ) %>
+  <b>Leave notice at:</b> <%=h membership.leave_notice_at.to_formatted_s( :long_ordinal ) %>
 </p>
 
 <% end %>
 
-<% @membership.designees.each do |designee| %>
+<% membership.designees.each do |designee| %>
 <p>
   <b>Designee for <%=h designee.committee.name %>:</b> <%=h designee.user.name(:net_id) %>
 </p>
 <% end %>
-</div> <!-- #membership-<%= @membership.id %> -->
-
-<p>
-<% if permitted_to? :edit, @membership -%>
-<%= link_to 'Edit', edit_membership_path(@membership) %> |
-<% end -%>
-<%= link_to 'Back', position_memberships_path(@membership.position) %>
-</p>
+</div> <!-- #membership-<%= membership.id %> -->
 

@@ -1,4 +1,4 @@
-<h2>Renewal preferences for <%= @user %></h2>
+<h2>Renewal preferences for <%= user %></h2>
 
 <p>
  Use this form to specify your membership renewal preferences for each of your
@@ -8,7 +8,7 @@
  end date to which you are interested to be reappointed to at this time.
 </p>
 
-<%= form_for @user, url: renew_user_memberships_path(@user) do |form| %>
+<%= form_for user, url: renew_user_memberships_path(user) do |form| %>
 <%= render 'shared/error_messages', target: form.object %>
 <table>
 <thead>
@@ -19,14 +19,15 @@
   </tr>
 </thead>
 <tbody>
-  <%= form.fields_for :memberships, @user.memberships.renewal_candidate do |subform| %>
+  <%= form.fields_for :memberships, user.memberships.renewal_candidate do |subform| %>
 
     <%= table_row_tag( subform.object.errors.empty?, false, { id: "membership-#{subform.object.id}" } ) do %>
       <% subform.object.renewal_confirmed_at = Time.zone.now %>
       <%= subform.hidden_field :renewal_confirmed_at %>
       <td><%= subform.label :renew_until, subform.object.position.to_s %></td>
-      <td><%= subform.object.ends_at.to_formatted_s :rfc822 %></td>
-      <td><%= subform.text_field :renew_until, value: subform.object.renew_until.try( :to_formatted_s, :rfc822 ), class: 'ui-date-picker' %></td>
+      <td><%= subform.object.ends_at.to_formatted_s :us_short %></td>
+      <td><%= subform.text_field :renew_until, value: subform.object.renew_until.try( :to_formatted_s, :us_short ), class: 'ui-date-picker' %><%= subform.hidden_field :renew_until, class: 'renew_until-alt' %></td>
+      <td></td>
     <% end %>
 
     <% if subform.object.errors.any? %>
