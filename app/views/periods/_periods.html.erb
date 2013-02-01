@@ -3,9 +3,7 @@
 <table id="periods">
   <thead>
   <tr>
-    <% unless schedule %>
-    <th>Schedule</th>
-    <% end %>
+    <%=content_tag( :td, "Schedule") unless schedule %>
     <th>Starts at</th>
     <th>Ends at</th>
   </tr>

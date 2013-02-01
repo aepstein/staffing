@@ -128,7 +128,7 @@ class MotionsController < ApplicationController
     motion.attachments.each { |a| a.attachable = motion }
     respond_to do |format|
       if motion.save
-        format.html { redirect_to motion, notice: 'Motion was successfully created.' }
+        format.html { redirect_to motion, notice: 'Motion created.' }
         format.xml  { render xml: motion, status: :created, location: motion }
       else
         format.html { render action: "new" }
@@ -142,7 +142,7 @@ class MotionsController < ApplicationController
   def update
     respond_to do |format|
       if motion.update_attributes(params[:motion], as: ( permitted_to?(:admin) ? :admin : :default ))
-        format.html { redirect_to motion, notice: 'Motion was successfully updated.' }
+        format.html { redirect_to motion, notice: 'Motion updated.' }
         format.xml  { head :ok }
       else
         format.html { render action: "edit" }
@@ -178,7 +178,7 @@ class MotionsController < ApplicationController
       else
         motion.assign_attributes params[:motion], as: :eventor
         if motion.propose
-          format.html { redirect_to(motion, notice: 'Motion was successfully proposed.') }
+          format.html { redirect_to(motion, notice: 'Motion proposed.') }
           format.xml  { head :ok }
         else
           format.html { render action: :propose }
@@ -193,7 +193,7 @@ class MotionsController < ApplicationController
   def restart
     respond_to do |format|
       if motion.restart
-        format.html { redirect_to motion, notice: 'Motion was successfully restarted.' }
+        format.html { redirect_to motion, notice: 'Motion restarted.' }
         format.xml { head :ok }
       else
         format.html { redirect_to motion, alert: 'Cannot restart the motion.' }
@@ -211,7 +211,7 @@ class MotionsController < ApplicationController
       else
         motion.assign_attributes params[:motion], as: :eventor
         if motion.withdraw
-          format.html { redirect_to(motion, notice: 'Motion was successfully withdrawn.') }
+          format.html { redirect_to(motion, notice: 'Motion withdrawn.') }
           format.xml  { head :ok }
         else
           format.html { render action: :withdraw }
@@ -230,7 +230,7 @@ class MotionsController < ApplicationController
       else
         if motion_merger.save
           format.html { redirect_to motion.terminal_merged_motion,
-            notice: 'Motion was successfully merged.' }
+            notice: 'Motion merged.' }
           format.xml { head :ok }
         else
           format.html { redirect_to motion, alert: 'Cannot merge the motion.' }
@@ -248,7 +248,7 @@ class MotionsController < ApplicationController
         format.html { render action: :refer }
       else
         if motion.refer
-          format.html { redirect_to(@referred_motion, notice: 'Motion was successfully referred.') }
+          format.html { redirect_to(@referred_motion, notice: 'Motion referred.') }
           format.xml  { head :ok }
       else
           format.html { render action: "refer" }
@@ -266,7 +266,7 @@ class MotionsController < ApplicationController
         format.html
       else
         if motion.amend
-          format.html { redirect_to(@amendment, notice: 'Motion was successfully amended.') }
+          format.html { redirect_to(@amendment, notice: 'Motion amended.') }
           format.xml  { head :ok }
         else
           format.html { render action: "amend" }
@@ -286,7 +286,7 @@ class MotionsController < ApplicationController
         motion.assign_attributes( params[:motion], as: :divider )
         motion.referred_motions.each { |m| m.committee = motion.committee; m.published = true; m.period = motion.period }
         if motion.divide
-          format.html { redirect_to(motion, notice: 'Motion was successfully divided.') }
+          format.html { redirect_to(motion, notice: 'Motion divided.') }
           format.xml  { head :ok }
         else
           format.html { render action: "divide" }
@@ -305,7 +305,7 @@ class MotionsController < ApplicationController
       else
         motion.assign_attributes params[:motion], as: :eventor
         if motion.adopt
-          format.html { redirect_to(motion, notice: 'Motion was successfully adopted.') }
+          format.html { redirect_to(motion, notice: 'Motion adopted.') }
           format.xml  { head :ok }
         else
           format.html { render action: :adopt }
@@ -324,7 +324,7 @@ class MotionsController < ApplicationController
     else
         motion.assign_attributes params[:motion], as: :eventor
         if motion.implement
-          format.html { redirect_to(motion, notice: 'Motion was successfully implemented.') }
+          format.html { redirect_to(motion, notice: 'Motion implemented.') }
           format.xml  { head :ok }
         else
           format.html { render action: :implement }
@@ -343,7 +343,7 @@ class MotionsController < ApplicationController
       else
         motion.assign_attributes params[:motion], as: :eventor
         if motion.reject
-          format.html { redirect_to(motion, notice: 'Motion was successfully rejected.') }
+          format.html { redirect_to(motion, notice: 'Motion rejected.') }
           format.xml  { head :ok }
         else
           format.html { render action: :reject }
@@ -359,7 +359,7 @@ class MotionsController < ApplicationController
     motion.destroy
 
     respond_to do |format|
-      format.html { redirect_to committee_motions_url( motion.committee, notice: 'Motion was successfully destroyed.' ) }
+      format.html { redirect_to committee_motions_url( motion.committee, notice: 'Motion destroyed.' ) }
       format.xml  { head :ok }
     end
   end
