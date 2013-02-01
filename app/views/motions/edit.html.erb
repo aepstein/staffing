@@ -1,6 +1,6 @@
-<h2>Editing motion for <%=h @motion.committee %></h2>
+<%=content_tag :h1, "Edit #{motion.to_s :full}" %>
 
-<%= simple_form_for(@motion) do |f| %>
+<%= simple_form_for(motion) do |f| %>
   <%= render partial: 'form', object: f %>
 <% end %>
 

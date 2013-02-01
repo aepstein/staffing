@@ -1,48 +1,85 @@
 class MotionsController < ApplicationController
-  before_filter :initialize_context
-  before_filter :initialize_index
-  before_filter :new_motion_from_params, only: [ :new, :create ]
-  before_filter :new_referred_motion_from_params, only: [ :refer ]
-  before_filter :setup_breadcrumbs
+  expose :committee { Committee.find params[:committee_id] if params[:committee_id] }
+  expose :user { User.find params[:user_id] if params[:user_id] }
+  expose :meeting { Meeting.find params[:meeting_id] if params[:meeting_id] }
+  expose :period { Period.find params[:period_id] if params[:period_id] }
+  expose :context { meeting || user || committee }
+  expose :q_scope do
+    scope = context.motions
+    scope ||= Motion.scoped
+    case request.action_name
+    when 'allowed'
+      scope = scope.allowed
+    when 'past', 'current'
+      scope = scope.send request.action_name
+    when 'proposed'
+      scope = scope.send :with_status, :proposed
+    else
+      scope = scope.scoped
+    end
+    scope = scope.where( period_id: period.id ) if period
+  end
+  expose :q do
+    q_scope.with_permissions_to(:show).search(
+      params[:term] ? { name_cont: params[:term] } : params[:q]
+    )
+  end
+  expose :motions do
+    q.result.ordered.page(params[:page])
+  end
+  expose :amendment { motion.referred_motions.build_amendment( params[:amendment] ) }
+  expose :referred_motion do
+    out = motion.referred_motions.build_referee( params[:referred_motion] )
+    motion.event_date, motion.event_description = out.event_date, out.event_description
+    out
+  end
+  expose :motion do
+    out = if params[:id]
+      Motion.find params[:id]
+    else
+      committee.motions.build( params[:motion], as: ( permitted_to?(:admin) ? :admin : :default ) )
+    end
+    if out.new_record?
+      out.period ||= out.committee.periods.active
+    end
+    out
+  end
+  expose(:motion_merger) do
+    motion.build_terminal_motion_merger do |merger|
+      merger.assign_attributes params[:motion_merger], as: :merger
+    end
+  end
   filter_access_to :new, :create, :edit, :update, :destroy, :show,
     :adopt, :amend, :divide, :implement, :merge, :propose, :refer, :reject,
     :restart, :unwatch, :watch, :withdraw,
-    attribute_check: true
+    attribute_check: true, load_method: :motion
   filter_access_to :adopt, :amend, :divide, :implement, :merge, :propose,
     :refer, :reject, :restart, :withdraw do
-    raise Authorization::NotAuthorized unless @motion.status_events.include? action_name.to_sym
-    permitted_to! action_name, @motion
+    raise Authorization::NotAuthorized unless motion.status_events.include? action_name.to_sym
+    permitted_to! action_name, motion
   end
 
   # GET /meetings/:meeting_id/motions/allowed
   # GET /meetings/:meeting_id/motions/allowed.xml
   def allowed
-    @motions = @motions.allowed
-    add_breadcrumb 'Allowed', polymorphic_path([:allowed, @context, :motions])
     index
   end
 
   # GET /committees/:committee_id/motions/past
   # GET /committees/:committee_id/motions/past.xml
   def past
-    @motions = @motions.past
-    add_breadcrumb 'Past', polymorphic_path([:past, @context, :motions])
     index
   end
 
   # GET /committees/:committee_id/motions/current
   # GET /committees/:committee_id/motions/current.xml
   def current
-    @motions = @motions.current
-    add_breadcrumb 'Current', polymorphic_path([:current, @context, :motions])
     index
   end
 
   # GET /committees/:committee_id/motions/proposed
   # GET /committees/:committee_id/motions/proposed.xml
   def proposed
-    @motions = @motions.current.with_status(:proposed)
-    add_breadcrumb 'Proposed', polymorphic_path([:proposed, @context, :motions])
     index
   end
 
@@ -55,15 +92,9 @@ class MotionsController < ApplicationController
   # GET /motions
   # GET /motions.xml
   def index
-    @search = @motions.with_permissions_to(:show).search(
-      params[:term] ? { :name_cont => params[:term] } : params[:search]
-    )
-    @motions = @search.result.ordered.page( params[:page] )
-
     respond_to do |format|
       format.html { render action: 'index' } # index.html.erb
-      format.json { render json: @motions.map { |m| m.to_s(:numbered) } }
-      format.xml  { render xml: @motions }
+      format.json { render json: motions.map { |m| m.to_s(:numbered) } }
     end
   end
 
@@ -72,10 +103,10 @@ class MotionsController < ApplicationController
   def show
     respond_to do |format|
       format.html # show.html.erb
-      format.xml  { render :xml => @motion }
+      format.xml  { render xml: motion }
       format.pdf do
-        report = MotionReport.new( @motion )
-        send_data report.to_pdf, filename: "#{@motion.to_s :file}.pdf",
+        report = MotionReport.new( motion )
+        send_data report.to_pdf, filename: "#{motion.to_s :file}.pdf",
           type: 'application/pdf', disposition: 'inline'
       end
     end
@@ -84,31 +115,24 @@ class MotionsController < ApplicationController
   # GET /committees/:committee_id/motions/new
   # GET /committees/:committee_id/motions/new.xml
   def new
-    @motion.sponsorships.build unless @motion.sponsorships.populate_for( current_user )
+    motion.sponsorships.build unless motion.sponsorships.populate_for( current_user )
     respond_to do |format|
       format.html # new.html.erb
-      format.xml  { render :xml => @motion }
-    end
-  end
-
-  # GET /motions/1/edit
-  def edit
-    respond_to do |format|
-      format.html # edit.html.erb
+      format.xml  { render xml: motion }
     end
   end
 
   # POST /committees/:committee_id/motions
   # POST /committees/:committee_id/motions.xml
   def create
-    @motion.attachments.each { |a| a.attachable = @motion }
+    motion.attachments.each { |a| a.attachable = motion }
     respond_to do |format|
-      if @motion.save
-        format.html { redirect_to @motion, notice: 'Motion was successfully created.' }
-        format.xml  { render xml: @motion, status: :created, location: @motion }
+      if motion.save
+        format.html { redirect_to motion, notice: 'Motion was successfully created.' }
+        format.xml  { render xml: motion, status: :created, location: motion }
       else
         format.html { render action: "new" }
-        format.xml  { render xml: @motion.errors, status: :unprocessable_entity }
+        format.xml  { render xml: motion.errors, status: :unprocessable_entity }
       end
     end
   end
@@ -117,12 +141,12 @@ class MotionsController < ApplicationController
   # PUT /motions/1.xml
   def update
     respond_to do |format|
-      if @motion.update_attributes(params[:motion], as: ( permitted_to?(:admin) ? :admin : :default ))
-        format.html { redirect_to @motion, notice: 'Motion was successfully updated.' }
+      if motion.update_attributes(params[:motion], as: ( permitted_to?(:admin) ? :admin : :default ))
+        format.html { redirect_to motion, notice: 'Motion was successfully updated.' }
         format.xml  { head :ok }
       else
-        format.html { render :action => "edit" }
-        format.xml  { render :xml => @motion.errors, :status => :unprocessable_entity }
+        format.html { render action: "edit" }
+        format.xml  { render xml: motion.errors, status: :unprocessable_entity }
       end
     end
   end
@@ -130,8 +154,8 @@ class MotionsController < ApplicationController
   # PUT /motions/:id/watch
   def watch
     respond_to do |format|
-      @motion.watchers << current_user
-      format.html { redirect_to @motion, notice: 'You are now watching the motion.' }
+      motion.watchers << current_user
+      format.html { redirect_to motion, notice: 'You are now watching the motion.' }
       format.xml { head :ok }
     end
   end
@@ -139,8 +163,8 @@ class MotionsController < ApplicationController
   # PUT /motions/:id/unwatch
   def unwatch
     respond_to do |format|
-      @motion.watchers.delete current_user
-      format.html { redirect_to @motion, notice: 'You are no longer watching the motion.' }
+      motion.watchers.delete current_user
+      format.html { redirect_to motion, notice: 'You are no longer watching the motion.' }
       format.xml { head :ok }
     end
   end
@@ -152,13 +176,13 @@ class MotionsController < ApplicationController
       if request.method_symbol == :get
         format.html { render action: :propose }
       else
-        @motion.assign_attributes params[:motion], as: :eventor
-        if @motion.propose
-          format.html { redirect_to(@motion, notice: 'Motion was successfully proposed.') }
+        motion.assign_attributes params[:motion], as: :eventor
+        if motion.propose
+          format.html { redirect_to(motion, notice: 'Motion was successfully proposed.') }
           format.xml  { head :ok }
         else
           format.html { render action: :propose }
-          format.xml  { render xml: @motion.errors, status: :unprocessable_entity }
+          format.xml  { render xml: motion.errors, status: :unprocessable_entity }
         end
       end
     end
@@ -168,12 +192,12 @@ class MotionsController < ApplicationController
   # TODO should have functionality similar to edit so chair or sponsor can alter sponsors, etc.
   def restart
     respond_to do |format|
-      if @motion.restart
-        format.html { redirect_to @motion, notice: 'Motion was successfully restarted.' }
+      if motion.restart
+        format.html { redirect_to motion, notice: 'Motion was successfully restarted.' }
         format.xml { head :ok }
       else
-        format.html { redirect_to @motion, alert: 'Cannot restart the motion.' }
-        format.xml { render xml: @motion.errors, status: :unprocessable_entity }
+        format.html { redirect_to motion, alert: 'Cannot restart the motion.' }
+        format.xml { render xml: motion.errors, status: :unprocessable_entity }
       end
     end
   end
@@ -185,13 +209,13 @@ class MotionsController < ApplicationController
       if request.method_symbol == :get
         format.html { render action: :withdraw }
       else
-        @motion.assign_attributes params[:motion], as: :eventor
-        if @motion.withdraw
-          format.html { redirect_to(@motion, notice: 'Motion was successfully withdrawn.') }
+        motion.assign_attributes params[:motion], as: :eventor
+        if motion.withdraw
+          format.html { redirect_to(motion, notice: 'Motion was successfully withdrawn.') }
           format.xml  { head :ok }
         else
           format.html { render action: :withdraw }
-          format.xml  { render xml: @motion.errors, status: :unprocessable_entity }
+          format.xml  { render xml: motion.errors, status: :unprocessable_entity }
         end
       end
     end
@@ -200,20 +224,17 @@ class MotionsController < ApplicationController
   # GET /motions/:id/merge - form where user selects motion to which this motion is to be merged
   # PUT /motions/:id/merge - do actual merge
   def merge
-    @motion_merger = @motion.build_terminal_motion_merger do |merger|
-      merger.assign_attributes params[:motion_merger], as: :merger
-    end
     respond_to do |format|
       if request.method_symbol == :get
         format.html { render action: :merge }
       else
-        if @motion_merger.save
-          format.html { redirect_to @motion.terminal_merged_motion,
+        if motion_merger.save
+          format.html { redirect_to motion.terminal_merged_motion,
             notice: 'Motion was successfully merged.' }
           format.xml { head :ok }
         else
-          format.html { redirect_to @motion, alert: 'Cannot merge the motion.' }
-          format.xml { render xml: @motion.errors, status: :unprocessable_entity }
+          format.html { redirect_to motion, alert: 'Cannot merge the motion.' }
+          format.xml { render xml: motion.errors, status: :unprocessable_entity }
         end
       end
     end
@@ -226,12 +247,12 @@ class MotionsController < ApplicationController
       if request.method_symbol == :get
         format.html { render action: :refer }
       else
-        if @motion.refer
+        if motion.refer
           format.html { redirect_to(@referred_motion, notice: 'Motion was successfully referred.') }
           format.xml  { head :ok }
       else
           format.html { render action: "refer" }
-          format.xml  { render xml: @motion.errors, status: :unprocessable_entity }
+          format.xml  { render xml: motion.errors, status: :unprocessable_entity }
         end
       end
     end
@@ -240,13 +261,11 @@ class MotionsController < ApplicationController
   # GET /motions/:id/amend
   # PUT /motions/:id/amend
   def amend
-    @motion.referred_motions.build_amendment( params[:amendment] )
-    @amendment = @motion.amendment
     respond_to do |format|
       if request.method_symbol == :get
         format.html
       else
-        if @motion.amend
+        if motion.amend
           format.html { redirect_to(@amendment, notice: 'Motion was successfully amended.') }
           format.xml  { head :ok }
         else
@@ -264,14 +283,14 @@ class MotionsController < ApplicationController
       if request.method_symbol == :get
         format.html { render action: :divide }
       else
-        @motion.assign_attributes( params[:motion], as: :divider )
-        @motion.referred_motions.each { |m| m.committee = @motion.committee; m.published = true; m.period = @motion.period }
-        if @motion.divide
-          format.html { redirect_to(@motion, notice: 'Motion was successfully divided.') }
+        motion.assign_attributes( params[:motion], as: :divider )
+        motion.referred_motions.each { |m| m.committee = motion.committee; m.published = true; m.period = motion.period }
+        if motion.divide
+          format.html { redirect_to(motion, notice: 'Motion was successfully divided.') }
           format.xml  { head :ok }
         else
           format.html { render action: "divide" }
-          format.xml  { render xml: @motion.errors, status: :unprocessable_entity }
+          format.xml  { render xml: motion.errors, status: :unprocessable_entity }
         end
       end
     end
@@ -284,13 +303,13 @@ class MotionsController < ApplicationController
       if request.method_symbol == :get
         format.html { render action: :adopt }
       else
-        @motion.assign_attributes params[:motion], as: :eventor
-        if @motion.adopt
-          format.html { redirect_to(@motion, notice: 'Motion was successfully adopted.') }
+        motion.assign_attributes params[:motion], as: :eventor
+        if motion.adopt
+          format.html { redirect_to(motion, notice: 'Motion was successfully adopted.') }
           format.xml  { head :ok }
         else
           format.html { render action: :adopt }
-          format.xml  { render xml: @motion.errors, status: :unprocessable_entity }
+          format.xml  { render xml: motion.errors, status: :unprocessable_entity }
         end
       end
     end
@@ -302,14 +321,14 @@ class MotionsController < ApplicationController
     respond_to do |format|
       if request.method_symbol == :get
         format.html { render action: :implement }
-      else
-        @motion.assign_attributes params[:motion], as: :eventor
-        if @motion.implement
-          format.html { redirect_to(@motion, notice: 'Motion was successfully implemented.') }
+    else
+        motion.assign_attributes params[:motion], as: :eventor
+        if motion.implement
+          format.html { redirect_to(motion, notice: 'Motion was successfully implemented.') }
           format.xml  { head :ok }
         else
           format.html { render action: :implement }
-          format.xml  { render xml: @motion.errors, status: :unprocessable_entity }
+          format.xml  { render xml: motion.errors, status: :unprocessable_entity }
         end
       end
     end
@@ -322,13 +341,13 @@ class MotionsController < ApplicationController
       if request.method_symbol == :get
         format.html { render action: :reject }
       else
-        @motion.assign_attributes params[:motion], as: :eventor
-        if @motion.reject
-          format.html { redirect_to(@motion, notice: 'Motion was successfully rejected.') }
+        motion.assign_attributes params[:motion], as: :eventor
+        if motion.reject
+          format.html { redirect_to(motion, notice: 'Motion was successfully rejected.') }
           format.xml  { head :ok }
         else
           format.html { render action: :reject }
-          format.xml  { render xml: @motion.errors, status: :unprocessable_entity }
+          format.xml  { render xml: motion.errors, status: :unprocessable_entity }
         end
       end
     end
@@ -337,65 +356,11 @@ class MotionsController < ApplicationController
   # DELETE /motions/1
   # DELETE /motions/1.xml
   def destroy
-    @motion.destroy
+    motion.destroy
 
     respond_to do |format|
-      format.html { redirect_to committee_motions_url( @motion.committee, notice: 'Motion was successfully destroyed.' ) }
+      format.html { redirect_to committee_motions_url( motion.committee, notice: 'Motion was successfully destroyed.' ) }
       format.xml  { head :ok }
-    end
-  end
-
-  private
-
-  def initialize_context
-    @motion = Motion.find(params[:id]) if params[:id]
-    @meeting = Meeting.find(params[:meeting_id]) if params[:meeting_id]
-    @user = User.find(params[:user_id]) if params[:user_id]
-    @committee = Committee.find(params[:committee_id]) if params[:committee_id]
-    @committee ||= @motion.committee if @motion
-    @committee ||= @meeting.committee if @meeting
-    @context = @user || @meeting || @committee
-  end
-
-  def initialize_index
-    @motions = Motion.scoped
-    @motions = @committee.motions if @committee
-    @motions = @user.motions if @user
-    @motions = @meeting.motions if @meeting
-    @motions = @motions.where( period_id: params[:period_id] ) if params[:period_id]
-  end
-
-  def new_motion_from_params
-    @motion = @committee.motions.build( params[:motion],
-      as: ( permitted_to?(:admin) ? :admin : :default ) )
-    @motion.period ||= @motion.committee.periods.active
-  end
-
-  def new_referred_motion_from_params
-    @referred_motion = @motion.referred_motions.build_referee( params[:referred_motion] )
-    @motion.event_date, @motion.event_description = @referred_motion.event_date, @referred_motion.event_description
-  end
-
-  def setup_breadcrumbs
-    add_breadcrumb 'Committees', committees_path
-    if @committee
-      add_breadcrumb @committee.name, committee_path(@committee)
-    end
-    if @meeting
-      add_breadcrumb 'Meetings',
-        polymorphic_path([ @committee, :meetings ])
-      add_breadcrumb @meeting.tense.to_s.capitalize,
-        polymorphic_path([ @meeting.tense, @committee, :meetings ])
-      add_breadcrumb @meeting,
-        meeting_path( @meeting )
-    end
-    if @user
-      add_breadcrumb 'Users', users_path
-      add_breadcrumb @user.name, user_path( @user )
-    end
-    add_breadcrumb 'Motions', polymorphic_path([ @context, :motions ])
-    if @motion && @motion.persisted?
-      add_breadcrumb @motion, motion_path(@motion)
     end
   end
 end

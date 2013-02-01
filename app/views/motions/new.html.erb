@@ -1,6 +1,6 @@
-<h2>New motion for <%= @motion.committee %></h2>
+<%=content_tag :h1, "New motion for #{motion.committee}" %>
 
-<%= simple_form_for( @motion, url: committee_motions_path(@motion.committee) ) do |f| %>
+<%= simple_form_for( motion, url: committee_motions_path(motion.committee) ) do |f| %>
   <%= render partial: 'form', object: f %>
 <% end %>
 

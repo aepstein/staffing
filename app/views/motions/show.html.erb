@@ -1,19 +1,21 @@
-<div id="motion-<%= @motion.id %>">
-<%= render partial: 'motions/detail', locals: { motion: @motion } %>
-</div>
+<%=content_tag :h1, "Show #{motion.to_s :full}" %>
 
-<h3>Events</h3>
+<%=content_tag :div, id: "motion-#{motion.id}" do %>
+<%= render partial: 'motions/detail', locals: { motion: motion } %>
+<% end %>
+
+<%=content_tag :h2, "Events" %>
 
 <%= render partial: 'motion_events/motion_events',
-  object: @motion.motion_events, locals: { motion: @motion } %>
+  object: motion.motion_events, locals: { motion: motion } %>
 
 <p>
-<% if permitted_to? :edit, @motion -%>
-<%= link_to 'Edit', edit_motion_path(@motion) %> |
+<% if permitted_to? :edit, motion -%>
+<%= link_to 'Edit', edit_motion_path(motion) %> |
 <% end -%>
-<%= link_to_watch_toggle( @motion ) %> |
-<%= nested_index @motion, :users, %w( allowed ) %> |
-<%= nested_index @motion, :meetings, %w( past current future ) %> |
-<%= link_to "Back to #{@motion.committee}", committee_motions_path(@motion.committee) %>
+<%= link_to_watch_toggle( motion ) %> |
+<%= nested_index motion, :users, %w( allowed ) %> |
+<%= nested_index motion, :meetings, %w( past current future ) %> |
+<%= link_to "Back to #{motion.committee}", committee_motions_path(motion.committee) %>
 </p>
 

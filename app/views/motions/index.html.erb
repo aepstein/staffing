@@ -1,24 +1,24 @@
-<h2><%=h params[:action].titleize %> motions for <%=h @committee ? @committee : "" %><%=h( @user ? @user : "" ) %></h2>
+<h2><%=h params[:action].titleize %> motions for <%=h committee ? committee : "" %><%=h( user ? user : "" ) %></h2>
 
 <p>
-<%= paginate @motions %>
+<%= paginate motions %>
 </p>
 
-<%= render :partial => "motions", :object => @motions,
-  :locals => { :committee => @committee ? @committee : false, :position => @user ? true : false } %>
+<%= render :partial => "motions", :object => motions,
+  :locals => { :committee => committee ? committee : false, :position => user ? true : false } %>
 
 <p>
-<%= paginate @motions %>
+<%= paginate motions %>
 </p>
 
 <hr />
 
 <p>
-<% if @committee && permitted_to?( :create, @committee.motions.build ) %>
-<%= link_to 'New motion', new_committee_motion_path( @committee ) %>
+<% if committee && permitted_to?( :create, committee.motions.build ) %>
+<%= link_to 'New motion', new_committee_motion_path( committee ) %>
 <% end %>
-<% if @user %>
-<%= link_to @user.to_s, user_path( @user ) %>
+<% if user %>
+<%= link_to user.to_s, user_path( user ) %>
 <% end %>
 </p>
 

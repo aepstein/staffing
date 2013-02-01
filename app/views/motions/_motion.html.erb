@@ -1,15 +1,11 @@
 <% committee ||= false %>
 <% period ||= false %>
   <%= table_row_tag(true, false, { id: "motion-#{motion.id}" }) do %>
-    <% unless committee %>
-    <td><%= motion.committee %></td>
-    <% end %>
-    <% unless period %>
-    <td><%= motion.period %></td>
-    <% end %>
-    <td><%= motion.position %></td>
-    <td class="name"><%= motion.name %></td>
-    <td><%= motion.status %></td>
+    <%=content_tag( :td, motion.committee ) unless committee %>
+    <%=content_tag( :td, motion.period ) unless period%>
+    <%=content_tag :td, motion.position %>
+    <%=content_tag :td, motion.name, class: "name" %>
+    <%=content_tag :td, motion.status %>
     <td><%= link_to 'Show', motion %></td>
     <td><%= link_to_watch_toggle( motion ) %></td>
     <td><%= link_to( 'Edit', edit_motion_path(motion) ) if permitted_to? :edit, motion %></td>

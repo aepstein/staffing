@@ -3,20 +3,16 @@
 <table id="motions">
   <thead>
   <tr>
-  <% unless committee %>
-    <th>Committee</th>
-  <% end %>
-  <% unless period %>
-    <th>Period</th>
-  <% end %>
+    <%=content_tag( :th, "Committee" ) unless committee %>
+    <%=content_tag(:th, "Period" ) unless period %>
     <th>Position</th>
     <th>Name</th>
     <th>Status</th>
   </tr>
   </thead>
   <tbody>
-<%= render :partial => "motions/motion", :collection => motions,
-  :locals => { :committee => committee, :period => period } %>
+<%= render partial: "motions/motion", collection: motions,
+  locals: { committee: committee, period: period } %>
   </tbody>
 </table>
 

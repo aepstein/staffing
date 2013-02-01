@@ -1,9 +1,11 @@
+<%=content_tag :h1, "Adopt #{motion.to_s :full}" %>
+
 <%= content_tag :p do %>
   Use this form to record the adoption of the motion by the committee.
 <% end %>
 
-<%= simple_form_for @motion, as: :motion,
-  url: adopt_motion_path( @motion ), method: :put do |form| %>
+<%= simple_form_for motion, as: :motion,
+  url: adopt_motion_path( motion ), method: :put do |form| %>
   <%= render "shared/error_messages", target: form.object %>
   <%= render partial: 'motions/event_fields', object: form %>
   <%= form.button :wrapped, label: 'Adopt', cancel: motion_path( form.object ) %>
