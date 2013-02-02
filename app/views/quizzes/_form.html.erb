@@ -1,5 +1,5 @@
   <%= render "shared/error_messages", target: form.object %>
   <%= form.input :name %>
   <%= form.input :quiz_questions, as: :cocoon, ordered_by: :position %>
-  <%= form.actions %>
+  <%= form.button :wrapped, cancel: quizzes_path %>
 

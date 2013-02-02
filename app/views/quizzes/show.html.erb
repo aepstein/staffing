@@ -1,16 +1,8 @@
-<div id="quiz-<%= @quiz.id %>">
+<div id="quiz-<%= quiz.id %>">
 <p>
-  <b>Name:</b> <%=h @quiz.name %>
+  <b>Name:</b> <%=h quiz.name %>
 </p>
 
-<%= render partial: 'quizzes/questions', object: @quiz.questions %>
-</div> <!-- #quiz-<%= @quiz.id %> -->
-
-
-<p>
-<% if permitted_to? :edit, @quiz -%>
-<%= link_to 'Edit', edit_quiz_path(@quiz) %> |
-<% end -%>
-<%= link_to 'Back', quizzes_path %>
-</p>
+<%= render partial: 'quizzes/questions', object: quiz.questions %>
+</div> <!-- #quiz-<%= quiz.id %> -->
 

@@ -1,55 +1,20 @@
 class QuizzesController < ApplicationController
-  before_filter :initialize_context
-  before_filter :new_quiz_from_params, only: [ :new, :create ]
+  expose :q_scope { Quiz.scoped }
+  expose :q { q_scope.search( params[:term] ? { name_cont: params[:term] } : params[:q] ) }
+  expose :quizzes { q_scope.result.ordered.page(params[:page]) }
+  expose :quiz
   filter_resource_access
-  before_filter :setup_breadcrumbs
-
-  # GET /quizzes
-  # GET /quizzes.xml
-  def index
-    search = params[:term] ? { name_cont: params[:term] } : params[:q]
-    @q ||= Quiz.search( search )
-    @quizzes = @q.result.ordered.page( params[:page] )
-
-    respond_to do |format|
-      format.html # index.html.erb
-      format.xml  { render :xml => @quizzes }
-    end
-  end
-
-  # GET /quizzes/1
-  # GET /quizzes/1.xml
-  def show
-    respond_to do |format|
-      format.html # show.html.erb
-      format.xml  { render :xml => @quiz }
-    end
-  end
-
-  # GET /quizzes/new
-  # GET /quizzes/new.xml
-  def new
-    respond_to do |format|
-      format.html # new.html.erb
-      format.xml  { render :xml => @quiz }
-    end
-  end
-
-  # GET /quizzes/1/edit
-  def edit
-  end
 
   # POST /quizzes
   # POST /quizzes.xml
   def create
     respond_to do |format|
-      if @quiz.save
-        flash[:notice] = 'Quiz was successfully created.'
-        format.html { redirect_to(@quiz) }
-        format.xml  { render :xml => @quiz, :status => :created, :location => @quiz }
+      if quiz.save
+        format.html { redirect_to quiz, flash: { success: 'Quiz created.' } }
+        format.xml  { render xml: quiz, status: :created, location: quiz }
       else
-        format.html { render :action => "new" }
-        format.xml  { render :xml => @quiz.errors, :status => :unprocessable_entity }
+        format.html { render action: "new" }
+        format.xml  { render xml: quiz.errors, status: :unprocessable_entity }
       end
     end
   end
@@ -58,13 +23,12 @@ class QuizzesController < ApplicationController
   # PUT /quizzes/1.xml
   def update
     respond_to do |format|
-      if @quiz.update_attributes(params[:quiz])
-        flash[:notice] = 'Quiz was successfully updated.'
-        format.html { redirect_to(@quiz) }
+      if quiz.save
+        format.html { redirect_to quiz, flash: { success: 'Quiz updated.' } }
         format.xml  { head :ok }
       else
-        format.html { render :action => "edit" }
-        format.xml  { render :xml => @quiz.errors, :status => :unprocessable_entity }
+        format.html { render action: "edit" }
+        format.xml  { render xml: quiz.errors, status: :unprocessable_entity }
       end
     end
   end
@@ -72,28 +36,11 @@ class QuizzesController < ApplicationController
   # DELETE /quizzes/1
   # DELETE /quizzes/1.xml
   def destroy
-    @quiz.destroy
+    quiz.destroy
 
     respond_to do |format|
-      format.html { redirect_to(quizzes_url, notice: "Quiz was successfully destroyed.") }
+      format.html { redirect_to quizzes_url, flash: { success: "Quiz was successfully destroyed." } }
       format.xml  { head :ok }
-    end
-  end
-
-  private
-
-  def initialize_context
-    @quiz = Quiz.find params[:id] if params[:id]
-  end
-
-  def new_quiz_from_params
-    Quiz.new( params[:quiz] )
-  end
-
-  def setup_breadcrumbs
-    add_breadcrumb 'Quizzes', quizzes_path
-    if @quiz && @quiz.persisted?
-      add_breadcrumb @quiz, quiz_path( @quiz )
     end
   end
 end
