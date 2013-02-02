@@ -1,6 +1,5 @@
-<h2>Listing questions<%=h " for #{@quiz}" if @quiz %></h2>
-
-<%= form_for @q, url: request.fullpath, method: :get do |form| %>
+<%=content_tag( :h1, ( "Questions" + ( context ? " for #{context}" : "" ) ) ) %>
+<%= form_for q, url: request.fullpath, method: :get do |form| %>
 <p>
   <%= form.label :name_cont, 'Name' %>
   <%= form.text_field :name_cont %>
@@ -12,15 +11,12 @@
 </p>
 <% end %>
 
-<p>
-<%= paginate @questions %>
-</p>
+<%= paginate questions %>
 
-<%= render partial: "questions/questions", object: @questions %>
+<%= render partial: "questions/questions", object: questions %>
 
-<p>
-<%= paginate @questions %>
-</p>
+<%= paginate questions %>
+
 
 <hr />
 

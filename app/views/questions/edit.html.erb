@@ -1,11 +1,6 @@
-<h2>Editing question</h2>
+<%=content_tag :h1, "Edit question #{question}" %>
 
-<%= simple_form_for(@question) do |f| %>
-  <%= render :partial => 'form', :object => f %>
+<%= simple_form_for(question) do |f| %>
+  <%= render partial: 'form', object: f %>
 <% end %>
-
-<p>
-<%= link_to 'Show', @question %> |
-<%= link_to 'Back', questions_path %>
-</p>
 

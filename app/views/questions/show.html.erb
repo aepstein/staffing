@@ -1,28 +1,21 @@
-<div id="question-<%= @question.id %>">
+<div id="question-<%= question.id %>">
 <p>
-  <b>Name:</b> <%=h @question.name %>
+  <b>Name:</b> <%=h question.name %>
 </p>
 
 <p>
-  <b>Disposition:</b> <%= Question::DISPOSITIONS.key( @question.disposition ) %>
+  <b>Disposition:</b> <%= Question::DISPOSITIONS.key( question.disposition ) %>
 </p>
 
 <p>
   <b>Content:</b>
 </p>
 
-<%=markdown @question.content %>
+<%=markdown question.content %>
 
 <p>
-  <b>Global?</b> <%= @question.global? ? 'Yes' : 'No' %>
+  <b>Global?</b> <%= question.global? ? 'Yes' : 'No' %>
 </p>
 
-</div> <!-- #question-<%= @question.id %> -->
-
-<p>
-<% if permitted_to? :edit, @question -%>
-<%= link_to 'Edit', edit_question_path(@question) %> |
-<% end -%>
-<%= link_to 'Back', questions_path %>
-</p>
+</div> <!-- #question-<%= question.id %> -->
 
