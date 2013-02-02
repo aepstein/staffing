@@ -1,10 +1,6 @@
-<h2>New position</h2>
+<%=content_tag :h1, "New position" %>
 
-<%= simple_form_for(@position) do |f| %>
-  <%= render :partial => 'form', :object => f %>
+<%= simple_form_for(position) do |f| %>
+  <%= render partial: 'form', object: f %>
 <% end %>
-
-<p>
-<%= link_to 'Back', positions_path %>
-</p>
 

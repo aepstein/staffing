@@ -1,6 +1,6 @@
-<h2>Listing positions<%=h @committee ? " for #{@committee}" : "" %></h2>
+<%=content_tag :h1, "Positions for #{context}" %>
 
-<%= form_for @q, :url => request.fullpath, :method => :get do |form| %>
+<%= form_for q, url: request.fullpath, method: :get do |form| %>
 <p>
   <%= form.label :name_cont, 'Name' %>
   <%= form.text_field :name_cont %>
@@ -8,14 +8,11 @@
 </p>
 <% end %>
 
-<p>
-<%= paginate @positions %>
-</p>
+<%= paginate positions %>
 
-<%= render partial: "positions/positions", object: @positions %>
-<p>
-<%= paginate @positions %>
-</p>
+<%= render partial: "positions/positions", object: positions %>
+
+<%= paginate positions %>
 
 <hr />
 
@@ -23,8 +20,8 @@
 <% if permitted_to? :create, :positions %>
 <%= link_to 'New position', new_position_path %>
 <% end %>
-<% if @committee %>
- | <%= link_to @committee.to_s, @committee %>
+<% if committee %>
+ | <%= link_to committee.to_s, committee %>
 <% end %>
 </p>
 

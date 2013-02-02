@@ -1,7 +1,20 @@
 class PositionsController < ApplicationController
-  before_filter :require_user, :initialize_context
-  before_filter :new_position_from_params, :only => [ :new, :create ]
-  before_filter :setup_breadcrumbs
+  expose :committee { Committee.find params[:committee_id] if params[:committee_id] }
+  expose :user { User.find params[:user_id] if params[:user_id] }
+  expose :context { committee || user }
+  expose :q_scope do
+    scope = context.positions
+    scope ||= Position.scoped
+    case request.action_name
+    when 'current', 'past', 'future', 'requestable'
+      scope.send request.action_name
+    else
+      scope.scoped
+    end
+  end
+  expose :q { q_scope.search( params[:term] ? { name_cont: params[:term] } : params[:q] ) }
+  expose :positions { q.result.ordered.page(params[:page]) }
+  expose :position
   filter_access_to :new, :create, :edit, :update, :destroy, :show
   filter_access_to :requestable, :index do
     permitted_to!( :show, @user ) if @user
@@ -11,7 +24,6 @@ class PositionsController < ApplicationController
   # GET /users/:user_id/positions/requestable
   # GET /users/:user_id/positions/requestable.xml
   def requestable
-    @search ||= @user.positions.requestable.search( params[:search] ) if @user
     index
   end
 
@@ -20,51 +32,23 @@ class PositionsController < ApplicationController
   # GET /committees/:committee_id/positions
   # GET /committees/:committee_id/positions.xml
   def index
-    search = params[:term] ? { :name_cont => params[:term] } : params[:q]
-    @q ||= @committee.positions.search( search ) if @committee
-    @q ||= Position.search( search )
-    @positions = @q.result.ordered.page( params[:page] )
-
     respond_to do |format|
-      format.html { render :action => 'index' } # index.html.erb
+      format.html { render action: 'index' } # index.html.erb
       format.json # index.json.erb
-      format.xml  { render :xml => @positions }
+      format.xml  { render xml: positions }
     end
-  end
-
-  # GET /positions/1
-  # GET /positions/1.xml
-  def show
-    respond_to do |format|
-      format.html # show.html.erb
-      format.xml  { render :xml => @position }
-    end
-  end
-
-  # GET /positions/new
-  # GET /positions/new.xml
-  def new
-    respond_to do |format|
-      format.html # new.html.erb
-      format.xml  { render :xml => @position }
-    end
-  end
-
-  # GET /positions/1/edit
-  def edit
   end
 
   # POST /positions
   # POST /positions.xml
   def create
     respond_to do |format|
-      if @position.save
-        flash[:notice] = 'Position was successfully created.'
-        format.html { redirect_to(@position) }
-        format.xml  { render :xml => @position, :status => :created, :location => @position }
+      if position.save
+        format.html { redirect_to( position, flash: { success: 'Position created.' } ) }
+        format.xml  { render xml: position, status: :created, location: position }
       else
-        format.html { render :action => "new" }
-        format.xml  { render :xml => @position.errors, :status => :unprocessable_entity }
+        format.html { render action: "new" }
+        format.xml  { render xml: position.errors, status: :unprocessable_entity }
       end
     end
   end
@@ -73,13 +57,12 @@ class PositionsController < ApplicationController
   # PUT /positions/1.xml
   def update
     respond_to do |format|
-      if @position.update_attributes(params[:position])
-        flash[:notice] = 'Position was successfully updated.'
-        format.html { redirect_to(@position) }
+      if position.save
+        format.html { redirect_to( position, flash: { success: 'Position updated.' } ) }
         format.xml  { head :ok }
       else
-        format.html { render :action => "edit" }
-        format.xml  { render :xml => @position.errors, :status => :unprocessable_entity }
+        format.html { render action: "edit" }
+        format.xml  { render xml: position.errors, status: :unprocessable_entity }
       end
     end
   end
@@ -87,32 +70,11 @@ class PositionsController < ApplicationController
   # DELETE /positions/1
   # DELETE /positions/1.xml
   def destroy
-    @position.destroy
+    position.destroy
 
     respond_to do |format|
-      format.html { redirect_to(positions_url, notice: "Position was successfully destroyed.") }
+      format.html { redirect_to( positions_url, flash: { success: "Position destroyed." } ) }
       format.xml  { head :ok }
-    end
-  end
-
-  private
-
-  def initialize_context
-    @position = Position.find( params[:id] ) if params[:id]
-    @committee = Committee.find( params[:committee_id] ) if params[:committee_id]
-    @user = User.find( params[:user_id] ) if params[:user_id]
-    @context = @committee || @user
-  end
-
-  def new_position_from_params
-    @position = Position.new( params[:position] )
-  end
-
-  def setup_breadcrumbs
-    add_breadcrumb @context, polymorphic_path( @context ) if @context
-    add_breadcrumb "Positions", polymorphic_path( [ @context, :positions ] )
-    if @position && @position.persisted?
-      add_breadcrumb @position, position_path( @position )
     end
   end
 end

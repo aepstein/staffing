@@ -1,22 +1,22 @@
-  <%= render "shared/error_messages", :target => form.object %>
+  <%= render "shared/error_messages", target: form.object %>
   <%= form.input :name %>
-  <%= form.input :authority %>
-  <%= form.input :quiz %>
-  <%= form.input :schedule %>
+  <%= form.association :authority %>
+  <%= form.association :quiz %>
+  <%= form.association :schedule %>
   <%= form.input :slots,
     hint: 'What is the maximum number of simultaneous memberships allowed for this position?' %>
   <%= form.input :minimum_slots,
     hint: 'What is the minimum number of simultaneous memberships allowed for this position?' %>
-  <%= form.input :renewable, :as => :radio, :label => 'Renewable?',
-    :hint => 'Should members receive renewal notices regarding this position?' %>
-  <%= form.input :notifiable, :as => :radio, :label => 'Notifiable?',
-    :hint => 'Should notices be sent when a membership is created/assigned and when it expires?' %>
-  <%= form.input :designable, :as => :radio, :label => 'Designable?',
-    :hint => 'Can designees be appointed for this position?' %>
-  <%= form.input :active, :as => :radio, :label => 'Active?',
-    :hint => 'Should unassigned memberships be generated automatically for this position?' %>
-  <%= form.input :statuses, :as => :check_boxes, :collection => User::STATUSES,
-    :hint => 'What status must a user have to be in this position?  Leave blank if status is not a factor.' %>
+  <%= form.input :renewable, as: :radio, label: 'Renewable?',
+    hint: 'Should members receive renewal notices regarding this position?' %>
+  <%= form.input :notifiable, as: :radio, label: 'Notifiable?',
+    hint: 'Should notices be sent when a membership is created/assigned and when it expires?' %>
+  <%= form.input :designable, as: :radio, label: 'Designable?',
+    hint: 'Can designees be appointed for this position?' %>
+  <%= form.input :active, as: :radio, label: 'Active?',
+    hint: 'Should unassigned memberships be generated automatically for this position?' %>
+  <%= form.input :statuses, as: :check_boxes, collection: User::STATUSES,
+    hint: 'What status must a user have to be in this position?  Leave blank if status is not a factor.' %>
   <%= form.input :join_message %>
   <%= form.input :leave_message %>
   <%= form.input :reject_message %>

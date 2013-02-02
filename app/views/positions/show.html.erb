@@ -1,43 +1,43 @@
-<div id="position-<%= @position.id %>">
+<div id="position-<%= position.id %>">
 <p>
-  <b>Name:</b> <%=h @position.name %>
+  <b>Name:</b> <%=h position.name %>
 </p>
 
 <p>
-  <b>Authority:</b> <%=h @position.authority %>
+  <b>Authority:</b> <%=h position.authority %>
 </p>
 
 <p>
-  <b>Quiz:</b> <%=h @position.quiz %>
+  <b>Quiz:</b> <%=h position.quiz %>
 </p>
 
 <p>
-  <b>Schedule:</b> <%=h @position.schedule %>
+  <b>Schedule:</b> <%=h position.schedule %>
 </p>
 
-<p><b>Notifiable?</b> <%= @position.notifiable? ? 'Yes' : 'No' %></p>
+<p><b>Notifiable?</b> <%= position.notifiable? ? 'Yes' : 'No' %></p>
 
-<p><b>Renewable?</b> <%= @position.renewable? ? 'Yes' : 'No' %></p>
+<p><b>Renewable?</b> <%= position.renewable? ? 'Yes' : 'No' %></p>
 
-<p><b>Designable?</b> <%= @position.designable? ? 'Yes' : 'No' %></p>
+<p><b>Designable?</b> <%= position.designable? ? 'Yes' : 'No' %></p>
 
-<p><b>Active?</b> <%= @position.active? ? 'Yes' : 'No' %></p>
+<p><b>Active?</b> <%= position.active? ? 'Yes' : 'No' %></p>
 
 <p>
-  <b>Slots:</b> <%=h @position.slots %>
+  <b>Slots:</b> <%=h position.slots %>
 </p>
 
 <p>
-  <b>Minimum slots:</b> <%= @position.minimum_slots %>
+  <b>Minimum slots:</b> <%= position.minimum_slots %>
 </p>
 
 <p>
   <b>Statuses:</b>
-  <% if @position.statuses.empty? %>
+  <% if position.statuses.empty? %>
   <i>No status restrictions.</i>
   <% else %>
   <ul>
-    <% @position.statuses.each do |status| %>
+    <% position.statuses.each do |status| %>
     <li><%=h status %></li>
     <% end %>
   </ul>
@@ -46,29 +46,29 @@
 
 <p><b>Join message:</b></p>
 
-<%=markdown @position.join_message %>
+<%=markdown position.join_message %>
 
 <p><b>Leave message:</b></p>
 
-<%=markdown @position.leave_message %>
+<%=markdown position.leave_message %>
 
 <p><b>Reject message:</b></p>
 
-<%=markdown @position.reject_message %>
+<%=markdown position.reject_message %>
 
 <h3>Enrollments</h3>
 
-<%= render partial: 'enrollments/enrollments', object: @position.enrollments,
-  locals: { position: @position } %>
+<%= render partial: 'enrollments/enrollments', object: position.enrollments,
+  locals: { position: position } %>
 
 </div> <!-- #position -->
 
 <p>
-<% if permitted_to? :edit, @position -%>
-<%= link_to 'Edit', edit_position_path(@position) %> |
+<% if permitted_to? :edit, position -%>
+<%= link_to 'Edit', edit_position_path(position) %> |
 <% end -%>
-<%= link_to 'List Memberships', position_memberships_path(@position) %> |
-<%= link_to 'List MembershipRequests', position_membership_requests_path(@position) %> |
+<%= link_to 'List memberships', position_memberships_path(position) %> |
+<%= link_to 'List membership requests', position_membership_requests_path(position) %> |
 <%= link_to 'Back', positions_path %>
 </p>
 
