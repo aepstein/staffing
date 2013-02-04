@@ -14,7 +14,6 @@ Tabulous.setup do |config|
       [    :schedules_subtab          ,'Schedules'          ,schedules_path          ,true                ,true        ],
       [    :meetings_subtab           ,'Meetings'           ,meetings_path           ,true                ,true        ],
       [    :motions_subtab            ,'Motions'            ,motions_path            ,true                ,true        ],
-      [    :membership_requests_subtab,'Membership Requests',membership_requests_path,true                ,true        ],
       [    :motions_subtab            ,'Motions'            ,motions_path            ,true                ,true        ],
     ]
     basic += [
@@ -34,7 +33,7 @@ Tabulous.setup do |config|
       [ :meetings           ,:all_actions,:meetings_subtab             ],
       [ :meeting_templates  ,:all_actions,:meeting_templates_subtab    ],
       [ :memberships        ,:all_actions,:admin_tab                   ],
-      [ :membership_requests,:all_actions,:membership_requests_subtab  ],
+      [ :membership_requests,:all_actions,:admin_tab                   ],
       [ :memberships        ,:all_actions,:memberships_tab             ],
       [ :motions            ,:all_actions,:motions_subtab              ],
       [ :positions          ,:all_actions,:positions_subtab            ],
