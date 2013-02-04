@@ -67,7 +67,7 @@ When /^I create a meeting template$/ do
 end
 
 Then /^I should see the new meeting template$/ do
-  within( "#flash_notice" ) { page.should have_text( "Meeting template was successfully created." ) }
+  within( ".alert" ) { page.should have_text( "Meeting template created." ) }
   within( "#meeting-template-#{@meeting_template.id}" ) do
     page.should have_text "Meeting template name: Annual"
     page.should have_no_text "No periods."
@@ -84,7 +84,7 @@ When /^I update the meeting template$/ do
 end
 
 Then /^I should see the edited meeting template$/ do
-  within('#flash_notice') { page.should have_text( "Meeting template was successfully updated." ) }
+  within('.alert') { page.should have_text( "Meeting template updated." ) }
   within("#meeting-template-#{@meeting_template.id}") do
     page.should have_text "Meeting template name: Empty"
     page.should have_text "No meeting section templates."
@@ -101,7 +101,7 @@ When /^I "(.+)" the (\d+)(?:st|nd|rd|th) meeting template$/ do |text, meeting_te
   within("table > tbody > tr:nth-child(#{meeting_template.to_i})") do
     click_link "#{text}"
   end
-  within("#flash_notice") { page.should have_text("Meeting template was successfully destroyed.") }
+  within(".alert") { page.should have_text("Meeting template destroyed.") }
 end
 
 Then /^I should see the following meeting templates:$/ do |table|

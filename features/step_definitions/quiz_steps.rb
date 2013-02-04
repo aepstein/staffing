@@ -65,7 +65,7 @@ When /^I create a quiz$/ do
 end
 
 Then /^I should see the new quiz$/ do
-  within( "#flash_notice" ) { page.should have_text( "Quiz was successfully created." ) }
+  within( ".alert" ) { page.should have_text( "Quiz created." ) }
   within( "#quiz-#{@quiz.id}" ) do
     page.should have_text "Name: Generic"
     within("#questions") do
@@ -82,7 +82,7 @@ When /^I update the quiz$/ do
 end
 
 Then /^I should see the edited quiz$/ do
-  within('#flash_notice') { page.should have_text( "Quiz was successfully updated." ) }
+  within('.alert') { page.should have_text( "Quiz updated." ) }
   within("#quiz-#{@quiz.id}") do
     page.should have_text "Name: Specialized"
     page.should have_text "No questions."
@@ -99,7 +99,7 @@ When /^I "(.+)" the (\d+)(?:st|nd|rd|th) quiz$/ do |text, quiz|
   within("table > tbody > tr:nth-child(#{quiz.to_i})") do
     click_link "#{text}"
   end
-  within("#flash_notice") { page.should have_text("Quiz was successfully destroyed.") }
+  within(".alert") { page.should have_text("Quiz destroyed.") }
 end
 
 Then /^I should see the following quizzes:$/ do |table|

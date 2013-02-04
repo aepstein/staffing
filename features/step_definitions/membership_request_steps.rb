@@ -157,7 +157,7 @@ Then /^I should( not)? see the creator error message$/ do |negate|
     within(".error_messages") { page.should have_text "may not request membership in the committee" }
   else
     @membership_request = MembershipRequest.find( URI.parse(current_url).path.match(/[\d]+$/)[0].to_i )
-    within('#flash_notice') { page.should have_text('Membership request was successfully created.') }
+    within('.alert') { page.should have_text('Membership request created.') }
   end
 end
 
@@ -191,7 +191,7 @@ When /^I update the membership request$/ do
 end
 
 Then /^I should see the updated membership request$/ do
-  within('#flash_notice') { page.should have_text("Membership request was successfully updated.") }
+  within('.alert') { page.should have_text("Membership request updated.") }
   within("#membership-request-#{@membership_request.id}") do
     page.should have_text "Desired start date: #{@starts.to_formatted_s(:long_ordinal)}"
     page.should have_text "Desired end date: #{@ends.to_formatted_s(:long_ordinal)}"
@@ -235,7 +235,7 @@ When /^I update the referred membership request$/ do
 end
 
 Then /^I should see the updated referred membership request$/ do
-  within('#flash_notice') { page.should have_text("Request was successfully updated.") }
+  within('.alert') { page.should have_text("Request updated.") }
   within("#membership-request-#{@membership_request.id}") do
     page.should have_text("Name: Referred membership_request")
     page.should have_text("This is different")
@@ -324,7 +324,7 @@ end
 
 Then /^I should see the rejected membership request$/ do
   @membership_request.reload
-  within("#flash_notice") { page.should have_text( "Membership request was successfully rejected." ) }
+  within(".alert") { page.should have_text( "Membership request rejected." ) }
   within("#membership-request-#{@membership_request.id}") do
     page.should have_text "Rejected at: #{@membership_request.rejected_at.to_s(:us_ordinal)}"
     page.should have_text "Rejected by authority: #{@membership_request.authorities.first.name}"
@@ -348,7 +348,7 @@ Then /^the membership request should be active$/ do
 end
 
 Then /^I should see the reactivated membership request$/ do
-  within("#flash_notice") { page.should have_text "Membership request was successfully reactivated." }
+  within(".alert") { page.should have_text "Membership request reactivated." }
 end
 
 When /^the (close|reject) notice has been sent$/ do |notice|

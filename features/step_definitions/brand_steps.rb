@@ -69,7 +69,7 @@ When /^I create an brand$/ do
 end
 
 Then /^I should see the new brand$/ do
-  within( "#flash_notice" ) { page.should have_text( "Brand was successfully created." ) }
+  within( ".alert" ) { page.should have_text( "Brand created." ) }
   within( "#brand-#{@brand.id}" ) do
     page.should have_text 'Name: SA brand'
     page.should have_text 'Phone: (607) 555-1000'
@@ -100,7 +100,7 @@ When /^I update the brand$/ do
 end
 
 Then /^I should see the edited brand$/ do
-  within('#flash_notice') { page.should have_text( "Brand was successfully updated." ) }
+  within('.alert') { page.should have_text( "Brand updated." ) }
   within("#brand-#{@brand.id}") do
     page.should have_text 'Name: SA alternative'
     page.should have_text 'Phone: (607) 555-1001'
@@ -128,7 +128,7 @@ Given /^I "(.+)" the (\d+)(?:st|nd|rd|th) brand$/ do |text, brand|
 end
 
 Then /^I should see the following brands:$/ do |table|
-  within("#flash_notice") { page.should have_text("Brand was successfully destroyed.") }
+  within(".alert") { page.should have_text("Brand destroyed.") }
   visit(brands_url)
   table.diff! tableish( 'table#brands > tbody > tr', 'td:nth-of-type(1)' )
 end

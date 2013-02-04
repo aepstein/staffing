@@ -1,31 +1,31 @@
-<div id="authority-<%= @authority.id %>">
+<div id="authority-<%= authority.id %>">
 <p>
-  <b>Name:</b> <%=h @authority.name %>
+  <b>Name:</b> <%=h authority.name %>
 </p>
 
 <p>
-  <b>Committee:</b> <%=h @authority.committee %>
+  <b>Committee:</b> <%=h authority.committee %>
 </p>
 
 <p><b>Join message:</b></p>
 
-<%=markdown @authority.join_message %>
+<%=markdown authority.join_message %>
 
 <p><b>Leave message:</b></p>
 
-<%=markdown @authority.leave_message %>
+<%=markdown authority.leave_message %>
 
 <p><b>Reject message:</b></p>
 
-<%=markdown @authority.reject_message %>
+<%=markdown authority.reject_message %>
 </div>
 
 <p>
-<% if permitted_to? :edit, @authority -%>
-<%= link_to 'Edit', edit_authority_path(@authority) %> |
+<% if permitted_to? :edit, authority -%>
+<%= link_to 'Edit', edit_authority_path(authority) %> |
 <% end -%>
-<%= nested_index @authority, 'memberships', %w( past current future ) %> |
-<%= nested_index @authority, 'membership_requests', %w( expired unexpired active rejected ) %> |
+<%= nested_index authority, 'memberships', %w( past current future ) %> |
+<%= nested_index authority, 'membership_requests', %w( expired unexpired active rejected ) %> |
 <%= link_to 'Back', authorities_path %>
 </p>
 

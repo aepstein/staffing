@@ -1,12 +1,13 @@
 class AuthoritiesController < ApplicationController
   expose :authority
   expose :authorities
-  filter_resource_access load_method: :authority
+  filter_access_to :new, :create, :edit, :update, :index, :destroy
+  respond_to :html, :xml
 
   # GET /authorities
   # GET /authorities.xml
   def index
-    respond_with users
+    respond_with authorities
   end
 
   # POST /authorities
@@ -31,7 +32,7 @@ class AuthoritiesController < ApplicationController
         format.html { redirect_to authority, flash: { success: 'Authority updated.' } }
         format.xml  { head :ok }
       else
-        format.html { render :action => "edit" }
+        format.html { render action: "edit" }
         format.xml  { render xml: authority.errors, status: :unprocessable_entity }
       end
     end
@@ -43,7 +44,7 @@ class AuthoritiesController < ApplicationController
     authority.destroy
 
     respond_to do |format|
-      format.html { redirect_to authorities_url, flash: { success: 'Authority was successfully destroyed.' } }
+      format.html { redirect_to authorities_url, flash: { success: 'Authority destroyed.' } }
       format.xml  { head :ok }
     end
   end

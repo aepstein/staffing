@@ -110,7 +110,7 @@ When /^I create an committee$/ do
 end
 
 Then /^I should see the new committee$/ do
-  within( "#flash_notice" ) { page.should have_text( "Committee was successfully created." ) }
+  within( ".alert" ) { page.should have_text( "Committee created." ) }
   within( "#committee-#{@committee.id}" ) do
     page.should have_text "Name: Important Committee"
     page.should have_text "Contact name: Officials"
@@ -153,7 +153,7 @@ When /^I update the committee$/ do
 end
 
 Then /^I should see the edited committee$/ do
-  within('#flash_notice') { page.should have_text( "Committee was successfully updated." ) }
+  within('.alert') { page.should have_text( "Committee updated." ) }
   within("#committee-#{@committee.id}") do
     page.should have_text "Name: No Longer Important Committee"
     page.should have_text "Contact name: Boss"
@@ -180,7 +180,7 @@ When /^I "(.+)" the (\d+)(?:st|nd|rd|th) committee$/ do |text, committee|
   within("table > tbody > tr:nth-child(#{committee.to_i})") do
     click_link "#{text}"
   end
-  within("#flash_notice") { page.should have_text("Committee was successfully destroyed.") }
+  within(".alert") { page.should have_text("Committee destroyed.") }
 end
 
 Then /^I should see the following committees:$/ do |table|

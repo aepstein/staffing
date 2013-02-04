@@ -132,7 +132,7 @@ When /^I create a meeting with a (named|motion) item as (staff|chair)$/ do |item
 end
 
 Then /^I should see the new meeting with the (named|motion) item$/ do |item|
-  within( "#flash_notice" ) { page.should have_text( "Meeting was successfully created." ) }
+  within( ".alert" ) { page.should have_text( "Meeting created." ) }
   @meeting = Meeting.find( URI.parse(current_url).path.match(/[\d]+$/)[0].to_i )
   within( "#meeting-#{@meeting.id}" ) do
     page.should have_text "Committee: #{@committee.name}"
@@ -168,7 +168,7 @@ When /^I update the meeting$/ do
 end
 
 Then /^I should see the edited meeting$/ do
-  within('#flash_notice') { page.should have_text( "Meeting was successfully updated." ) }
+  within('.alert') { page.should have_text( "Meeting updated." ) }
   within("#meeting-#{@meeting.id}") do
     page.should have_text "Starts at: #{@start.to_s :long_ordinal}"
     page.should have_text "Ends at: #{@end.to_s :long_ordinal}"
@@ -203,7 +203,7 @@ When /^I "(.+)" the (\d+)(?:st|nd|rd|th) meeting$/ do |text, meeting|
   within("table > tbody > tr:nth-child(#{meeting.to_i})") do
     click_link "#{text}"
   end
-  within("#flash_notice") { page.should have_text("Meeting was successfully destroyed.") }
+  within(".alert") { page.should have_text("Meeting destroyed.") }
 end
 
 Then /^I should see the following meetings:$/ do |table|
@@ -238,6 +238,6 @@ When /^I publish the meeting$/ do
 end
 
 Then /^I should see the published meeting$/ do
-  within("#flash_notice") { page.should have_text "Meeting was successfully published." }
+  within(".alert") { page.should have_text "Meeting published." }
 end
 

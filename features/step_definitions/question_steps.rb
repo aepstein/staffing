@@ -62,7 +62,7 @@ When /^I create a question$/ do
 end
 
 Then /^I should see the new question$/ do
-  within( "#flash_notice" ) { page.should have_text( "Question was successfully created." ) }
+  within( ".alert" ) { page.should have_text( "Question created." ) }
   within( "#question-#{@question.id}" ) do
     page.should have_text "Name: Favorite color"
     page.should have_text "What is your favorite color?"
@@ -80,7 +80,7 @@ When /^I update the question$/ do
 end
 
 Then /^I should see the edited question$/ do
-  within('#flash_notice') { page.should have_text( "Question was successfully updated." ) }
+  within('.alert') { page.should have_text( "Question updated." ) }
   within("#question-#{@question.id}") do
     page.should have_text "Name: Favorite dessert"
     page.should have_text "What is your favorite dessert?"
@@ -99,7 +99,7 @@ When /^I "(.+)" the (\d+)(?:st|nd|rd|th) question$/ do |text, question|
   within("table > tbody > tr:nth-child(#{question.to_i})") do
     click_link "#{text}"
   end
-  within("#flash_notice") { page.should have_text("Question was successfully destroyed.") }
+  within(".alert") { page.should have_text("Question destroyed.") }
 end
 
 Then /^I should see the following questions:$/ do |table|

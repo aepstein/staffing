@@ -169,7 +169,7 @@ Then /^I should( not)? see the modifier error message$/ do |negate|
     within(".error_messages") { page.should have_text "must have authority to modify the position between" }
   else
     @membership = Membership.find( URI.parse(current_url).path.match(/[\d]+$/)[0].to_i )
-    within('#flash_notice') { page.should have_text('Membership was successfully created.') }
+    within('.alert') { page.should have_text('Membership created.') }
   end
 end
 
@@ -196,7 +196,7 @@ When /^I update the membership$/ do
 end
 
 Then /^I should see the edited membership$/ do
-  within('#flash_notice') { page.should have_text("Membership was successfully updated.") }
+  within('.alert') { page.should have_text("Membership updated.") }
   within("#membership-#{@membership.id}") do
     page.should have_text("User: #{@designee.name(:net_id)}")
     page.should have_text("Starts at: #{@starts_at.to_formatted_s(:us_ordinal)}")
@@ -292,7 +292,7 @@ end
 
 Then /^I should see the membership declined$/ do
   @membership.reload
-  within("#flash_notice") { page.should have_text( "Membership renewal was successfully declined." ) }
+  within(".alert") { page.should have_text( "Membership renewal declined." ) }
   within("#membership-#{@membership.id}") do
     page.should have_text "Renewal declined at: #{@membership.declined_at.to_s(:long_ordinal)}"
     page.should have_text "Renewal declined by: #{@current_user.name(:net_id)}"
@@ -346,7 +346,7 @@ Then /^the membership should have (a|no) renewal$/ do |renotify|
 end
 
 Then /^I should see renewals confirmed with renotification (en|dis)abled$/ do |renotify|
-  within("#flash_notice") { page.should have_text "Renewal preferences successfully updated." }
+  within(".alert") { page.should have_text "Renewal preferences successfully updated." }
   @membership.user.reload
   if renotify == 'en'
     @membership.user.renewal_checkpoint.should be_within(1.second).of(@original_renewal_checkpoint)

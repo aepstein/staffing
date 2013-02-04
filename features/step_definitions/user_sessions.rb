@@ -24,7 +24,7 @@ end
 
 Then /^I should be logged in$/ do
   URI.parse(current_url).path.should eql '/'
-  within '#flash_notice' do
+  within '.alert' do
     page.should have_content "You logged in successfully."
   end
 end
@@ -32,7 +32,7 @@ end
 Then /^I can log out$/ do
   step %{I log out}
   URI.parse(current_url).path.should eql '/login'
-  within '#flash_notice' do
+  within '.alert' do
     page.should have_content "You logged out successfully."
   end
 end

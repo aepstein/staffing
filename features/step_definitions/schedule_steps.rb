@@ -62,7 +62,7 @@ When /^I create a schedule$/ do
 end
 
 Then /^I should see the new schedule$/ do
-  within( "#flash_notice" ) { page.should have_text( "Schedule was successfully created." ) }
+  within( ".alert" ) { page.should have_text( "Schedule created." ) }
   within( "#schedule-#{@schedule.id}" ) do
     page.should have_text "Name: Annual"
     page.should have_no_text "No periods."
@@ -80,7 +80,7 @@ When /^I update the schedule$/ do
 end
 
 Then /^I should see the edited schedule$/ do
-  within('#flash_notice') { page.should have_text( "Schedule was successfully updated." ) }
+  within('.alert') { page.should have_text( "Schedule updated." ) }
   within("#schedule-#{@schedule.id}") do
     page.should have_text "Name: Empty"
     page.should have_text "No periods."
@@ -97,7 +97,7 @@ When /^I "(.+)" the (\d+)(?:st|nd|rd|th) schedule$/ do |text, schedule|
   within("table > tbody > tr:nth-child(#{schedule.to_i})") do
     click_link "#{text}"
   end
-  within("#flash_notice") { page.should have_text("Schedule was successfully destroyed.") }
+  within(".alert") { page.should have_text("Schedule destroyed.") }
 end
 
 Then /^I should see the following schedules:$/ do |table|

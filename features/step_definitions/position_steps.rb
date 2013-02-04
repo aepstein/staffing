@@ -126,7 +126,7 @@ When /^I create a position$/ do
 end
 
 Then /^I should see the new position$/ do
-  within( "#flash_notice" ) { page.should have_text( "Position was successfully created." ) }
+  within( ".alert" ) { page.should have_text( "Position created." ) }
   within( "#position-#{@position.id}" ) do
     page.should have_text "Authority: Supreme"
     page.should have_text "Quiz: Generic"
@@ -175,7 +175,7 @@ When /^I update the position$/ do
 end
 
 Then /^I should see the edited position$/ do
-  within('#flash_notice') { page.should have_text( "Position was successfully updated." ) }
+  within('.alert') { page.should have_text( "Position updated." ) }
   within("#position-#{@position.id}") do
     page.should have_text "Authority: Inferior"
     page.should have_text "Quiz: Specialized"
@@ -205,7 +205,7 @@ When /^I "(.+)" the (\d+)(?:st|nd|rd|th) position$/ do |text, position|
   within("table > tbody > tr:nth-child(#{position.to_i})") do
     click_link "#{text}"
   end
-  within("#flash_notice") { page.should have_text("Position was successfully destroyed.") }
+  within(".alert") { page.should have_text("Position destroyed.") }
 end
 
 Then /^I should see the following positions:$/ do |table|

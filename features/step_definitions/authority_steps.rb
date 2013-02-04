@@ -90,7 +90,7 @@ When /^I create an authority$/ do
 end
 
 Then /^I should see the new authority$/ do
-  within( "#flash_notice" ) { page.should have_text( "Authority was successfully created." ) }
+  within( ".alert" ) { page.should have_text( "Authority created." ) }
   within( "#authority-#{@authority.id}" ) do
     page.should have_text("Name: Supreme Authority")
     page.should have_text("Committee: First committee")
@@ -111,7 +111,7 @@ When /^I update the authority$/ do
 end
 
 Then /^I should see the edited authority$/ do
-  within('#flash_notice') { page.should have_text( "Authority was successfully updated." ) }
+  within('.alert') { page.should have_text( "Authority updated." ) }
   within("#authority-#{@authority.id}") do
     page.should have_text("Name: Subordinate Authority")
     page.should have_text("Committee: Second committee")
@@ -134,7 +134,7 @@ Given /^I "(.+)" the (\d+)(?:st|nd|rd|th) authority$/ do |text, authority|
 end
 
 Then /^I should see the following authorities:$/ do |table|
-  within("#flash_notice") { page.should have_text("Authority was successfully destroyed.") }
+  within(".alert") { page.should have_text("Authority destroyed.") }
   visit(authorities_url)
   table.diff! tableish( 'table#authorities > tbody > tr', 'td:nth-of-type(1)' )
 end

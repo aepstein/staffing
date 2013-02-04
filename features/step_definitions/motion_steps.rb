@@ -86,16 +86,16 @@ Then /^I should see confirmation of the event on the motion$/ do
   end
   @motion.reload
   @motion.status.should eql new_status
-  within("#flash_notice") do
+  within(".alert") do
     case @event
     when 'restart'
-      page.should have_text "Motion was successfully restarted."
+      page.should have_text "Motion restarted."
     when 'watch'
       page.should have_text "You are now watching the motion."
     when 'unwatch'
       page.should have_text "You are no longer watching the motion."
     else
-      page.should have_text "Motion was successfully #{new_status}."
+      page.should have_text "Motion #{new_status}."
     end
   end
   unless %w( restart amend ).include?( @event )
@@ -255,7 +255,7 @@ When /^I create a motion as (voter|staff)$/ do |relationship|
 end
 
 Then /^I should see the new motion$/ do
-  within('#flash_notice') { page.should have_text('Motion was successfully created.') }
+  within('.alert') { page.should have_text('Motion created.') }
   within("#motion-#{@motion.id}") do
     page.should have_text("Committee: Powerful Committee")
     page.should have_text("Period: #{@period.to_s}")
@@ -282,7 +282,7 @@ When /^I update the motion$/ do
 end
 
 Then /^I should see the edited motion$/ do
-  within('#flash_notice') { page.should have_text("Motion was successfully updated.") }
+  within('.alert') { page.should have_text("Motion updated.") }
   within("#motion-#{@motion.id}") do
     page.should have_text("Name: Charter change")
     page.should have_text("This is a big change.")
@@ -325,7 +325,7 @@ When /^I update the referred motion$/ do
 end
 
 Then /^I should see the updated referred motion$/ do
-  within('#flash_notice') { page.should have_text("Motion was successfully updated.") }
+  within('.alert') { page.should have_text("Motion updated.") }
   within("#motion-#{@motion.id}") do
     page.should have_text("Name: Referred motion")
     page.should have_text("This is different")

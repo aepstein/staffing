@@ -113,7 +113,7 @@ When /^I create a user as (admin|staff)$/ do |role|
 end
 
 Then /^I should see the new user as (admin|staff)$/ do |role|
-  within( "#flash_notice" ) { page.should have_text( "User was successfully created." ) }
+  within( ".alert" ) { page.should have_text( "User created." ) }
   within( "#user-#{@user.id}" ) do
     page.should have_text "First name: Andrew"
     page.should have_text "Middle name: D"
@@ -168,7 +168,7 @@ When /^I update the user as (admin|staff|owner)$/ do |role|
 end
 
 Then /^I should see the edited user as (admin|staff|owner)$/ do |role|
-  within('#flash_notice') { page.should have_text( "User was successfully updated." ) }
+  within('.alert') { page.should have_text( "User updated." ) }
   within("#user-#{@user.id}") do
     page.should have_text "First name: David"
     page.should have_text "Middle name: J"
@@ -201,7 +201,7 @@ When /^I "(.+)" the (\d+)(?:st|nd|rd|th) user$/ do |text, user|
   within("table > tbody > tr:nth-child(#{user.to_i})") do
     click_link "#{text}"
   end
-  within("#flash_notice") { page.should have_text("User was successfully destroyed.") }
+  within(".alert") { page.should have_text("User destroyed.") }
 end
 
 Then /^I should see the following users:$/ do |table|
@@ -233,7 +233,7 @@ When /^I set empl_ids in bulk via (text|attachment)$/ do |method|
 end
 
 Then /^I should see empl_ids set$/ do
-  within("#flash_notice") { page.should have_text "Processed empl_ids." }
+  within(".alert") { page.should have_text "Processed empl_ids." }
   @user.reload
   @user.empl_id.should eql 123456
   User.where { net_id.eq( 'faker2' ) }.should be_empty
