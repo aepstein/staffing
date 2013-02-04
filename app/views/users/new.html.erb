@@ -1,10 +1,6 @@
-<h2>New user</h2>
+<%=content_tag :h1, "New user" %>
 
-<%= simple_form_for(@user, :html => { :multipart => true } ) do |f| %>
-  <%= render :partial => 'form', :object => f %>
+<%= simple_form_for(user, html: { multipart: true } ) do |f| %>
+  <%= render partial: 'form', object: f %>
 <% end %>
-
-<p>
-<%= link_to 'Back', users_path %>
-</p>
 

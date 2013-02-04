@@ -1,11 +1,6 @@
-<h2>Editing user</h2>
+<%=content_tag :h1, "Edit user #{user}" %>
 
-<%= simple_form_for(@user, :html => { :multipart => true } ) do |f| %>
-  <%= render :partial => 'form', :object => f %>
+<%= simple_form_for(user, html: { multipart: true } ) do |f| %>
+  <%= render partial: 'form', object: f %>
 <% end %>
-
-<p>
-<%= link_to 'Show', @user %> |
-<%= link_to 'Back', users_path %>
-</p>
 

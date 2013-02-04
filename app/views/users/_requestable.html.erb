@@ -1,5 +1,5 @@
 <%= table_row_tag do %>
-  <td><%=h requestable %></td>
+  <%=content_tag :td, requestable %>
   <% if current_user.requestables.include? requestable %>
   <td><%= link_to 'Edit', edit_polymorphic_path( current_user.membership_requests.select { |r| r.requestable == requestable }.first ) %></td>
   <% else %>

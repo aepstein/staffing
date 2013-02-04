@@ -1,73 +1,73 @@
-<div id="user-<%= @user.id %>">
+<div id="user-<%= user.id %>">
 <p>
-  <b>First name:</b> <%=h @user.first_name %>
+  <b>First name:</b> <%=h user.first_name %>
 </p>
 
 <p>
-  <b>Middle name:</b> <%=h @user.middle_name %>
+  <b>Middle name:</b> <%=h user.middle_name %>
 </p>
 
 <p>
-  <b>Last name:</b> <%=h @user.last_name %>
+  <b>Last name:</b> <%=h user.last_name %>
 </p>
 
 <p>
-  <b>Net id:</b> <%=h @user.net_id %>
+  <b>Net id:</b> <%=h user.net_id %>
 </p>
 
 <p>
-  <b>Empl id:</b> <%=h @user.empl_id %>
+  <b>Empl id:</b> <%=h user.empl_id %>
 </p>
 
 <p>
-  <b>Email:</b> <%=h @user.email %>
+  <b>Email:</b> <%=h user.email %>
 </p>
 
 <p>
-  <b>Mobile phone:</b> <%=h @user.mobile_phone :pretty %>
+  <b>Mobile phone:</b> <%=h user.mobile_phone :pretty %>
 </p>
 
 <p>
-  <b>Work phone:</b> <%=h @user.work_phone :pretty %>
+  <b>Work phone:</b> <%=h user.work_phone :pretty %>
 </p>
 
 <p>
-  <b>Home phone:</b> <%=h @user.home_phone :pretty %>
+  <b>Home phone:</b> <%=h user.home_phone :pretty %>
 </p>
 
 <p>
-  <b>Work address:</b> <%=h @user.work_address %>
+  <b>Work address:</b> <%=h user.work_address %>
 </p>
 
 <p>
-  <b>Date of birth:</b> <%=h @user.date_of_birth.to_formatted_s( :long ) if @user.date_of_birth %>
+  <b>Date of birth:</b> <%=h user.date_of_birth.to_formatted_s( :long ) if user.date_of_birth %>
 </p>
 
 <p>
-  <b>Resume?</b> <%= @user.resume.blank? ? 'No' : link_to( 'Yes', resume_user_path(@user, :format => :pdf) ) %>
+  <b>Resume?</b> <%= user.resume.blank? ? 'No' : link_to( 'Yes', resume_user_path(user, format: :pdf) ) %>
 </p>
 
 <p>
-  <b>Portrait:</b> <%= @user.portrait.blank? ? 'No' : image_tag(user_path(
-    @user, format: :jpg, version: 'thumb' )) %>
+  <b>Portrait:</b> <%= user.portrait.blank? ? 'No' : image_tag(user_path(
+    user, format: :jpg, version: 'thumb' )) %>
 </p>
 
 <p>
-  <b>Statuses:</b> <%= @user.statuses.empty? ? 'unknown' : @user.statuses.join( ', ' ) %>
+  <b>Statuses:</b> <%= user.statuses.empty? ? 'unknown' : user.statuses.join( ', ' ) %>
 </p>
 
 <p>
-  <b>Administrator?</b> <%=h @user.admin? ? 'Yes' : 'No' %>
+  <b>Administrator?</b> <%=h user.admin? ? 'Yes' : 'No' %>
 </p>
 
 <p>
-  <b>Staff?</b> <%=h @user.staff? ? 'Yes' : 'No' %>
+  <b>Staff?</b> <%=h user.staff? ? 'Yes' : 'No' %>
 </p>
-</div> <!-- #user-<%= @user.id %> -->
+</div> <!-- #user-<%= user.id %> -->
 
 <h3>Generate tent card</h3>
 
-<%=form_tag tent_user_path(@user, format: :pdf), method: :get do %>
+<%=form_tag tent_user_path(user, format: :pdf), method: :get do %>
 <p>
   <b><%=label_tag :brand_id, 'Brand' %></b>
   <%=select_tag :brand_id, options_from_collection_for_select(Brand.all, :id, :name) %><br/>
@@ -78,14 +78,14 @@
 <% end %>
 
 <p>
-<% if permitted_to? :edit, @user -%>
-<%= link_to 'Edit', edit_user_path(@user) %> |
+<% if permitted_to? :edit, user -%>
+<%= link_to 'Edit', edit_user_path(user) %> |
 <% end -%>
-<%= nested_index @user, 'memberships', %w( past current future renewed unrenewed ) %> |
-<%= nested_index @user, 'membership_requests', %w( expired unexpired ) %> |
-<%= nested_index @user, 'enrollments' %> |
-<%= link_to 'MembershipRequestable committees', requestable_user_committees_path(@user) %> |
-<%= link_to 'Tent card (pdf)', tent_user_path(@user, :format => :pdf) %> |
+<%= nested_index user, 'memberships', %w( past current future renewed unrenewed ) %> |
+<%= nested_index user, 'membership_requests', %w( expired unexpired ) %> |
+<%= nested_index user, 'enrollments' %> |
+<%= link_to 'Requestable committees', requestable_user_committees_path(user) %> |
+<%= link_to 'Tent card (pdf)', tent_user_path(user, format: :pdf) %> |
 <%= link_to 'Back', users_path %>
 </p>
 

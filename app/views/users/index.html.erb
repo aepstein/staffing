@@ -1,6 +1,6 @@
-<h2>Listing users</h2>
+<%=content_tag :h1, "Users" %>
 
-<%= form_for @q, url: request.fullpath, method: :get do |form| %>
+<%= form_for q, url: request.fullpath, method: :get do |form| %>
 <p>
   <%= form.label :name_cont, 'Name' %>
   <%= form.text_field :name_cont %>
@@ -8,15 +8,11 @@
 </p>
 <% end %>
 
-<p>
-<%= paginate @users %>
-</p>
+<%= paginate users %>
 
-<%= render partial: "users/users", object: @users %>
+<%= render partial: "users/users", object: users %>
 
-<p>
-<%= paginate @users %>
-</p>
+<%= paginate users %>
 
 <hr />
 
