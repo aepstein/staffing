@@ -53,6 +53,10 @@ authorization do
         id: is_in { user.enrollments.current.with_roles('vicechair').value_of(:id) },
         votes: gt { 0 } }
     end
+    has_permission_on :committees, to: :enroll, join_by: :or do
+      if_attribute enrollments: {
+        position_id: is_in { user.memberships.current.value_of(:position_id) } }
+    end
     has_permission_on :meetings, to: :show do
       if_attribute published: is { true }
       if_attribute ends_at: lt { Time.zone.now }

@@ -13,11 +13,11 @@ class UsersController < ApplicationController
   expose :q_scope do
     scope = context.users if context
     scope ||= User.scoped
-    case request.action_name
+    case params[:action]
     when 'allowed'
       scope.allowed
     when 'staff', 'admin'
-      scope.where( request.action_name => true )
+      scope.where( params[:action] => true )
     else
       scope.scoped
     end

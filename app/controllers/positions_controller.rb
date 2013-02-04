@@ -5,9 +5,9 @@ class PositionsController < ApplicationController
   expose :q_scope do
     scope = context.positions
     scope ||= Position.scoped
-    case request.action_name
+    case params[:action]
     when 'current', 'past', 'future', 'requestable'
-      scope.send request.action_name
+      scope.send params[:action]
     else
       scope.scoped
     end

@@ -7,11 +7,11 @@ class MotionsController < ApplicationController
   expose :q_scope do
     scope = context.motions
     scope ||= Motion.scoped
-    case request.action_name
+    case params[:action]
     when 'allowed'
       scope = scope.allowed
     when 'past', 'current'
-      scope = scope.send request.action_name
+      scope = scope.send params[:action]
     when 'proposed'
       scope = scope.send :with_status, :proposed
     else

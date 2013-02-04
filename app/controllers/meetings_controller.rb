@@ -5,9 +5,9 @@ class MeetingsController < ApplicationController
     scope ||= committee.meetings if committee
     scope ||= motion.meetings if motion
     scope ||= Meeting.scoped
-    scope = scope.past if request.action_name == 'past'
-    scope = scope.current if request.action_name == 'current'
-    scope = scope.future if request.action_name == 'future'
+    scope = scope.past if params[:action] == 'past'
+    scope = scope.current if params[:action] == 'current'
+    scope = scope.future if params[:action] == 'future'
   end
   expose :q { q_scope.search }
   expose :meetings do

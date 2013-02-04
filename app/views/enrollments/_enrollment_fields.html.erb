@@ -21,7 +21,7 @@
     hint: 'What title does the member hold in the committee?' %>
   <%= f.input :votes,
     hint: 'How many votes does the member control in the committee? 0 if non-voting.' %>
-  <%= f.input :requestable, as: :radio, label: "Requestable?",
+  <%= f.input :requestable, as: :radio_buttons, label: "Requestable?",
     hint: 'Can this committee and position be accessed through the application process?' %>
   <%= f.input :roles, as: :check_boxes, collection: Enrollment::ROLES,
     hint: 'What special roles for the committee are associated with assignment to this position?' %>

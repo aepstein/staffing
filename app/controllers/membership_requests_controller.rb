@@ -8,11 +8,11 @@ class MembershipRequestsController < ApplicationController
   expose :q_scope do
     scope = context.membership_requests.scoped if context
     scope ||= MembershipRequest.scoped
-    scope = scope.expired if request.action_name == 'expired'
-    scope = scope.unexpired if request.action_name == 'unexpired'
-    scope = scope.active if request.action_name == 'active'
-    scope = scope.inactive if request.action_name == 'inactive'
-    scope = scope.rejected if request.action_name == 'rejected'
+    scope = scope.expired if params[:action] == 'expired'
+    scope = scope.unexpired if params[:action] == 'unexpired'
+    scope = scope.active if params[:action] == 'active'
+    scope = scope.inactive if params[:action] == 'inactive'
+    scope = scope.rejected if params[:action] == 'rejected'
   end
   expose :q do
     q_scope.search( params[:q] )

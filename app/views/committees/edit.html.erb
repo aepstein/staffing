@@ -1,4 +1,4 @@
-<h1>Editing committee <%= committee.name %></h1>
+<%=content_tag :h1, "Edit committee #{committee.name}" %>
 
 <%= simple_form_for(committee) do |f| %>
   <%= render partial: 'form', object: f %>

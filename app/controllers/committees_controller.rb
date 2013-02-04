@@ -10,9 +10,9 @@ class CommitteesController < ApplicationController
     end
     Time.zone.today
   end
-  expose :user { User.find params[:user_id] if params[:user_id] }
+  expose( :user ) { User.find params[:user_id] if params[:user_id] }
   expose :q_scope do
-    scope = user.committees.requestable if request.action_name == 'requestable'
+    scope = user.committees.requestable if params[:action] == 'requestable'
     scope ||= user.committees.scoped if user
     scope ||= Committee.scoped
   end
@@ -23,18 +23,16 @@ class CommitteesController < ApplicationController
     q.result.ordered.page(params[:page])
   end
   expose :committee
-  filter_access_to :new, :create, :edit, :update, :destroy, :show, :index,
-    :tents, :members, load_method: :committee
-  filter_access_to :requestable do
-    permitted_to!( :show, user )
-  end
+  filter_access_to :new, :create, :edit, :update, :destroy, :show, :index, load_method: :committee
+  filter_access_to :tents, :members, require: :enroll, load_method: :committee
+  filter_access_to :requestable, require: :show, load_method: :user
 
   # GET /users/:user_id/committees/requestable
   # GET /users/:user_id/committees/requestable.xml
   def requestable
     respond_to do |format|
       format.html { render action: 'index' }
-      format.json { json: committees }
+      format.json { render json: committees }
     end
   end
 
@@ -100,7 +98,7 @@ class CommitteesController < ApplicationController
     committee.destroy
 
     respond_to do |format|
-      format.html { redirect_to(committees_url, flash: { success: "Committee was successfully destroyed." } ) }
+      format.html { redirect_to(committees_url, flash: { success: "Committee destroyed." } ) }
       format.xml  { head :ok }
     end
   end

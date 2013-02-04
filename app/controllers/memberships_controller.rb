@@ -1,16 +1,16 @@
 class MembershipsController < ApplicationController
   before_filter :require_user
   before_filter :populate_designees, only: [ :new, :edit ]
-  expose :position { Position.find params[:position_id] if params[:position_id] }
-  expose :committee { Committee.find params[:committee_id] if params[:committee_id] }
-  expose :user { User.find params[:user_id] if params[:user_id] }
-  expose :authority { Authority.find params[:authority_id] if params[:authority_id] }
-  expose :membership_request { MembershipRequest.find params[:membership_request_id] if params[:membership_request_id] }
-  expose :context { position || committee || user || authority || membership_request }
+  expose( :position ) { Position.find params[:position_id] if params[:position_id] }
+  expose( :committee ) { Committee.find params[:committee_id] if params[:committee_id] }
+  expose( :user ) { User.find params[:user_id] if params[:user_id] }
+  expose( :authority ) { Authority.find params[:authority_id] if params[:authority_id] }
+  expose( :membership_request ) { MembershipRequest.find params[:membership_request_id] if params[:membership_request_id] }
+  expose( :context ) { position || committee || user || authority || membership_request }
   expose :q_scope do
     scope = context.memberships.scoped if context
     scope ||= Membership.scoped
-    scope = case request.action_name
+    scope = case params[:action]
     when 'renewable'
       scope.renewal_candidate.renewal_undeclined.renew_until(Time.zone.today)
     when 'renewed'
@@ -18,15 +18,15 @@ class MembershipsController < ApplicationController
     when 'unrenewed'
       scope.renewable.unrenewed
     when 'renewed','current','past','future'
-      scope.send request.action_name
+      scope.send params[:action]
     when 'assignable'
       membership_request.memberships.assignable
     else
       scope
     end
   end
-  expose :q { q_scope.search params[:q] }
-  expose :memberships { q.result.ordered.page(params[:page]) }
+  expose( :q ) { q_scope.search params[:q] }
+  expose( :memberships ) { q.result.ordered.page params[:page] }
   expose :membership do
     out = if params[:id]
       Membership.find params[:id]
@@ -37,8 +37,6 @@ class MembershipsController < ApplicationController
     out.modifier = current_user if permitted_to? :staff, out
     out
   end
-  before_filter :initialize_index, only: [ :index, :renewed, :unrenewed,
-    :current, :future, :past, :assignable, :renewable ]
   filter_access_to :new, :create, :edit, :update, :destroy, :show, :confirm,
     :decline, attribute_check: true, load_method: :membership
   filter_access_to :renew do
