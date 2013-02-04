@@ -109,10 +109,7 @@ Staffing::Application.routes.draw do
       end
     end
   end
-  resources :qualifications
-  resources :questions do
-    resources :answers, only: [ :index, :new, :create ]
-  end
+  resources :questions
   resources :quizzes do
     resources :questions, only: [ :index ]
   end

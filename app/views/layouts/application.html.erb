@@ -40,68 +40,34 @@
 
 <hr class="banner-separator" />
 
-  <div id="header">
-    <div id="navigation-wrap">
-	    <div id="navigation">
-		    <ul>
-          <% if current_user %>
-          <li><%= link_to 'home', profile_path %></li>
-          <% if current_user.admin? || current_user.staff? %>
-          <li><%= link_to 'authorities', authorities_path %></li>
-          <li><%= link_to 'brands', brands_path %></li>
-          <li><%= link_to 'committees', committees_path %></li>
-          <%= content_tag :li, link_to( 'meeting templates', meeting_templates_path ) %>
-          <li><%= link_to 'positions', positions_path %></li>
-          <li><%= link_to 'qualifications', qualifications_path %></li>
-          <li><%= link_to 'questions', questions_path %></li>
-          <li><%= link_to 'schedules', schedules_path %></li>
-          <li><%= link_to 'quizzes', quizzes_path %></li>
-          <li><%= link_to 'users', users_path %></li>
-          <% end %>
-          <% unless sso_net_id %>
-          <li><%= link_to 'log out', logout_path %></li>
-          <% end %>
-          <% else %>
-          <%= link_to 'log in', login_path %>
-          <% end %>
-		    </ul>
-	    </div> <!-- #navigation -->
-	  </div> <!-- #navigation-wrap -->
-    <hr class="banner-separator" />
-    <div id="identity-wrap">
-	    <div id="identity">
-		    <h1>Campus Committees</h1>
-	    </div> <!-- #identity -->
-	  </div> <!-- #identity-wrap -->
-  </div> <!--#header -->
+<div class="navbar navbar-inverse">
+  <div class="navbar-inner">
+    <div class="container">
+      <a class="btn btn-navbar" data-toggle="collapse" data-target=".nav-collapse">
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+      </a>
+      <a class="brand" href="#">Shared Governance</a>
+      <div class="nav-collapse collapse">
+      <%= tabs %>
+      </div><!--/.nav-collapse -->
+    </div>
+  </div>
+</div>
 
-<hr class="banner-separator" />
+<div id="content" class="container">
+  <a name="content"></a>
+  <%= flash_messages %>
 
-<div id="container">
-<div id="content">
-
-  <% flash.each do |name, msg| %>
-    <%= content_tag :div, msg, id: "flash_#{name}" %>
-  <% end %>
-
-<% if breadcrumbs %>
-<p>
-  <%=raw breadcrumbs.map { |txt, path| link_to_unless(path.blank?, h(txt), path) }.join(" &gt; ") %>
-</p>
-<% end %>
-
-<%= yield %>
-
-</div> <!-- #content -->
+  <%= yield %>
 </div> <!-- #container -->
 
-<div id="footer">
-<div id="footer-content">
-&copy; 2008-<%= Time.zone.today.year %> Office of the Assemblies, Cornell University.
+<div>
+&copy; 2008-<%= Time.zone.today.year %> Cornell University.
 We use <a href="http://www.fsf.org/">free software</a>.
 Questions? Contact
 <a href="mailto:assembly@cornell.edu">assembly@cornell.edu</a>.
-</div>
 </div>
 </body>
 </html>
