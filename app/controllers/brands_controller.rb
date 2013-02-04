@@ -1,10 +1,9 @@
 class BrandsController < ApplicationController
   expose :brands
   expose :brand
-  filter_resource_access load_method: :brand
-  filter_access_to :thumb do
-    permitted_to! :show
-  end
+  filter_access_to :index, :new, :create, :edit, :update, :destroy, :show,
+    load_method: :brand
+  filter_access_to :thumb, require: :show, load_method: :brand
 
   # GET /brands/:id/thumb.png
   def thumb
@@ -12,12 +11,6 @@ class BrandsController < ApplicationController
       format.png { send_file brand.logo.thumb.store_path, type: :png,
         disposition: 'inline'  }
     end
-  end
-
-  # GET /brands
-  # GET /brands.xml
-  def index
-    respond_with brands
   end
 
   # POST /brands

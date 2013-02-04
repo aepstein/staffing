@@ -1,11 +1,6 @@
-<h2>Editing brand</h2>
+<%=content_tag :h1, "Edit brand #{brand}" %>
 
-<%= simple_form_for(@brand, :html => { :multipart => true } ) do |f| %>
-  <%= render :partial => 'form', :object => f %>
+<%= simple_form_for(brand, html: { multipart: true } ) do |f| %>
+  <%= render partial: 'form', object: f %>
 <% end %>
-
-<p>
-<%= link_to 'Show', @brand %> |
-<%= link_to 'Back', brands_path %>
-</p>
 
