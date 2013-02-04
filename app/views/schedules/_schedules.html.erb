@@ -1,15 +1,15 @@
 <% if schedules.any? %>
-<table id="schedules">
-  <thead>
-  <tr>
-    <th>Name</th>
-  </tr>
-  </thead>
-  <tbody>
-  <%= render partial: 'schedules/schedule', collection: schedules %>
-  </tbody>
-</table>
+  <%=content_tag :table, id: "schedules" do %>
+    <%=content_tag :thead do %>
+      <%=content_tag :tr do %>
+        <%=content_tag :th, "Name" %>
+      <% end %>
+    <% end %>
+    <%=content_tag :tbody do %>
+      <%= render partial: 'schedules/schedule', collection: schedules %>
+    <% end %>
+  <% end %>
 <% else %>
-<p>No schedules.</p>
+  <%=content_tag :p, "No schedules." %>
 <% end %>
 

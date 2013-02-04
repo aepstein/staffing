@@ -1,6 +1,6 @@
-<h2>Listing schedules</h2>
+<%=content_tag :h1, "Schedules" %>
 
-<%= form_for @q, url: request.fullpath, method: :get do |form| %>
+<%= form_for q, url: request.fullpath, method: :get do |form| %>
 <p>
   <%= form.label :name_cont, 'Name' %>
   <%= form.text_field :name_cont %>
@@ -8,15 +8,11 @@
 </p>
 <% end %>
 
-<p>
-<%= paginate @schedules %>
-</p>
+<%= paginate schedules %>
 
-<%= render partial: "schedules/schedules", object: @schedules %>
+<%= render partial: "schedules/schedules", object: schedules %>
 
-<p>
-<%= paginate @schedules %>
-</p>
+<%= paginate schedules %>
 
 <hr />
 
