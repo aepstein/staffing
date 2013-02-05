@@ -1,6 +1,6 @@
 <% committee = false unless defined? committee %>
 <% position = false unless defined? position %>
-<div class="nested-fields">
+<%=content_tag :div, class: "nested-fields" do %>
   <% if committee.blank? %>
     <% if f.object.new_record? %>
       <%= f.input :committee_name, as: :autocomplete, label: 'Committee',
@@ -26,8 +26,6 @@
   <%= f.input :roles, as: :check_boxes, collection: Enrollment::ROLES,
     hint: 'What special roles for the committee are associated with assignment to this position?' %>
 
-  <p>
-  <%= link_to_remove_association 'remove enrollment', f %>
-  </p>
-</div>
+  <%=content_tag :p, link_to_remove_association( 'Remove Enrollment', f ) %>
+<% end %>
 

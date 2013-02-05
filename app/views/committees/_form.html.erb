@@ -13,6 +13,6 @@
   <%= form.input :join_message %>
   <%= form.input :leave_message %>
   <%= form.input :reject_message %>
-  <%= form.input :enrollments, as: :cocoon %>
+  <%= cocoon_fields form, :enrollments, insertable: true %>
   <%= form.button :wrapped, cancel: committees_path %>
 

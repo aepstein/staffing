@@ -102,7 +102,7 @@ When /^I create an committee$/ do
   fill_in "Votes", with: "1"
   within_control_group("Requestable?") { choose 'Yes' }
   within_control_group("Roles") do
-    within("li:nth-of-type(1)") { check 'chair' }
+    check 'vicechair'
     check 'monitor'
   end
   click_button 'Create'
@@ -130,7 +130,7 @@ Then /^I should see the new committee$/ do
     enrollment = @committee.enrollments.first
     within("tr#enrollment-#{enrollment.id}") do
       within("td:nth-of-type(4)") { page.should have_text "Yes" }
-      within("td:nth-of-type(5)") { page.should have_text "chair, monitor" }
+      within("td:nth-of-type(5)") { page.should have_text "vicechair, monitor" }
     end
   end
 end
