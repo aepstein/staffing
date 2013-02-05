@@ -1,19 +1,18 @@
-<h1>Login</h1>
+<%=content_tag :h1, "Login" %>
 
 <%= form_tag user_session_path, class: "form-horizontal" do %>
-  <p>
-  <%= label_tag :net_id, 'Net Id' %><br />
-  <%= text_field_tag :net_id, params[:net_id] %>
-  </p>
+  <%=content_tag :div, class: 'control-group' do %>
+    <%=label_tag :net_id, 'Net Id', class: 'control-label' %>
+    <%=content_tag :div, text_field_tag( :net_id, params[:net_id] ), class: 'controls' %>
+  <% end %>
 
-  <p>
-  <%= label_tag :password %><br />
-  <%= password_field_tag :password %>
-  </p>
+  <%=content_tag :div, class: 'control-group' do %>
+    <%=label_tag :password, 'Password', class: 'control-label' %>
+    <%=content_tag :div, password_field_tag( :password ), class: 'controls' %>
+  <% end %>
 
-  <p>
-  <%= submit_tag "Log in" %>
-  </p>
-
+  <%=content_tag :div, class: 'form-actions' do %>
+    <%=button_tag "Log in", type: 'submit', class: 'btn btn-primary' %>
+  <% end %>
 <% end %>
 
