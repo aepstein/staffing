@@ -1,6 +1,6 @@
 <h1>Login</h1>
 
-<%= form_tag user_session_path do %>
+<%= form_tag user_session_path, class: "form-horizontal" do %>
   <p>
   <%= label_tag :net_id, 'Net Id' %><br />
   <%= text_field_tag :net_id, params[:net_id] %>

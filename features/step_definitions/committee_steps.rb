@@ -92,16 +92,16 @@ When /^I create an committee$/ do
   select "Informal", from: "Meeting template"
   select "Prestigious", from: "Brand"
   fill_in "Publish email", with: "info@example.com"
-  within_fieldset('Active?') { choose 'No' }
+  within_control_group('Active?') { choose 'No' }
   fill_in "Join message", with: "Welcome to *committee*."
   fill_in "Leave message", with: "You were *dropped* from the committee."
   fill_in "Reject message", with: "There were *no* slots."
-  click_link "add enrollment"
+  click_link "Add Enrollment"
   fill_in "Position", with: "Member of Committee"
   fill_in "Title", with: "Voting Member"
   fill_in "Votes", with: "1"
-  within_fieldset("Requestable?") { choose 'Yes' }
-  within_fieldset("Roles") do
+  within_control_group("Requestable?") { choose 'Yes' }
+  within_control_group("Roles") do
     within("li:nth-of-type(1)") { check 'chair' }
     check 'monitor'
   end
@@ -140,7 +140,7 @@ When /^I update the committee$/ do
   fill_in "Name", with: "No Longer Important Committee"
   fill_in "Contact name", with: "Boss"
   fill_in "Contact email", with: "boss@example.com"
-  within_fieldset('Active?') { choose "Yes" }
+  within_control_group('Active?') { choose "Yes" }
   select "Semester", from: "Schedule"
   select "Elaborate", from: "Meeting template"
   select "Silly", from: "Brand"
@@ -148,7 +148,7 @@ When /^I update the committee$/ do
   fill_in "Join message", with: "Welcome message"
   fill_in "Leave message", with: "Farewell message"
   fill_in "Reject message", with: "There were *not enough* slots."
-  click_link "remove enrollment"
+  click_link "Remove Enrollment"
   click_button 'Update'
 end
 
