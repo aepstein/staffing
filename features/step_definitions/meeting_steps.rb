@@ -107,8 +107,8 @@ When /^I create a meeting with a (named|motion) item as (staff|chair)$/ do |item
   end
   @start = Time.zone.now + 1.day
   @end = (Time.zone.now + 1.day) + 1.hour
-  fill_in "Starts at", with: "#{@start.strftime DateTimePickerInput::DEFAULT_FORMAT}"
-  fill_in "Ends at", with: "#{@end.strftime DateTimePickerInput::DEFAULT_FORMAT}"
+  fill_in "Starts at", with: "#{@start.to_s :us_short}"
+  fill_in "Ends at", with: "#{@end.to_s :us_short}"
   fill_in "Location", with: "Green Room"
   click_link 'Add Meeting Section'
   within_fieldset("Meeting Section") do
@@ -157,8 +157,8 @@ When /^I update the meeting$/ do
   @start += 1.hour
   @end += 1.hour
   visit(edit_meeting_path(@meeting))
-  fill_in "Starts at", with: "#{@start.strftime DateTimePickerInput::DEFAULT_FORMAT}"
-  fill_in "Ends at", with: "#{@end.strftime DateTimePickerInput::DEFAULT_FORMAT}"
+  fill_in "Starts at", with: "#{@start.to_s :us_short}"
+  fill_in "Ends at", with: "#{@end.to_s :us_short}"
   fill_in "Location", with: "Red Room"
   attach_file "Audio", File.expand_path("spec/assets/audio.mp3")
   attach_file "Editable minutes", temporary_file("minutes.doc",20.bytes)

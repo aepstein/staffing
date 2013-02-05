@@ -16,9 +16,9 @@ Scenario Outline: Access control
     |admin           |un |future |may    |may    |may    |may    |
     |staff           |un |current|may    |may    |may    |may    |
     |staff           |un |past   |may    |may    |may    |may not|
-    |staff           |un |future |may    |may    |may    |may not|
+    |staff           |un |future |may    |may    |may    |may    |
     |current chair   |un |current|may    |may    |may    |may    |
-    |current chair   |un |recent |may    |may    |may    |may    |
+    |current chair   |un |recent |may    |may    |may    |may not|
     |current chair   |un |pending|may    |may    |may    |may    |
     |recent chair    |un |current|may not|may not|may not|may not|
     |recent chair    |un |current|may not|may not|may not|may not|

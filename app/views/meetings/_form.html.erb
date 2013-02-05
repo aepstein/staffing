@@ -1,5 +1,5 @@
 <%= render "shared/error_messages", target: form.object %>
-<% unless form.object.persisted? %>
+<% if form.object.new_record? && permitted_to?(:staff, form.object) %>
   <%= form.input :period, collection: form.object.committee.schedule.periods %>
 <% end %>
 <%= form.input :starts_at, as: :date_time_picker %>
@@ -8,6 +8,6 @@
 <%= form.input :audio, as: :file %>
 <%= form.input :editable_minutes, as: :file %>
 <%= form.input :published_minutes, as: :file %>
-<%= form.input :meeting_sections, as: :cocoon, ordered_by: :position %>
+<%= cocoon_fields form, :meeting_sections, insertable: true, ordered_by: :position %>
 <%= form.button :wrapped, cancel: meetings_path %>
 

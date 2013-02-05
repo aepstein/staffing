@@ -1,6 +1,6 @@
 class MeetingsController < ApplicationController
-  expose :committee { Committee.find params[:committee_id] if params[:committee_id] }
-  expose :motion { Motion.find params[:motion_id] if params[:motion_id] }
+  expose( :committee ) { Committee.find params[:committee_id] if params[:committee_id] }
+  expose( :motion ) { Motion.find params[:motion_id] if params[:motion_id] }
   expose :q_scope do
     scope ||= committee.meetings if committee
     scope ||= motion.meetings if motion
@@ -8,19 +8,30 @@ class MeetingsController < ApplicationController
     scope = scope.past if params[:action] == 'past'
     scope = scope.current if params[:action] == 'current'
     scope = scope.future if params[:action] == 'future'
+    scope
   end
-  expose :q { q_scope.search }
+  expose( :q ) { q_scope.search( params[:q] ) }
   expose :meetings do
-    scope = q.result.with_permissions_to(:show).ordered.page(params[:page])
+    q.result.with_permissions_to(:show).ordered.page(params[:page])
   end
-  expose :meeting
+  expose :meeting do
+    out = if params[:id]
+      Meeting.find params[:id]
+    else
+      return nil unless committee
+      committee.meetings.build
+    end
+    out.period ||= out.committee.schedule.periods.current.first if out.new_record?
+    out
+  end
+  expose( :role ) { permitted_to?(:staff, meeting) ? :staff : :default }
+  before_filter( only: [ :create, :update ] ) { meeting.assign_attributes params[:meeting], as: role }
   before_filter :populate_meeting_sections, only: [ :new, :edit ]
+  before_filter :reciprocate_attachments, only: [ :create, :update ]
   filter_access_to :new, :create, :edit, :update, :destroy, :show, :publish,
     attribute_check: true, load_method: :meeting
-  filter_access_to :index, :current, :past, :future
-  filter_access_to :editable_minutes, :published_minutes, :audio, :agenda do
-    permitted_to! :show, meeting
-  end
+  filter_access_to :editable_minutes, :published_minutes, :audio, :agenda,
+    attribute_check: true, require: :show, load_method: :meeting
 
   # GET /meetings/:id/agenda.pdf
   def agenda
@@ -106,11 +117,6 @@ class MeetingsController < ApplicationController
   # POST /committees/:committee_id/meetings
   # POST /committees/:committee_id/meetings.xml
   def create
-    meeting.meeting_sections.each do |section|
-      section.meeting_items.each do |item|
-        item.attachments.each { |attachment| attachment.attachable = item }
-      end
-    end
     respond_to do |format|
       if meeting.save
         format.html { redirect_to( meeting, flash: { success: 'Meeting created.' } ) }
@@ -152,6 +158,14 @@ class MeetingsController < ApplicationController
 
   def populate_meeting_sections
     meeting.meeting_sections.populate
+  end
+
+  def reciprocate_attachments
+    meeting.meeting_sections.each do |section|
+      section.meeting_items.each do |item|
+        item.attachments.each { |attachment| attachment.attachable = item }
+      end
+    end
   end
 end
 

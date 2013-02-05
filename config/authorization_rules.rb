@@ -19,7 +19,10 @@ authorization do
       if_attribute declined_at: is { nil }, starts_at: lte { Time.zone.today },
         renew_until: is_not { nil }, position: { renewable: true }
     end
-    has_permission_on :meetings, to: :publish
+    has_permission_on :meetings, to: [ :publish, :staff ]
+    has_permission_on :meetings, to: [ :destroy ] do
+      if_attribute period: { ends_at: gte { Time.zone.today } }
+    end
     has_permission_on :motions, to: [ :admin, :adopt, :amend, :divide,
       :implement, :merge, :propose, :refer, :reject, :restart, :withdraw ]
     has_permission_on :users, to: [ :resume, :staff, :tent ]
@@ -58,15 +61,22 @@ authorization do
         position_id: is_in { user.memberships.current.value_of(:position_id) } }
     end
     has_permission_on :meetings, to: :show do
+      if_permitted_to :vicechair, :committee
       if_attribute published: is { true }
       if_attribute ends_at: lt { Time.zone.now }
       if_attribute committee: { enrollments: { position_id: is_in { user.memberships.
         where { ends_at.gte( Time.zone.today ) }.value_of(:position_id) } } }
     end
-    has_permission_on :meetings, to: [:manage, :publish], join_by: :and do
+    has_permission_on :meetings, to: [:create, :update, :publish], join_by: :and do
       if_permitted_to :vicechair, :committee
       if_attribute period: { starts_at: lte { Time.zone.today },
         ends_at: gte { Time.zone.today } }
+    end
+    has_permission_on :meetings, to: [:destroy], join_by: :and do
+      if_permitted_to :vicechair, :committee
+      if_attribute period: { starts_at: lte { Time.zone.today },
+        ends_at: gte { Time.zone.today } }
+      if_attribute starts_at: gte { Time.zone.today }
     end
     has_permission_on :memberships, to: [ :create ], join_by: :and do
       if_attribute position: { authority: { authorized_enrollments: {

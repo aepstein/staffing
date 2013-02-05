@@ -3,7 +3,7 @@
   <%= f.input :name, hint: "If not associated with a motion, provide name and leave motion blank." %>
   <% end %>
   <% unless f.object.name.present? %>
-  <%= f.input :motion, as: :select, label: 'Motion',
+  <%= f.association :motion, as: :select, label: 'Motion',
     collection: Hash[ *f.object.meeting_section.meeting.committee.motions.
       map { |m| [ m.to_s(:numbered), m.id  ] }.flatten ],
     hint: "If associated with a motion, specify motion and leave name blank." %>
@@ -11,7 +11,7 @@
   <%= f.input :duration, hint: "How many minutes are allocated to this item?" %>
   <%= f.input :description, hint: "Any additional comments to add specific to this listing." %>
   <%= f.input :position, as: :hidden %>
-  <%= f.input :attachments, as: :cocoon %>
+  <%= cocoon_fields f, :attachments, insertable: true %>
   <%= link_to_remove_association 'Remove Meeting Item', f %>
 <% end %>
 

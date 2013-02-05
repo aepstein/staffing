@@ -1,7 +1,8 @@
 class Meeting < ActiveRecord::Base
-  attr_accessible :period_id, :committee_id, :audio, :editable_minutes,
+  attr_accessible :committee_id, :audio, :editable_minutes,
     :published_minutes, :starts_at, :ends_at, :location, :published,
-    :meeting_sections_attributes
+    :meeting_sections_attributes, as: [ :default, :staff ]
+  attr_accessible :period_id, as: :staff
   attr_accessible :publish_to, as: :publisher
   attr_readonly :period_id, :committee_id
 
@@ -47,8 +48,7 @@ class Meeting < ActiveRecord::Base
   validates :location, presence: true
   validate :period_must_be_in_committee_schedule, :must_be_in_period
 
-  default_scope order { starts_at.desc }
-
+  scope :ordered, lambda { order { starts_at.desc } }
   scope :past, lambda { where { ends_at < Time.zone.today.to_time } }
   scope :future, lambda { where {
     starts_at > ( Time.zone.today.to_time + 1.day ) } }

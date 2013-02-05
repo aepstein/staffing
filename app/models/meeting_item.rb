@@ -3,7 +3,7 @@ class MeetingItem < ActiveRecord::Base
   belongs_to :motion, inverse_of: :meeting_items
   has_many :attachments, as: :attachable, dependent: :destroy
   attr_accessible :description, :duration, :name, :position, :motion_id,
-    :motion_name, :_destroy, :attachments_attributes
+    :motion_name, :_destroy, :attachments_attributes, as: [ :default, :staff ]
 
   default_scope order { [ meeting_section_id, position ] }
 
