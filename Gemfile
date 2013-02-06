@@ -26,7 +26,8 @@ gem 'cornell-assemblies-rails',
   git: 'git://assembly.cornell.edu/git/cornell-assemblies-rails.git',
   branch: '0-0-3'
 gem 'cornell-assemblies-branding',
-  git: 'git://assembly.cornell.edu/git/cornell-assemblies-branding.git'
+  git: 'git://assembly.cornell.edu/git/cornell-assemblies-branding.git',
+  branch: '0-0-3'
 gem 'decent_exposure'
 gem 'valium'
 group :assets do
