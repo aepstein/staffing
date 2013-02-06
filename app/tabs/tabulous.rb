@@ -42,7 +42,8 @@ Tabulous.setup do |config|
       [ :quizzes            ,:all_actions,:quizzes_subtab              ],
       [ :schedules          ,:all_actions,:schedules_subtab            ],
       [ :users              ,:all_actions,:users_subtab                ],
-      [ :user_sessions      ,:new        ,:login_tab                   ]
+      [ :user_sessions      ,:new        ,:login_tab                   ],
+      [ :user_sessions      ,:create     ,:login_tab                   ]
     ]
   end
 

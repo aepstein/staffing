@@ -8,7 +8,7 @@ GIT
 
 GIT
   remote: git://assembly.cornell.edu/git/cornell-assemblies-rails.git
-  revision: 908986e411e4fbf8764f6b57f34d18ca9f63d380
+  revision: abd1cff287d4c005bbdb0a952fd48ba96bb90454
   branch: 0-0-3
   specs:
     cornell-assemblies-rails (0.0.3)
@@ -226,7 +226,7 @@ GEM
       actionpack (~> 3.0)
       activerecord (~> 3.0)
       polyamorous (~> 0.5.0)
-    rdoc (3.12)
+    rdoc (3.12.1)
       json (~> 1.4)
     rmagick (2.13.1)
     rspec (2.0.1)
