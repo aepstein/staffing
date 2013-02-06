@@ -105,8 +105,8 @@ When /^I create a meeting with a (named|motion) item as (staff|chair)$/ do |item
   if relationship == 'staff'
     select @current_period.to_s.strip.squeeze(" "), from: "Period"
   end
-  @start = Time.zone.now + 1.day
-  @end = (Time.zone.now + 1.day) + 1.hour
+  @start = ( Time.zone.now + 1.day ).floor
+  @end = @end + 1.hour
   fill_in "Starts at", with: "#{@start.to_s :us_short}"
   fill_in "Ends at", with: "#{@end.to_s :us_short}"
   fill_in "Location", with: "Green Room"
@@ -137,8 +137,8 @@ Then /^I should see the new meeting with the (named|motion) item$/ do |item|
   within( "#meeting-#{@meeting.id}" ) do
     page.should have_text "Committee: #{@committee.name}"
     page.should have_text "Period: #{@current_period}"
-    page.should have_text "Starts at: #{@start.to_s :long_ordinal}"
-    page.should have_text "Ends at: #{@end.to_s :long_ordinal}"
+    page.should have_text "Starts at: #{@start.to_s :us_ordinal}"
+    page.should have_text "Ends at: #{@end.to_s :us_ordinal}"
     page.should have_text "Location: Green Room"
     page.should have_text "Audio? No"
     page.should have_text "Editable minutes? No"
@@ -170,8 +170,8 @@ end
 Then /^I should see the edited meeting$/ do
   within('.alert') { page.should have_text( "Meeting updated." ) }
   within("#meeting-#{@meeting.id}") do
-    page.should have_text "Starts at: #{@start.to_s :long_ordinal}"
-    page.should have_text "Ends at: #{@end.to_s :long_ordinal}"
+    page.should have_text "Starts at: #{@start.to_s :us_ordinal}"
+    page.should have_text "Ends at: #{@end.to_s :us_ordinal}"
     page.should have_text "Location: Red Room"
     page.should have_text "Audio? Yes"
     page.should have_text "Editable minutes? Yes"
