@@ -58,7 +58,9 @@ class MeetingItem < ActiveRecord::Base
     when :file
       to_s.strip.downcase.gsub(/[^a-z0-9]/,'-').squeeze('-')
     else
-      if name?
+      if new_record?
+        "New Meeting Item"
+      elsif name?
         name
       elsif motion_name
         motion_name

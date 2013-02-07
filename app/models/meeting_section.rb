@@ -14,5 +14,7 @@ class MeetingSection < ActiveRecord::Base
   validates :meeting, presence: true
   validates :name, presence: true, uniqueness: { scope: :meeting_id }
   validates :position, presence: true, numericality: { greater_than: 0 }
+
+  def to_s; new_record? ? "New Meeting Section" : name; end
 end
 
