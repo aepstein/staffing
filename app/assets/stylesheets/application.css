@@ -1,9 +1,0 @@
-/*
- *= require_self
- *= require cornell-assemblies-rails
- *= require cornell-assemblies-branding
- */
-
-ol.meeting-sections { list-style-type: upper-roman; }
-ol.meeting-items { list-style-type: decimal; }
-

@@ -14,7 +14,7 @@ module ApplicationHelper
 
   def sortable_label( label )
     ( content_tag(:span, '', class: 'ui-icon ui-icon-arrowthick-2-n-s',
-      style: 'float: left;') + label ).html_safe
+      style: 'float: left; vertical-align: middle;') + label ).html_safe
   end
 
   def cocoon_fields( builder, association_name, fields_options = {}, &block  )

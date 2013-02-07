@@ -1,0 +1,39 @@
+/*
+ *= require_self
+ *= require cornell-assemblies-rails
+ *= require cornell-assemblies-branding
+ */
+
+ol.meeting-sections { list-style-type: upper-roman; }
+ol.meeting-items { list-style-type: decimal; }
+
+/* For sortable cocoons (see https://github.com/nathanvda/cocoon/pull/104) */
+fieldset.cocoon {
+  legend {
+    display: block !important;
+    width: 100% !important;
+    float: none !important;
+  }
+/*
+  ol {
+    padding: 0 !important;
+    width: auto !important;
+    float: none !important;
+  }
+*/
+  fieldset {
+    padding: 1em !important;
+  }
+
+  .links a {
+    @extend .button;
+  }
+
+  .nested-fields.ui-sortable {
+    fieldset {
+      border-top: solid #777 12px;
+      cursor: move;
+    }
+  }
+}
+
