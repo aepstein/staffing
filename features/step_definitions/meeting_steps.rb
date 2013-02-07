@@ -106,7 +106,7 @@ When /^I create a meeting with a (named|motion) item as (staff|chair)$/ do |item
     select @current_period.to_s.strip.squeeze(" "), from: "Period"
   end
   @start = ( Time.zone.now + 1.day ).floor
-  @end = @end + 1.hour
+  @end = @start + 1.hour
   fill_in "Starts at", with: "#{@start.to_s :us_short}"
   fill_in "Ends at", with: "#{@end.to_s :us_short}"
   fill_in "Location", with: "Green Room"
@@ -129,6 +129,7 @@ When /^I create a meeting with a (named|motion) item as (staff|chair)$/ do |item
     end
   end
   click_button 'Create'
+  save_and_open_page
 end
 
 Then /^I should see the new meeting with the (named|motion) item$/ do |item|

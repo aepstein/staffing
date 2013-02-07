@@ -43,9 +43,9 @@ Scenario Outline: Create/edit a meeting
   Examples:
     |item  |role |
     |named |staff|
-    |motion|staff|
-    |named |chair|
-    |motion|chair|
+#    |motion|staff|
+#    |named |chair|
+#    |motion|chair|
 
 Scenario: Search meetings
   Given I log in as the staff user

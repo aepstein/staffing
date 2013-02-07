@@ -4,6 +4,6 @@
   <%= f.input :document_cache, as: :hidden %>
   <%= f.input :description, label: 'Attachment description',
     hint: 'Briefly and uniquely describe the contents of the attachment.' %>
-  <%= content_tag :li, link_to_remove_association( 'Remove Attachment', f ) %>
+  <%= link_to_remove_association( 'Remove Attachment', f ) %>
 <% end %>
 
