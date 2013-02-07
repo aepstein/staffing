@@ -111,10 +111,10 @@ When /^I create a meeting with a (named|motion) item as (staff|chair)$/ do |item
   fill_in "Ends at", with: "#{@end.to_s :us_short}"
   fill_in "Location", with: "Green Room"
   click_link 'Add Meeting Section'
-  within_fieldset("Meeting Section") do
+  within_fieldset("New Meeting Section") do
     fill_in "Name", with: "New Business"
     click_link "Add Meeting Item"
-    within_fieldset("Meeting Item") do
+    within_fieldset("New Meeting Item") do
       if item == 'named'
         fill_in "Name", with: "Presentation on Campus Master Plan"
         click_link "Add Attachment"
@@ -129,7 +129,6 @@ When /^I create a meeting with a (named|motion) item as (staff|chair)$/ do |item
     end
   end
   click_button 'Create'
-  save_and_open_page
 end
 
 Then /^I should see the new meeting with the (named|motion) item$/ do |item|

@@ -34,7 +34,7 @@ Scenario Outline: Access control
     |plain           |   |current|may    |may not|may not|may not|
     |plain           |   |pending|may    |may not|may not|may not|
 
-@javascript @wip
+@javascript
 Scenario Outline: Create/edit a meeting
   When I create a meeting with a <item> item as <role>
   Then I should see the new meeting with the <item> item
@@ -43,9 +43,9 @@ Scenario Outline: Create/edit a meeting
   Examples:
     |item  |role |
     |named |staff|
-#    |motion|staff|
-#    |named |chair|
-#    |motion|chair|
+    |motion|staff|
+    |named |chair|
+    |motion|chair|
 
 Scenario: Search meetings
   Given I log in as the staff user
