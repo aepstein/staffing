@@ -2,16 +2,12 @@
 
 <%= simple_form_for(membership_request, url: reject_membership_request_path(membership_request),
   html: { method: :put } ) do |form| %>
-  <%= form.inputs do %>
-    <%= form.input :rejected_by_authority, as: :select, label: 'Authority',
-      hint: 'Under which authority should rejection be made?',
-      collection: ( current_user.authorities.authorized.to_a & membership_request.authorities ),
-      html_options: { include_blank: false } %>
-    <%= form.input :rejection_comment, as: :text, label: 'Comment',
-      hint: 'Provide a brief explanation to the applicant for rejecting the request.' %>
-  <% end %>
-  <%= form.actions do %>
-    <%= form.action :submit, label: 'Reject' %>
-  <% end %>
+  <%= form.association :rejected_by_authority, label: 'Authority',
+    hint: 'Under which authority should rejection be made?',
+    collection: ( current_user.authorities.authorized.to_a & membership_request.authorities ),
+    html_options: { include_blank: false } %>
+  <%= form.input :rejection_comment, as: :text, label: 'Comment',
+    hint: 'Provide a brief explanation to the applicant for rejecting the request.' %>
+  <%= form.button :wrapped, label: "Reject", cancel: membership_request_path(form.object) %>
 <% end %>
 

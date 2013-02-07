@@ -1,10 +1,10 @@
 class MembershipRequestsController < ApplicationController
   before_filter :require_user
   before_filter :populate_answers, only: [ :new, :edit ]
-  expose :committee { Committee.find params[:committee_id] if params[:committee_id] }
-  expose :authority { Authority.find params[:authority_id] if params[:authority_id] }
-  expose :user { User.find params[:user_id] if params[:user_id] }
-  expose :context { authority || committee || user }
+  expose( :committee ) { Committee.find params[:committee_id] if params[:committee_id] }
+  expose( :authority ) { Authority.find params[:authority_id] if params[:authority_id] }
+  expose( :user ) { User.find params[:user_id] if params[:user_id] }
+  expose( :context ) { authority || committee || user }
   expose :q_scope do
     scope = context.membership_requests.scoped if context
     scope ||= MembershipRequest.scoped
@@ -13,12 +13,13 @@ class MembershipRequestsController < ApplicationController
     scope = scope.active if params[:action] == 'active'
     scope = scope.inactive if params[:action] == 'inactive'
     scope = scope.rejected if params[:action] == 'rejected'
+    scope
   end
   expose :q do
     q_scope.search( params[:q] )
   end
   expose :membership_requests do
-    q.result.ordered.with_permissions_to(:show)
+    q.result.ordered.with_permissions_to(:show).page(params[:page])
   end
   expose :assigner_role do
     case action_name
@@ -53,10 +54,6 @@ class MembershipRequestsController < ApplicationController
   # GET /user/:user_id/membership_requests
   # GET /user/:user_id/membership_requests.xml
   def index
-    unless params[:format] == 'csv'
-      membership_requests = membership_requests.page( params[:page] )
-    end
-
     respond_to do |format|
       format.csv { index_csv }
       format.html { render action: 'index' } # index.html.erb
@@ -167,7 +164,7 @@ class MembershipRequestsController < ApplicationController
   def index_csv
     csv_string = CSV.generate do |csv|
       csv << %w( net_id first last status committee until )
-      membership_requests.all.each do |membership_request|
+     q.result.ordered.all.each do |membership_request|
         csv << [ membership_request.user.net_id, membership_request.user.first_name,
           membership_request.user.last_name, membership_request.user.status,
           membership_request.committee, membership_request.ends_at ]

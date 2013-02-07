@@ -143,12 +143,12 @@ When /^I create a membership request for the committee$/ do
   create( :quiz_question, position: 1, quiz: @quiz,
     question: create(:question, name: 'Qualified',
       content: 'Are you qualified?', disposition: 'boolean')) ]
-  visit new_committee_membership_request_url(@committee)
+  visit new_committee_membership_request_path(@committee)
   step %{I fill in basic fields for the membership request}
   # TODO: Assure order of questions is observed
   fill_in 'Favorite color', with: '*bl*ue'
   fill_in 'Capital of Assyria', with: '*Da*mascus'
-  within_fieldset('Qualified?') { choose 'Yes' }
+  within_control_group('Qualified?') { choose 'Yes' }
   click_button 'Create'
 end
 
@@ -179,14 +179,14 @@ end
 When /^I update the membership request$/ do
   @questions[0].update_column :position, 1
   @questions[2].update_column :position, 3
-  visit edit_membership_request_url(@membership_request)
+  visit edit_membership_request_path(@membership_request)
   @starts += 1.day
   @ends -= 1.day
   step %{I fill in basic fields for the membership request}
   # TODO: Assure order of questions is observed
   fill_in 'Favorite color', with: 'yellow'
   fill_in 'Capital of Assyria', with: 'Carthage'
-  within_fieldset('Qualified?') { choose 'No' }
+  within_control_group('Qualified?') { choose 'No' }
   click_button 'Update'
 end
 
@@ -316,7 +316,8 @@ Given /^the membership request is rejected$/ do
 end
 
 When /^I reject the membership request$/ do
-  visit reject_membership_request_url(@membership_request)
+  visit reject_membership_request_path(@membership_request)
+  save_and_open_page
   select @membership_request.authorities.first.to_s, from: 'Authority'
   fill_in "Comment", with: "No *membership* for you!"
   click_button "Reject"

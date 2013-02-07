@@ -11,7 +11,7 @@
   'your level of preference for this committee or position.' %>
 <% form.object.questions.each do |question| %>
   <% if answer = form.object.answers.for_question( question ) %>
-    <%= form.semantic_fields_for :answers, answer do |subform| %>
+    <%= form.simple_fields_for :answers, answer do |subform| %>
       <%= subform.input( :question_id, as: :hidden ) if subform.object.new_record? %>
       <%= render_question subform %>
     <% end %>

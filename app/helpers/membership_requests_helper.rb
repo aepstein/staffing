@@ -6,7 +6,7 @@ module MembershipRequestsHelper
     when 'text'
       :text
     when 'boolean'
-      :radio
+      :radio_buttons
     else
       'text'
     end
