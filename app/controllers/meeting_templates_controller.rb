@@ -1,9 +1,9 @@
 class MeetingTemplatesController < ApplicationController
-  expose :q_scope { MeetingTemplate.scoped }
-  expose :search { params[:term] ? { name_cont: params[:term] } : params[:q] }
-  expose :q { q_scope.search( search ) }
-  expose :meeting_templates { q.result.ordered.page(params[:page]) }
-  expose :meeting_template
+  expose( :q_scope ) { MeetingTemplate.scoped }
+  expose( :search ) { params[:term] ? { name_cont: params[:term] } : params[:q] }
+  expose( :q ) { q_scope.search( search ) }
+  expose( :meeting_templates ) { q.result.ordered.page(params[:page]) }
+  expose( :meeting_template )
   filter_resource_access
 
   # GET /meeting_templates

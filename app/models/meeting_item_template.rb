@@ -22,6 +22,14 @@ class MeetingItemTemplate < ActiveRecord::Base
       position: position }
   end
 
-  def to_s; name? ? name : super; end
+  def to_s
+    if new_record?
+      "New Section Item Template"
+    elsif name?
+      name
+    else
+      super
+    end
+  end
 end
 

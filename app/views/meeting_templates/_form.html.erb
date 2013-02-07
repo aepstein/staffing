@@ -1,6 +1,6 @@
   <%= render "shared/error_messages", target: form.object %>
   <%= form.input :name, label: 'Meeting template name' %>
-  <%= form.input :meeting_section_templates, as: :cocoon, ordered_by: :position %>
+  <%= cocoon_fields form, :meeting_section_templates, insertable: true, ordered_by: :position %>
 
   <%= form.button :wrapped, cancel: meeting_templates_path %>
 
