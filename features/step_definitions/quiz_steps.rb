@@ -61,7 +61,6 @@ When /^I create a quiz$/ do
     select 'An Interesting Question', from: "Question"
   end
   click_button 'Create'
-  save_and_open_page
   @quiz = Quiz.find( URI.parse(current_url).path.match(/[\d]+$/)[0].to_i )
 end
 

@@ -1,8 +1,8 @@
 <%= field_set_tag( sortable_label(f.object.to_s), class: 'nested-fields' ) do %>
-    <% if f.object.new_record? %>
-      <%= f.association :question, collection: Question.all %>
-    <% end %>
-    <%= f.input :position, as: :hidden %>
-    <%= link_to_remove_association 'Remove Question', f %>
+  <% if f.object.new_record? %>
+    <%= f.association :question, collection: Question.all %>
+  <% end %>
+  <%= f.input :position, as: :hidden %>
+  <%= link_to_remove_association 'Remove Question', f %>
 <% end %>
 
