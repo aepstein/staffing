@@ -6,10 +6,10 @@ class UsersController < ApplicationController
       permitted_to?(:staff, user) ? :staff : :default
     end
   end
-  expose :membership { Membership.find( params[:membership_id] ) if params[:membership_id] }
-  expose :motion { Motion.find( params[:motion_id] ) if params[:motion_id] }
-  expose :committee { Committee.find( params[:committee_id] ) if params[:committee_id] }
-  expose :context { membership || motion || committee }
+  expose( :membership ) { Membership.find( params[:membership_id] ) if params[:membership_id] }
+  expose( :motion ) { Motion.find( params[:motion_id] ) if params[:motion_id] }
+  expose( :committee ) { Committee.find( params[:committee_id] ) if params[:committee_id] }
+  expose( :context ) { membership || motion || committee }
   expose :q_scope do
     scope = context.users if context
     scope ||= User.scoped
@@ -22,8 +22,8 @@ class UsersController < ApplicationController
       scope.scoped
     end
   end
-  expose :q { q_scope.search( params[:term] ? { name_cont: params[:term] } : params[:q] ) }
-  expose :users { q.result.with_permissions_to(:show).ordered.page(params[:page]) }
+  expose( :q ) { q_scope.search( params[:term] ? { name_cont: params[:term] } : params[:q] ) }
+  expose( :users ) { q.result.with_permissions_to(:show).ordered.page(params[:page]) }
   expose :user do
     out = if params[:id]
       User.find(params[:id])
@@ -160,7 +160,7 @@ class UsersController < ApplicationController
     user.destroy
 
     respond_to do |format|
-      format.html { redirect_to(users_url, flash: { success: "User destroyed." } }
+      format.html { redirect_to users_url, flash: { success: "User destroyed." } }
       format.xml  { head :ok }
     end
   end

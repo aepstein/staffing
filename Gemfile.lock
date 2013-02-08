@@ -9,7 +9,7 @@ GIT
 
 GIT
   remote: git://assembly.cornell.edu/git/cornell-assemblies-rails.git
-  revision: b4eab997a6d06e96e5f596d128c4365c550d5d54
+  revision: b533888062c47480bed8f6ad34c155902b42a795
   branch: 0-0-3
   specs:
     cornell_assemblies_rails (0.0.3)
@@ -20,6 +20,7 @@ GIT
       cocoon (~> 1.0)
       cornell_ldap (~> 1.4.3)
       cornell_netid (~> 1.1)
+      decent_exposure (~> 2.0)
       jquery-rails (~> 2.0)
       jquery-ui-rails (~> 4.0)
       kaminari (~> 0.14)
@@ -116,6 +117,7 @@ GEM
       nokogiri (>= 1.5.0)
     daemons (1.1.9)
     database_cleaner (0.9.1)
+    decent_exposure (2.0.1)
     declarative_authorization (0.5.6)
     diff-lcs (1.2.0)
     erubis (2.7.0)

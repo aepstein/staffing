@@ -1,7 +1,7 @@
 class PositionsController < ApplicationController
-  expose :committee { Committee.find params[:committee_id] if params[:committee_id] }
-  expose :user { User.find params[:user_id] if params[:user_id] }
-  expose :context { committee || user }
+  expose( :committee ) { Committee.find params[:committee_id] if params[:committee_id] }
+  expose( :user ) { User.find params[:user_id] if params[:user_id] }
+  expose( :context ) { committee || user }
   expose :q_scope do
     scope = context.positions
     scope ||= Position.scoped
@@ -12,8 +12,8 @@ class PositionsController < ApplicationController
       scope.scoped
     end
   end
-  expose :q { q_scope.search( params[:term] ? { name_cont: params[:term] } : params[:q] ) }
-  expose :positions { q.result.ordered.page(params[:page]) }
+  expose( :q ) { q_scope.search( params[:term] ? { name_cont: params[:term] } : params[:q] ) }
+  expose( :positions ) { q.result.ordered.page(params[:page]) }
   expose :position
   filter_access_to :new, :create, :edit, :update, :destroy, :show
   filter_access_to :requestable, :index do

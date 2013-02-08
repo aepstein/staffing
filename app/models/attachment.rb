@@ -21,10 +21,12 @@ class Attachment < ActiveRecord::Base
       ( attachable.to_s(:file) + '-' +
       description.strip.downcase.gsub(/[^a-z0-9]/,'-').squeeze('-') )[0..240] +
       File.extname( document.path )
-    elsif persisted?
-      "Attachment for #{attachable} #{description}"
     else
-      "New Attachment"
+      if persisted?
+        description
+      else
+        "New Attachment"
+      end
     end
   end
 end

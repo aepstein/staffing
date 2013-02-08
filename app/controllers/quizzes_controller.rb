@@ -1,7 +1,7 @@
 class QuizzesController < ApplicationController
-  expose :q_scope { Quiz.scoped }
-  expose :q { q_scope.search( params[:term] ? { name_cont: params[:term] } : params[:q] ) }
-  expose :quizzes { q_scope.result.ordered.page(params[:page]) }
+  expose( :q_scope ) { Quiz.scoped }
+  expose( :q ) { q_scope.search( params[:term] ? { name_cont: params[:term] } : params[:q] ) }
+  expose( :quizzes ) { q_scope.result.ordered.page(params[:page]) }
   expose :quiz
   filter_resource_access
 

@@ -2,7 +2,7 @@ Feature: Memberships
   In order to record memberships of people in positions
   As a committee authority member or administrator
   I want to create, modify, list, show, and destroy memberships
-@wip
+
 Scenario Outline: Access control
   Given an authorization scenario of a <member_tense> membership to which I have a <relationship> relationship
   Then I <show> see the membership
@@ -41,7 +41,7 @@ Scenario Outline: Access control to decline
     |past        |pending authority|is       |has      |next day     |may not|
     |current     |current authority|is       |has      |next day     |may not|
     |current     |future authority |is       |has      |next day     |may    |
-
+@javascript
 Scenario Outline: Create/edit a membership
   When I attempt to create a <tense> membership as <relationship>
   Then I should not see the modifier error message

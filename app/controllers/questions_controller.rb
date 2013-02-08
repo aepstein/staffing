@@ -1,6 +1,6 @@
 class QuestionsController < ApplicationController
-  expose :quiz { Quiz.find params[:quiz_id] if params[:quiz] }
-  expose :context { quiz }
+  expose( :quiz ) { Quiz.find params[:quiz_id] if params[:quiz] }
+  expose( :context ) { quiz }
   expose :q_scope do
     scope = quiz.questions
     scope ||= Question.scoped
@@ -9,7 +9,7 @@ class QuestionsController < ApplicationController
   expose :q do
     q_scope.search( params[:term] ? { name_cont: params[:term] } : params[:q] )
   end
-  expose :questions { q.result.ordered.page(params[:page]) }
+  expose( :questions ) { q.result.ordered.page(params[:page]) }
   expose :question
   filter_resource_access
 

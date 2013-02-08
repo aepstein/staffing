@@ -1,9 +1,9 @@
 class MotionsController < ApplicationController
-  expose :committee { Committee.find params[:committee_id] if params[:committee_id] }
-  expose :user { User.find params[:user_id] if params[:user_id] }
-  expose :meeting { Meeting.find params[:meeting_id] if params[:meeting_id] }
-  expose :period { Period.find params[:period_id] if params[:period_id] }
-  expose :context { meeting || user || committee }
+  expose( :committee ) { Committee.find params[:committee_id] if params[:committee_id] }
+  expose( :user ) { User.find params[:user_id] if params[:user_id] }
+  expose( :meeting ) { Meeting.find params[:meeting_id] if params[:meeting_id] }
+  expose( :period ) { Period.find params[:period_id] if params[:period_id] }
+  expose( :context ) { meeting || user || committee }
   expose :q_scope do
     scope = context.motions
     scope ||= Motion.scoped
@@ -27,7 +27,7 @@ class MotionsController < ApplicationController
   expose :motions do
     q.result.ordered.page(params[:page])
   end
-  expose :amendment { motion.referred_motions.build_amendment( params[:amendment] ) }
+  expose( :amendment ) { motion.referred_motions.build_amendment( params[:amendment] ) }
   expose :referred_motion do
     out = motion.referred_motions.build_referee( params[:referred_motion] )
     motion.event_date, motion.event_description = out.event_date, out.event_description
