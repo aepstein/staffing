@@ -4,7 +4,7 @@
     hint: 'How should the question be presented to the user?' %>
   <%= form.input :content,
     hint: 'What is the text of the question?' %>
-  <%= form.input :global, as: :radio, label: 'Global?',
+  <%= form.input :global, as: :radio_buttons, label: 'Global?',
     hint: "Should the answer default to what has been given to the same question in other membership_requests?" %>
   <%= form.button :wrapped, cancel: questions_path %>
 

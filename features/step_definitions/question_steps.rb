@@ -56,7 +56,7 @@ When /^I create a question$/ do
   fill_in "Name", with: "Favorite color"
   fill_in "Content", with: "What is your favorite color?"
   select "Text Box", from: "Disposition"
-  within_fieldset("Global?") { choose "Yes" }
+  within_control_group("Global?") { choose "Yes" }
   click_button 'Create'
   @question = Question.find( URI.parse(current_url).path.match(/[\d]+$/)[0].to_i )
 end
@@ -75,7 +75,7 @@ When /^I update the question$/ do
   fill_in "Name", with: "Favorite dessert"
   fill_in "Content", with: "What is your favorite dessert?"
   select "Yes/No", from: "Disposition"
-  within_fieldset("Global?") { choose "No" }
+  within_control_group("Global?") { choose "No" }
   click_button 'Update'
 end
 

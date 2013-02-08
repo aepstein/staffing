@@ -2,7 +2,7 @@ class QuestionsController < ApplicationController
   expose( :quiz ) { Quiz.find params[:quiz_id] if params[:quiz] }
   expose( :context ) { quiz }
   expose :q_scope do
-    scope = quiz.questions
+    scope = context.questions if context
     scope ||= Question.scoped
     scope.scoped
   end
