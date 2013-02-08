@@ -1,8 +1,16 @@
 class QuizzesController < ApplicationController
   expose( :q_scope ) { Quiz.scoped }
   expose( :q ) { q_scope.search( params[:term] ? { name_cont: params[:term] } : params[:q] ) }
-  expose( :quizzes ) { q_scope.result.ordered.page(params[:page]) }
-  expose :quiz
+  expose( :quizzes ) { q.result.ordered.page(params[:page]) }
+  expose :quiz do
+    quiz = if params[:id]
+      Quiz.find params[:id]
+    else
+      Quiz.new
+    end
+    quiz.assign_attributes params[:quiz]
+    quiz
+  end
   filter_resource_access
 
   # POST /quizzes
@@ -39,7 +47,7 @@ class QuizzesController < ApplicationController
     quiz.destroy
 
     respond_to do |format|
-      format.html { redirect_to quizzes_url, flash: { success: "Quiz was successfully destroyed." } }
+      format.html { redirect_to quizzes_url, flash: { success: "Quiz destroyed." } }
       format.xml  { head :ok }
     end
   end
