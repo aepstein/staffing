@@ -101,24 +101,24 @@ When /^I create a position$/ do
   select "Supreme", from: "Authority"
   select "Generic", from: "Quiz"
   select "Annual", from: "Schedule"
-  within_fieldset("Renewable?") { choose "Yes" }
-  within_fieldset("Notifiable?") { choose "Yes" }
-  within_fieldset("Designable?") { choose "Yes" }
-  within_fieldset("Active?") { choose "Yes" }
+  within_control_group("Renewable?") { choose "Yes" }
+  within_control_group("Notifiable?") { choose "Yes" }
+  within_control_group("Designable?") { choose "Yes" }
+  within_control_group("Active?") { choose "Yes" }
   fill_in "Slots", with: "1"
   fill_in "Minimum slots", with: "1"
-  within_fieldset("Statuses") { check "undergrad" }
+  within_control_group("Statuses") { check "undergrad" }
   fill_in "Name", with: "Popular Committee Member"
   fill_in "Join message", with: "Welcome to *committee*."
   fill_in "Leave message", with: "You were *dropped* from the committee."
   fill_in "Reject message", with: "There were *no* slots."
-  click_link "add enrollment"
+  click_link "Add Enrollment"
   fill_in "Committee", with: "Cool Committee"
   fill_in "Title", with: "Voting Member"
   fill_in "Votes", with: "1"
-  within_fieldset("Requestable?") { choose 'Yes' }
-  within_fieldset("Roles") do
-    within("li:nth-of-type(1)") { check 'chair' }
+  within_control_group("Requestable?") { choose 'Yes' }
+  within_control_group("Roles") do
+    check 'vicechair'
     check 'monitor'
   end
   click_button 'Create'
@@ -149,7 +149,7 @@ Then /^I should see the new position$/ do
     enrollment = @position.enrollments.first
     within("tr#enrollment-#{enrollment.id}") do
       within("td:nth-of-type(4)") { page.should have_text "Yes" }
-      within("td:nth-of-type(5)") { page.should have_text "chair, monitor" }
+      within("td:nth-of-type(5)") { page.should have_text "vicechair, monitor" }
     end
   end
 end
@@ -159,18 +159,18 @@ When /^I update the position$/ do
   select "Inferior", from: "Authority"
   select "Specialized", from: "Quiz"
   select "Semester", from: "Schedule"
-  within_fieldset("Renewable?") { choose "No" }
-  within_fieldset("Notifiable?") { choose "No" }
-  within_fieldset("Designable?") { choose "No" }
-  within_fieldset("Active?") { choose "No" }
+  within_control_group("Renewable?") { choose "No" }
+  within_control_group("Notifiable?") { choose "No" }
+  within_control_group("Designable?") { choose "No" }
+  within_control_group("Active?") { choose "No" }
   fill_in "Slots", with: "2"
   fill_in "Minimum slots", with: "2"
-  within_fieldset("Statuses") { uncheck "undergrad" }
+  within_control_group("Statuses") { uncheck "undergrad" }
   fill_in "Name", with: "Normal Committee Member"
   fill_in "Join message", with: "Welcome!"
   fill_in "Leave message", with: "Goodbye!"
   fill_in "Reject message", with: "No more room!"
-  click_link "remove enrollment"
+  click_link "Remove Enrollment"
   click_button 'Update'
 end
 

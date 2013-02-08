@@ -3,7 +3,7 @@ class PositionsController < ApplicationController
   expose( :user ) { User.find params[:user_id] if params[:user_id] }
   expose( :context ) { committee || user }
   expose :q_scope do
-    scope = context.positions
+    scope = context.positions if context
     scope ||= Position.scoped
     case params[:action]
     when 'current', 'past', 'future', 'requestable'
@@ -17,7 +17,7 @@ class PositionsController < ApplicationController
   expose :position
   filter_access_to :new, :create, :edit, :update, :destroy, :show
   filter_access_to :requestable, :index do
-    permitted_to!( :show, @user ) if @user
+    permitted_to!( :show, user ) if user
     permitted_to! :index
   end
 
