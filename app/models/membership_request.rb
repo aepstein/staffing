@@ -180,7 +180,15 @@ class MembershipRequest < ActiveRecord::Base
     end
   end
 
-  def to_s; committee.to_s; end
+  def to_s
+    if user && committee
+      "#{user} Request for Membership in #{committee}"
+    elsif new_record?
+      "New Membership Request"
+    else
+      super
+    end
+  end
 
   protected
 

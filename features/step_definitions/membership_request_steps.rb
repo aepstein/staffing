@@ -129,8 +129,8 @@ end
 When /^I fill in basic fields for the membership request$/ do
   @starts ||= Time.zone.today
   @ends ||= @starts + 2.years
-  fill_in 'Desired start date', with: @starts.to_s(:rfc822)
-  fill_in 'Desired end date', with: @ends.to_s(:rfc822)
+  fill_in 'Desired start date', with: @starts.to_s(:us_short)
+  fill_in 'Desired end date', with: @ends.to_s(:us_short)
 end
 
 When /^I create a membership request for the committee$/ do
@@ -148,7 +148,7 @@ When /^I create a membership request for the committee$/ do
   # TODO: Assure order of questions is observed
   fill_in 'Favorite color', with: '*bl*ue'
   fill_in 'Capital of Assyria', with: '*Da*mascus'
-  within_control_group('Qualified?') { choose 'Yes' }
+  within_control_group_containing('Qualified?') { choose 'Yes' }
   click_button 'Create'
 end
 
@@ -186,12 +186,12 @@ When /^I update the membership request$/ do
   # TODO: Assure order of questions is observed
   fill_in 'Favorite color', with: 'yellow'
   fill_in 'Capital of Assyria', with: 'Carthage'
-  within_control_group('Qualified?') { choose 'No' }
+  within_control_group_containing('Qualified?') { choose 'No' }
   click_button 'Update'
 end
 
 Then /^I should see the updated membership request$/ do
-  within('.alert') { page.should have_text("Membership request updated.") }
+  within('.alert') { page.should have_text("Membership request updated and active.") }
   within("#membership-request-#{@membership_request.id}") do
     page.should have_text "Desired start date: #{@starts.to_formatted_s(:long_ordinal)}"
     page.should have_text "Desired end date: #{@ends.to_formatted_s(:long_ordinal)}"
@@ -316,7 +316,7 @@ Given /^the membership request is rejected$/ do
 end
 
 When /^I reject the membership request$/ do
-  visit reject_membership_request_path(@membership_request)
+  visit reject_membership_request_url(@membership_request)
   save_and_open_page
   select @membership_request.authorities.first.to_s, from: 'Authority'
   fill_in "Comment", with: "No *membership* for you!"

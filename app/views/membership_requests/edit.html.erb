@@ -1,4 +1,4 @@
-<h1>Editing membership_request of <%=h membership_request.user.name %> for <%=h membership_request.committee %></h1>
+<%=content_tag :h1, "Edit #{membership_request}" %>
 
 <%= simple_form_for(membership_request, html: { multipart: true }) do |f| %>
   <%= render partial: 'form', object: f %>

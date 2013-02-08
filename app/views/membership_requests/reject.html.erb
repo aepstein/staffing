@@ -1,4 +1,4 @@
-<h1>Reject <%=h membership_request.user.name %> for <%=h membership_request.committee %></h1>
+<%=content_tag :h1, "Reject #{membership_request}" %>
 
 <%= simple_form_for(membership_request, url: reject_membership_request_path(membership_request),
   html: { method: :put } ) do |form| %>

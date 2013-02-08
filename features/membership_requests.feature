@@ -36,7 +36,8 @@ Scenario Outline: Access control to reactivate
     |recent authority    |may not   |
     |future authority    |may       |
     |plain               |may not   |
-@javascript @wip
+
+@javascript
 Scenario Outline: Create and edit request
   Given I log in as the plain user
   And I have an undergrad status

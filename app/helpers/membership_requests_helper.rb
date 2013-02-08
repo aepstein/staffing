@@ -16,7 +16,7 @@ module MembershipRequestsHelper
     else
       form.object.question.name
     end
-    form.input :content, as: as, label: label,
+    form.input :content, as: as, label: label.strip,
       hint: form.object.question.content
   end
 end
