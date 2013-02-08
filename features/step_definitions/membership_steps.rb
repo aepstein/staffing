@@ -353,12 +353,10 @@ Then /^I should see renewals confirmed with renotification (en|dis)abled$/ do |r
     target = @original_renewal_checkpoint.to_i
     checkpoint.should be >= target - 1
     checkpoint.should be <= target + 1
-#    @membership.user.renewal_checkpoint.to_i.should( be_within(1).of(@original_renewal_checkpoint.to_i) )
   else
     target = Time.zone.now.to_i
     checkpoint.should be >= target - 1.minute.to_i
     checkpoint.should be <= target + 1.minute.to_i
-#    @membership.user.renewal_checkpoint.to_i.should_not( be_within(1.week.to_i).of(@original_renewal_checkpoint.to_i) )
   end
 end
 
