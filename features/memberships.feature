@@ -2,7 +2,7 @@ Feature: Memberships
   In order to record memberships of people in positions
   As a committee authority member or administrator
   I want to create, modify, list, show, and destroy memberships
-
+@wip
 Scenario Outline: Access control
   Given an authorization scenario of a <member_tense> membership to which I have a <relationship> relationship
   Then I <show> see the membership

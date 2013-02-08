@@ -158,8 +158,8 @@ When /^I attempt to create a (past|current|future|pending|recent) membership as 
   visit new_position_membership_url(@position)
   fill_in 'User', with: @candidate.name(:net_id)
   select @period.to_s.strip.squeeze(" "), from: "Period"
-  fill_in 'Starts at', with: @starts_at.to_s(:rfc822)
-  fill_in 'Ends at', with: @ends_at.to_s(:rfc822)
+  fill_in 'Starts at', with: @starts_at.to_s(:us_short)
+  fill_in 'Ends at', with: @ends_at.to_s(:us_short)
   fill_in "Designee for Important Committee", with: @designee.name(:net_id)
   click_button 'Create'
 end
@@ -189,8 +189,8 @@ When /^I update the membership$/ do
   fill_in 'User', with: @designee.name(:net_id)
   @starts_at += 1.day
   @ends_at -= 1.day
-  fill_in 'Starts at', with: @starts_at.to_s(:rfc822)
-  fill_in 'Ends at', with: @ends_at.to_s(:rfc822)
+  fill_in 'Starts at', with: @starts_at.to_s(:us_short)
+  fill_in 'Ends at', with: @ends_at.to_s(:us_short)
   fill_in 'Designee for Important Committee', with: @candidate.name(:net_id)
   click_button 'Update'
 end
@@ -326,7 +326,7 @@ When /^I fill in (a|no) renewal for the membership$/ do |v|
   visit renew_user_memberships_url( @membership.user )
   within("#membership-#{@membership.id}") do
     fill_in "#{@membership.position}",
-      with: ( v == 'a' ? ( @membership.ends_at + 1.year ).to_formatted_s(:rfc822) : '' )
+      with: ( v == 'a' ? ( @membership.ends_at + 1.year ).to_formatted_s(:us_short) : '' )
   end
 end
 
