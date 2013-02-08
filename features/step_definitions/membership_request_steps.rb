@@ -317,7 +317,6 @@ end
 
 When /^I reject the membership request$/ do
   visit reject_membership_request_url(@membership_request)
-  save_and_open_page
   select @membership_request.authorities.first.to_s, from: 'Authority'
   fill_in "Comment", with: "No *membership* for you!"
   click_button "Reject"

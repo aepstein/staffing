@@ -8,6 +8,6 @@
     html_options: { include_blank: false } %>
   <%= form.input :rejection_comment, as: :text, label: 'Comment',
     hint: 'Provide a brief explanation to the applicant for rejecting the request.' %>
-  <%= form.button :wrapped, label: "Reject", cancel: membership_request_path(form.object) %>
+  <%= form.button :button, 'Reject', class: 'btn btn-primary' %> or <%=link_to 'Cancel', membership_request_path(form.object) %>
 <% end %>
 

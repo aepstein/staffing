@@ -131,6 +131,7 @@ class MembershipRequestsController < ApplicationController
         end
       else
         membership_request.rejected_by_authority ||= ( current_user.authorities.authorized.to_a & membership_request.authorities ).first
+        format.html { render action: "reject" }
       end
     end
   end

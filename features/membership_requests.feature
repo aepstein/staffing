@@ -69,7 +69,7 @@ Scenario Outline: Fail to create request
     |status|
     |a grad|
     |noone |
-@wip
+
 Scenario Outline: Reject a request and reactivate
   Given an authorization scenario of a current membership request to which I have a <relation> relationship
   When I reject the membership request
@@ -79,7 +79,7 @@ Scenario Outline: Reject a request and reactivate
   Examples:
     |relation          |
     |staff             |
-#    |current authority |
+    |current authority |
 
 Scenario Outline: Reapply on a rejected request
   Given an authorization scenario of a current membership request to which I have a <relation> relationship
