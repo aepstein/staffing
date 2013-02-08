@@ -15,9 +15,9 @@ class Attachment < ActiveRecord::Base
     uniqueness: { scope: [ :attachable_id, :attachable_type ] }
 
   def to_s(format=nil)
-    return super() unless attachable
     case format
     when :file
+      return super() unless attachable
       ( attachable.to_s(:file) + '-' +
       description.strip.downcase.gsub(/[^a-z0-9]/,'-').squeeze('-') )[0..240] +
       File.extname( document.path )

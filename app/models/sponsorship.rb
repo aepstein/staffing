@@ -12,7 +12,13 @@ class Sponsorship < ActiveRecord::Base
   validates :motion_id, uniqueness: { scope: :user_id }
   validate :user_must_be_allowed
 
-  def to_s; user ? user.to_s : ''; end
+  def to_s
+    if new_record?
+      "New Sponsorship"
+    else
+      user ? user.to_s : super
+    end
+  end
 
   protected
 

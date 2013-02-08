@@ -11,61 +11,61 @@ When /^I (adopt|amend|divide|implement|merge|propose|refer|reject|restart|withdr
   case @event
   when 'adopt'
     visit(adopt_motion_path(@motion))
-    fill_in 'Adopt date', with: Time.zone.today.to_formatted_s(:db)
+    fill_in 'Adopt date', with: Time.zone.today.to_formatted_s(:us_short)
     fill_in 'Event description', with: 'event details'
     click_button 'Adopt'
   when 'amend'
     visit(amend_motion_path(@motion))
-    fill_in 'Amend date', with: Time.zone.today.to_formatted_s(:db)
+    fill_in 'Amend date', with: Time.zone.today.to_formatted_s(:us_short)
     fill_in 'Event description', with: 'event details'
     fill_in 'Description', with: 'New description'
     fill_in 'Content', with: 'New content'
     click_button 'Amend'
   when 'divide'
     visit(divide_motion_path(@motion))
-    fill_in 'Divide date', with: Time.zone.today.to_formatted_s(:db)
+    fill_in 'Divide date', with: Time.zone.today.to_formatted_s(:us_short)
     fill_in 'Event description', with: 'event details'
-    click_link 'add dividing motion'
+    click_link 'Add Referred Motion'
     fill_in 'Name', with: 'Charter amendment'
     fill_in 'Description', with: 'This is a big change'
     fill_in 'Content', with: 'Whereas and resolved'
     click_button 'Divide'
   when 'implement'
     visit(implement_motion_path(@motion))
-    fill_in 'Implement date', with: Time.zone.today.to_formatted_s(:db)
+    fill_in 'Implement date', with: Time.zone.today.to_formatted_s(:us_short)
     fill_in 'Event description', with: 'event details'
     click_button 'Implement'
   when 'merge'
     create :motion, committee: @motion.committee, period: @motion.period,
       name: 'Target', published: true, status: 'proposed'
     visit(merge_motion_path(@motion))
-    fill_in 'Merge date', with: Time.zone.today.to_formatted_s(:db)
+    fill_in 'Merge date', with: Time.zone.today.to_formatted_s(:us_short)
     fill_in 'Event description', with: 'event details'
     select 'Target', from: 'Motion'
     click_button 'Merge'
   when 'propose'
     visit(propose_motion_path(@motion))
-    fill_in 'Propose date', with: Time.zone.today.to_formatted_s(:db)
+    fill_in 'Propose date', with: Time.zone.today.to_formatted_s(:us_short)
     fill_in 'Event description', with: 'event details'
     click_button 'Propose'
   when 'refer'
     other_committee = create( :committee, schedule: @committee.schedule )
     visit(refer_motion_path(@motion))
-    fill_in 'Refer date', with: Time.zone.today.to_formatted_s(:db)
+    fill_in 'Refer date', with: Time.zone.today.to_formatted_s(:us_short)
     fill_in 'Event description', with: 'event details'
     fill_in 'Committee', with: other_committee.name
     fill_in 'Name', with: "#{@motion.name} referred"
     click_button 'Refer'
   when 'reject'
     visit(reject_motion_path(@motion))
-    fill_in 'Reject date', with: Time.zone.today.to_formatted_s(:db)
+    fill_in 'Reject date', with: Time.zone.today.to_formatted_s(:us_short)
     fill_in 'Event description', with: 'event details'
     click_button 'Reject'
   when 'restart'
     Capybara.current_session.driver.submit :put, restart_motion_url(@motion), {}
   when 'withdraw'
     visit(withdraw_motion_path(@motion))
-    fill_in 'Withdraw date', with: Time.zone.today.to_formatted_s(:db)
+    fill_in 'Withdraw date', with: Time.zone.today.to_formatted_s(:us_short)
     fill_in 'Event description', with: 'event details'
     click_button 'Withdraw'
   end
@@ -239,13 +239,13 @@ When /^I create a motion as (voter|staff)$/ do |relationship|
     select @period.to_s.strip.squeeze(" "), from: 'Period'
     fill_in "Sponsor", with: "#{@sponsor.net_id}"
   else
-    within("form") { page.should have_no_text('Period') }
+    within("form") { page.should have_text('You may not change the period of this motion.') }
   end
   fill_in 'Name', with: 'Charter amendment'
   fill_in 'Description', with: 'This is a *big* change.'
   fill_in 'Content', with: '*Whereas* and *Resolved*'
   click_link 'Add Attachment'
-  within_fieldset "Attachment" do
+  within_fieldset "Attachments" do
     attach_file 'Attachment document', File.expand_path('spec/assets/empl_ids.csv')
     fill_in 'Attachment description', with: 'Sample employee ids'
   end

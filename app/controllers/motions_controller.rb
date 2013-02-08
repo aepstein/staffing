@@ -5,7 +5,7 @@ class MotionsController < ApplicationController
   expose( :period ) { Period.find params[:period_id] if params[:period_id] }
   expose( :context ) { meeting || user || committee }
   expose :q_scope do
-    scope = context.motions
+    scope = context.motions if context
     scope ||= Motion.scoped
     case params[:action]
     when 'allowed'
@@ -18,6 +18,7 @@ class MotionsController < ApplicationController
       scope = scope.scoped
     end
     scope = scope.where( period_id: period.id ) if period
+    scope
   end
   expose :q do
     q_scope.with_permissions_to(:show).search(
@@ -30,7 +31,7 @@ class MotionsController < ApplicationController
   expose( :amendment ) { motion.referred_motions.build_amendment( params[:amendment] ) }
   expose :referred_motion do
     out = motion.referred_motions.build_referee( params[:referred_motion] )
-    motion.event_date, motion.event_description = out.event_date, out.event_description
+    out.referring_motion.event_date, out.referring_motion.event_description = out.event_date, out.event_description
     out
   end
   expose :motion do
@@ -229,8 +230,7 @@ class MotionsController < ApplicationController
         format.html { render action: :merge }
       else
         if motion_merger.save
-          format.html { redirect_to motion.terminal_merged_motion,
-            notice: 'Motion merged.' }
+          format.html { redirect_to motion.terminal_merged_motion, notice: 'Motion merged.' }
           format.xml { head :ok }
         else
           format.html { redirect_to motion, alert: 'Cannot merge the motion.' }
@@ -247,8 +247,9 @@ class MotionsController < ApplicationController
       if request.method_symbol == :get
         format.html { render action: :refer }
       else
+        referred_motion
         if motion.refer
-          format.html { redirect_to(@referred_motion, notice: 'Motion referred.') }
+          format.html { redirect_to(referred_motion, notice: 'Motion referred.') }
           format.xml  { head :ok }
       else
           format.html { render action: "refer" }
@@ -265,12 +266,13 @@ class MotionsController < ApplicationController
       if request.method_symbol == :get
         format.html
       else
+        amendment
         if motion.amend
-          format.html { redirect_to(@amendment, notice: 'Motion amended.') }
+          format.html { redirect_to(amendment, notice: 'Motion amended.') }
           format.xml  { head :ok }
         else
           format.html { render action: "amend" }
-          format.xml  { render xml: @amendment.errors, status: :unprocessable_entity }
+          format.xml  { render xml: amendment.errors, status: :unprocessable_entity }
         end
       end
     end

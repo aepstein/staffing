@@ -1,43 +1,21 @@
 <% f.object.committee = committee if committee %>
-<div class="nested-fields">
-  <%= f.inputs do %>
-    <%= f.input :name, hint: 'Name of the motion' %>
-    <% unless role == :referrer %>
-      <%= f.input :description, hint: 'Briefly describe purpose and effect of motion' %>
-      <%= f.input :content, hint: 'Provide the text of the motion' %>
-    <% end %>
-    <% unless role == :divider %>
-      <%= f.input :period, collection: f.object.committee.schedule.periods,
-        hint: 'For what period is the motion sponsored' %>
-
-      <%= f.inputs for: :sponsorships, name: 'sponsor' do |subform| %>
-        <%= render partial: 'sponsorships/sponsorship_fields', locals: { f: subform } %>
-      <% end %>
-
-      <div class='links'>
-        <p>
-          <%= link_to_add_association 'add sponsorship', f, :sponsorships,
-            partial: 'sponsorships/sponsorship_fields' %>
-        </p>
-      </div>
-    <% end %>
-
-    <% unless role == :referrer %>
-      <%= f.inputs for: :attachments, name: 'attachment' do |subform| %>
-        <%= render partial: 'attachments/attachment_fields', locals: { f: subform } %>
-      <% end %>
-
-      <div class='links'>
-        <p>
-          <%= link_to_add_association 'add attachment', f, :attachments,
-            partial: 'attachments/attachment_fields' %>
-        </p>
-      </div>
-    <% end %>
+<% label = ( case role; when :referrer; 'Referred'; else; 'Divided'; end ) %>
+<%=field_set_tag "#{label} Motion", class: "nested-fields" do %>
+  <%= f.input :name, hint: 'Name of the motion' %>
+  <% unless role == :referrer %>
+    <%= f.input :description, hint: 'Briefly describe purpose and effect of motion' %>
+    <%= f.input :content, hint: 'Provide the text of the motion' %>
+  <% end %>
+  <% unless role == :divider %>
+    <%= f.input :period, collection: f.object.committee.schedule.periods,
+      hint: 'For what period is the motion sponsored' %>
+    <%= cocoon_fields f, :sponsorships, insertable: true %>
   <% end %>
 
-  <p>
-  <%= link_to_remove_association 'remove motion', f %>
-  </p>
-</div>
+  <% unless role == :referrer %>
+    <%= cocoon_fields f, :attachments, insertable: true %>
+  <% end %>
+
+  <%= link_to_remove_association 'Remove Referred Motion', f %>
+<% end %>
 

@@ -10,11 +10,11 @@ Use this form to merge the motion to another motion proposed before the same com
 
 <%=content_tag :h2, "Motion to which it will be merged" %>
 
-<%= simple_form_for motion_merger, as: :motion_merger,
+<%= simple_form_for( motion_merger, as: :motion_merger,
   url: merge_motion_path( motion_merger.merged_motion ),
-  method: :put do |form| %>
+  method: :put ) do |form| %>
 
-  <%= form.simple_fields_for: :merged_motion do |merged_motion_fields| %>
+  <%= form.simple_fields_for :merged_motion do |merged_motion_fields| %>
     <%= render partial: 'motions/event_fields', object: merged_motion_fields %>
   <% end %>
 
@@ -22,6 +22,6 @@ Use this form to merge the motion to another motion proposed before the same com
     collection: motion_merger.merged_motion.mergeable_motions,
     hint: 'What motion should this motion be merged into?' %>
 
-  <%= form.button :wrapped, label: "Merge", cancel: motion_path(motion_merger.motion) %>
+  <%= form.button :wrapped, label: "Merge", cancel: motion_path(motion_merger.merged_motion) %>
 <% end %>
 

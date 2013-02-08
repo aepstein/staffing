@@ -16,8 +16,8 @@ An amendment must have sponsors.
     hint: 'What should be the new name of the amendment? (Usually best to use the default)' %>
   <%= form.input :description, hint: 'Briefly describe amended purpose and effect of motion' %>
   <%= form.input :content, hint: 'Provide the amended text of the motion' %>
-  <%= form.input :sponsorships, as: :cocoon %>
-  <%= form.input :attachments, as: :cocoon %>
+  <%= cocoon_fields form, :sponsorships, insertable: true %>
+  <%= cocoon_fields form, :attachments, insertable: true %>
   <%= form.button :wrapped, label: 'Amend', cancel: motion_path( motion ) %>
 <% end %>
 

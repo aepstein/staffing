@@ -1,14 +1,15 @@
   <%= render "shared/error_messages", target: form.object %>
-  <%= form.inputs do %>
-    <%= form.input :name, hint: 'Name of the motion' %>
-    <%= form.input :description, hint: 'Briefly describe purpose and effect of motion' %>
-    <%= form.input :content, hint: 'Provide the text of the motion' %>
-    <% if form.object.new_record? && permitted_to?( :admin, form.object ) %>
-    <%= form.input :period, collection: form.object.committee.schedule.periods,
-      hint: 'For what period is the motion sponsored' %>
-    <% end %>
-    <%= form.input :sponsorships, as: :cocoon %>
-    <%= form.input :attachments, as: :cocoon %>
+  <%= form.input :name, hint: 'Name of the motion' %>
+  <%= form.input :description, hint: 'Briefly describe purpose and effect of motion' %>
+  <%= form.input :content, hint: 'Provide the text of the motion' %>
+  <% if form.object.new_record? && permitted_to?( :admin, form.object ) %>
+  <%= form.association :period, collection: form.object.committee.schedule.periods,
+    hint: "For what period is the motion sponsored?" %>
+  <% else %>
+  <%= form.association :period, disabled: true,
+    hint: "You may not change the period of this motion." %>
   <% end %>
-  <%= form.actions %>
+  <%= cocoon_fields form, :sponsorships, insertable: true %>
+  <%= cocoon_fields form, :attachments, insertable: true %>
+  <%= form.button :wrapped, cancel: committee_motions_path(form.object.committee) %>
 
