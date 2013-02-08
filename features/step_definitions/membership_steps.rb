@@ -155,7 +155,7 @@ When /^I attempt to create a (past|current|future|pending|recent) membership as 
   if relation == 'authority'
     step %{I have a #{relation_tense} #{relation} relationship to the position}
   end
-  visit new_position_membership_url(@position)
+  visit new_position_membership_path(@position)
   fill_in 'User', with: @candidate.name(:net_id)
   select @period.to_s.strip.squeeze(" "), from: "Period"
   fill_in 'Starts at', with: @starts_at.to_s(:us_short)
@@ -185,7 +185,7 @@ Then /^I should see the new membership$/ do
 end
 
 When /^I update the membership$/ do
-  visit edit_membership_url(@membership)
+  visit edit_membership_path(@membership)
   fill_in 'User', with: @designee.name(:net_id)
   @starts_at += 1.day
   @ends_at -= 1.day
@@ -323,7 +323,7 @@ Given /^the membership is( not)? renewable$/ do |unrenewable|
 end
 
 When /^I fill in (a|no) renewal for the membership$/ do |v|
-  visit renew_user_memberships_url( @membership.user )
+  visit renew_user_memberships_path( @membership.user )
   within("#membership-#{@membership.id}") do
     fill_in "#{@membership.position}",
       with: ( v == 'a' ? ( @membership.ends_at + 1.year ).to_formatted_s(:us_short) : '' )
@@ -346,12 +346,19 @@ Then /^the membership should have (a|no) renewal$/ do |renotify|
 end
 
 Then /^I should see renewals confirmed with renotification (en|dis)abled$/ do |renotify|
-  within(".alert") { page.should have_text "Renewal preferences successfully updated." }
+  within(".alert") { page.should have_text "Renewal preferences updated." }
   @membership.user.reload
+  checkpoint = @membership.user.renewal_checkpoint.to_i
   if renotify == 'en'
-    @membership.user.renewal_checkpoint.should be_within(1.second).of(@original_renewal_checkpoint)
+    target = @original_renewal_checkpoint.to_i
+    checkpoint.should be >= target - 1
+    checkpoint.should be <= target + 1
+#    @membership.user.renewal_checkpoint.to_i.should( be_within(1).of(@original_renewal_checkpoint.to_i) )
   else
-    @membership.user.renewal_checkpoint.should_not be_within(1.week).of(@original_renewal_checkpoint)
+    target = Time.zone.now.to_i
+    checkpoint.should be >= target - 1.minute.to_i
+    checkpoint.should be <= target + 1.minute.to_i
+#    @membership.user.renewal_checkpoint.to_i.should_not( be_within(1.week.to_i).of(@original_renewal_checkpoint.to_i) )
   end
 end
 

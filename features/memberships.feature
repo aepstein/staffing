@@ -41,6 +41,7 @@ Scenario Outline: Access control to decline
     |past        |pending authority|is       |has      |next day     |may not|
     |current     |current authority|is       |has      |next day     |may not|
     |current     |future authority |is       |has      |next day     |may    |
+
 @javascript
 Scenario Outline: Create/edit a membership
   When I attempt to create a <tense> membership as <relationship>
@@ -57,6 +58,7 @@ Scenario Outline: Create/edit a membership
     |current|pending authority|
     |future |future authority |
 
+@javascript
 Scenario Outline: Prevent authority from editing non-overlap membership
   When I attempt to create a <tense> membership as <relationship>
   Then I should <error> the modifier error message
@@ -149,13 +151,14 @@ Scenario Outline: Show correct renewable memberships
     |historic|current       |member  |is       |may not|
     |past    |current       |member  |is not   |may not|
 
+@javascript
 Scenario Outline: Set renewal preferences for a user
   Given an authorization scenario of a <tense> membership to which I have a <relation_tense> <relation> relationship
   And the membership is renewable
   When I fill in <renewal> renewal for the membership
   And I submit renewals with renotification <renotify>abled
-  Then I should see renewals confirmed with renotification <renotify>abled
-  And the membership should have <renewal> renewal
+  Then the membership should have <renewal> renewal
+  And I should see renewals confirmed with renotification <renotify>abled
   Examples:
     |tense|relation_tense|relation|renewal|renotify|
     |past |current       |member  |a      |dis     |

@@ -15,6 +15,7 @@ authorization do
       :user_renewal_notices, :sendings ],
       to: [ :create, :update, :show, :index, :staff ]
     has_permission_on :committees, to: [ :chair, :members, :tents, :vote ]
+    has_permission_on :memberships, to: [ :staff ]
     has_permission_on :memberships, to: [ :decline ] do
       if_attribute declined_at: is { nil }, starts_at: lte { Time.zone.today },
         renew_until: is_not { nil }, position: { renewable: true }

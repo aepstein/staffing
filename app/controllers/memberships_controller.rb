@@ -34,7 +34,6 @@ class MembershipsController < ApplicationController
       position.memberships.build_for_authorization
     end
     out.assign_attributes params[:membership], as: :creator if out.new_record? && params[:membership]
-    out.modifier = current_user if permitted_to? :staff, out
     out
   end
   filter_access_to :new, :create, :edit, :update, :destroy, :show, :confirm,
@@ -68,14 +67,18 @@ class MembershipsController < ApplicationController
   # PUT /users/:user_id/memberships/renew
   def renew
     respond_to do |format|
-      unless request.request_method_symbol == :get
-        if @user.update_attributes( params[:user], as: :default )
-          format.html { render flash: { success: 'Renewal preferences updated.' } }
-        else
-          format.html { render flash: { error: 'Renewal preferences not updated.' } }
+      if request.request_method_symbol == :get
+        format.html
+      else
+        format.html do
+          if user.update_attributes( params[:user], as: :default )
+            flash[:success] = 'Renewal preferences updated.'
+          else
+            flash[:error] = 'Renewal preferences not updated.'
+          end
+          render action: 'renew'
         end
       end
-      format.html
     end
   end
 
@@ -163,6 +166,7 @@ class MembershipsController < ApplicationController
   # POST /positions/:position_id/memberships
   # POST /positions/:position_id/memberships.xml
   def create
+    membership.modifier = current_user
     respond_to do |format|
       if membership.save
         format.html { redirect_to( membership, flash: { success: 'Membership created.' } ) }
@@ -176,6 +180,7 @@ class MembershipsController < ApplicationController
   # PUT /memberships/1
   # PUT /memberships/1.xml
   def update
+    membership.modifier = current_user
     respond_to do |format|
       membership.assign_attributes params[:membership], as: :updator
       if membership.save
