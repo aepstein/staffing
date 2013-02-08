@@ -6,7 +6,6 @@ gem 'exception_notification'
 gem 'capistrano'
 gem 'validates_timeliness'
 gem 'gettext'
-gem 'jquery-rails'
 gem 'squeel'
 gem 'ransack'
 gem 'cornell_ldap', '>= 1.3.1'
@@ -16,7 +15,6 @@ gem 'carrierwave'
 gem 'blind_date', '~> 1.0.2'
 gem 'acts_as_list', '~> 0.1.9'
 gem 'daemons'
-gem 'bluecloth'
 gem 'whenever', require: false
 gem 'escape_utils'
 gem 'prawn', '~> 1.0.0rc'
@@ -28,7 +26,6 @@ gem 'cornell_assemblies_rails',
 gem 'cornell-assemblies-branding',
   git: 'git://assembly.cornell.edu/git/cornell-assemblies-branding.git',
   branch: '0-0-3'
-gem 'decent_exposure'
 gem 'valium'
 group :assets do
   gem 'sass-rails'
