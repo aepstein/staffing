@@ -1,6 +1,6 @@
 <%= table_row_tag true, false, { id: "period-#{period.id}" } do %>
   <%=content_tag( :td, period.schedule ) unless schedule %>
-  <%=content_tag :td, period.starts_at.to_s :us_short %>
-  <%=content_tag :td, period.ends_at.to_s :us_short %>
+  <%=content_tag :td, period.starts_at.to_s( :us_short ) %>
+  <%=content_tag :td, period.ends_at.to_s( :us_short ) %>
 <% end %>
 

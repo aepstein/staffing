@@ -23,9 +23,9 @@ module ApplicationHelper
     ordered_by = fields_options.delete( :ordered_by )
     field_set_options = ordered_by.present? ? { data: { ordered_by: ordered_by } } : { }
     insertable = fields_options.delete( :insertable ) || false
-    fields_options[:class] = fields_options[:class] ? "#{fields_options[:class]} cocoon" : "cocoon"
+    field_set_options[:class] = fields_options[:class] ? "#{fields_options[:class]} cocoon" : "cocoon"
     locals = fields_options.delete(:locals) || {}
-    field_set_tag label, field_set_options do
+    field_set_tag( label, field_set_options ) do
       out = builder.association association_name, fields_options do |f|
         render partial: "#{singular_association_name}_fields", locals: locals.merge( { f: f } )
       end

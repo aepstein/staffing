@@ -58,6 +58,7 @@ When /^I create a schedule$/ do
   fill_in "Starts at", with: Date.new(2010,1,1).to_s(:us_short)
   fill_in "Ends at", with: Date.new(2010,12,31).to_s(:us_short)
   click_button 'Create'
+  save_and_open_page
   @schedule = Schedule.find( URI.parse(current_url).path.match(/[\d]+$/)[0].to_i )
 end
 
@@ -67,7 +68,7 @@ Then /^I should see the new schedule$/ do
     page.should have_text "Name: Annual"
     page.should have_no_text "No periods."
     step %{I should see the following periods:}, table(%{
-      | 1 Jan 2010 | 31 Dec 2010 |
+      | 01/01/2010 | 12/31/2010 |
     })
   end
 end
