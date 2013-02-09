@@ -20,9 +20,14 @@ $ ->
           timeFormat: "hh:mm:'00' tt"
       $(scope).find(".best_in_place").best_in_place()
       $(scope).find("input.colorpicker").colorpicker()
-      $(scope).find(".autocomplete").autocomplete(
-        source: ( -> $(this).data("url")),
-        minLength: 2 )
+#      $(scope).find(".autocomplete").each (i) ->
+#        sourceURL = $(this).data("url")
+#        $(this).autocomplete(
+#          source: ( (request, response) ->
+#            console.log
+#            result = $.getJSON( sourceURL, { term: request.term.split().pop().replace(/^\s+/,"") } )
+#            response.apply( null, result ) ),
+#          minLength: 2 )
 #  $.cornellUI.applyBehaviors( $("body") )
 
 $ ->
