@@ -9,7 +9,7 @@
       <%= form.input :net_id, label: 'Net id', input_html: { readonly: true } %>
     <% end %>
     <%= form.input :empl_id, label: 'Empl id' %>
-    <%= form.input :status, as: :radio, collection: User::STATUSES %>
+    <%= form.input :status, as: :radio_buttons, collection: User::STATUSES %>
   <% end %>
   <%= form.input :email %>
   <%= form.input :mobile_phone %>
@@ -21,8 +21,8 @@
   <%= form.input :portrait, as: :file, hint: 'You may optionally provide a picture (jpg only)' %>
   <%= form.input :portrait_cache, as: :hidden %>
   <% if permitted_to? :manage, form.object %>
-    <%= form.input :admin, as: :radio, label: 'Administrator?' %>
-    <%= form.input :staff, as: :radio, label: 'Staff?' %>
+    <%= form.input :admin, as: :radio_buttons, label: 'Administrator?' %>
+    <%= form.input :staff, as: :radio_buttons, label: 'Staff?' %>
   <% end %>
   <%= form.button :wrapped, cancel: ( user.id == current_user.id ? home_path : users_path ) %>
 

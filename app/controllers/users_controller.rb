@@ -1,7 +1,7 @@
 class UsersController < ApplicationController
   expose :role do
     if permitted_to?( :manage, user )
-      return :admin
+      :admin
     else
       permitted_to?(:staff, user) ? :staff : :default
     end
@@ -17,7 +17,7 @@ class UsersController < ApplicationController
     when 'allowed'
       scope.allowed
     when 'staff', 'admin'
-      scope.where( params[:action] => true )
+      scope.where( params[:action].to_sym => true )
     else
       scope.scoped
     end
@@ -30,7 +30,6 @@ class UsersController < ApplicationController
     else
       User.new
     end
-    out.assign_attributes( params[:user], as: role ) if out.new_record?
     out
   end
   filter_access_to :new, :create, :edit, :update, :destroy, :show, :tent,
@@ -129,6 +128,7 @@ class UsersController < ApplicationController
   # POST /users
   # POST /users.xml
   def create
+    user.assign_attributes params[:user], as: role
     respond_to do |format|
       if user.save
         format.html { redirect_to user, flash: { success: 'User created.' } }

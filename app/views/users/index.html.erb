@@ -1,6 +1,6 @@
 <%=content_tag :h1, "Users" %>
 
-<%= form_for q, url: request.fullpath, method: :get do |form| %>
+<%= form_for( q, url: request.fullpath, method: :get ) do |form| %>
 <p>
   <%= form.label :name_cont, 'Name' %>
   <%= form.text_field :name_cont %>

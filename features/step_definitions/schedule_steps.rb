@@ -58,7 +58,6 @@ When /^I create a schedule$/ do
   fill_in "Starts at", with: Date.new(2010,1,1).to_s(:us_short)
   fill_in "Ends at", with: Date.new(2010,12,31).to_s(:us_short)
   click_button 'Create'
-  save_and_open_page
   @schedule = Schedule.find( URI.parse(current_url).path.match(/[\d]+$/)[0].to_i )
 end
 

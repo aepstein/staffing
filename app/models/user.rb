@@ -11,8 +11,6 @@ class User < ActiveRecord::Base
   attr_accessible :net_id, :empl_id, :status, as: [ :admin, :staff ]
   attr_accessible :admin, :staff, as: [ :admin ]
 
-  default_scope lambda { ordered }
-
   has_paper_trail
 
   has_many :memberships, inverse_of: :user do
@@ -89,7 +87,7 @@ class User < ActiveRecord::Base
     foreign_key: :declined_by_user_id, inverse_of: :declined_by_user,
     dependent: :nullify
 
-  scope :ordered, order { [ last_name, first_name, middle_name ] }
+  scope :ordered, lambda { order { [ last_name, first_name, middle_name ] } }
   scope :assignable_to, lambda { |position|
     if position.statuses_mask > 0
       with_statuses_mask( position.statuses_mask )

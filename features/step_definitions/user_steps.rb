@@ -94,7 +94,7 @@ When /^I create a user as (admin|staff)$/ do |role|
   fill_in "Last name", with: "White"
   fill_in "Net id", with: "fake"
   fill_in "Empl id", with: "123456"
-  within_fieldset("Status") { choose "faculty" }
+  within_control_group("Status") { choose "faculty" }
   fill_in "Email", with: "jd@example.com"
   fill_in "Mobile phone", with: "607-555-1212"
   fill_in "Work phone", with: "607-555-1234"
@@ -102,11 +102,11 @@ When /^I create a user as (admin|staff)$/ do |role|
   fill_in "Work address", with: "100 Day Hall"
   fill_in "Date of birth", with: "1982-06-04"
   if role == 'admin'
-    within_fieldset("Administrator?") { choose "Yes" }
-    within_fieldset("Staff?") { choose "Yes" }
+    within_control_group("Administrator?") { choose "Yes" }
+    within_control_group("Staff?") { choose "Yes" }
   else
-    page.should have_no_fieldset("Administrator?")
-    page.should have_no_fieldset("Staff?")
+    page.should have_no_control_group("Administrator?")
+    page.should have_no_control_group("Staff?")
   end
   click_button 'Create'
   @user = User.find( URI.parse(current_url).path.match(/[\d]+$/)[0].to_i )
@@ -151,18 +151,18 @@ When /^I update the user as (admin|staff|owner)$/ do |role|
   fill_in "Work address", with: "101 Day Hall"
   fill_in "Date of birth", with: "1980-06-04"
   if role == 'admin'
-    within_fieldset("Administrator?") { choose "No" }
-    within_fieldset("Staff?") { choose "No" }
+    within_control_group("Administrator?") { choose "No" }
+    within_control_group("Staff?") { choose "No" }
   else
-    page.should have_no_fieldset("Administrator?")
-    page.should have_no_fieldset("Staff?")
+    page.should have_no_control_group("Administrator?")
+    page.should have_no_control_group("Staff?")
   end
   if role == 'owner'
-    page.should have_no_fieldset("Empl id")
-    page.should have_no_fieldset("Status")
+    page.should have_no_control_group("Empl id")
+    page.should have_no_control_group("Status")
   else
     fill_in "Empl id", with: "654321"
-    within_fieldset("Status") { choose "staff" }
+    within_control_group("Status") { choose "staff" }
   end
   click_button 'Update'
 end

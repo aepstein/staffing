@@ -2,9 +2,9 @@
     <%=content_tag :td, user.name( :last_first ) %>
     <%=content_tag :td, user.net_id %>
     <%=content_tag :td, user.email %>
-    <%=content_tag :td, user.mobile_phone :pretty %>
-    <%=content_tag :td, user.work_phone :pretty %>
-    <%=content_tag :td, user.home_phone :pretty %>
+    <%=content_tag :td, user.mobile_phone( :pretty ) %>
+    <%=content_tag :td, user.work_phone( :pretty ) %>
+    <%=content_tag :td, user.home_phone( :pretty ) %>
     <%=content_tag :td, user.work_address %>
     <%=content_tag :td, user.date_of_birth.try( :to_formatted_s, :db) %>
     <td><%= user.statuses.join ', ' %></td>
