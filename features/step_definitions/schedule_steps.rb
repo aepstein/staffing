@@ -54,9 +54,9 @@ end
 When /^I create a schedule$/ do
   visit(new_schedule_path)
   fill_in "Name", with: "Annual"
-  click_link "add period"
-  fill_in "Starts at", with: "2010-01-01"
-  fill_in "Ends at", with: "2010-12-31"
+  click_link "Add Period"
+  fill_in "Starts at", with: Date.new(2010,1,1).to_s(:us_short)
+  fill_in "Ends at", with: Date.new(2010,12,31).to_s(:us_short)
   click_button 'Create'
   @schedule = Schedule.find( URI.parse(current_url).path.match(/[\d]+$/)[0].to_i )
 end
@@ -75,7 +75,7 @@ end
 When /^I update the schedule$/ do
   visit(edit_schedule_path(@schedule))
   fill_in "Name", with: "Empty"
-  click_link "remove period"
+  click_link "Remove Period"
   click_button 'Update'
 end
 

@@ -1,5 +1,5 @@
   <%= render "shared/error_messages", target: form.object %>
   <%= form.input :name %>
-  <%= form.input :periods, as: :cocoon %>
+  <%= cocoon_fields form, :periods, insertable: true %>
   <%= form.button :wrapped, cancel: schedules_path %>
 
