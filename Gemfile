@@ -36,7 +36,8 @@ group :assets do
   gem 'libv8', '~> 3.3.10'
 end
 group :development, :test do
-  gem 'rspec-rails'
+  gem 'rspec', '~> 2.12'
+  gem 'rspec-rails', '~> 2.12'
 end
 group :development do
   gem 'ruby-graphviz', require: 'graphviz'
