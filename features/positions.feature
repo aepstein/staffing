@@ -22,7 +22,7 @@ Scenario: Create/edit a position
   Then I should see the new position
   When I update the position
   Then I should see the edited position
-@wip
+
 Scenario: Search positions
   Given I log in as the plain user
   And there are 4 positions
