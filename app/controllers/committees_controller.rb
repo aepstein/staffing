@@ -32,7 +32,7 @@ class CommitteesController < ApplicationController
   def requestable
     respond_to do |format|
       format.html { render action: 'index' }
-      format.json { render json: committees }
+      format.json { render json: committees.map(&:name) }
     end
   end
 

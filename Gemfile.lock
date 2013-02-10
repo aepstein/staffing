@@ -9,7 +9,7 @@ GIT
 
 GIT
   remote: git://assembly.cornell.edu/git/cornell-assemblies-rails.git
-  revision: 71925e8b1ca7aeae741a1f4733cc5da5f4ef5efd
+  revision: eccefd2aaa43f2aa8e33f8bf6441ec2b106f3172
   branch: 0-0-3
   specs:
     cornell_assemblies_rails (0.0.3)
@@ -171,7 +171,7 @@ GEM
       i18n (>= 0.4.0)
       mime-types (~> 1.16)
       treetop (~> 1.4.8)
-    mime-types (1.20.1)
+    mime-types (1.21)
     multi_json (1.5.0)
     multipart-post (1.1.5)
     mysql2 (0.3.11)
