@@ -150,8 +150,8 @@ When /^I attempt to create a (past|current|future|pending|recent) membership as 
   else
     @period.ends_at
   end
-  @candidate = create(:user)
-  @designee = create(:user)
+  @candidate = create(:user, net_id: 'zzz998')
+  @designee = create(:user, net_id: 'zzz999')
   if relation == 'authority'
     step %{I have a #{relation_tense} #{relation} relationship to the position}
   end
