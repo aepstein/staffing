@@ -172,9 +172,9 @@ class MembershipRequest < ActiveRecord::Base
   def new_position_options
     user.membership_requests.inject( new_record? ? { 'Last Position' => '' } : {} ) do |memo, membership_request|
       if membership_request == self
-        memo[membership_request.to_s] = ''
+        memo[membership_request.committee.to_s] = ''
       else
-        memo[membership_request.to_s] = membership_request.position
+        memo[membership_request.committee.to_s] = membership_request.position
       end
       memo
     end
