@@ -55,10 +55,10 @@ When /^I create a meeting template$/ do
   visit(new_meeting_template_path)
   fill_in "Meeting template name", with: "Annual"
   click_link "Add Meeting Section Template"
-  within_fieldset "Meeting Section Template" do
+  within_fieldset "New Meeting Section Template" do
     fill_in "Name", with: "Call to Order"
     click_link "Add Meeting Item Template"
-    within_fieldset "Meeting Item Template" do
+    within_fieldset "New Meeting Item Template" do
       fill_in "Name", with: "Roll Call"
     end
   end

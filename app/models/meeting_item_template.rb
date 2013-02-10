@@ -24,7 +24,7 @@ class MeetingItemTemplate < ActiveRecord::Base
 
   def to_s
     if new_record?
-      "New Section Item Template"
+      "New Meeting Item Template"
     elsif name?
       name
     else
