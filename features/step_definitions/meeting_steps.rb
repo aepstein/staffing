@@ -118,7 +118,7 @@ When /^I create a meeting with a (named|motion) item as (staff|chair)$/ do |item
       if item == 'named'
         fill_in "Name", with: "Presentation on Campus Master Plan"
         click_link "Add Attachment"
-        within_fieldset("Attachment") do
+        within_fieldset("New Attachment") do
           attach_file 'Attachment document', File.expand_path('spec/assets/empl_ids.csv')
           fill_in 'Attachment description', with: 'Sample employee ids'
         end
