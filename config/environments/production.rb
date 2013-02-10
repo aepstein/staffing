@@ -7,7 +7,6 @@ Staffing::Application.configure do
   config.i18n.fallbacks = true
   config.active_support.deprecation = :notify
   config.assets.js_compressor  = :uglifier
-  config.assets.css_compressor = :scss
   config.assets.compress = true
   config.assets.compile = false
   config.assets.digest = true
