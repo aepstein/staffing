@@ -13,7 +13,7 @@ class Committee < ActiveRecord::Base
 
   attr_accessible :name, :description, :join_message, :leave_message, :brand_id,
     :requestable, :public_url, :publish_email, :meeting_template_id, :schedule_id,
-    :reject_message, :active, :contact_name, :contact_email,
+    :reject_message, :active, :contact_name, :contact_email, :sponsor,
     :enrollments_attributes
 
   belongs_to :schedule, inverse_of: :committees

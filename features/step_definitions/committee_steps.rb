@@ -93,6 +93,7 @@ When /^I create an committee$/ do
   select "Prestigious", from: "Brand"
   fill_in "Publish email", with: "info@example.com"
   within_control_group('Active?') { choose 'No' }
+  within_control_group('Sponsor?')  { choose 'Yes' }
   fill_in "Join message", with: "Welcome to *committee*."
   fill_in "Leave message", with: "You were *dropped* from the committee."
   fill_in "Reject message", with: "There were *no* slots."
@@ -116,6 +117,7 @@ Then /^I should see the new committee$/ do
     page.should have_text "Contact name: Officials"
     page.should have_text "Contact email: officials@example.com"
     page.should have_text "Active? No"
+    page.should have_text "Sponsor? Yes"
     page.should have_text "Schedule: Annual"
     page.should have_text "Meeting template: Informal"
     page.should have_text "Brand: Prestigious"
@@ -141,6 +143,7 @@ When /^I update the committee$/ do
   fill_in "Contact name", with: "Boss"
   fill_in "Contact email", with: "boss@example.com"
   within_control_group('Active?') { choose "Yes" }
+  within_control_group('Sponsor?') { choose "No" }
   select "Semester", from: "Schedule"
   select "Elaborate", from: "Meeting template"
   select "Silly", from: "Brand"
@@ -159,6 +162,7 @@ Then /^I should see the edited committee$/ do
     page.should have_text "Contact name: Boss"
     page.should have_text "Contact email: boss@example.com"
     page.should have_text "Active? Yes"
+    page.should have_text "Sponsor? No"
     page.should have_text "Schedule: Semester"
     page.should have_text "Meeting template: Elaborate"
     page.should have_text "Brand: Silly"

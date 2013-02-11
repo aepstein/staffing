@@ -47,6 +47,10 @@ authorization do
         position_id: is_in { user.memberships.current.value_of(:position_id) },
         votes: gt { 0 } }
     end
+    has_permission_on :committees, to: :sponsor, join_by: :and do
+      if_permitted_to :vote
+      if_attribute sponsor: is { true }
+    end
     has_permission_on :committees, to: :chair do
       if_attribute enrollments: {
         id: is_in { user.enrollments.current.with_roles('chair').value_of(:id) },
@@ -120,8 +124,8 @@ authorization do
     has_permission_on :motions, to: :own do
       if_attribute sponsorships: { user_id: is { user.id } }
     end
-    has_permission_on :motions, to: :create, join_by: :and do
-      if_permitted_to :vote, :committee
+    has_permission_on :motions, to: :create do
+      if_permitted_to :sponsor, :committee
     end
     has_permission_on :motions, to: :update, join_by: :and do
       if_permitted_to :own

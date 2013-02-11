@@ -6,6 +6,8 @@
     hint: 'What is the email that should appear in from for messages regarding this committee?' %>
   <%= form.input :active, as: :radio_buttons, label: 'Active?',
     hint: 'Is committee active for staffing and motion purposes?' %>
+  <%= form.input :sponsor, as: :radio_buttons, label: 'Sponsor?',
+    hint: 'Can voting members of the committee sponsor new motions?' %>
   <%= form.association :schedule, hint: 'On what schedule are sessions of the committee organized?' %>
   <%= form.association :meeting_template, hint: 'What template should be used to create meeting agendas?' %>
   <%= form.association :brand %>

@@ -105,12 +105,12 @@ Then /^I should see confirmation of the event on the motion$/ do
   end
 end
 
-Given /^(?:an )authorization scenario of a (current|future|past) (un)?published, (\w+) motion of (sponsored|referred) origin to which I have a (?:(current|past|future) )?(admin|staff|chair|vicechair|voter|sponsor|nonvoter|plain) relationship$/ do |motion_tense, publication, status, origin, tense, relationship|
+Given /^(?:an )authorization scenario of a (current|future|past) (un)?published, (\w+) motion of (sponsored|referred) origin to which I have a (?:(current|past|future) )?(admin|staff|chair|vicechair|voter|sponsor|nonsponsor|nonvoter|plain) relationship$/ do |motion_tense, publication, status, origin, tense, relationship|
   Motion.delete_all
   committee_relationship = case relationship
   when 'admin', 'staff', 'plain'
     nil
-  when 'sponsor'
+  when 'sponsor', 'nonsponsor'
     'voter'
   else
     relationship
@@ -122,7 +122,13 @@ Given /^(?:an )authorization scenario of a (current|future|past) (un)?published,
     'plain'
   end
   step %{I log in as the #{role} user}
-  @committee = create :committee
+  sponsor_flag = case relationship
+  when 'nonsponsor'
+    false
+  else
+    true
+  end
+  @committee = create( :committee, sponsor: sponsor_flag )
   if committee_relationship
     step %{I have a #{tense} #{committee_relationship} relationship to the committee}
   end

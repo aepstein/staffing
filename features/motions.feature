@@ -10,30 +10,31 @@ Scenario Outline: Access control
   And I <update> update the motion
   And I <destroy> destroy the motion
   Examples:
-    |relationship     |tense  |origin   |pub|status  |show   |create |update |destroy|
-    |admin            |current|sponsored|un |started |may    |may    |may    |may    |
-    |admin            |current|sponsored|   |proposed|may    |may    |may    |may    |
-    |admin            |past   |sponsored|un |started |may    |may    |may    |may    |
-    |admin            |future |sponsored|un |started |may    |may    |may    |may    |
-    |staff            |current|sponsored|un |started |may    |may    |may    |may not|
-    |staff            |past   |sponsored|un |started |may    |may    |may    |may not|
-    |staff            |future |sponsored|un |started |may    |may    |may    |may not|
-    |current vicechair|current|referred |un |started |may    |may    |may    |may not|
-    |current vicechair|current|sponsored|un |started |may not|may    |may not|may not|
-    |past vicechair   |past   |sponsored|un |started |may not|may not|may not|may not|
-    |current nonvoter |current|sponsored|un |started |may not|may not|may not|may not|
-    |current sponsor  |current|referred |un |started |may    |may    |may    |may not|
-    |current sponsor  |current|sponsored|un |started |may    |may    |may    |may not|
-    |current sponsor  |current|sponsored|un |proposed|may    |may    |may not|may not|
-    |past sponsor     |past   |sponsored|un |started |may    |may not|may not|may not|
-    |current voter    |current|referred |un |started |may not|may    |may not|may not|
-    |current voter    |current|sponsored|un |started |may not|may    |may not|may not|
-    |past voter       |past   |sponsored|un |started |may not|may not|may not|may not|
-    |current nonvoter |current|referred |un |started |may not|may not|may not|may not|
-    |current nonvoter |current|sponsored|un |started |may not|may not|may not|may not|
-    |plain            |current|referred |un |started |may not|may not|may not|may not|
-    |plain            |current|sponsored|un |started |may not|may not|may not|may not|
-    |plain            |current|sponsored|   |started |may    |may not|may not|may not|
+    |relationship      |tense  |origin   |pub|status  |show   |create |update |destroy|
+    |admin             |current|sponsored|un |started |may    |may    |may    |may    |
+    |admin             |current|sponsored|   |proposed|may    |may    |may    |may    |
+    |admin             |past   |sponsored|un |started |may    |may    |may    |may    |
+    |admin             |future |sponsored|un |started |may    |may    |may    |may    |
+    |staff             |current|sponsored|un |started |may    |may    |may    |may not|
+    |staff             |past   |sponsored|un |started |may    |may    |may    |may not|
+    |staff             |future |sponsored|un |started |may    |may    |may    |may not|
+    |current vicechair |current|referred |un |started |may    |may    |may    |may not|
+    |current vicechair |current|sponsored|un |started |may not|may    |may not|may not|
+    |past vicechair    |past   |sponsored|un |started |may not|may not|may not|may not|
+    |current nonvoter  |current|sponsored|un |started |may not|may not|may not|may not|
+    |current nonsponsor|current|sponsored|un |started |may not|may not|may not|may not|
+    |current sponsor   |current|referred |un |started |may    |may    |may    |may not|
+    |current sponsor   |current|sponsored|un |started |may    |may    |may    |may not|
+    |current sponsor   |current|sponsored|un |proposed|may    |may    |may not|may not|
+    |past sponsor      |past   |sponsored|un |started |may    |may not|may not|may not|
+    |current voter     |current|referred |un |started |may not|may    |may not|may not|
+    |current voter     |current|sponsored|un |started |may not|may    |may not|may not|
+    |past voter        |past   |sponsored|un |started |may not|may not|may not|may not|
+    |current nonvoter  |current|referred |un |started |may not|may not|may not|may not|
+    |current nonvoter  |current|sponsored|un |started |may not|may not|may not|may not|
+    |plain             |current|referred |un |started |may not|may not|may not|may not|
+    |plain             |current|sponsored|un |started |may not|may not|may not|may not|
+    |plain             |current|sponsored|   |started |may    |may not|may not|may not|
 
 Scenario Outline: Access control for events
   Given an authorization scenario of a <tense> <pub>published, <status> motion of <origin> origin to which I have a <relationship> relationship

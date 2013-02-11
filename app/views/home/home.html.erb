@@ -56,13 +56,13 @@ You have no motions in process.
 </p>
 <% end %>
 
-<% if current_user.committees.with_permissions_to(:vote).length > 0 %>
+<% if current_user.committees.with_permissions_to(:sponsor).length > 0 %>
 <p>
 You may start motions for the following committees:
 </p>
 
 <ul id="voting_committees">
-<% current_user.committees.with_permissions_to(:vote).uniq.each do |committee| %>
+<% current_user.committees.with_permissions_to(:sponsor).uniq.each do |committee| %>
   <%= content_tag :li, id: "committee-#{committee.id}" do %>
     <%=link_to committee.name, new_committee_motion_path( committee ) %>
   <% end %>
