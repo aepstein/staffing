@@ -1,9 +1,9 @@
   <%= table_row_tag true, false, { id: "enrollment-#{enrollment.id}" } do %>
     <% unless committee %>
-    <td><%=h enrollment.committee %></td>
+    <%=content_tag :td, link_to( enrollment.committee.name, committee_path( enrollment.committee ) ) %>
     <% end %>
     <% unless position %>
-    <td><%=h enrollment.position %></td>
+    <%=content_tag :td, link_to( enrollment.position.name, position_path( enrollment.position ) ) %>
     <% end %>
     <td><%=h enrollment.title %></td>
     <td><%=h enrollment.votes %></td>
