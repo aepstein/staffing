@@ -70,3 +70,10 @@ Scenario Outline: Set user empl_ids in bulk
     |text      |
     |attachment|
 
+Scenario Outline: Reports for committee
+  Given an authorization scenario of a user to which I have a <role> relationship
+  When I download the <type> report for the user
+  Examples:
+    |role         |type       |
+    |staff        |tent pdf   |
+

@@ -86,7 +86,7 @@ class UsersController < ApplicationController
     context = user
     tents = [ [ user.name, params[:title],
       ( user.portrait? ? user.portrait.small.path : nil ) ] ]
-    render_user_tent_reports
+    render_user_tent_reports( tents )
   end
 
   # GET /users/1

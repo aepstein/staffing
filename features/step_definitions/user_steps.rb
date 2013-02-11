@@ -248,3 +248,13 @@ Given /^I have (?:an? )(#{User::STATUSES.join '|'}|no) status$/ do |status|
   @current_user.save!
 end
 
+When /^I download the (tent pdf) report for the user$/ do |type|
+  VectorUploader.enable_processing = true
+  create :brand
+  VectorUploader.enable_processing = false
+  case type
+  when 'tent pdf'
+    visit(tent_user_url(@user, format: :pdf))
+  end
+end
+
