@@ -27,13 +27,17 @@ class CommitteesController < ApplicationController
   filter_access_to :tents, :members, require: :enroll, load_method: :committee
   filter_access_to :requestable, require: :show, load_method: :user
 
-  # GET /users/:user_id/committees/requestable
-  # GET /users/:user_id/committees/requestable.xml
-  def requestable
+  def index
     respond_to do |format|
       format.html { render action: 'index' }
       format.json { render json: committees.map(&:name) }
     end
+  end
+
+  # GET /users/:user_id/committees/requestable
+  # GET /users/:user_id/committees/requestable.xml
+  def requestable
+    index
   end
 
   # GET /committees/:id/tents.pdf
