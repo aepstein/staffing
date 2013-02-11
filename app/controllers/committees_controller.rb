@@ -2,13 +2,14 @@ class CommitteesController < ApplicationController
   before_filter :require_user
   expose :as_of do
     begin
-      if params[:as_of]
-        return Date.parse( params[:as_of] )
+      date = if params[:as_of]
+        Date.parse( params[:as_of] )
       end
     rescue ArgumentError
       flash[:error] = 'Invalid date supplied for report.'
     end
-    Time.zone.today
+    date ||= Time.zone.today
+    date
   end
   expose( :user ) { User.find params[:user_id] if params[:user_id] }
   expose :q_scope do
