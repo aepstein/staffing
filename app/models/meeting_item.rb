@@ -3,7 +3,11 @@ class MeetingItem < ActiveRecord::Base
   belongs_to :motion, inverse_of: :meeting_items
   has_many :attachments, as: :attachable, dependent: :destroy
   attr_accessible :description, :duration, :name, :position, :motion_id,
-    :motion_name, :_destroy, :attachments_attributes, as: [ :default, :staff ]
+    :motion_name, :_destroy, :attachments_attributes, :named,
+    as: [ :default, :staff ]
+  attr_readonly :motion_id
+
+  attr_accessor :named
 
   default_scope order { [ meeting_section_id, position ] }
 
@@ -38,7 +42,6 @@ class MeetingItem < ActiveRecord::Base
 
   # Accepts motion optionally prefixed with R. #:
   def motion_name=(n)
-    return nil unless meeting_section && meeting_section.meeting && meeting_section.meeting.committee
     self.motion = meeting_section.meeting.committee.motions.find_by_name(
       n.slice( /^(?:R\. \d+\: )?(.*)/, 1 ) )
     n

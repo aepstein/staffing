@@ -1,6 +1,9 @@
 <%= render "shared/error_messages", target: form.object %>
 <% if form.object.new_record? && permitted_to?(:staff, form.object) %>
-  <%= form.input :period, collection: form.object.committee.schedule.periods %>
+  <%= form.association :period, collection: form.object.committee.schedule.periods %>
+<% else %>
+  <%= form.association :period, collection: form.object.committee.schedule.periods,
+    disabled: true, hint: 'You may not change the period of the meeting.' %>
 <% end %>
 <%= form.input :starts_at, as: :date_time_picker %>
 <%= form.input :ends_at, as: :date_time_picker %>

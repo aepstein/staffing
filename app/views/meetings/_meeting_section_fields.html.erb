@@ -1,7 +1,17 @@
 <%= field_set_tag( sortable_label(f.object.to_s), class: 'nested-fields' ) do %>
   <%= f.input :name %>
   <%= f.input :position, as: :hidden %>
-  <%= cocoon_fields f, :meeting_items, insertable: true, ordered_by: :position %>
+  <%= field_set_tag 'Meeting Items', class: "cocoon", data: { ordered_by: 'position' } do %>
+    <%= f.association :meeting_items do |sub_f| %>
+      <%= render partial: "meeting_item_fields", locals: { f: sub_f }  %>
+    <% end %>
+    <%= content_tag :div, class: "links" do %>
+      <%= link_to_add_association( "Add Motion Meeting Item",
+            f, :meeting_items, render_options: { locals: { named: false } } ) %>
+      <%= link_to_add_association( "Add Generic Meeting Item",
+            f, :meeting_items, render_options: { locals: { named: true } } ) %>
+    <% end %>
+  <% end %>
   <%= link_to_remove_association 'Remove Meeting Section', f %>
 <% end %>
 

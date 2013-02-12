@@ -113,7 +113,7 @@ When /^I create a meeting with a (named|motion) item as (staff|chair)$/ do |item
   click_link 'Add Meeting Section'
   within_fieldset("New Meeting Section") do
     fill_in "Name", with: "New Business"
-    click_link "Add Meeting Item"
+    click_link "Add #{item == 'named' ? 'Generic' : 'Motion'} Meeting Item"
     within_fieldset("New Meeting Item") do
       if item == 'named'
         fill_in "Name", with: "Presentation on Campus Master Plan"
@@ -123,7 +123,7 @@ When /^I create a meeting with a (named|motion) item as (staff|chair)$/ do |item
           fill_in 'Attachment description', with: 'Sample employee ids'
         end
       else
-        select "R. 1: Get Something Done", from: "Motion"
+        fill_in "Motion", with: "R. 1: Get Something Done"
       end
       fill_in "Duration", with: 10
     end
