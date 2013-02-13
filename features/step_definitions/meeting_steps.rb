@@ -123,7 +123,10 @@ When /^I create a meeting with a (named|motion) item as (staff|chair)$/ do |item
           fill_in 'Attachment description', with: 'Sample employee ids'
         end
       else
-        fill_in "Motion", with: "R. 1: Get Something Done"
+        selector = '.ui-menu-item a:contains(\"R. 1: Get Something Done\")'
+        fill_in "Motion", with: "Get Something Done"
+        sleep(3)
+        page.execute_script " $('#{selector}').trigger(\"mouseenter\").click();"
       end
       fill_in "Duration", with: 10
     end

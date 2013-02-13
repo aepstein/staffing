@@ -1,6 +1,6 @@
 <%= field_set_tag f.object.to_s, class: "nested-fields" do %>
   <% if f.object.new_record? %>
-    <%= f.input :user_name, as: :autocomplete, label: "Sponsor",
+    <%= f.input :user_name, as: :autocomplete, label: "Sponsor", value_method: :to_s,
       url: ( f.object.motion.persisted? ? allowed_motion_users_path( f.object.motion, format: :json ) : users_path( format: :json ) ) %>
   <% end %>
   <%= link_to_remove_association 'Remove Sponsorship', f %>

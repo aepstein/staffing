@@ -5,7 +5,7 @@
   <% else %>
     <% if f.object.new_record? %>
     <%= f.input :named, as: :hidden %>
-    <%= f.input :motion_name, as: :autocomplete, label: 'Motion',
+    <%= f.input :motion_id, as: :autocomplete, label: 'Motion',
       hint: "What motion is associated with this item?",
       url: committee_motions_path(f.object.meeting_section.meeting.committee),
         dynamic_term: "period_id", dynamic_id: "meeting_period_id" %>

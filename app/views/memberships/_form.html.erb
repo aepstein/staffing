@@ -1,5 +1,6 @@
 <%= render "shared/error_messages", target: form.object %>
-<%= form.input :user_name, as: :autocomplete, label: 'User', url: users_path( format: :json ) %>
+<%= form.input :user_name, as: :autocomplete, label: 'User',
+  value_method: :to_s, url: users_path( format: :json ) %>
 <% if form.object.new_record? %>
 <%= form.association :period, collection: form.object.position.schedule.periods %>
 <% else %>
@@ -14,7 +15,7 @@
       <%= designee_form.input :committee_id, as: :hidden %>
       <%= designee_form.input :user_name, as: :autocomplete,
         label: "Designee for #{designee_form.object.committee.name}",
-        url: users_path( format: :json ) %>
+        value_method: :to_s, url: users_path( format: :json ) %>
       <%= designee_form.input :_destroy, label: "Check to remove this designee", as: :boolean %>
     <% end %>
   <% end %>

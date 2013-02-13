@@ -95,7 +95,7 @@ class MotionsController < ApplicationController
   def index
     respond_to do |format|
       format.html { render action: 'index' } # index.html.erb
-      format.json { render json: motions.map { |m| m.to_s(:numbered) } }
+      format.json { render json: motions.map { |m| { label: m.to_s(:numbered), value: m.id } } }
     end
   end
 

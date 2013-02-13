@@ -4,17 +4,19 @@
   <% if committee.blank? %>
     <% if f.object.new_record? %>
       <%= f.input :committee_name, as: :autocomplete, label: 'Committee',
-        url: committees_path( format: :json ) %>
+        value_method: :to_s, url: committees_path( format: :json ) %>
     <% else %>
-      <%= f.input :committee_name, input_html: { readonly: true } %>
+      <%= f.input :committee_name, disabled: true,
+        hint: "You may not change the committee of an existing enrollment." %>
     <% end %>
   <% end %>
   <% if position.blank? %>
     <% if f.object.new_record? %>
       <%= f.input :position_name, as: :autocomplete, label: 'Position',
-        url: positions_path( format: :json ) %>
+        value_method: :to_s, url: positions_path( format: :json ) %>
     <% else %>
-      <%= f.input :position_name, input_html: { readonly: true } %>
+      <%= f.input :position_name, disabled: true,
+        hint: "You may not change the position of an existing enrollment." %>
     <% end %>
   <% end %>
   <%= f.input :title,
