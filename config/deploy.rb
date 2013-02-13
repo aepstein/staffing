@@ -16,9 +16,7 @@ set :repository, "git://assembly.cornell.edu/git/#{application}.git"
 set :branch, "master"
 set :git_enable_submodules, 0
 
-set :default_environment, {
-  'RAILS_RELATIVE_URL_ROOT' => '/staffing'
-}
+set :asset_env, "#{asset_env} RAILS_RELATIVE_URL_ROOT=/staffing"
 
 namespace :deploy do
   desc "Tell Passenger to restart the app."
