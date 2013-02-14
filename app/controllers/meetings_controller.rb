@@ -1,4 +1,18 @@
 class MeetingsController < ApplicationController
+  expose :starts_at do
+    if params[:start] && ( sanitized = params[:start].to_i ) > 0
+      Time.zone.at sanitized
+    else
+      nil
+    end
+  end
+  expose :ends_at do
+    if params[:end] && ( sanitized = params[:end].to_i ) > 0
+      Time.zone.at sanitized
+    else
+      nil
+    end
+  end
   expose( :committee ) { Committee.find params[:committee_id] if params[:committee_id] }
   expose( :motion ) { Motion.find params[:motion_id] if params[:motion_id] }
   expose :q_scope do
@@ -8,6 +22,8 @@ class MeetingsController < ApplicationController
     scope = scope.past if params[:action] == 'past'
     scope = scope.current if params[:action] == 'current'
     scope = scope.future if params[:action] == 'future'
+    scope = scope.where { starts_at.gte( starts_at ) } if starts_at
+    scope = scope.where { starts_at.lte( ends_at ) } if ends_at
     scope
   end
   expose( :q ) { q_scope.search( params[:q] ) }
@@ -110,6 +126,7 @@ class MeetingsController < ApplicationController
   def index
     respond_to do |format|
       format.html { render action: 'index' } # index.html.erb
+      format.json { render json: meetings.per(500).map(&:to_json_attributes) }
       format.xml  { render xml: meetings }
     end
   end

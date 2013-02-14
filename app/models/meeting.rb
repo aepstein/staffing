@@ -108,6 +108,10 @@ class Meeting < ActiveRecord::Base
     :current
   end
 
+  def to_json_attributes
+    { title: committee.name, start: starts_at, end: ends_at }
+  end
+
   def to_s(style=nil)
     case style
     when :file
