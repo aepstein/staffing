@@ -68,7 +68,7 @@ authorization do
     has_permission_on :meetings, to: :show do
       if_permitted_to :vicechair, :committee
       if_attribute published: is { true }
-      if_attribute ends_at: lt { Time.zone.now }
+      if_attribute starts_at: lt { Time.zone.today }
       if_attribute committee: { enrollments: { position_id: is_in { user.memberships.
         where { ends_at.gte( Time.zone.today ) }.value_of(:position_id) } } }
     end
