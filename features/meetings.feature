@@ -34,7 +34,7 @@ Scenario Outline: Access control
     |plain           |   |current|may    |may not|may not|may not|
     |plain           |   |pending|may    |may not|may not|may not|
 
-@javascript @wip
+@javascript
 Scenario Outline: Create/edit a meeting
   When I create a meeting with a <item> item as <role>
   Then I should see the new meeting with the <item> item
