@@ -99,8 +99,8 @@ When /^I create a meeting with a (named|motion) item as (staff|chair)$/ do |item
   end
   @past_period = create(:past_period, schedule: @committee.schedule)
   @current_period = create(:current_period, schedule: @committee.schedule)
-  @motion = create(:motion, name: "Get Something Done",
-    committee: @committee, period: @current_period, status: 'proposed' )
+  @motion = create(:motion, name: "Get Something Done", published: true,
+    committee: @committee, period: @current_period, status: ( role == 'staff' ? 'started' : 'proposed' ) )
   visit(new_committee_meeting_path(@committee))
   within_fieldset("Basic Information") do
     if relationship == 'staff'
@@ -133,7 +133,6 @@ When /^I create a meeting with a (named|motion) item as (staff|chair)$/ do |item
       fill_in "Duration", with: 10
     end
   end
-  save_and_open_page
   click_button 'Create'
 end
 

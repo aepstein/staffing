@@ -42,9 +42,9 @@ Scenario Outline: Create/edit a meeting
   Then I should see the edited meeting
   Examples:
     |item  |role |
-#    |named |staff|
-#    |motion|staff|
-#    |named |chair|
+    |named |staff|
+    |motion|staff|
+    |named |chair|
     |motion|chair|
 
 Scenario: Search meetings
