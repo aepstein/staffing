@@ -1,16 +1,19 @@
 <%= render "shared/error_messages", target: form.object %>
-<% if form.object.new_record? && permitted_to?(:staff, form.object) %>
-  <%= form.association :period, collection: form.object.committee.schedule.periods %>
-<% else %>
-  <%= form.association :period, collection: form.object.committee.schedule.periods,
-    disabled: true, hint: 'You may not change the period of the meeting.' %>
+
+<%= field_set_tag "Basic Information" do %>
+  <% if form.object.new_record? && permitted_to?(:staff, form.object) %>
+    <%= form.association :period, collection: form.object.committee.schedule.periods %>
+  <% else %>
+    <%= form.association :period, collection: [ [ form.object.period.to_s, form.object.period.id ] ],
+      disabled: true, hint: 'You may not change the period of the meeting.' %>
+  <% end %>
+  <%= form.input :starts_at, as: :date_time_picker %>
+  <%= form.input :duration, hint: 'What is the duration of the meeting in minutes?' %>
+  <%= form.input :location %>
+  <%= form.input :audio, as: :file %>
+  <%= form.input :editable_minutes, as: :file %>
+  <%= form.input :published_minutes, as: :file %>
 <% end %>
-<%= form.input :starts_at, as: :date_time_picker %>
-<%= form.input :ends_at, as: :date_time_picker %>
-<%= form.input :location %>
-<%= form.input :audio, as: :file %>
-<%= form.input :editable_minutes, as: :file %>
-<%= form.input :published_minutes, as: :file %>
 <%= cocoon_fields form, :meeting_sections, insertable: true, ordered_by: :position %>
 <%= form.button :wrapped, cancel: meetings_path %>
 

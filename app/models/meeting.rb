@@ -1,6 +1,6 @@
 class Meeting < ActiveRecord::Base
   attr_accessible :committee_id, :audio, :editable_minutes,
-    :published_minutes, :starts_at, :ends_at, :location, :published,
+    :published_minutes, :starts_at, :duration, :location, :published,
     :meeting_sections_attributes, as: [ :default, :staff ]
   attr_accessible :period_id, as: :staff
   attr_accessible :publish_to, as: :publisher
@@ -44,16 +44,16 @@ class Meeting < ActiveRecord::Base
   validates :committee, presence: true
   validates :period, presence: true
   validates :starts_at, presence: true
-  validates :ends_at, presence: true, timeliness: { after: :starts_at }
+  validates :duration, presence: true, numericality: { integer_only: true, greater_than: 0 }
   validates :location, presence: true
   validate :period_must_be_in_committee_schedule, :must_be_in_period
 
   scope :ordered, lambda { order { starts_at.desc } }
-  scope :past, lambda { where { ends_at < Time.zone.today.to_time } }
+  scope :past, lambda { where { starts_at < Time.zone.today.to_time } }
   scope :future, lambda { where {
     starts_at > ( Time.zone.today.to_time + 1.day ) } }
   scope :current, lambda { where { (starts_at >= Time.zone.today.to_time) &
-    ( ends_at <= ( Time.zone.today.to_time + 1.day ) ) } }
+    ( starts_at <= ( Time.zone.today.to_time + 1.day ) ) } }
 
   # Extract enclosures
   def attachments(reload = false)
@@ -96,9 +96,14 @@ class Meeting < ActiveRecord::Base
     super
   end
 
+  def ends_at
+    return nil unless starts_at && duration
+    starts_at + duration.minutes
+  end
+
   def tense
-    return nil unless starts_at && ends_at
-    return :past if ends_at < Time.zone.today
+    return nil unless starts_at
+    return :past if starts_at < Time.zone.today
     return :future if starts_at > Time.zone.today
     :current
   end
@@ -131,9 +136,8 @@ class Meeting < ActiveRecord::Base
   end
 
   def must_be_in_period
-    return unless starts_at && ends_at && period
+    return unless starts_at && period
     errors.add :starts_at, "is not within #{period}" unless period.starts_at.to_time <= starts_at && period.ends_at.to_time >= starts_at
-    errors.add :ends_at, "is not within #{period}" unless period.starts_at.to_time <= ends_at && period.ends_at.to_time >= ends_at
   end
 
 end

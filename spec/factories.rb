@@ -72,17 +72,16 @@ FactoryGirl.define do
       committee.schedule.periods.first
     end
     starts_at { period.starts_at + 1.hour }
-    ends_at { starts_at + 1.hour }
+    duration 60
     location 'Day Hall'
 
     factory :current_meeting do
       starts_at { Time.zone.now - 1.hour }
-      ends_at { Time.zone.now + 1.hour }
+      duration 120
     end
 
     factory :recent_meeting do
       starts_at { Time.zone.now - 1.day }
-      ends_at { ( Time.zone.now - 1.day ) + 1.hour }
     end
 
     factory :pending_meeting do

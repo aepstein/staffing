@@ -24,8 +24,10 @@ describe Meeting do
     @meeting.save.should be_false
   end
 
-  it 'should not save with a ends_at' do
-    @meeting.ends_at = nil
+  it 'should not save with a duration or with an invalid duration' do
+    @meeting.duration = nil
+    @meeting.save.should be_false
+    @meeting.duration = 0
     @meeting.save.should be_false
   end
 
@@ -37,7 +39,6 @@ describe Meeting do
   it 'should not save with a period from a different schedule than that of committee' do
     @meeting.period = create(:period)
     @meeting.starts_at = @meeting.period.starts_at.to_time + 1.hour
-    @meeting.ends_at = @meeting.starts_at + 1.hour
     @meeting.save.should be_false
   end
 
@@ -45,20 +46,6 @@ describe Meeting do
     @meeting.starts_at = @meeting.period.starts_at.to_time - 1.day
     @meeting.save.should be_false
     @meeting.starts_at = @meeting.period.ends_at.to_time + 1.day
-    @meeting.save.should be_false
-  end
-
-  it 'should not save with a ends_at outside the period' do
-    @meeting.ends_at = @meeting.period.starts_at.to_time - 1.day
-    @meeting.save.should be_false
-    @meeting.ends_at = @meeting.period.ends_at.to_time + 1.day
-    @meeting.save.should be_false
-  end
-
-  it 'should not save with ends_at equal to or before starts_at' do
-    @meeting.ends_at = @meeting.starts_at
-    @meeting.save.should be_false
-    @meeting.ends_at = @meeting.starts_at - 1.minute
     @meeting.save.should be_false
   end
 
@@ -131,7 +118,6 @@ describe Meeting do
 
   def setup_past_and_future
     @meeting.starts_at = Time.zone.now
-    @meeting.ends_at = Time.zone.now + 1.hour
     @meeting.save!
     @past = create(:meeting, starts_at: Time.zone.now - 1.week)
     @future = create(:meeting, starts_at: Time.zone.now + 1.week)

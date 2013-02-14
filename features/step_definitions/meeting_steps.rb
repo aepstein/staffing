@@ -102,14 +102,16 @@ When /^I create a meeting with a (named|motion) item as (staff|chair)$/ do |item
   @motion = create(:motion, name: "Get Something Done",
     committee: @committee, period: @current_period, status: 'proposed' )
   visit(new_committee_meeting_path(@committee))
-  if relationship == 'staff'
-    select @current_period.to_s.strip.squeeze(" "), from: "Period"
+  within_fieldset("Basic Information") do
+    if relationship == 'staff'
+      select @current_period.to_s.strip.squeeze(" "), from: "Period"
+    end
+    @start = ( Time.zone.now + 1.day ).floor
+    @end = @start + 1.hour
+    fill_in "Starts at", with: "#{@start.to_s :us_short}"
+    fill_in "Duration", with: 60
+    fill_in "Location", with: "Green Room"
   end
-  @start = ( Time.zone.now + 1.day ).floor
-  @end = @start + 1.hour
-  fill_in "Starts at", with: "#{@start.to_s :us_short}"
-  fill_in "Ends at", with: "#{@end.to_s :us_short}"
-  fill_in "Location", with: "Green Room"
   click_link 'Add Meeting Section'
   within_fieldset("New Meeting Section") do
     fill_in "Name", with: "New Business"
@@ -131,6 +133,7 @@ When /^I create a meeting with a (named|motion) item as (staff|chair)$/ do |item
       fill_in "Duration", with: 10
     end
   end
+  save_and_open_page
   click_button 'Create'
 end
 
@@ -142,6 +145,7 @@ Then /^I should see the new meeting with the (named|motion) item$/ do |item|
     page.should have_text "Period: #{@current_period}"
     page.should have_text "Starts at: #{@start.to_s :us_ordinal}"
     page.should have_text "Ends at: #{@end.to_s :us_ordinal}"
+    page.should have_text "Duration: 60 minutes"
     page.should have_text "Location: Green Room"
     page.should have_text "Audio? No"
     page.should have_text "Editable minutes? No"
@@ -158,14 +162,16 @@ end
 
 When /^I update the meeting$/ do
   @start += 1.hour
-  @end += 1.hour
+  @end += 70.minutes
   visit(edit_meeting_path(@meeting))
-  fill_in "Starts at", with: "#{@start.to_s :us_short}"
-  fill_in "Ends at", with: "#{@end.to_s :us_short}"
-  fill_in "Location", with: "Red Room"
-  attach_file "Audio", File.expand_path("spec/assets/audio.mp3")
-  attach_file "Editable minutes", temporary_file("minutes.doc",20.bytes)
-  attach_file "Published minutes", temporary_file("minutes.pdf",20.bytes)
+  within_fieldset("Basic Information") do
+    fill_in "Starts at", with: "#{@start.to_s :us_short}"
+    fill_in "Duration", with: "70"
+    fill_in "Location", with: "Red Room"
+    attach_file "Audio", File.expand_path("spec/assets/audio.mp3")
+    attach_file "Editable minutes", temporary_file("minutes.doc",20.bytes)
+    attach_file "Published minutes", temporary_file("minutes.pdf",20.bytes)
+  end
   click_link "Remove Meeting Section"
   click_button 'Update'
 end
@@ -175,6 +181,7 @@ Then /^I should see the edited meeting$/ do
   within("#meeting-#{@meeting.id}") do
     page.should have_text "Starts at: #{@start.to_s :us_ordinal}"
     page.should have_text "Ends at: #{@end.to_s :us_ordinal}"
+    page.should have_text "Duration: 70"
     page.should have_text "Location: Red Room"
     page.should have_text "Audio? Yes"
     page.should have_text "Editable minutes? Yes"
