@@ -4,10 +4,15 @@ Feature: Member dashboards
   I want dashboards to review meetings and motions
 
   @javascript
-  Scenario: See meetings on my meetings dashboard
-    Given a current published meeting exists of a committee to which I have a current nonvoter relationship
+  Scenario Outline: See meetings on my meetings dashboard
+    Given a current published meeting exists of a committee to which I have a <relationship> relationship
     When I go to my meetings dashboard
-    Then I should see the meeting
+    Then I should <see> the meeting
+    Examples:
+      | relationship     | see     |
+      | current nonvoter | see     |
+      | staff            | see     |
+      | plain            | not see |
 
   Scenario: See published, unscheduled motions on my motions dashboard
     Given a current published, proposed motion exists of sponsored origin to which I have a current nonvoter relationship
