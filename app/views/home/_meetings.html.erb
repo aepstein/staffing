@@ -1,3 +1,8 @@
+<% url = if current_user.role_symbols.include?(:staff)
+  meetings_path( format: :json )
+  else
+  user_meetings_path( current_user, format: :json )
+  end %>
 <%= content_tag "div", '', id: "meetings-calendar",
-  data: {url: user_meetings_path( current_user, format: :json )} %>
+  data: { url: url } %>
 
