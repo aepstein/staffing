@@ -4,7 +4,7 @@ Feature: Manage motions
   I want to create, modify, list, show, and destroy motions
 
 Scenario Outline: Access control
-  Given an authorization scenario of a <tense> <pub>published, <status> motion of <origin> origin to which I have a <relationship> relationship
+  Given a <tense> <pub>published, <status> motion exists of <origin> origin to which I have a <relationship> relationship
   Then I <show> see the motion
   And I <create> create motions for the committee
   And I <update> update the motion
@@ -37,7 +37,7 @@ Scenario Outline: Access control
     |plain             |current|sponsored|   |started |may    |may not|may not|may not|
 
 Scenario Outline: Access control for events
-  Given an authorization scenario of a <tense> <pub>published, <status> motion of <origin> origin to which I have a <relationship> relationship
+  Given a <tense> <pub>published, <status> motion exists of <origin> origin to which I have a <relationship> relationship
   Then I <permit> <event> the motion
   Examples:
     |relationship     |tense  |origin   |pub|status   |permit |event    |
@@ -137,7 +137,7 @@ Scenario: List/delete a motion
   | Motion 1 |
 
 Scenario Outline: Motion events without javascript
-  Given an authorization scenario of a <tense> <pub>published, <status> motion of <origin> origin to which I have a <relationship> relationship
+  Given a <tense> <pub>published, <status> motion exists of <origin> origin to which I have a <relationship> relationship
   When I <event> the motion
   Then I should see confirmation of the event on the motion
   Examples:
@@ -155,7 +155,7 @@ Scenario Outline: Motion events without javascript
 
 @javascript
 Scenario Outline: Motion events with javascript
-  Given an authorization scenario of a <tense> <pub>published, <status> motion of <origin> origin to which I have a <relationship> relationship
+  Given a <tense> <pub>published, <status> motion exists of <origin> origin to which I have a <relationship> relationship
   When I <event> the motion
   Then I should see confirmation of the event on the motion
   Examples:

@@ -132,6 +132,7 @@ Staffing::Application.routes.draw do
         get :current, :future, :past
       end
     end
+    resources :meetings, only: [ :index ]
     resources :memberships, only: [ :index ] do
       collection do
         get :current, :future, :past, :unrenewed, :renewed, :renew

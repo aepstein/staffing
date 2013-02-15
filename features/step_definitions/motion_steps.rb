@@ -105,7 +105,7 @@ Then /^I should see confirmation of the event on the motion$/ do
   end
 end
 
-Given /^(?:an )authorization scenario of a (current|future|past) (un)?published, (\w+) motion of (sponsored|referred) origin to which I have a (?:(current|past|future) )?(admin|staff|chair|vicechair|voter|sponsor|nonsponsor|nonvoter|plain) relationship$/ do |motion_tense, publication, status, origin, tense, relationship|
+Given /^(?:an? )(current|future|past) (un)?published, (\w+) motion exists of (sponsored|referred) origin to which I have a (?:(current|past|future) )?(admin|staff|chair|vicechair|voter|sponsor|nonsponsor|nonvoter|plain) relationship$/ do |motion_tense, publication, status, origin, tense, relationship|
   Motion.delete_all
   committee_relationship = case relationship
   when 'admin', 'staff', 'plain'
@@ -356,5 +356,27 @@ end
 Then /^I should see the following motions for the committee:$/ do |table|
   visit(committee_motions_path(@committee))
   table.diff! tableish( 'table#motions > tbody > tr', 'td:nth-of-type(3)' )
+end
+
+Then /^I should( not)? see the motion with the pending meeting$/ do |negate|
+  motion_selector = "#motion-#{@motion.id}"
+  if negate.present?
+    if page.has_selector?(motion_selector)
+      within(motion_selector) do
+        page.should_not have_selector "a.pending-meeting"
+      end
+    end
+  else
+    within(motion_selector) do
+      within("a.pending-meeting") do
+        page.should have_text "#{@meeting.starts_at.to_s :us_short}"
+      end
+    end
+  end
+end
+
+Given /^the motion is scheduled for a pending meeting$/ do
+  @meeting = create(:meeting, committee: @motion.committee, period: @motion.period, starts_at: Time.zone.now + 1.day)
+  create( :motion_meeting_item, meeting_section: create( :meeting_section, meeting: @meeting ), motion: @motion )
 end
 

@@ -7,6 +7,8 @@
 ol.meeting-sections { list-style-type: upper-roman; }
 ol.meeting-items { list-style-type: decimal; }
 
+.fc-event-location { font-style: italic; }
+
 /* For sortable cocoons (see https://github.com/nathanvda/cocoon/pull/104) */
 fieldset.cocoon {
   legend {

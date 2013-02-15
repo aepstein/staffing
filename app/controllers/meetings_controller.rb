@@ -15,15 +15,17 @@ class MeetingsController < ApplicationController
   end
   expose( :committee ) { Committee.find params[:committee_id] if params[:committee_id] }
   expose( :motion ) { Motion.find params[:motion_id] if params[:motion_id] }
+  expose( :user ) { User.find params[:user_id] if params[:user_id] }
   expose :q_scope do
     scope ||= committee.meetings if committee
     scope ||= motion.meetings if motion
+    scope ||= user.meetings if user
     scope ||= Meeting.scoped
     scope = scope.past if params[:action] == 'past'
     scope = scope.current if params[:action] == 'current'
     scope = scope.future if params[:action] == 'future'
-    scope = scope.where { starts_at.gte( starts_at ) } if starts_at
-    scope = scope.where { starts_at.lte( ends_at ) } if ends_at
+    scope = scope.where { |m| m.starts_at.gte( starts_at ) } if starts_at
+    scope = scope.where { |m| m.starts_at.lte( ends_at ) } if ends_at
     scope
   end
   expose( :q ) { q_scope.search( params[:q] ) }
@@ -48,6 +50,10 @@ class MeetingsController < ApplicationController
     attribute_check: true, load_method: :meeting
   filter_access_to :editable_minutes, :published_minutes, :audio, :agenda,
     attribute_check: true, require: :show, load_method: :meeting
+  filter_access_to :index do
+    permitted_to! :show, user if user
+    true
+  end
 
   # GET /meetings/:id/agenda.pdf
   def agenda
@@ -126,7 +132,11 @@ class MeetingsController < ApplicationController
   def index
     respond_to do |format|
       format.html { render action: 'index' } # index.html.erb
-      format.json { render json: meetings.per(500).map(&:to_json_attributes) }
+      format.json do
+        out = meetings.per(500).map(&:to_json_attributes)
+        out.each { |m| m[:url] = meeting_path(m[:url]) }
+        render json: out
+      end
       format.xml  { render xml: meetings }
     end
   end

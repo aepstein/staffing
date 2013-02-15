@@ -1,0 +1,91 @@
+<p>
+<%= link_to 'Click here', edit_user_path( current_user ) %> to update your personal and contact information.  If you are not <%=h current_user.name %>, please close the web browser completely and log in using your own credentials.
+</p>
+
+<% if current_user.authorities.authorized(0).length > 0 -%>
+<h2>Your Authorities</h2>
+
+<p>
+You may review membership requests and update memberships for the following authorities:
+</p>
+
+<ul>
+<% current_user.authorities.prospective.each do |authority| %>
+  <%= content_tag :li, id: "authority-#{authority.id}" do %>
+    <%= link_to h( authority ), authority %>
+    (<%= link_to 'renewable memberships', renewable_authority_memberships_path( authority ) %>)
+    (<%= link_to 'active membership requests', active_authority_membership_requests_path( authority ) %>)
+    (<%= link_to 'rejected membership requests', rejected_authority_membership_requests_path( authority ) %>)
+    (<%= link_to 'current memberships', current_authority_memberships_path( authority ) %>)
+    (<%= link_to 'future memberships', future_authority_memberships_path( authority ) %>)
+  <% end %>
+<% end %>
+</ul>
+
+<% end -%>
+<h2>Your Memberships</h2>
+
+<p>
+You have <%= link_to pluralize( current_user.memberships.current.length, 'current membership' ), current_user_memberships_path(current_user) %>, <%= link_to pluralize( current_user.memberships.past.size, 'past membership' ), past_user_memberships_path(current_user) %>, and <%= link_to pluralize( current_user.memberships.future.size, 'future membership' ), future_user_memberships_path(current_user) %>.
+</p>
+
+<% if current_user.memberships.where { starts_at.lte( Time.zone.today ) }.count > 0 %>
+<p>
+You can specify your <%= link_to 'renewal preferences', renew_user_memberships_path( current_user ) %>.
+</p>
+<% end %>
+
+<% if current_user.memberships.current.length > 0 %>
+<h4>Current Memberships</h4>
+<%= render partial: 'memberships/memberships', object: current_user.memberships.current, locals: { user: current_user } %>
+<% end %>
+
+<h4>Current Motions</h4>
+
+<% if current_user.motions.current.in_process.length > 0 %>
+<p>
+You have the following motions in process:
+</p>
+
+<%= render partial: 'motions/motions', object: current_user.motions.current.in_process %>
+<% else %>
+<p>
+You have no motions in process.
+</p>
+<% end %>
+
+<% if current_user.committees.with_permissions_to(:sponsor).length > 0 %>
+<p>
+You may start motions for the following committees:
+</p>
+
+<ul id="voting_committees">
+<% current_user.committees.with_permissions_to(:sponsor).uniq.each do |committee| %>
+  <%= content_tag :li, id: "committee-#{committee.id}" do %>
+    <%=link_to committee.name, new_committee_motion_path( committee ) %>
+  <% end %>
+<% end %>
+</ul>
+<% else %>
+<p>
+You may not start motions for any committee at this time.
+</p>
+<% end %>
+
+<div id="membership_requests">
+<h2>Your Requests for Membership</h2>
+
+<p>
+You have <%= link_to pluralize( current_user.membership_requests.unexpired.count, 'current membership request' ), unexpired_user_membership_requests_path( current_user ) %> and <%= link_to pluralize( current_user.membership_requests.expired.count, 'expired membership request' ), expired_user_membership_requests_path( current_user ) %>.
+</p>
+
+<p>
+You may browse <%= link_to pluralize( current_user.committees.requestable.count("committees.id", distinct: true), 'committee' ), requestable_user_committees_path( current_user ) %> for which you are eligible to request membership.
+</p>
+
+<h4>Active Requests</h4>
+<%= render partial: 'membership_requests/membership_requests',
+  object: current_user.membership_requests.active.unexpired,
+  locals: { user: current_user } %>
+</div> <!-- #membership_requests -->
+

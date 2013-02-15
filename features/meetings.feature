@@ -4,7 +4,7 @@ Feature: Manage meetings
   I want to create, modify, list, show, and destroy meetings
 
 Scenario Outline: Access control
-  Given an authorization scenario of a <tense> <pub>published meeting of a committee to which I have a <relationship> relationship
+  Given a <tense> <pub>published meeting exists of a committee to which I have a <relationship> relationship
   Then I <show> see the meeting
   And I <create> create meetings
   And I <update> update the meeting
@@ -64,14 +64,15 @@ Scenario: List/delete a meeting
     |01 Jan 2001 09:00|
 
 Scenario Outline: Reports for meeting
-  Given a report scenario of a current published meeting of a committee to which I have a <relationship> relationship
+  Given a current published meeting exists of a committee to which I have a <relationship> relationship
+  And the meeting has items on its agenda
   When I download the <type> report for the meeting
   Examples:
     |relationship |type      |
     |staff        |agenda pdf|
 
 Scenario: Publish a meeting
-  Given an authorization scenario of a current unpublished meeting of a committee to which I have a current chair relationship
+  Given a current unpublished meeting exists of a committee to which I have a current chair relationship
   When I publish the meeting
   Then I should see the published meeting
 

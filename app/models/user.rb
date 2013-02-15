@@ -51,6 +51,10 @@ class User < ActiveRecord::Base
           authorized( votes ).map(&:id) ) ).select( 'DISTINCT committees.*' )
     end
   end
+  # Meetings which coincide with a membership
+  has_many :meetings, through: :committees, uniq: true,
+    conditions: "memberships.starts_at <= meetings.starts_at " +
+      "AND #{Membership.date_add :ends_at, 1, :days} > meetings.starts_at"
   has_many :authorities, through: :committees do
     def prospective
       where { committees.enrollments.memberships.ends_at > Time.zone.today }

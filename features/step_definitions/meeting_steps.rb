@@ -1,4 +1,4 @@
-Given /^(?:an )authorization scenario of an? (current|recent|pending|future|past) (un)?published meeting of a committee to which I have a (?:(current|recent|pending) )?(admin|staff|chair|vicechair|voter|nonvoter|plain) relationship$/ do |meeting_tense, unpub, member_tense, relationship|
+Given /^(?:an? )(current|recent|pending|future|past) (un)?published meeting exists of a committee to which I have a (?:(current|recent|pending) )?(admin|staff|chair|vicechair|voter|nonvoter|plain) relationship$/ do |meeting_tense, unpub, member_tense, relationship|
   committee_relationship = case relationship
   when 'admin', 'staff', 'plain'
     nil
@@ -225,8 +225,7 @@ When /^I search for meetings with period "([^"]+)"$/ do |needle|
   click_button "Search"
 end
 
-Given /^a report scenario (of an? (?:current|recent|pending|future|past) (?:un)?published meeting of a committee to which I have a (?:(?:current|recent|pending) )?(?:admin|staff|chair|vicechair|voter|nonvoter|plain) relationship)$/ do |authorization_scenario|
-  step %{an authorization scenario #{authorization_scenario}}
+Given /^the meeting has items on its agenda$/ do
   create(:meeting_item, meeting_section: create(:meeting_section, meeting: @meeting))
 end
 
@@ -248,5 +247,13 @@ end
 
 Then /^I should see the published meeting$/ do
   within(".alert") { page.should have_text "Meeting published." }
+end
+
+Then /^I should( not)? see the meeting$/ do |negate|
+  if negate.present?
+    page.should_not have_selector("#meeting-#{@meeting.id}")
+  else
+    page.should have_selector("#meeting-#{@meeting.id}")
+  end
 end
 

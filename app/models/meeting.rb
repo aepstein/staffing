@@ -109,7 +109,13 @@ class Meeting < ActiveRecord::Base
   end
 
   def to_json_attributes
-    { title: committee.name, start: starts_at, end: ends_at }
+    { :id => "meeting-#{id}",
+      :title => committee.name,
+      :start => starts_at,
+      :end => ends_at,
+      :url => self,
+      :location => location,
+      :allDay => false }
   end
 
   def to_s(style=nil)
