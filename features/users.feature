@@ -77,3 +77,8 @@ Scenario Outline: Reports for committee
     |role  |type       |
     |staff |tent pdf   |
 
+Scenario: Register sso user
+  Given I have a single sign on net id
+  When I register
+  Then I should be registered
+

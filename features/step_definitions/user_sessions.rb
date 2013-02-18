@@ -1,3 +1,12 @@
+Given /^I have a single sign on net id$/ do
+  @net_id = 'zzz999'
+  visit home_path( params: { sso_net_id: @net_id } )
+end
+
+Then /^I should be prompted to register$/ do
+  within('.alert') { page.should have_text 'You must register to access this page.' }
+end
+
 Given /^I log in as the (admin|staff|plain) user$/ do |type|
   @current_user = case type
   when 'admin'
@@ -35,5 +44,14 @@ Then /^I can log out$/ do
   within '.alert' do
     page.should have_content "You logged out successfully."
   end
+end
+
+When /^the single sign on net id is associated with a user$/ do
+  @current_user = create( :user, net_id: @net_id )
+end
+
+Then /^I should automatically log in when required$/ do
+  visit edit_user_path( @current_user )
+  current_path.should eql edit_user_path( @current_user )
 end
 

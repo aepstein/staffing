@@ -1,4 +1,6 @@
 class UsersController < ApplicationController
+  before_filter :require_user, except: [ :register ]
+  before_filter :require_no_user, only: [ :register ]
   expose :role do
     if permitted_to?( :manage, user )
       :admin
@@ -30,6 +32,7 @@ class UsersController < ApplicationController
     else
       User.new
     end
+    out.net_id = sso_net_id if current_user.blank? && sso_net_id
     out
   end
   filter_access_to :new, :create, :edit, :update, :destroy, :show, :tent,
@@ -120,6 +123,24 @@ class UsersController < ApplicationController
         else
           send_file user.resume.path, filename: "#{user.name :file}-resume.pdf",
             type: :pdf, disposition: 'inline'
+        end
+      end
+    end
+  end
+
+  # GET /users/new/register
+  # POST /users/new/register
+  def register
+    respond_to do |format|
+      if request.method_symbol == :get
+        format.html
+      else
+        user.assign_attributes params[:user], as: :default
+        if user.save
+          session[:user_id] = user.id
+          format.html { redirect_to home_path, flash: { success: 'User registered.' } }
+        else
+          format.html
         end
       end
     end

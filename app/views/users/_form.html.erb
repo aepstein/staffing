@@ -6,10 +6,18 @@
     <% if form.object.new_record? %>
       <%= form.input :net_id, label: 'Net id' %>
     <% else %>
-      <%= form.input :net_id, label: 'Net id', input_html: { readonly: true } %>
+      <%= form.input :net_id, label: 'Net id', disabled: true,
+        hint: 'You may not change the net id of an existing user.' %>
     <% end %>
     <%= form.input :empl_id, label: 'Empl id' %>
     <%= form.input :status, as: :radio_buttons, collection: User::STATUSES %>
+  <% else %>
+    <%= form.input :net_id, label: 'Net id', disabled: true,
+      hint: 'You may not change the net id.' %>
+    <%= form.input :empl_id, label: 'Empl id', disabled: true,
+      hint: 'You may not change the empl id.' %>
+    <%= form.input :status, as: :radio_buttons, collection: User::STATUSES,
+      hint: 'You may not change the status.', disabled: true %>
   <% end %>
   <%= form.input :email %>
   <%= form.input :mobile_phone %>
@@ -20,9 +28,17 @@
   <%= form.input :resume, as: :file, hint: 'You may optionally provide a resume (pdf only)' %>
   <%= form.input :portrait, as: :file, hint: 'You may optionally provide a picture (jpg only)' %>
   <%= form.input :portrait_cache, as: :hidden %>
+  <% unless sso_net_id %>
+  <%= form.input :password, as: :password %>
+  <%= form.input :password_confirmation, as: :password %>
+  <% end %>
   <% if permitted_to? :manage, form.object %>
     <%= form.input :admin, as: :radio_buttons, label: 'Administrator?' %>
     <%= form.input :staff, as: :radio_buttons, label: 'Staff?' %>
+  <% else %>
+    <%= form.input :admin, as: :radio_buttons, label: 'Administrator?',
+      disabled: true, hint: 'You may not change the admin flag.' %>
+    <%= form.input :staff, as: :radio_buttons, label: 'Staff?',
+      disabled: true, hint: 'You may not change the staff flag.' %>
   <% end %>
-  <%= form.button :wrapped, cancel: ( user.id == current_user.id ? home_path : users_path ) %>
 

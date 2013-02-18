@@ -181,6 +181,7 @@ authorization do
   end
   role :guest do
     has_permission_on :user_sessions, to: [ :new, :create ]
+    has_permission_on :users, to: [ :register ]
   end
 end
 

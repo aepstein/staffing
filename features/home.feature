@@ -19,7 +19,7 @@ Feature: Home page
       |plain               |not see|
 
   Scenario Outline: List motions in process
-    Given an authorization scenario of a <tense> published, <state> motion of sponsored origin to which I have a <relationship> relationship
+    Given a <tense> published, <state> motion exists of sponsored origin to which I have a <relationship> relationship
     When I am on the home page
     Then I should <see> the motion
     Examples:

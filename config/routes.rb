@@ -115,6 +115,10 @@ Staffing::Application.routes.draw do
   end
   resources :schedules
   resources :users do
+    new do
+      get :register
+      post :register
+    end
     member do
       get :resume, :tent
     end

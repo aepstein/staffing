@@ -105,8 +105,8 @@ When /^I create a user as (admin|staff)$/ do |role|
     within_control_group("Administrator?") { choose "Yes" }
     within_control_group("Staff?") { choose "Yes" }
   else
-    page.should have_no_control_group("Administrator?")
-    page.should have_no_control_group("Staff?")
+    within_control_group("Administrator?") { page.should have_selector "input.disabled" }
+    within_control_group("Staff?") { page.should have_selector "input.disabled" }
   end
   click_button 'Create'
   @user = User.find( URI.parse(current_url).path.match(/[\d]+$/)[0].to_i )
@@ -139,8 +139,7 @@ Then /^I should see the new user as (admin|staff)$/ do |role|
   end
 end
 
-When /^I update the user as (admin|staff|owner)$/ do |role|
-  visit(edit_user_path(@user))
+When /^I fill in the user as (admin|staff|owner)$/ do |role|
   fill_in "First name", with: "David"
   fill_in "Middle name", with: "J"
   fill_in "Last name", with: "Skorton"
@@ -154,17 +153,33 @@ When /^I update the user as (admin|staff|owner)$/ do |role|
     within_control_group("Administrator?") { choose "No" }
     within_control_group("Staff?") { choose "No" }
   else
-    page.should have_no_control_group("Administrator?")
-    page.should have_no_control_group("Staff?")
+    within_control_group("Administrator?") { page.should have_selector "input.disabled" }
+    within_control_group("Staff?") { page.should have_selector "input.disabled" }
   end
   if role == 'owner'
-    page.should have_no_control_group("Empl id")
-    page.should have_no_control_group("Status")
+    within_control_group("Empl id") { page.should have_selector "input.disabled" }
+    within_control_group("Status") { page.should have_selector "input.disabled" }
   else
     fill_in "Empl id", with: "654321"
     within_control_group("Status") { choose "staff" }
   end
+end
+
+When /^I update the user as (admin|staff|owner)$/ do |role|
+  visit(edit_user_path(@user))
+  step %{I fill in the user as #{role}}
   click_button 'Update'
+end
+
+When /^I register$/ do
+  step %{I fill in the user as owner}
+  click_button 'Register'
+end
+
+Then /^I should be registered$/ do
+  current_path.should eql '/home'
+  within(".alert") { page.should have_text "User registered." }
+  within("h1") { page.should have_text "Welcome, David" }
 end
 
 Then /^I should see the edited user as (admin|staff|owner)$/ do |role|
