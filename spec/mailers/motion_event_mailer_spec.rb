@@ -8,6 +8,12 @@ end
 shared_context "with chair and no vicechair" do
   before(:each) { chair }
 
+  def should_be_to_chair
+    mail.to.should_not include vicechair.email
+    mail.to.should include chair.email
+    both_parts_should_match /Dear #{chair.first_name},/
+  end
+
   def should_be_to_vicechair
     mail.to.should_not include vicechair.email
     mail.to.should include chair.email
@@ -22,6 +28,12 @@ end
 
 shared_context "with chair and vicechair" do
   before(:each) { chair; vicechair }
+
+  def should_be_to_chair
+    mail.to.should_not include vicechair.email
+    mail.to.should include chair.email
+    both_parts_should_match /Dear #{chair.first_name},/
+  end
 
   def should_be_to_vicechair
     mail.to.should include vicechair.email
@@ -348,19 +360,31 @@ describe MotionEventMailer do
     context "with chair and vicechair" do
       include_context "with chair and vicechair"
 
-      it "should have notify sponsor and cc vicechair" do
+      it "should be to chair and cc sponsor" do
         should_have_adopt
-        should_be_to_vicechair
+        should_be_to_chair
         should_cc_sponsor
       end
     end
+  end
 
-    context "with chair and no vicechair" do
-      include_context "with chair and no vicechair"
+  context "implement" do
+    let(:status) { "implemented" }
+    let(:event) { "implement" }
 
-      it "should have notify sponsor and cc chair in lieu of vicechair" do
-        should_have_adopt
-        should_be_to_vicechair
+    def should_have_implement
+      should_have_layout
+      mail.subject.should eq "#{motion.to_s :full} implemented"
+      both_parts_should_match /#{motion.committee} implemented #{motion.to_s :numbered} on #{motion_event.occurrence.to_s :long_ordinal}./
+      both_parts_should_match /No further actions are allowed or required regarding the motion./
+    end
+
+    context "with chair and vicechair" do
+      include_context "with chair and vicechair"
+
+      it "should be to chair and cc sponsor" do
+        should_have_implement
+        should_be_to_chair
         should_cc_sponsor
       end
     end

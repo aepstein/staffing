@@ -86,7 +86,7 @@ class MotionEventMailer < ActionMailer::Base
   end
 
   def adopt_notice
-    self.recipients = vicechairs
+    self.recipients = chairs
     mail(
       to: recipients.map(&:email),
       cc: sponsors.map(&:email),
@@ -97,11 +97,13 @@ class MotionEventMailer < ActionMailer::Base
   end
 
   def implement_notice
+    self.recipients = chairs
     mail(
-      to: motion.users.map(&:to_email),
-      cc: motion.observer_emails,
+      to: recipients.map(&:email),
+      cc: sponsors.map(&:email),
       from: motion.effective_contact_name_and_email,
-      subject: "#{motion.to_s :full} implemented"
+      subject: "#{motion.to_s :full} implemented",
+      template_name: 'implement_notice'
     )
   end
 
