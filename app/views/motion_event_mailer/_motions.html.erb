@@ -1,0 +1,10 @@
+<% committee ||= false %>
+<% if motions.any? %>
+  <%=content_tag :ul do %>
+    <%=render partial: 'motion_event_mailer/motion', collection: motions,
+      locals: { committee: committee } %>
+  <% end %>
+<% else %>
+  <%=content_tag :p, 'No motions.' %>
+<% end %>
+

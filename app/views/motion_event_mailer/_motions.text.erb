@@ -1,0 +1,8 @@
+<% committee ||= false %>
+<% if motions.any? %>
+<%=render partial: 'motion_event_mailer/motion', collection: motions,
+  locals: { committee: committee } %>
+<% else %>
+No motions.
+<% end %>
+

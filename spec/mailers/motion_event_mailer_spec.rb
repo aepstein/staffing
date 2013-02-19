@@ -252,5 +252,49 @@ describe MotionEventMailer do
       end
     end
   end
+
+  context "divide" do
+    let(:status) { "divided" }
+    let(:event) { "divide" }
+    let(:dividing_motions) do
+      (1..2).map do |i|
+        create(:referred_motion, referring_motion: motion, committee: motion.committee, period: motion.period,
+          name: "Dividing Motion #{i}")
+      end
+    end
+
+    before(:each) { dividing_motions }
+
+    def should_have_divide
+      should_have_layout
+      mail.subject.should eq "#{motion.to_s :full} divided"
+      both_parts_should_match /#{motion.committee} divided #{motion.to_s :numbered} on #{motion_event.occurrence.to_s :long_ordinal}./
+      both_parts_should_match /No further actions are allowed or required regarding the motion./
+      both_parts_should_match /#{dividing_motions[0].to_s :numbered}/
+      both_parts_should_match /#{dividing_motions[1].to_s :numbered}/
+      both_parts_should_not_match /#{dividing_motions[0].to_s :full}/
+      both_parts_should_not_match /#{dividing_motions[1].to_s :full}/
+    end
+
+    context "with chair and vicechair" do
+      include_context "with chair and vicechair"
+
+      it "should have notify sponsor and cc vicechair" do
+        should_have_divide
+        should_be_to_vicechair
+        should_cc_sponsor
+      end
+    end
+
+    context "with chair and no vicechair" do
+      include_context "with chair and no vicechair"
+
+      it "should have notify sponsor and cc chair in lieu of vicechair" do
+        should_have_divide
+        should_be_to_vicechair
+        should_cc_sponsor
+      end
+    end
+  end
 end
 

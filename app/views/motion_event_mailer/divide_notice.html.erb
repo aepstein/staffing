@@ -1,0 +1,7 @@
+<p>
+<%= motion.committee %> divided <%= motion.to_s :numbered %> on <%= event.occurrence.to_s :long_ordinal%> into the following motions:
+</p>
+
+<%= render partial: "motion_event_mailer/motions", object: motion.referred_motions,
+  locals: { committee: motion.committee } %>
+

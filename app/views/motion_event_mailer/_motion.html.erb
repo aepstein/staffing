@@ -1,0 +1,6 @@
+<% committee ||= false
+   motion_name = ( committee ? motion.to_s( :numbered ) : motion.to_s( :full ) ) %>
+<%= content_tag :li do %>
+  <%=link_to motion_name, motion %>
+<% end %>
+
