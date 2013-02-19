@@ -1,4 +1,5 @@
 class MotionEvent < ActiveRecord::Base
+  NOTIFIABLE_EVENTS = %w( propose adopt reject refer implement divide merge restart )
   belongs_to :motion, inverse_of: :motion_events
   belongs_to :user, inverse_of: :motion_events
   attr_accessible :description, :occurrence, :event, :user
@@ -19,6 +20,7 @@ class MotionEvent < ActiveRecord::Base
 
   scope :ordered, lambda { order { [ occurrence, created_at ] } }
   scope :occurred_since, lambda { |since| where { occurrence.gte( since ) } }
+  scope :notifiable, lambda { where { event.in( MotionEvent::NOTIFIABLE_EVENTS ) } }
   scope :no_notice, where { notice_sent_at.eq( nil ) }
   scope :no_notice_since, lambda { |since|
     where { notice_sent_at.eq( nil ) || notice_sent_at.lte( since ) }
@@ -27,9 +29,12 @@ class MotionEvent < ActiveRecord::Base
   delegate :period_starts_at, to: :motion
 
   def send_notice!
-    MotionEventMailer.send( "#{event}_notice", self ).deliver
-    self.update_attributes( { notice_sent_at: Time.zone.now },
-      without_protection: true )
+    message = MotionEventMailer.event_notice self
+    if message.to.present?
+      message.deliver
+      self.update_attributes( { notice_sent_at: Time.zone.now },
+        without_protection: true )
+    end
   end
 end
 

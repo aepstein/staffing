@@ -1,5 +1,5 @@
 task :notices => [ 'notices:leave', 'notices:join', 'notices:reject',
-  'notices:decline', 'notices:renew' ]
+  'notices:decline', 'notices:renew', 'notices:motion_events' ]
 
 namespace :notices do
 
@@ -42,6 +42,12 @@ namespace :notices do
       no_renew_notice_since( Time.zone.now - 1.month ).each do |user|
         user.send_renew_notice!
       end
+  end
+
+  desc "Send notices for events occurring in last week for which no notice has been sent"
+  task :motion_events => [ :environment ] do
+    MotionEvent.notifiable.where { |e| e.occurrence.gte( Time.zone.today - 1.week ) }.
+      no_notice.each { |e| e.send_notice! }
   end
 
   def notices_log(message)
