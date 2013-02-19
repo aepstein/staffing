@@ -333,5 +333,37 @@ describe MotionEventMailer do
       end
     end
   end
+
+  context "adopt" do
+    let(:status) { "adopted" }
+    let(:event) { "adopt" }
+
+    def should_have_adopt
+      should_have_layout
+      mail.subject.should eq "#{motion.to_s :full} adopted"
+      both_parts_should_match /#{motion.committee} adopted #{motion.to_s :numbered} on #{motion_event.occurrence.to_s :long_ordinal}./
+      both_parts_should_match /You may [\w\,\s]+ the motion here:/
+    end
+
+    context "with chair and vicechair" do
+      include_context "with chair and vicechair"
+
+      it "should have notify sponsor and cc vicechair" do
+        should_have_adopt
+        should_be_to_vicechair
+        should_cc_sponsor
+      end
+    end
+
+    context "with chair and no vicechair" do
+      include_context "with chair and no vicechair"
+
+      it "should have notify sponsor and cc chair in lieu of vicechair" do
+        should_have_adopt
+        should_be_to_vicechair
+        should_cc_sponsor
+      end
+    end
+  end
 end
 

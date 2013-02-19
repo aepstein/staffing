@@ -86,11 +86,13 @@ class MotionEventMailer < ActionMailer::Base
   end
 
   def adopt_notice
+    self.recipients = vicechairs
     mail(
-      to: motion.users.map(&:to_email),
-      cc: motion.observer_emails,
+      to: recipients.map(&:email),
+      cc: sponsors.map(&:email),
       from: motion.effective_contact_name_and_email,
-      subject: "#{motion.to_s :full} adopted"
+      subject: "#{motion.to_s :full} adopted",
+      template_name: 'adopt_notice'
     )
   end
 
