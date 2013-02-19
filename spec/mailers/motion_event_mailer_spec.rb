@@ -296,5 +296,42 @@ describe MotionEventMailer do
       end
     end
   end
+
+  context "merge" do
+    let(:status) { "proposed" }
+    let(:event) { "merge" }
+    let(:motion_merger) do
+      create(:motion_merger, merged_motion: motion)
+    end
+
+    before(:each) { motion_merger }
+
+    def should_have_merge
+      should_have_layout
+      mail.subject.should eq "#{motion.to_s :full} merged"
+      both_parts_should_match /#{motion.committee} merged #{motion.to_s :numbered} into #{motion_merger.motion.to_s :numbered} on #{motion_event.occurrence.to_s :long_ordinal}./
+      both_parts_should_match /No further actions are allowed or required regarding the motion./
+    end
+
+    context "with chair and vicechair" do
+      include_context "with chair and vicechair"
+
+      it "should have notify sponsor and cc vicechair" do
+        should_have_merge
+        should_be_to_vicechair
+        should_cc_sponsor
+      end
+    end
+
+    context "with chair and no vicechair" do
+      include_context "with chair and no vicechair"
+
+      it "should have notify sponsor and cc chair in lieu of vicechair" do
+        should_have_merge
+        should_be_to_vicechair
+        should_cc_sponsor
+      end
+    end
+  end
 end
 
