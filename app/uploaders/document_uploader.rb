@@ -10,7 +10,7 @@ class DocumentUploader < CarrierWave::Uploader::Base
 
   # Use mounted_as parameter to give file predictable name
   def filename
-    "#{mounted_as}_#{Time.zone.now.to_s :number}#{File.extname(original_filename)}" if original_filename
+    "#{mounted_as}_#{timestamp_for_filename}#{File.extname(original_filename)}" if original_filename
   end
 
   # Partitions model id in form 000/000/001 for scalable storage
