@@ -4,9 +4,13 @@ class DocumentUploader < CarrierWave::Uploader::Base
     %w( doc odt docx xls ods xlsx ppt odp pptx pdf txt swf csv )
   end
 
+  def timestamp_for_filename
+    @timestamp_for_filename ||= Time.zone.now.to_s :number
+  end
+
   # Use mounted_as parameter to give file predictable name
   def filename
-    "#{mounted_as}_#{Time.zone.now.to_s :number}.#{File.extname(original_filename)}" if original_filename
+    "#{mounted_as}_#{Time.zone.now.to_s :number}#{File.extname(original_filename)}" if original_filename
   end
 
   # Partitions model id in form 000/000/001 for scalable storage
