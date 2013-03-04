@@ -113,6 +113,14 @@ Then /^I may( not)? reactivate the membership request$/ do |negate|
   step %{I should#{negate} be authorized}
 end
 
+Then /^I may( not)? edit the membership request via new action$/ do |negate|
+  visit(new_committee_membership_request_url(@committee, user_id: @membership_request.user_id))
+  if negate.blank?
+    current_path.should eql edit_membership_request_path( @membership_request )
+    within( '.alert' ) { page.should have_text 'Update and reactivate your existing request.' }
+  end
+end
+
 Given /^(?:an? )?(#{User::STATUSES.join '|'}|(?:every|any|no)(?:one|body)) may create membership requests for the committee$/ do |status|
   @committee = create(:committee)
   @enrollment = case status
