@@ -39,6 +39,18 @@ Scenario Outline: Access control to reactivate
     |future authority    |may       |
     |plain               |may not   |
 
+Scenario Outline: Access control to reactivate
+  Given an authorization scenario of a current membership request to which I have a <relation> relationship
+  And the membership request is rejected
+  Then I <edit> edit the membership request via new action
+  Examples:
+    |relation            |edit    |
+    |admin               |may     |
+    |staff               |may     |
+    |current authority   |may not |
+    |requestor           |may     |
+    |plain               |may not |
+
 @javascript
 Scenario Outline: Create and edit request
   Given I log in as the plain user

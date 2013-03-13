@@ -37,6 +37,9 @@ class MembershipRequestsController < ApplicationController
   expose :membership_request do
     out = if params[:id]
       MembershipRequest.find params[:id]
+    elsif user
+      committee.membership_requests.where( user_id: user.id ).first ||
+      committee.membership_requests.build { |mr| mr.user = user }
     else
       committee.membership_requests.where( user_id: current_user.id ).first ||
       committee.membership_requests.build
@@ -50,6 +53,18 @@ class MembershipRequestsController < ApplicationController
   filter_access_to :index, :renewed, :unrenewed, :expired, :unexpired, :active,
     :inactive, :rejected do
     user ? permitted_to!( :show, user ) : permitted_to!( :index )
+  end
+
+  def new
+    respond_to do |format|
+      format.html do
+        if membership_request.new_record?
+          render action: 'new'
+        else
+          redirect_to edit_membership_request_url( membership_request ), notice: 'Update and reactivate your existing request.'
+        end
+      end
+    end
   end
 
   # GET /position/:position_id/membership_requests
