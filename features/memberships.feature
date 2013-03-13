@@ -7,20 +7,21 @@ Scenario Outline: Access control
   Given an authorization scenario of a <member_tense> membership to which I have a <relationship> relationship
   Then I <show> see the membership
   And I <create> create memberships for the position
+  And I <review> review the membership
   And I <update> update the membership
   And I <destroy> destroy the membership
   Examples:
-    |member_tense|relationship        |show|create |update |destroy|
-    |current     |admin               |may |may    |may    |may    |
-    |current     |staff               |may |may    |may    |may not|
-    |past        |staff               |may |may    |may    |may not|
-    |current     |current authority   |may |may    |may    |may not|
-    |pending     |current authority   |may |may    |may    |may not|
-    |recent      |current authority   |may |may    |may    |may not|
-    |past        |current authority   |may |may    |may not|may not|
-    |future      |current authority   |may |may    |may not|may not|
-    |current     |current authority_ro|may |may not|may not|may not|
-    |current     |plain               |may |may not|may not|may not|
+    |member_tense|relationship        |show|create |review |update |destroy|
+    |current     |admin               |may |may    |may not|may    |may    |
+    |current     |staff               |may |may    |may not|may    |may not|
+    |past        |staff               |may |may    |may not|may    |may not|
+    |current     |current authority   |may |may    |may    |may    |may not|
+    |pending     |current authority   |may |may    |may    |may    |may not|
+    |recent      |current authority   |may |may    |may not|may    |may not|
+    |past        |current authority   |may |may    |may not|may not|may not|
+    |future      |current authority   |may |may    |may not|may not|may not|
+    |current     |current authority_ro|may |may not|may    |may not|may not|
+    |current     |plain               |may |may not|may not|may not|may not|
 
 Scenario Outline: Access control to decline
   Given an authorization scenario of a <member_tense> membership to which I have a <relationship> relationship

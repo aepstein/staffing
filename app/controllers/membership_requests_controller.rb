@@ -7,19 +7,24 @@ class MembershipRequestsController < ApplicationController
   expose( :context ) { authority || committee || user }
   expose :q_scope do
     scope = context.membership_requests.scoped if context
+    scope = current_user.reviewable_membership_requests if params[:review]
     scope ||= MembershipRequest.scoped
-    scope = scope.expired if params[:action] == 'expired'
-    scope = scope.unexpired if params[:action] == 'unexpired'
-    scope = scope.active if params[:action] == 'active'
-    scope = scope.inactive if params[:action] == 'inactive'
-    scope = scope.rejected if params[:action] == 'rejected'
-    scope
+    scope = case params[:action]
+    when 'expired', 'unexpired', 'active', 'inactive', 'rejected'
+      scope.send params[:action]
+    else
+      scope
+    end
   end
   expose :q do
     q_scope.search( params[:q] )
   end
   expose :membership_requests do
-    q.result.ordered.with_permissions_to(:show).page(params[:page])
+    if params[:review]
+      q.result.ordered.page(params[:page])
+    else
+      q.result.ordered.with_permissions_to(:show).page(params[:page])
+    end
   end
   expose :assigner_role do
     case action_name

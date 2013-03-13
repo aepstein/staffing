@@ -9,15 +9,14 @@ class MembershipsController < ApplicationController
   expose( :context ) { position || committee || user || authority || membership_request }
   expose :q_scope do
     scope = context.memberships.scoped if context
+    scope = current_user.reviewable_memberships if params[:review]
     scope ||= Membership.scoped
     scope = case params[:action]
     when 'renewable'
-      scope.renewal_candidate.renewal_undeclined.renew_until(Time.zone.today)
-    when 'renewed'
-      scope.renewed
+      scope.renewal_candidate.renewal_undeclined.renew_until( Time.zone.today )
     when 'unrenewed'
       scope.renewable.unrenewed
-    when 'renewed','current','past','future'
+    when 'renewed','current','past','future', 'active'
       scope.send params[:action]
     when 'assignable'
       membership_request.memberships.assignable

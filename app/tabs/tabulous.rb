@@ -2,20 +2,28 @@ Tabulous.setup do |config|
   config.tabs do
     basic = [ [ :home_tab, 'Home', home_path, true, true ] ]
     basic += [
-      [ :admin_tab                    ,"Administration"     ,users_path              ,permitted_to?(:staff,:users)      ,true ],
-      [    :authorities_subtab        ,'Authorities'        ,authorities_path        ,true                ,true        ],
-      [    :brands_subtab             ,'Brands'             ,brands_path             ,true                ,true        ],
-      [    :positions_subtab          ,'Positions'          ,positions_path          ,true                ,true        ],
-      [    :committees_subtab         ,'Committees'         ,committees_path         ,true                ,true        ],
-      [    :meeting_templates_subtab  ,'Meeting Templates'  ,meeting_templates_path  ,true                ,true        ],
-      [    :users_subtab              ,'Users'              ,users_path              ,true                ,true        ],
-      [    :questions_subtab          ,'Questions'          ,questions_path          ,true                ,true        ],
-      [    :quizzes_subtab            ,'Quizzes'            ,quizzes_path            ,true                ,true        ],
-      [    :schedules_subtab          ,'Schedules'          ,schedules_path          ,true                ,true        ],
-      [    :meetings_subtab           ,'Meetings'           ,meetings_path           ,true                ,true        ],
-      [    :motions_subtab            ,'Motions'            ,motions_path            ,true                ,true        ],
-      [    :motions_subtab            ,'Motions'            ,motions_path            ,true                ,true        ],
+      [ :admin_tab                   ,"Administration"   ,users_path              ,permitted_to?(:staff,:users)      ,true ],
+      [    :authorities_subtab       ,'Authorities'      ,authorities_path        ,true                ,true        ],
+      [    :brands_subtab            ,'Brands'           ,brands_path             ,true                ,true        ],
+      [    :positions_subtab         ,'Positions'        ,positions_path          ,true                ,true        ],
+      [    :committees_subtab        ,'Committees'       ,committees_path         ,true                ,true        ],
+      [    :meeting_templates_subtab ,'Meeting Templates',meeting_templates_path  ,true                ,true        ],
+      [    :users_subtab             ,'Users'            ,users_path              ,true                ,true        ],
+      [    :questions_subtab         ,'Questions'        ,questions_path          ,true                ,true        ],
+      [    :quizzes_subtab           ,'Quizzes'          ,quizzes_path            ,true                ,true        ],
+      [    :schedules_subtab         ,'Schedules'        ,schedules_path          ,true                ,true        ],
+      [    :meetings_subtab          ,'Meetings'         ,meetings_path           ,true                ,true        ],
+      [    :motions_subtab           ,'Motions'          ,motions_path            ,true                ,true        ],
+      [    :motions_subtab           ,'Motions'          ,motions_path            ,true                ,true        ]
     ]
+    if current_user
+      basic += [
+        [ :review_tab                  ,"Review"           ,reviewable_memberships_path ,current_user.authorities.prospective.any?, true ],
+        [ :active_memberships_subtab   ,"Active Memberships",active_reviewable_memberships_path,true, true],
+        [ :active_membership_requests_subtab,"Active Membership Requests",active_reviewable_membership_requests_path,true,true],
+        [ :inactive_membership_requests_subtab,"Inactive Membership Requests",inactive_reviewable_membership_requests_path,true,true]
+      ]
+    end
     basic += [
       [ :logout_tab, 'Log Out', logout_path, current_user.present?, true ],
       [ :login_tab , 'Log In' , login_path , current_user.blank?  , true ]

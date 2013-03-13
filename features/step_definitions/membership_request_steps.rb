@@ -85,6 +85,15 @@ Then /^I may( not)? see the membership request$/ do |negate|
   end
 end
 
+Then /^I may( not)? review the membership request$/ do |negate|
+  visit(reviewable_membership_requests_url)
+  if negate.blank?
+    page.should have_selector( "#membership-request-#{@membership_request.id}" )
+  else
+    page.should have_no_selector( "#membership-request-#{@membership_request.id}" )
+  end
+end
+
 Then /^I may( not)? reject the membership request$/ do |negate|
   visit(committee_membership_requests_url(@committee))
   if negate.blank?

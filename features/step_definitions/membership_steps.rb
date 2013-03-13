@@ -104,6 +104,15 @@ Then /^I may( not)? see the membership$/ do |negate|
   end
 end
 
+Then /^I may( not)? review the membership$/ do |negate|
+  visit(reviewable_memberships_url)
+  if negate.blank?
+    page.should have_selector( "#membership-#{@membership.id}" )
+  else
+    page.should have_no_selector( "#membership-#{@membership.id}" )
+  end
+end
+
 Then /^I may( not)? decline the membership$/ do |negate|
   visit(position_memberships_url(@position))
   if negate.blank?

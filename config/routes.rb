@@ -113,6 +113,18 @@ Staffing::Application.routes.draw do
   resources :quizzes do
     resources :questions, only: [ :index ]
   end
+  scope 'review', as: :reviewable, defaults: { review: true } do
+    resources :memberships, only: [ :index ] do
+      collection do
+        get :active
+      end
+    end
+    resources :membership_requests, only: [ :index ] do
+      collection do
+        get :active, :inactive, :rejected
+      end
+    end
+  end
   resources :schedules
   resources :users do
     new do

@@ -6,18 +6,20 @@ Feature: Membership requests
 Scenario Outline: Access control
   Given an authorization scenario of a current membership request to which I have a <relation> relationship
   Then I <show> see the membership request
+  And I <review> review the membership request
   And I <update> update the membership request
   And I <reject> reject the membership request
   And I <destroy> destroy the membership request
   Examples:
-    |relation            |show   |update |reject |destroy|
-    |admin               |may    |may    |may    |may    |
-    |staff               |may    |may    |may    |may not|
-    |current authority   |may    |may not|may    |may not|
-    |current authority_ro|may    |may not|may not|may not|
-    |recent authority    |may not|may not|may not|may not|
-    |future authority    |may    |may not|may    |may not|
-    |plain               |may not|may not|may not|may not|
+    |relation            |show   |review |update |reject |destroy|
+    |admin               |may    |may not|may    |may    |may    |
+    |staff               |may    |may not|may    |may    |may not|
+    |current authority   |may    |may    |may not|may    |may not|
+    |current authority_ro|may    |may    |may not|may not|may not|
+    |recent authority    |may not|may not|may not|may not|may not|
+    |pending authority   |may    |may    |may not|may    |may not|
+    |future authority    |may    |may not|may not|may    |may not|
+    |plain               |may not|may not|may not|may not|may not|
 
 Scenario: Access control to create requests
   Given an authorization scenario of a current membership request to which I have a plain relationship

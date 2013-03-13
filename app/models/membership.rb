@@ -113,6 +113,7 @@ class Membership < ActiveRecord::Base
   scope :past, lambda { where { ends_at < Time.zone.today } }
   scope :recent, lambda { where { period_id.in( Period.unscoped.recent.select { id } ) } }
   scope :current_or_future, lambda { where { ends_at >= Time.zone.today } }
+  scope :active, lambda { current_or_future }
   scope :renewal_candidate, lambda { renewable.assigned.unrenewed.unabridged.recent }
   scope :renewable, lambda { where { position_id.
     in( Position.unscoped.active.renewable.select { id } ) } }
