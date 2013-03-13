@@ -68,14 +68,14 @@ class User < ActiveRecord::Base
   has_many :membership_requests, inverse_of: :user
   # User has permission to review requests that overlap with authority to staff
   has_many :reviewable_membership_requests, through: :authorities,
-    source: :membership_requests, include: :user,
+    source: :membership_requests, include: :user, uniq: true,
     conditions: lambda { |user|
       [ "membership_requests.starts_at <= memberships.ends_at AND " +
         "membership_requests.ends_at >= memberships.starts_at AND " +
         "memberships.ends_at >= ?", Time.zone.today ] }
   # User has permission to review memberships that overlap with authority to staff
   has_many :reviewable_memberships, through: :authorities,
-    source: :memberships,
+    source: :memberships, uniq: true,
     conditions: lambda { |user|
       [ "memberships_reviewable_memberships_join.starts_at <= memberships.ends_at AND " +
         "memberships_reviewable_memberships_join.ends_at >= memberships.starts_at AND " +

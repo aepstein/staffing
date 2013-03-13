@@ -18,6 +18,8 @@ class MembershipsController < ApplicationController
       scope.renewable.unrenewed
     when 'renewed','current','past','future', 'active'
       scope.send params[:action]
+    when 'active'
+      scope.send 'current_or_future'
     when 'assignable'
       membership_request.memberships.assignable
     else
@@ -141,6 +143,11 @@ class MembershipsController < ApplicationController
 
   # GET /membership_requests/:membership_request_id/memberships/assignable
   def assignable
+    index
+  end
+
+  # GET /review/membership_requests/active
+  def active
     index
   end
 
