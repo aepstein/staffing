@@ -82,6 +82,8 @@ class User < ActiveRecord::Base
         "memberships.ends_at >= ?", Time.zone.today ] }
   has_many :sponsorships, inverse_of: :user
   has_many :motions, through: :sponsorships
+  has_and_belongs_to_many :watched_motions, class_name: 'Motion',
+    join_table: 'motions_watchers'
   has_many :answers, through: :membership_requests
   has_many :periods, through: :memberships
   has_many :positions, through: :memberships do

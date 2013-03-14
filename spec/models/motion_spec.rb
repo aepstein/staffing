@@ -113,6 +113,10 @@ describe Motion do
 
     let(:amendment) {  motion.referred_motions.build_amendment }
 
+    it "should save ancestry for a referee motion" do
+      motion.parent.should eql motion.referring_motion
+    end
+
     it 'should have a referee? method that indicates if it originates from a referred motion' do
       motion.referee?.should be_false
       divisee = divided_motions.first
