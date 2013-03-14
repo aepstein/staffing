@@ -6,6 +6,7 @@ class Motion < ActiveRecord::Base
   EVENTS_PUTONLY = [ :restart, :unwatch, :watch ]
 
   has_paper_trail
+  has_ancestry
 
   attr_accessible :name, :content, :description, :complete,
     :referring_motion_id, :sponsorships_attributes, :attachments_attributes,
@@ -62,7 +63,7 @@ class Motion < ActiveRecord::Base
   has_many :merged_motions, through: :motion_mergers, source: :merged_motion
   has_many :referred_motions, inverse_of: :referring_motion,
     class_name: 'Motion', foreign_key: :referring_motion_id,
-    dependent: :destroy do
+    dependent: :restrict do
     def build_referee( referral_attributes = {} )
       referral_attributes ||= {}
       build( proxy_association.owner.attributes ) do |new_motion|
@@ -111,6 +112,9 @@ class Motion < ActiveRecord::Base
   # No validation on position -- this will be handled automatically
 
   before_create do |motion|
+    if motion.referring_motion != motion.parent
+      motion.parent = motion.referring_motion
+    end
     if motion.referring_motion && motion.referring_motion.published?
       motion.published = true
     end
