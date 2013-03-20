@@ -1,10 +1,10 @@
 <%=content_tag :h3, 'Current Motions' %>
 <%=render partial: 'motions/motions', object: current_user.motions.current %>
-<% if current_user.committees.authorized.sponsor.any? %>
+<% if current_user.committees.sponsor.with_permissions_to(:vote).any? %>
   <%=content_tag :div, id: 'new-motions' do %>
     <%=content_tag :p, 'Start new motion' %>
     <%=content_tag :ul do %>
-      <% current_user.committees.authorized.sponsor.each do |committee| %>
+      <% current_user.committees.sponsor.with_permissions_to(:vote).uniq.each do |committee| %>
         <%=content_tag :li, link_to( committee.name, new_committee_motion_path( committee ) ) %>
       <% end %>
     <% end %>
