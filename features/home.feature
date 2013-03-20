@@ -17,19 +17,7 @@ Feature: Home page
       |future authority_ro |see    |
       |recent authority    |not see|
       |plain               |not see|
-
-  Scenario Outline: List motions in process
-    Given a <tense> published, <state> motion exists of sponsored origin to which I have a <relationship> relationship
-    When I am on the home page
-    Then I should <see> the motion
-    Examples:
-      |tense  |relationship   |state    |see    |
-      |current|admin          |started  |not see|
-      |current|current sponsor|started  |see    |
-      |current|current sponsor|rejected |not see|
-      |current|current voter  |started  |not see|
-      |past   |past sponsor   |started  |not see|
-
+@wip
   Scenario Outline: List committees I can vote on
     Given an authorization scenario of a committee to which I have a <relationship> relationship
     When I am on the home page

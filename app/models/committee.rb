@@ -8,6 +8,8 @@ class Committee < ActiveRecord::Base
       joins(:position).merge( Position.unscoped.active.with_status(user.status) )
     ) }
   }
+  scope :sponsor, where { sponsor.eq( true ) }
+  scope :no_sponsor, where { sponsor.not_eq( true ) }
   scope :active, where { active.eq( true ) }
   scope :inactive, where { active.not_eq( true ) }
 

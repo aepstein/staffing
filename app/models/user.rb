@@ -45,10 +45,11 @@ class User < ActiveRecord::Base
       Committee.requestable_for_user(proxy_association.owner)
     end
     def authorized(votes = 1)
-      return [] if proxy_association.owner.authorities.authorized(votes).empty?
-      Committee.joins(:positions).merge(
-        Position.where( :authority_id.in => proxy_association.owner.authorities.
-          authorized( votes ).map(&:id) ) ).select( 'DISTINCT committees.*' )
+      Committee.where { |c| c.id.in( Enrollment.select { committee_id }.
+        where { |e| e.position_id.in(
+          Position.select { id }.where { |p| p.authority_id.in(
+            proxy_association.owner.authorities.authorized( votes ).
+            select { id } ) } ) } ) }
     end
   end
   # Meetings which coincide with a membership
@@ -60,7 +61,7 @@ class User < ActiveRecord::Base
       where { committees.enrollments.memberships.ends_at > Time.zone.today }
     end
     def authorized( votes = 1 )
-      return Authority.all if ( proxy_association.owner.role_symbols & [ :admin, :staff ] ).any?
+      return Authority.unscoped if ( proxy_association.owner.role_symbols & [ :admin, :staff ] ).any?
       prospective.where { |a| a.committees.enrollments.votes.gte( votes ) }
     end
   end
@@ -82,6 +83,10 @@ class User < ActiveRecord::Base
         "memberships.ends_at >= ?", Time.zone.today ] }
   has_many :sponsorships, inverse_of: :user
   has_many :motions, through: :sponsorships
+  has_many :peer_motions, through: :committees, source: :motions,
+    conditions: lambda { |user|
+      [ "motions.period_id IN (SELECT id FROM periods WHERE periods.starts_at <= memberships.ends_at AND " +
+        "periods.ends_at >= memberships.starts_at) AND memberships.ends_at >= ?", Time.zone.today ] }
   has_and_belongs_to_many :watched_motions, class_name: 'Motion',
     join_table: 'motions_watchers'
   has_many :answers, through: :membership_requests

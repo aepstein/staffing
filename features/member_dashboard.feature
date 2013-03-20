@@ -13,16 +13,27 @@ Feature: Member dashboards
       | current nonvoter | see     |
       | staff            | see     |
       | plain            | not see |
-  @wip
-  Scenario: See published, unscheduled motions on my motions dashboard
-    Given a current published, proposed motion exists of sponsored origin to which I have a current nonvoter relationship
+
+  Scenario Outline: See a current motion
+    Given a <period> published, proposed motion exists of sponsored origin to which I have a <relation> relationship
     When I go to my motions dashboard
-    Then I should see the motion
-    And I should not see the motion with the pending meeting
-  @wip
-  Scenario: See published, scheduled motions on my motions dashboard
-    Given a current published, proposed motion exists of sponsored origin to which I have a current nonvoter relationship
-    And the motion is scheduled for a pending meeting
-    When I go to my motions dashboard
-    Then I should see the motion with the pending meeting
+    Then I should <see> the motion
+    Examples:
+    | period  | relation        | see     |
+    | current | current voter   | not see |
+    | current | current sponsor | see     |
+    | past    | past sponsor    | not see |
+    | current | watcher         | see     |
+    | past    | watcher         | not see |
+@wip
+  Scenario Outline: Create a motion
+    Given a <period> published, proposed motion exists of sponsored origin to which I have a <relation> relationship
+    Then I <create> create motions for the committee through my dashboard
+    Examples:
+    | period  | relation           | create  |
+    | current | admin              | may     |
+    | current | current voter      | may     |
+    | past    | past voter         | may not |
+    | current | current nonsponsor | may not |
+    | current | current nonvoter   | may not |
 

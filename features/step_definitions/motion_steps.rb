@@ -105,10 +105,10 @@ Then /^I should see confirmation of the event on the motion$/ do
   end
 end
 
-Given /^(?:an? )(current|future|past) (un)?published, (\w+) motion exists of (sponsored|referred) origin to which I have a (?:(current|past|future) )?(admin|staff|chair|vicechair|voter|sponsor|nonsponsor|nonvoter|plain) relationship$/ do |motion_tense, publication, status, origin, tense, relationship|
+Given /^(?:an? )(current|future|past) (un)?published, (\w+) motion exists of (sponsored|referred) origin to which I have a (?:(current|past|future) )?(admin|staff|chair|vicechair|voter|sponsor|nonsponsor|nonvoter|watcher|plain) relationship$/ do |motion_tense, publication, status, origin, tense, relationship|
   Motion.delete_all
   committee_relationship = case relationship
-  when 'admin', 'staff', 'plain'
+  when 'admin', 'staff', 'watcher', 'plain'
     nil
   when 'sponsor', 'nonsponsor'
     'voter'
@@ -137,6 +137,9 @@ Given /^(?:an? )(current|future|past) (un)?published, (\w+) motion exists of (sp
     period: @period, status: status, published: publication.blank?
   if relationship == 'sponsor'
     create :sponsorship, motion: @motion, user: @current_user
+  end
+  if relationship == 'watcher'
+    @current_user.watched_motions << @motion
   end
 end
 
@@ -356,6 +359,21 @@ end
 Then /^I should see the following motions for the committee:$/ do |table|
   visit(committee_motions_path(@committee))
   table.diff! tableish( 'table#motions > tbody > tr', 'td:nth-of-type(3)' )
+end
+
+Then /^I may( not)? create motions for the committee through my dashboard$/ do |negate|
+  visit home_url
+  if negate.blank?
+    within("#new-motions") do
+      page.should have_text @committee.name
+    end
+  else
+    if page.has_selector?("#new-motions")
+      within("#new-motions") do
+        page.should have_no_text
+      end
+    end
+  end
 end
 
 Then /^I should( not)? see the motion with the pending meeting$/ do |negate|

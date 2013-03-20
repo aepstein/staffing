@@ -36,40 +36,8 @@ You can specify your <%= link_to 'renewal preferences', renew_user_memberships_p
 <% end %>
 
 <% if current_user.memberships.current.length > 0 %>
-<h4>Current Memberships</h4>
+<h3>Current Memberships</h3>
 <%= render partial: 'memberships/memberships', object: current_user.memberships.current, locals: { user: current_user } %>
-<% end %>
-
-<h4>Current Motions</h4>
-
-<% if current_user.motions.current.in_process.length > 0 %>
-<p>
-You have the following motions in process:
-</p>
-
-<%= render partial: 'motions/motions', object: current_user.motions.current.in_process %>
-<% else %>
-<p>
-You have no motions in process.
-</p>
-<% end %>
-
-<% if current_user.committees.with_permissions_to(:sponsor).length > 0 %>
-<p>
-You may start motions for the following committees:
-</p>
-
-<ul id="voting_committees">
-<% current_user.committees.with_permissions_to(:sponsor).uniq.each do |committee| %>
-  <%= content_tag :li, id: "committee-#{committee.id}" do %>
-    <%=link_to committee.name, new_committee_motion_path( committee ) %>
-  <% end %>
-<% end %>
-</ul>
-<% else %>
-<p>
-You may not start motions for any committee at this time.
-</p>
 <% end %>
 
 <div id="membership_requests">
