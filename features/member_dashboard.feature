@@ -25,13 +25,13 @@ Feature: Member dashboards
     | past    | past sponsor    | not see |
     | current | watcher         | see     |
     | past    | watcher         | not see |
-@wip
+
   Scenario Outline: Create a motion
     Given a <period> published, proposed motion exists of sponsored origin to which I have a <relation> relationship
     Then I <create> create motions for the committee through my dashboard
     Examples:
     | period  | relation           | create  |
-    | current | admin              | may     |
+    | current | admin              | may not |
     | current | current voter      | may     |
     | past    | past voter         | may not |
     | current | current nonsponsor | may not |
