@@ -1,0 +1,8 @@
+<%=content_tag :h3, meeting_segment.to_s %>
+
+<% if meeting_segment.minutes_from_start %>
+<%=content_tag :p, "#{pluralize(meeting_segment.minutes_from_start,'minute')} from start" %>
+<% end %>
+
+<%=markdown meeting_segment.content %>
+

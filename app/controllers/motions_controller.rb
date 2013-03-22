@@ -38,7 +38,8 @@ class MotionsController < ApplicationController
     out = if params[:id]
       Motion.find params[:id]
     else
-      committee.motions.build( params[:motion], as: ( permitted_to?(:admin) ? :admin : :default ) )
+      source = ( meeting ? meeting.minute_motions : committee.motions )
+      source.build( params[:motion], as: ( permitted_to?(:admin) ? :admin : :default ) )
     end
     if out.new_record?
       out.period ||= out.committee.periods.active
@@ -117,6 +118,7 @@ class MotionsController < ApplicationController
   # GET /committees/:committee_id/motions/new.xml
   def new
     motion.sponsorships.build unless motion.sponsorships.populate_for( current_user )
+    motion.populate_from_meeting
     respond_to do |format|
       format.html # new.html.erb
       format.xml  { render xml: motion }

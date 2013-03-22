@@ -1,0 +1,10 @@
+<%= field_set_tag( sortable_label(f.object.to_s), class: 'nested-fields' ) do %>
+  <%= f.input :description,
+    hint: 'Describe this segment, recommended if not associated with an agenda item.' %>
+  <%= f.association :meeting_item, collection: f.object.motion.meeting.meeting_items,
+    hint: 'Specify the agenda item with which this segment is associated, if any.' %>
+  <%= f.input :position, as: :hidden %>
+  <%= f.input :content %>
+  <%= link_to_remove_association 'Remove Meeting Segment', f %>
+<% end %>
+

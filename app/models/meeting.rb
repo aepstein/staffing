@@ -26,6 +26,8 @@ class Meeting < ActiveRecord::Base
       proxy_association.owner.committee.meeting_template
     end
   end
+  has_many :meeting_items, through: :meeting_sections,
+    order: 'meeting_sections.position, meeting_items.position'
   has_many :motions, through: :meeting_sections do
     # Allowed motions are in same committee and period as the meeting
     def allowed
@@ -34,6 +36,7 @@ class Meeting < ActiveRecord::Base
         period_id: proxy_association.owner.period_id )
     end
   end
+  has_many :minute_motions, class_name: 'Motion'
 
   accepts_nested_attributes_for :meeting_sections, allow_destroy: true
 

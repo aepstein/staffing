@@ -20,6 +20,14 @@ class MotionReport < AbstractCommitteeReport
       height: ( from - to )
   end
 
+  def motion_content
+    out = ""
+    out += motion.content if motion.content
+    out += motion.motion_meeting_segments.inject("") do |memo, segment|
+      memo << "\n\n#{segment.to_s}\n\n#{segment.content}"
+    end
+  end
+
   def to_pdf
     draw_letterhead
     move_down 12
@@ -40,7 +48,7 @@ class MotionReport < AbstractCommitteeReport
     self.first_line_at = cursor
     font 'Helvetica', size: 12, kerning: true do
       span( 504, position: :right ) do
-        text( ( motion.content? ? motion.content : "" ))
+        text motion_content
       end
       if page_number > 1
         draw_line_numbers 720, cursor

@@ -17,12 +17,14 @@ class Motion < ActiveRecord::Base
   attr_accessible :referring_motion_attributes, as: [ :referrer ]
   attr_accessible :referred_motions_attributes, as: [ :divider ]
   attr_accessible :committee_name, as: :referrer
+  attr_accessible :motion_meeting_segments, as: [ :admin, :default, :amender ]
   attr_readonly :committee_id, :period_id, :position
 
   belongs_to :period, inverse_of: :motions
   belongs_to :committee, inverse_of: :motions
   belongs_to :referring_motion, inverse_of: :referred_motions,
     class_name: 'Motion'
+  belongs_to :meeting, inverse_of: :minute_motions
 
   has_many :peers, through: :committee, source: :motions,
     conditions: Proc.new { { period_id: period_id } }
@@ -75,6 +77,7 @@ class Motion < ActiveRecord::Base
     def build_amendment( amendment_attributes = {} )
       proxy_association.owner.amendment = build( proxy_association.owner.attributes ) do |new_motion|
         new_motion.assign_attributes amendment_attributes, as: :amender
+        new_motion.meeting = proxy_association.owner.meeting
         new_motion.committee = proxy_association.owner.committee
         new_motion.period = proxy_association.owner.period
         new_motion.name = proxy_association.owner.amendable_name
@@ -90,6 +93,33 @@ class Motion < ActiveRecord::Base
       end
     end
   end
+  has_many :motion_meeting_segments, dependent: :destroy, inverse_of: :motion do
+    def populate
+      if referring_motion
+        populate_from_motion referring_motion
+      else
+        proxy_association.owner.meeting.meeting_items.each do |item|
+          build( description: item.name )
+        end
+      end
+    end
+    def populate_from_motion( motion )
+      motion.motion_meeting_segments.each do |segment|
+        build( segment.attributes, as: :amender )
+      end
+    end
+    def comparable_attributes
+      map do |segment|
+        [ segment.position, segment.description, segment.meeting_item_id, segment.content ]
+      end
+    end
+    def amend_from_motion( source )
+      if source.motion_meeting_segments.comparable_attributes != comparable_attributes
+        clear
+        populate_from_motion( source )
+      end
+    end
+  end
 
   scope :ordered, order { position }
   scope :past, lambda { joins(:period).merge Period.unscoped.past }
@@ -99,6 +129,7 @@ class Motion < ActiveRecord::Base
   accepts_nested_attributes_for :attachments, allow_destroy: true
   accepts_nested_attributes_for :sponsorships, allow_destroy: true
   accepts_nested_attributes_for :referred_motions
+  accepts_nested_attributes_for :motion_meeting_segments, allow_destroy: true
 
   delegate :periods, :period_ids, to: :committee
 
@@ -148,6 +179,7 @@ class Motion < ActiveRecord::Base
         motion.referring_motion.amendment = motion
         motion.referring_motion.event_date = motion.event_date
         motion.referring_motion.event_description = motion.event_description
+        motion.referring_motion.motion_meeting_segments.amend_from_motion( motion )
         motion.referring_motion.amend!
       end
     end
@@ -315,6 +347,14 @@ class Motion < ActiveRecord::Base
       candidate.gsub!( /#(\d+)$/ ) { "##{$1.to_i + 1}" }
     end
     candidate
+  end
+
+  def populate_from_meeting
+    return unless meeting
+    self.name ||= "Minutes of #{proxy_association.owner.starts_at.to_s :long}"
+    self.description ||= "Adopt minutes of #{proxy_association.owner}"
+    self.content ||= "RESOLVED the minutes of #{proxy_association.owner} are adopted as provided below."
+    motion_meeting_segments.populate
   end
 
   def to_s(format=nil)

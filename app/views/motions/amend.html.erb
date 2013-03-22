@@ -18,6 +18,9 @@ An amendment must have sponsors.
   <%= form.input :content, hint: 'Provide the amended text of the motion' %>
   <%= cocoon_fields form, :sponsorships, insertable: true %>
   <%= cocoon_fields form, :attachments, insertable: true %>
+  <% if form.object.meeting %>
+    <%= cocoon_fields form, :motion_meeting_segments, insertable: true, ordered_by: :position %>
+  <% end %>
   <%= form.button :wrapped, label: 'Amend', cancel: motion_path( motion ) %>
 <% end %>
 

@@ -17,18 +17,6 @@ Feature: Home page
       |future authority_ro |see    |
       |recent authority    |not see|
       |plain               |not see|
-@wip
-  Scenario Outline: List committees I can vote on
-    Given an authorization scenario of a committee to which I have a <relationship> relationship
-    When I am on the home page
-    Then I should <see> committee in my voting committees
-    Examples:
-      |relationship    |see        |
-      |admin           |not see any|
-      |current voter   |see the    |
-      |current nonvoter|not see any|
-      |recent voter    |not see any|
-      |pending voter   |not see any|
 
   Scenario Outline: List my active membership requests
     Given an authorization scenario of an <condition> membership request to which I have a <relationship> relationship

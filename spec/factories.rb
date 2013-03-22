@@ -187,6 +187,9 @@ FactoryGirl.define do
         association( :period, :schedule => committee.schedule )
       end
     end
+    factory :meeting_motion do
+      meeting { association(:meeting, committee: committee, period: period) }
+    end
     factory :referred_motion do
       referring_motion do |motion|
         FactoryGirl.create( :sponsored_motion,
@@ -200,6 +203,11 @@ FactoryGirl.define do
         motion.sponsorships << [ FactoryGirl.build(:sponsorship, motion: motion) ]
       end
     end
+  end
+
+  factory :motion_meeting_segment do
+    motion { association :meeting_motion }
+    position 1
   end
 
   factory :motion_event do

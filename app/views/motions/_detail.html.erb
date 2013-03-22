@@ -26,6 +26,8 @@
 
 <%=markdown motion.content %>
 
+<%=render partial: 'motions/meeting_segment', collection: motion.motion_meeting_segments.ordered %>
+
 <p><b>Sponsors:</b> <%= motion.users.map(&:name).listify %> </p>
 
 <p>Attachments:</p>
