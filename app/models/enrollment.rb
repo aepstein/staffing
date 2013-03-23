@@ -1,5 +1,5 @@
 class Enrollment < ActiveRecord::Base
-  ROLES = %w( chair vicechair monitor )
+  ROLES = %w( chair vicechair monitor clerk )
   attr_accessible :committee_id, :committee_name, :position_name, :position_id,
     :title, :votes, :requestable, :roles
   attr_readonly :committee_id, :position_id
