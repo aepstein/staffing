@@ -1,5 +1,17 @@
-When /^I create a minute motion for the meeting$/ do
+When /^I create a minute motion for the meeting with (past|current|default) period$/ do |period|
+  @current = if @meeting.period.ends_at < Time.zone.today
+    @past = @meeting.period
+    create(:period, schedule: @meeting.committee.schedule)
+  else
+    @meeting.period
+  end
   visit new_meeting_motion_path( @meeting )
+  if period == 'default'
+  elsif period == 'current'
+    select @current.to_s, from: 'Period'
+  else
+    select @past.to_s, from: 'Period'
+  end
   within_fieldset("Meeting Segments") do
     within_fieldset(@meeting.meeting_items.first.to_s) do
       fill_in "Content", with: "Somebody talked about *something*."
@@ -8,8 +20,13 @@ When /^I create a minute motion for the meeting$/ do
   click_button "Create Motion"
 end
 
-Then /^I should see the new minute motion$/ do
+Then /^I should see the new minute motion with (past|current) period$/ do |period|
   within(".alert") { page.should have_text 'Motion created.' }
+  if period == 'current'
+    page.should have_text "Period: #{@current.to_s}"
+  else
+    page.should have_text "Period: #{@past.to_s}"
+  end
   @motion = Motion.find( URI.parse(current_url).path.match(/[\d]+$/)[0].to_i )
   page.should have_text "Somebody talked about something."
 end

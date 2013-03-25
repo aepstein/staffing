@@ -131,11 +131,13 @@ authorization do
     has_permission_on :motions, to: :own do
       if_attribute sponsorships: { user_id: is { user.id } }
     end
-    has_permission_on :motions, to: :create do
+    has_permission_on :motions, to: :create, join_by: :and do
       if_permitted_to :sponsor, :committee
+      if_attribute period: { starts_at: lte { Time.zone.today }, ends_at: gte { Time.zone.today } }
     end
-    has_permission_on :motions, to: :create do
+    has_permission_on :motions, to: :create, join_by: :and do
       if_permitted_to :clerk, :meeting
+      if_attribute period: { starts_at: lte { Time.zone.today }, ends_at: gte { Time.zone.today } }
     end
     has_permission_on :motions, to: :update, join_by: :and do
       if_permitted_to :own
@@ -144,7 +146,8 @@ authorization do
     end
     has_permission_on :motions, to: :update, join_by: :and do
       if_permitted_to :clerk, :meeting
-      if_attribute status: is { 'started' }
+      if_attribute status: is { 'started' },
+        period: { starts_at: lte { Time.zone.today }, ends_at: gte { Time.zone.today } }
     end
     has_permission_on :motions, to: :watch do
       if_attribute published: true, watchers: does_not_contain { user }
@@ -173,6 +176,11 @@ authorization do
     has_permission_on :motions, to: [ :propose, :show, :update ], join_by: :and do
       if_permitted_to :vicechair, :committee
       if_attribute status: is { 'started' }, referring_motion_id: is_not { nil },
+        period: { starts_at: lte { Time.zone.today }, ends_at: gte { Time.zone.today } }
+    end
+    has_permission_on :motions, to: [ :propose, :show, :update ], join_by: :and do
+      if_permitted_to :vicechair, :committee
+      if_attribute status: is { 'started' }, meeting_id: is_not { nil },
         period: { starts_at: lte { Time.zone.today }, ends_at: gte { Time.zone.today } }
     end
     has_permission_on :motions, to: [ :adopt, :amend, :divide, :merge, :reject,

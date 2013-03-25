@@ -43,7 +43,7 @@ class MotionsController < ApplicationController
     end
     if out.new_record?
       out.committee ||= out.meeting.committee if out.meeting
-      out.period ||= out.committee.periods.active
+      out.period ||= ( ( permitted_to?( :admin ) && meeting ) ? meeting.period : out.committee.periods.active )
     end
     out
   end

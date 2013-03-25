@@ -2,7 +2,7 @@ class MotionMeetingSegment < ActiveRecord::Base
   belongs_to :motion, inverse_of: :motion_meeting_segments
   belongs_to :meeting_item, inverse_of: :motion_meeting_segments
   attr_accessible :position, :content, :description, :minutes_from_start,
-    :meeting_item_id, as: [ :default, :amender ]
+    :meeting_item_id, as: [ :admin, :default, :amender ]
   attr_readonly :motion_id
 
   validates :position, numericality: { integer_only: true, greater_than: 0 },
