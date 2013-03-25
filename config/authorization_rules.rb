@@ -14,7 +14,7 @@ authorization do
       :quizzes, :questions, :membership_requests, :schedules, :users,
       :user_renewal_notices, :sendings ],
       to: [ :create, :update, :show, :index, :staff ]
-    has_permission_on :committees, to: [ :chair, :members, :tents, :vote ]
+    has_permission_on :committees, to: [ :chair, :clerk, :members, :tents, :vote ]
     has_permission_on :memberships, to: [ :staff ]
     has_permission_on :memberships, to: [ :decline ] do
       if_attribute declined_at: is { nil }, starts_at: lte { Time.zone.today },
@@ -51,6 +51,10 @@ authorization do
       if_permitted_to :vote
       if_attribute sponsor: is { true }
     end
+    has_permission_on :committees, to: :clerk, join_by: :and do
+      if_attribute enrollments: {
+        id: is_in { user.enrollments.current.with_roles('clerk').value_of(:id) } }
+    end
     has_permission_on :committees, to: :chair do
       if_attribute enrollments: {
         id: is_in { user.enrollments.current.with_roles('chair').value_of(:id) },
@@ -64,6 +68,9 @@ authorization do
     has_permission_on :committees, to: :enroll, join_by: :or do
       if_attribute enrollments: {
         position_id: is_in { user.memberships.current.value_of(:position_id) } }
+    end
+    has_permission_on :meetings, to: :clerk do
+      if_permitted_to :clerk, :committee
     end
     has_permission_on :meetings, to: :show do
       if_permitted_to :vicechair, :committee
@@ -127,10 +134,17 @@ authorization do
     has_permission_on :motions, to: :create do
       if_permitted_to :sponsor, :committee
     end
+    has_permission_on :motions, to: :create do
+      if_permitted_to :clerk, :meeting
+    end
     has_permission_on :motions, to: :update, join_by: :and do
       if_permitted_to :own
       if_attribute status: is { 'started' },
         period: { starts_at: lte { Time.zone.today }, ends_at: gte { Time.zone.today } }
+    end
+    has_permission_on :motions, to: :update, join_by: :and do
+      if_permitted_to :clerk, :meeting
+      if_attribute status: is { 'started' }
     end
     has_permission_on :motions, to: :watch do
       if_attribute published: true, watchers: does_not_contain { user }

@@ -27,6 +27,13 @@
   <b>Audio?</b> <%= meeting.audio.blank? ? 'No' : link_to( 'Yes', "#{root_path}#{meeting.audio.url}" )  %>
 </p>
 
+<%=content_tag :h3, 'Minutes' %>
+
+<%=render partial: 'motions/motions', object: meeting.minute_motions,
+  locals: { committee: meeting.committee, period: meeting.period } %>
+
+<%=link_to( new_meeting_motion_path(meeting), 'Add Minutes' ) if permitted_to?( :create, meeting.minute_motions.build ) %>
+
 <p>
   <b>Editable minutes?</b> <%= meeting.editable_minutes.blank? ? 'No' : link_to( 'Yes', "#{root_path}#{meeting.editable_minutes.url}" )  %>
 </p>

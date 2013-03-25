@@ -56,7 +56,7 @@ Staffing::Application.routes.draw do
     collection do
       get :past, :current, :future
     end
-    resources :motions, only: [ :index ] do
+    resources :motions, only: [ :index, :new, :create ] do
       collection do
         get :allowed
       end
