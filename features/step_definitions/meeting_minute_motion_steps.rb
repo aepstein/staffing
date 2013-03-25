@@ -47,6 +47,7 @@ Then /^I should see the updated minute motion$/ do
 end
 
 Then /^I may( not)? create minute motions for the meeting$/ do |negate|
+  create(:period, schedule: @meeting.committee.schedule) if @meeting.period.ends_at < Time.zone.today
   visit meeting_url( @meeting )
   if negate.blank?
     page.should have_text "Add Minutes"

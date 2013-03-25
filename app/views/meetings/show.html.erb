@@ -32,7 +32,7 @@
 <%=render partial: 'motions/motions', object: meeting.minute_motions,
   locals: { committee: meeting.committee, period: meeting.period } %>
 
-<%=link_to( 'Add Minutes', new_meeting_motion_path(meeting) ) if permitted_to?( :create, meeting.minute_motions.build ) %>
+<%=link_to( 'Add Minutes', new_meeting_motion_path(meeting) ) if permitted_to?( :clerk, meeting ) %>
 
 <p>
   <b>Editable minutes?</b> <%= meeting.editable_minutes.blank? ? 'No' : link_to( 'Yes', "#{root_path}#{meeting.editable_minutes.url}" )  %>
