@@ -105,7 +105,7 @@ Then /^I should see confirmation of the event on the motion$/ do
   end
 end
 
-Given /^(?:an? )(current|future|past) (un)?published, (\w+) motion exists of (sponsored|referred) origin to which I have a (?:(current|past|future) )?(admin|staff|chair|vicechair|voter|sponsor|nonsponsor|nonvoter|watcher|plain) relationship$/ do |motion_tense, publication, status, origin, tense, relationship|
+Given /^(?:an? )(current|future|past) (un)?published, (\w+) motion exists of (sponsored|referred|meeting) origin to which I have a (?:(current|past|future) )?(admin|staff|chair|vicechair|voter|sponsor|nonsponsor|clerk|nonvoter|watcher|plain) relationship$/ do |motion_tense, publication, status, origin, tense, relationship|
   Motion.delete_all
   committee_relationship = case relationship
   when 'admin', 'staff', 'watcher', 'plain'

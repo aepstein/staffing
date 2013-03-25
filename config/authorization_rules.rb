@@ -144,7 +144,7 @@ authorization do
       if_attribute status: is { 'started' },
         period: { starts_at: lte { Time.zone.today }, ends_at: gte { Time.zone.today } }
     end
-    has_permission_on :motions, to: :update, join_by: :and do
+    has_permission_on :motions, to: [ :update, :propose ], join_by: :and do
       if_permitted_to :clerk, :meeting
       if_attribute status: is { 'started' },
         period: { starts_at: lte { Time.zone.today }, ends_at: gte { Time.zone.today } }
