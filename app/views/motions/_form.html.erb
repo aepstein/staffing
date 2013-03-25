@@ -12,7 +12,11 @@
   <%= cocoon_fields form, :sponsorships, insertable: true %>
   <%= cocoon_fields form, :attachments, insertable: true %>
   <% if form.object.meeting %>
-    <%= cocoon_fields form, :motion_meeting_segments, insertable: true, ordered_by: :position %>
+    <%= cocoon_fields form, :motion_meeting_segments, label: 'Meeting Segments', insertable: true, ordered_by: :position %>
   <% end %>
+  <% if form.object.meeting %>
+  <%= form.button :wrapped, cancel: meeting_path(form.object.meeting) %>
+  <% else %>
   <%= form.button :wrapped, cancel: committee_motions_path(form.object.committee) %>
+  <% end %>
 

@@ -1,6 +1,7 @@
 class MeetingItem < ActiveRecord::Base
   belongs_to :meeting_section, inverse_of: :meeting_items
   belongs_to :motion, inverse_of: :meeting_items
+  has_many :motion_meeting_segments, inverse_of: :meeting_item, dependent: :nullify
   has_many :attachments, as: :attachable, dependent: :destroy
   attr_accessible :description, :duration, :name, :position, :motion_id,
     :motion_name, :_destroy, :attachments_attributes, :named,

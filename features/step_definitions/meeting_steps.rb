@@ -1,4 +1,4 @@
-Given /^(?:an? )(current|recent|pending|future|past) (un)?published meeting exists of a committee to which I have a (?:(current|recent|pending) )?(admin|staff|chair|vicechair|voter|nonvoter|plain) relationship$/ do |meeting_tense, unpub, member_tense, relationship|
+Given /^(?:an? )(current|recent|pending|future|past) (un)?published meeting exists of a committee to which I have a (?:(current|recent|pending) )?(admin|staff|chair|vicechair|voter|clerk|nonvoter|plain) relationship$/ do |meeting_tense, unpub, member_tense, relationship|
   committee_relationship = case relationship
   when 'admin', 'staff', 'plain'
     nil

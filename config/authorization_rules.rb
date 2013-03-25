@@ -155,6 +155,7 @@ authorization do
     has_permission_on :motions, to: :show do
       if_attribute published: true
       if_attribute sponsorships: { user_id: is { user.id } }
+      if_permitted_to :clerk, :meeting
     end
     has_permission_on :motions, to: [ :propose, :withdraw ], join_by: :and do
       if_permitted_to :vote, :committee

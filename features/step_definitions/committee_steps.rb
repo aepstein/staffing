@@ -1,4 +1,4 @@
-Given /^I have a (current|recent|pending|past|future) (chair|vicechair|voter|nonvoter) relationship to the committee$/ do |tense, relationship|
+Given /^I have a (current|recent|pending|past|future) (chair|vicechair|voter|clerk|nonvoter) relationship to the committee$/ do |tense, relationship|
   position = create :position
   create "#{tense}_membership".to_sym, position: position, user: @current_user
   case relationship
@@ -6,6 +6,8 @@ Given /^I have a (current|recent|pending|past|future) (chair|vicechair|voter|non
     create :enrollment, roles: [ relationship ], committee: @committee, position: position
   when 'voter'
     create :enrollment, votes: 1, committee: @committee, position: position
+  when 'clerk'
+    create :enrollment, votes: 0, roles: [ relationship ], committee: @committee, position: position
   when 'nonvoter'
     create :enrollment, votes: 0, committee: @committee, position: position
   end

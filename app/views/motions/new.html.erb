@@ -1,6 +1,10 @@
-<%=content_tag :h1, "New motion for #{motion.committee}" %>
+<% if meeting %>
+  <%=content_tag :h1, "New minute motion for #{meeting}"  %>
+<% else %>
+  <%=content_tag :h1, "New motion for #{context}" %>
+<% end %>
 
-<%= simple_form_for( motion, url: committee_motions_path(motion.committee) ) do |f| %>
+<%= simple_form_for( motion, url: polymorphic_path([ context, :motions ]) ) do |f| %>
   <%= render partial: 'form', object: f %>
 <% end %>
 

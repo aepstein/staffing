@@ -17,7 +17,7 @@ class Motion < ActiveRecord::Base
   attr_accessible :referring_motion_attributes, as: [ :referrer ]
   attr_accessible :referred_motions_attributes, as: [ :divider ]
   attr_accessible :committee_name, as: :referrer
-  attr_accessible :motion_meeting_segments, as: [ :admin, :default, :amender ]
+  attr_accessible :motion_meeting_segments_attributes, as: [ :admin, :default, :amender ]
   attr_readonly :committee_id, :period_id, :position
 
   belongs_to :period, inverse_of: :motions
@@ -95,11 +95,15 @@ class Motion < ActiveRecord::Base
   end
   has_many :motion_meeting_segments, dependent: :destroy, inverse_of: :motion do
     def populate
-      if referring_motion
-        populate_from_motion referring_motion
+      if proxy_association.owner.referring_motion
+        populate_from_motion proxy_association.owner.referring_motion
       else
+        i = 0
         proxy_association.owner.meeting.meeting_items.each do |item|
-          build( description: item.name )
+          i +=  1
+          build( position: i ) do |segment|
+            segment.meeting_item = item
+          end
         end
       end
     end
@@ -351,9 +355,9 @@ class Motion < ActiveRecord::Base
 
   def populate_from_meeting
     return unless meeting
-    self.name ||= "Minutes of #{proxy_association.owner.starts_at.to_s :long}"
-    self.description ||= "Adopt minutes of #{proxy_association.owner}"
-    self.content ||= "RESOLVED the minutes of #{proxy_association.owner} are adopted as provided below."
+    self.name ||= "Minutes of #{meeting.starts_at.to_s :long}"
+    self.description ||= "Adopt minutes of #{meeting}"
+    self.content ||= "RESOLVED the minutes of #{meeting} are adopted as provided below."
     motion_meeting_segments.populate
   end
 
