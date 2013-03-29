@@ -40,6 +40,9 @@ class Meeting < ActiveRecord::Base
 
   accepts_nested_attributes_for :meeting_sections, allow_destroy: true
 
+  delegate :effective_contact_name_and_email, :effective_contact_email,
+    :effective_contact_name, :users_for to: :committee
+
   mount_uploader :audio, MeetingAudioUploader
   mount_uploader :editable_minutes, MeetingEditableMinutesUploader
   mount_uploader :published_minutes, MeetingPublishableMinutesUploader

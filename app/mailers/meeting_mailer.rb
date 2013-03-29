@@ -14,6 +14,27 @@ class MeetingMailer < ActionMailer::Base
       subject: "#{meeting.committee} Meeting on #{meeting.starts_at.to_date.to_s :long_ordinal}" )
   end
 
+  def minutes_notice( meeting, options = {})
+    self.meeting = meeting
+    mail( to: clerks, from: meeting.effective_contact_name_and_email,
+      subject: "Minutes Needed for #{meeting.committee} Meeting on #{meeting.starts_at.to_date.to_s :long_ordinal}" )
+  end
+
+  def overdue_minutes_notice( meeting, options = {})
+    self.meeting = meeting
+    mail( to: clerks, cc: vicechairs,
+      from: meeting.effective_contact_name_and_email,
+      subject: "Minutes Overdue for #{meeting.committee} Meeting on #{meeting.starts_at.to_date.to_s :long_ordinal}" )
+  end
+
+  def clerks
+    @clerks ||= meeting.users_for(:clerks)
+  end
+
+  def vicechairs
+    @vicechairs ||= meeting.users_for(:vicechairs)
+  end
+
   def add_attachments
     enclosures = meeting.attachments.values.flatten.
       reject { |attachment| linked_attachments.include?(attachment) }

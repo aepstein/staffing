@@ -46,6 +46,12 @@ class Committee < ActiveRecord::Base
         ( user.portrait? ? user.portrait.small.path : nil ) ] }
     end
   end
+  has_many :users, through: :memberships do
+    def current
+      scoped.where { memberships.starts_at.lte( Time.zone.today ) &&
+        memberships.ends_at.gte( Time.zone.today ) }
+    end
+  end
   has_many :requestable_enrollments, class_name: 'Enrollment',
     conditions: { requestable: true }
   has_many :requestable_positions, through: :requestable_enrollments,
@@ -55,6 +61,15 @@ class Committee < ActiveRecord::Base
 
   validates :name, presence: true, uniqueness: true
   validates :schedule, presence: true
+
+  def users_for( population, options = {} )
+    case population
+    when :watchers
+      watchers
+    else
+      User.where { |u| u.id.in( memberships.current.with_roles(population.to_s.singularize).select { user_id } ) }
+    end
+  end
 
   def contact_attributes
     return Brand.contact_attributes unless brand

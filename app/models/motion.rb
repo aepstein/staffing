@@ -304,14 +304,8 @@ class Motion < ActiveRecord::Base
     users = case population
     when :sponsors
       self.users
-    when :watchers
-      committee.watchers
-    when :monitors
-      User.where { |u| u.id.in( committee.memberships.current.with_roles('monitor').select { user_id } ) }
-    when :vicechairs
-      User.where { |u| u.id.in( committee.memberships.current.with_roles('vicechair').select { user_id } ) }
-    when :chairs
-      User.where { |u| u.id.in( committee.memberships.current.with_roles('chair').select { user_id } ) }
+    else
+      committee.users_for population
     end
     if referring_motion && include_referrers
       users += referring_motion.users_for( population, include_referrers: include_referrers )
