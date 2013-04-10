@@ -9,6 +9,9 @@
   <%= form.association :period, disabled: true,
     hint: "You may not change the period of this motion." %>
   <% end %>
+  <% if permitted_to?(:admin, form.object) %>
+  <%= form.input :comment_until, hint: "Specify to set a comment period from now until specified deadline." %>
+  <% end %>
   <%= cocoon_fields form, :sponsorships, insertable: true %>
   <%= cocoon_fields form, :attachments, insertable: true %>
   <% if form.object.meeting %>
