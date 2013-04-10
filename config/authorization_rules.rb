@@ -9,9 +9,9 @@ authorization do
     includes :staff
   end
   role :staff do
-    has_permission_on [ :authorities, :brands, :committees,
-      :meetings, :meeting_templates, :memberships, :motions, :positions,
-      :quizzes, :questions, :membership_requests, :schedules, :users,
+    has_permission_on [ :attachments, :authorities, :brands, :committees,
+      :meetings, :meeting_templates, :memberships, :motions, :motion_comments,
+      :positions, :quizzes, :questions, :membership_requests, :schedules, :users,
       :user_renewal_notices, :sendings ],
       to: [ :create, :update, :show, :index, :staff ]
     has_permission_on :committees, to: [ :chair, :clerk, :members, :tents, :vote ]
