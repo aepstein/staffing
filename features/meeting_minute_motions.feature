@@ -15,7 +15,7 @@ Feature: Manage meeting minute motions
       |meeting |relation     |choice |period |
       |current |staff        |current|current|
       |past    |staff        |past   |past   |
-      |past    |staff        |current|current |
+      |past    |staff        |current|current|
       |past    |current clerk|default|current|
       |current |current clerk|default|current|
 

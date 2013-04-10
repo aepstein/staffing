@@ -20,10 +20,10 @@ Scenario Outline: Access control existing comment
   |commenter   |still    |may |may    |may    |may not|
   |plain       |still    |may |may    |may not|may not|
 
-@wip @javascript
+@javascript
 Scenario: Create/edit a motion comment
   When I create a motion comment
   Then I should see the new motion comment
-  When I update the motion
+  When I update the motion comment
   Then I should see the edited motion comment
 

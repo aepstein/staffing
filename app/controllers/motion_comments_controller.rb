@@ -42,6 +42,7 @@ class MotionCommentsController < ApplicationController
   # PUT /motion_comments/1
   # PUT /motion_comments/1.xml
   def update
+    motion_comment.assign_attributes params[:motion_comment]
     respond_to do |format|
       if motion_comment.save
         format.html { redirect_to motion_comment.motion, flash: { success: 'Motion comment updated.' } }
@@ -68,7 +69,7 @@ class MotionCommentsController < ApplicationController
   private
 
   def reciprocate_attachments
-    motion_comment.attachments.each { |attachment| attachment.attachable = item }
+    motion_comment.attachments.each { |attachment| attachment.attachable = motion_comment }
   end
 end
 

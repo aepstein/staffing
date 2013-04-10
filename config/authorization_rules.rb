@@ -38,7 +38,7 @@ authorization do
   end
   role :user do
     has_permission_on [ :authorities, :brands, :committees, :meeting_templates,
-      :memberships, :positions, :schedules ],
+      :memberships, :motion_comments, :positions, :schedules ],
       to: [ :show, :index ]
     has_permission_on [ :motions, :membership_requests ], to: :index
     has_permission_on :attachments, to: :show do

@@ -66,3 +66,40 @@ Then /^I may( not)? see the motion comment$/ do |negate|
   end
 end
 
+
+When /^I create a motion comment$/ do
+  step %{a current published, proposed motion exists of sponsored origin to which I have a plain relationship}
+  step %{the motion is still open for comment}
+  visit new_motion_motion_comment_path( @motion )
+  fill_in "Comment", with: "This is my comment."
+  click_link "Add Attachment"
+  within_fieldset("New Attachment") do
+    attach_file 'Attachment document', File.expand_path('spec/assets/empl_ids.csv')
+    fill_in 'Attachment description', with: 'Sample employee ids'
+  end
+  click_button "Create"
+end
+
+Then /^I should see the new motion comment$/ do
+  within( ".alert" ) { page.should have_text( "Motion comment created." ) }
+  @motion_comment = @motion.motion_comments.last
+  within("#motion-comment-#{@motion_comment.id}") do
+    page.should have_text "This is my comment."
+  end
+end
+
+When /^I update the motion comment$/ do
+  visit edit_motion_comment_path( @motion_comment )
+  fill_in "Comment", with: "Some other *comment*."
+  click_link "Remove Attachment"
+  click_button "Update"
+end
+
+Then /^I should see the edited motion comment$/ do
+  within( ".alert" ) { page.should have_text( "Motion comment updated." ) }
+  visit motion_comment_path( @motion_comment )
+  page.should have_text "Some other comment."
+  @motion_comment.reload
+  @motion_comment.attachments.count.should eql 0
+end
+
