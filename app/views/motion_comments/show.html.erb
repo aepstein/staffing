@@ -1,0 +1,7 @@
+<%=content_tag :div, id: "motion-comment-#{motion_comment.id}" do %>
+  <p><b>User:</b> <%= motion_comment.user %></p>
+  <p><b>Comment:</b></p>
+  <%=markdown motion_comment.comment%>
+  <%=render partial: 'attachments/attachments', object: motion_comment.attachments %>
+<% end %>
+

@@ -1,0 +1,6 @@
+<h1>Editing comment for <%=h motion_comment.motion %></h1>
+
+<%= simple_form_for( motion_comment, html: { multipart: true } ) do |f| %>
+  <%= render partial: 'form', object: f %>
+<% end %>
+

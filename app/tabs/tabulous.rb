@@ -13,7 +13,6 @@ Tabulous.setup do |config|
       [    :quizzes_subtab           ,'Quizzes'          ,quizzes_path            ,true                ,true        ],
       [    :schedules_subtab         ,'Schedules'        ,schedules_path          ,true                ,true        ],
       [    :meetings_subtab          ,'Meetings'         ,meetings_path           ,true                ,true        ],
-      [    :motions_subtab           ,'Motions'          ,motions_path            ,true                ,true        ],
       [    :motions_subtab           ,'Motions'          ,motions_path            ,true                ,true        ]
     ]
     if current_user
@@ -44,6 +43,7 @@ Tabulous.setup do |config|
       [ :membership_requests,:all_actions,:admin_tab                   ],
       [ :memberships        ,:all_actions,:memberships_tab             ],
       [ :motions            ,:all_actions,:motions_subtab              ],
+      [ :motion_comments    ,:all_actions,:motions_subtab              ],
       [ :positions          ,:all_actions,:positions_subtab            ],
       [ :qualifications     ,:all_actions,:qualifications_tab          ],
       [ :questions          ,:all_actions,:questions_subtab            ],

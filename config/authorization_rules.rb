@@ -1,8 +1,8 @@
 authorization do
   role :admin do
     has_permission_on [ :authorities, :brands, :committees,
-      :meetings, :meeting_templates, :memberships, :motions, :positions,
-      :quizzes, :questions, :membership_requests, :schedules, :users,
+      :meetings, :meeting_templates, :memberships, :motions, :motion_comments,
+      :positions, :quizzes, :questions, :membership_requests, :schedules, :users,
       :user_renewal_notices, :sendings ],
       to: [ :manage ]
 
@@ -25,7 +25,9 @@ authorization do
       if_attribute period: { ends_at: gte { Time.zone.today } }
     end
     has_permission_on :motions, to: [ :admin, :adopt, :amend, :divide,
-      :implement, :merge, :propose, :refer, :reject, :restart, :withdraw ]
+      :implement, :merge, :propose, :refer, :reject, :restart, :withdraw,
+      :comment ]
+    has_permission_on :motion_comments, to: [ :update ]
     has_permission_on :users, to: [ :resume, :staff, :tent ]
     has_permission_on :membership_requests, to: [ :reject, :reactivate ]
 
@@ -201,6 +203,16 @@ authorization do
       if_permitted_to :chair, :committee
       if_attribute status: is { 'adopted' },
         period: { starts_at: lte { Time.zone.today }, ends_at: gte { Time.zone.today } }
+    end
+    has_permission_on :motions, to: [ :comment ] do
+      if_attribute comment_until: gt { Time.zone.now }
+    end
+    has_permission_on :motion_comments, to: :create do
+      if_permitted_to :comment, :motion
+    end
+    has_permission_on :motion_comments, to: :update, join_by: :and do
+      if_permitted_to :comment, :motion
+      if_attribute user_id: is { user.id }
     end
     has_permission_on :users, to: :resume do
       if_attribute id: is { user.id }

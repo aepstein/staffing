@@ -1,0 +1,8 @@
+<%=content_tag :tr, id: "motion-comment-#{motion_comment.id}" do %>
+  <%=content_tag :td, motion_comment.user %>
+  <%=content_tag( :td, ( motion_comment.comment? ? motion_comment.comment[0..255] : "" )  ) %>
+  <%=content_tag :td, link_to( "Show", motion_comment ) %>
+  <td><%= link_to( "Edit", edit_motion_comment_path( motion_comment )) if permitted_to?( :update, motion_comment ) %></td>
+  <td><%= link_to( 'Destroy', motion_comment, data: { confirm: 'Are you sure?' }, method: :delete ) if permitted_to? :destroy, motion_comment %></td>
+<% end %>
+

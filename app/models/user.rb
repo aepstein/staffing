@@ -111,6 +111,7 @@ class User < ActiveRecord::Base
   has_many :declined_memberships, class_name: 'Membership',
     foreign_key: :declined_by_user_id, inverse_of: :declined_by_user,
     dependent: :nullify
+  has_many :motion_comments, inverse_of: :user, dependent: :destroy
 
   scope :ordered, lambda { order { [ last_name, first_name, middle_name ] } }
   scope :assignable_to, lambda { |position|

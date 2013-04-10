@@ -1,0 +1,6 @@
+<%= render "shared/error_messages", target: form.object %>
+
+<%= form.input :comment, hint: "Provide the text of your comment." %>
+<%= cocoon_fields form, :attachments, insertable: true %>
+<%= form.button :wrapped, cancel: motion_path( form.object.motion ) %>
+

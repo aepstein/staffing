@@ -96,7 +96,9 @@ Staffing::Application.routes.draw do
         get :past, :current, :future
       end
     end
+    resources :motion_comments, only: [ :new, :create ]
   end
+  resources :motion_comments, except: [ :new, :create, :index ]
   resources :positions do
     resources :memberships, only: [ :index, :new, :create ] do
       collection do

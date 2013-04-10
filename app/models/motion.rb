@@ -13,7 +13,7 @@ class Motion < ActiveRecord::Base
     :event_date, :event_description,
     as: [ :admin, :default, :divider, :referrer, :amender ]
   attr_accessible :event_date, :event_description, as: [ :eventor, :merger ]
-  attr_accessible :period_id, as: [ :admin ]
+  attr_accessible :period_id, :comment_until, as: [ :admin ]
   attr_accessible :referring_motion_attributes, as: [ :referrer ]
   attr_accessible :referred_motions_attributes, as: [ :divider ]
   attr_accessible :committee_name, as: :referrer
@@ -124,6 +124,7 @@ class Motion < ActiveRecord::Base
       end
     end
   end
+  has_many :motion_comments, inverse_of: :motion, dependent: :destroy
 
   scope :ordered, order { position }
   scope :past, lambda { joins(:period).merge Period.unscoped.past }
@@ -369,6 +370,13 @@ class Motion < ActiveRecord::Base
   end
 
   protected
+
+  def comment_until_must_be_in_period
+    return unless comment_until && period
+    unless period.starts_at < comment_until && period.ends_at > comment_until
+      errors.add :comment_until, 'must be in period'
+    end
+  end
 
   def period_must_be_in_committee_schedule
     return unless period && committee

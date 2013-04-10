@@ -1,0 +1,16 @@
+<% if motion_comments.any? %>
+<%=content_tag :table, id: "motion-comments" do %>
+  <%=content_tag :thead do %>
+    <%=content_tag :tr do %>
+      <%=content_tag :th, "User" %>
+      <%=content_tag :th, "Abstract" %>
+    <% end %>
+  <% end %>
+  <%=content_tag :tbody do %>
+    <%=render partial: 'motion_comments/motion_comment', collection: motion_comments %>
+  <% end %>
+<% end %>
+<% else %>
+<%=content_tag :p, "No comments." %>
+<% end %>
+

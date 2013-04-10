@@ -15,6 +15,10 @@
 </p>
 
 <p>
+  <b>Comments allowed until:</b> <%= motion.comment_until? ? motion.comment_until.to_s( :us_long ) : 'No comment period.' %>
+</p>
+
+<p>
   <b>Description:</b>
 </p>
 
@@ -33,4 +37,13 @@
 <p>Attachments:</p>
 
 <%= render partial: 'attachments/attachments', object: motion.attachments %>
+
+
+<p>Comments:</p>
+
+<%=render partial: 'motion_comments/motion_comments', object: motion.motion_comments %>
+
+<% if permitted_to? :comment, motion %>
+<%=content_tag :p, link_to( 'Add comment', new_motion_motion_comment_path( motion ) ) %>
+<% end %>
 

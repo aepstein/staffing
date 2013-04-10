@@ -205,6 +205,12 @@ FactoryGirl.define do
     end
   end
 
+  factory :motion_comment do
+    association :motion, status: 'proposed'
+    association :user
+    comment 'I wish to comment.'
+  end
+
   factory :motion_meeting_segment do
     motion { association :meeting_motion }
     position 1
