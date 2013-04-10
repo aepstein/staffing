@@ -43,6 +43,7 @@ authorization do
     has_permission_on [ :motions, :membership_requests ], to: :index
     has_permission_on :attachments, to: :show do
       if_permitted_to :show, :attachable
+      if_attribute attachable_type: 'MotionComment'
     end
     has_permission_on :committees, to: :vote do
       if_attribute enrollments: {
