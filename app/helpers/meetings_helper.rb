@@ -44,6 +44,7 @@ module MeetingsHelper
     format = options[:format] || :html
     absolute = options[:absolute] || false
     index = meeting.attachment_index( attachment )
+    attachment_description = attachment.instance_of?(Motion) ? attachment.to_s(:numbered) : attachment.to_s
     case format
     when :html
       anchor = content_tag :a, '', name: "footnote-#{index}"
@@ -58,9 +59,9 @@ module MeetingsHelper
         attached_file = meeting.attachment_filename(attachment)
         link_to attached_file, attachments[attached_file].url
       end
-      content_tag :li, "#{anchor}#{attachment.description} [#{link}]".html_safe, id: "footnote-#{index}"
+      content_tag :li, "#{anchor}#{attachment_description} [#{link}]".html_safe, id: "footnote-#{index}"
     else
-      "#{index}. #{attachment.description} [#{attachment_url(attachment)}]"
+      "#{index}. #{attachment_description} [#{attachment_url(attachment)}]"
     end
   end
 
