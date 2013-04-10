@@ -7,7 +7,7 @@ class AttachmentsController < ApplicationController
   # GET /users/1.xml
   def show
     send_file attachment.document.path, disposition: 'attachment',
-      filename: "#{attachment.document.to_s :file}"
+      filename: "#{attachment.to_s :file}"
   end
 
 end
