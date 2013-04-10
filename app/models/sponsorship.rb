@@ -1,7 +1,8 @@
 class Sponsorship < ActiveRecord::Base
   include UserNameLookup
 
-  attr_accessible :motion_id, :user_id, :user_name, :_destroy, as: [ :admin, :default ]
+  attr_accessible :motion_id, :user_id, :user_name, :on_behalf_of, :_destroy,
+    as: [ :admin, :default ]
   attr_readonly :motion_id, :user_id
 
   belongs_to :motion, inverse_of: :sponsorships
@@ -15,8 +16,14 @@ class Sponsorship < ActiveRecord::Base
   def to_s
     if new_record?
       "New Sponsorship"
+    elsif user
+      if on_behalf_of?
+        "#{user} on behalf of #{on_behalf_of}"
+      else
+        user.to_s
+      end
     else
-      user ? user.to_s : super
+      super
     end
   end
 
