@@ -7,7 +7,7 @@ class MotionReport < AbstractCommitteeReport
   end
 
   def sponsors
-    @sponsors ||= motion.sponsorships.subtree.to_a
+    @sponsors ||= motion.sponsorships.path.to_a
   end
 
   def last_event

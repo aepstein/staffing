@@ -30,8 +30,8 @@ class Motion < ActiveRecord::Base
     conditions: Proc.new { { period_id: period_id } }
   has_many :meeting_items, inverse_of: :motion, dependent: :destroy
   has_many :sponsorships, inverse_of: :motion, dependent: :destroy do
-    def subtree
-      Sponsorship.where { |s| s.motion_id.in( proxy_association.owner.subtree.select { id } ) }
+    def path
+      Sponsorship.where { |s| s.motion_id.in( proxy_association.owner.path.select { id } ) }
     end
     # Build and return a sponsorship if provided user is allowed
     # Otherwise, return nil
