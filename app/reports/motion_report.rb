@@ -56,7 +56,7 @@ class MotionReport < AbstractCommitteeReport
           draw_line_numbers first_line_at, 0
         end
         if page_number > 2
-          repeat( 2..(page - 1) ) do
+          repeat( 2..(page_number - 1) ) do
             draw_line_numbers 720, 0
           end
         end
