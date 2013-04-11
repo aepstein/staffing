@@ -1,12 +1,13 @@
 class MeetingMailer < ActionMailer::Base
-  attr_accessor :meeting
-  helper_method :meeting, :linked_attachments
+  attr_accessor :meeting, :note
+  helper_method :meeting, :note, :linked_attachments
   helper MeetingsHelper
 
   THRESHOLD = 2.megabytes
 
   def publish_notice( meeting, options = {})
     self.meeting = meeting
+    self.note = options.delete :note
     to = options.delete :to
     from = options.delete :from
     add_attachments

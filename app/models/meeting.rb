@@ -6,7 +6,7 @@ class Meeting < ActiveRecord::Base
   attr_accessible :publish_to, as: :publisher
   attr_readonly :period_id, :committee_id
 
-  attr_accessor :publish_to, :publish_from
+  attr_accessor :publish_to, :publish_from, :publish_note
 
   belongs_to :committee, inverse_of: :meetings
   belongs_to :period, inverse_of: :meetings
@@ -89,7 +89,8 @@ class Meeting < ActiveRecord::Base
 
   def publish
     if publish_to
-      MeetingMailer.publish_notice( self, to: publish_to, from: publish_from ).deliver
+      MeetingMailer.publish_notice( self, to: publish_to, from: publish_from,
+        note: publish_note ).deliver
       true
     else
       errors.add :publish_to, 'may not be blank'
