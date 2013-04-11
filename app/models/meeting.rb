@@ -3,7 +3,7 @@ class Meeting < ActiveRecord::Base
     :published_minutes, :starts_at, :duration, :location, :published,
     :meeting_sections_attributes, as: [ :default, :staff ]
   attr_accessible :period_id, as: :staff
-  attr_accessible :publish_to, as: :publisher
+  attr_accessible :publish_to, :publish_note, as: :publisher
   attr_readonly :period_id, :committee_id
 
   attr_accessor :publish_to, :publish_from, :publish_note
