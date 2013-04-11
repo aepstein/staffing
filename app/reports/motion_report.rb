@@ -7,7 +7,7 @@ class MotionReport < AbstractCommitteeReport
   end
 
   def sponsors
-    @sponsors ||= motion.users_for(:sponsors, include_referrers: true)
+    @sponsors ||= motion.sponsorships.subtree.to_a
   end
 
   def last_event
