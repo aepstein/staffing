@@ -103,3 +103,26 @@ Then /^I should see the edited motion comment$/ do
   @motion_comment.attachments.count.should eql 0
 end
 
+Given /^the motion has( no)? comments$/ do |negate|
+  if negate.blank?
+    @motion.update_column( :comment_until, Time.zone.now + 1.week )
+    create(:motion_comment, motion: @motion)
+  end
+end
+
+When /^I download the comments pdf report for the motion$/ do
+  VectorUploader.enable_processing = true
+  create :brand
+  VectorUploader.enable_processing = false
+  visit motion_motion_comments_url( @motion, format: :pdf )
+end
+
+Then /^I should( not)? see the comments report$/ do |negate|
+#  save_and_open_page
+  if negate.blank?
+    page.response_headers["Content-Disposition"].should eql "inline; filename=\"comments-#{@motion.to_s :file}.pdf\""
+  else
+    within(".alert") { page.should have_text 'No comments provided for the motion.' }
+  end
+end
+

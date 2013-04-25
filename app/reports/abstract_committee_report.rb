@@ -49,5 +49,11 @@ class AbstractCommitteeReport < Prawn::Document
     text_box content, size: 9, at: [LETTERHEAD_TEXT_START + 18, letterhead_contact_offset]
     self.letterhead_contact_offset -= 10
   end
+
+  def draw_line_numbers( from, to )
+    lines = ( ( from - to + 12 ) / 12 ).floor
+    text_box "#{(1..lines).to_a.join("\n")}", at: [ 0, from ], width: 18,
+      height: ( from - to )
+  end
 end
 
