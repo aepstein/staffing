@@ -79,7 +79,7 @@ class Meeting < ActiveRecord::Base
 
   def attachment_filename( attachment )
     base = "#{attachment_index(attachment)}_#{attachment.to_s :file}"
-    return "#{base}.pdf" if attachment.instance_of?( Motion )
+    return "#{base}.pdf" if attachment.instance_of?( Motion ) || attachment.instance_of?( MotionCommentReport )
     base
   end
 

@@ -44,16 +44,27 @@ module MeetingsHelper
     format = options[:format] || :html
     absolute = options[:absolute] || false
     index = meeting.attachment_index( attachment )
-    attachment_description = attachment.instance_of?(Motion) ? attachment.to_s(:numbered) : attachment.to_s
+    attachment_description = if attachment.instance_of?(Motion)
+      attachment.to_s(:numbered)
+    elsif attachment.instance_of?(MotionCommentReport)
+      "Comments for #{attachment.motion.to_s(:numbered)}"
+    else
+      attachment.to_s
+    end
     case format
     when :html
       anchor = content_tag :a, '', name: "footnote-#{index}"
       link = if linked_attachments.nil? || linked_attachments.include?( attachment )
-        link_options = attachment.instance_of?( Motion ) ? { format: :pdf } : { }
-        if absolute
-          link_to polymorphic_url(attachment, link_options), polymorphic_url(attachment, link_options)
+        link_path = if attachment.instance_of?( MotionCommentReport )
+          [ attachment.motion, :motion_comments ]
         else
-          link_to polymorphic_path(attachment, link_options), polymorphic_path(attachment, link_options)
+          attachment
+        end
+        link_options = attachment.instance_of?( Attachment ) ? { } : { format: :pdf }
+        if absolute
+          link_to polymorphic_url(link_path, link_options), polymorphic_url(link_path, link_options)
+        else
+          link_to polymorphic_path(link_path, link_options), polymorphic_path(link_path, link_options)
         end
       else
         attached_file = meeting.attachment_filename(attachment)

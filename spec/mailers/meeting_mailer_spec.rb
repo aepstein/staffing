@@ -31,6 +31,41 @@ describe MeetingMailer do
       text_part_should_match /1. #{attachment.description}/
     end
 
+    context "motion item" do
+      before(:each) do
+        VectorUploader.enable_processing = true
+        create :brand
+        VectorUploader.enable_processing = false
+      end
+      let(:motion) { item.motion }
+      let(:attachment) { create :attachment, attachable: motion }
+      let(:item) { create( :motion_meeting_item ) }
+
+      it "should display motion and attachment for motion" do
+        html_part_should_match /#{motion.to_s :numbered}/
+        text_part_should_match /1. #{motion.to_s :numbered}/
+        html_part_should_match /#{attachment.description}/
+        text_part_should_match /2. #{attachment.description}/
+      end
+
+      context "motion item with comments" do
+        before(:each) do
+          motion.update_column :comment_until, Time.zone.now + 1.week
+          create :motion_comment, motion: motion
+          motion.reload
+        end
+
+        it "should display motion, comments, and attachment for motion" do
+          html_part_should_match /#{motion.to_s :numbered}/
+          text_part_should_match /1. #{motion.to_s :numbered}/
+          html_part_should_match /Comments for #{motion.to_s :numbered}/
+          text_part_should_match /2. Comments for #{motion.to_s :numbered}/
+          html_part_should_match /#{attachment.description}/
+          text_part_should_match /3. #{attachment.description}/
+        end
+      end
+    end
+
     context "no attachment" do
       before(:each) { attachment.destroy }
 

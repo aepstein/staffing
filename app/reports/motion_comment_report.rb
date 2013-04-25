@@ -6,6 +6,11 @@ class MotionCommentReport < AbstractCommitteeReport
     super( motion.committee, page_size: 'LETTER' )
   end
 
+  def <=>(o)
+    return 0 if self.class == o.class && self.motion == o.motion
+    super
+  end
+
   def comments
     i = 0
     @comments ||=  motion.motion_comments.to_a.inject({}) do |memo, comment|
@@ -22,6 +27,15 @@ class MotionCommentReport < AbstractCommitteeReport
     end
     move_down 12
     text comment.comment
+  end
+
+  def to_s( format = nil )
+    case format
+    when :file
+      "comments-#{motion.to_s :file}.pdf"
+    else
+      super()
+    end
   end
 
   def to_pdf

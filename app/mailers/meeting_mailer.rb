@@ -42,6 +42,8 @@ class MeetingMailer < ActionMailer::Base
     enclosures.each do |attachment|
       if attachment.instance_of?( Motion )
         attachments[meeting.attachment_filename(attachment)] = MotionReport.new( attachment ).to_pdf
+      elsif attachment.instance_of?( MotionCommentReport )
+        attachments[meeting.attachment_filename(attachment)] = attachment.to_pdf
       else
         attachments[meeting.attachment_filename(attachment)] = attachment.document.read
       end
@@ -53,7 +55,7 @@ class MeetingMailer < ActionMailer::Base
   def linked_attachments
     @linked_attachments ||= []
     meeting.attachments.values.flatten.
-      reject { |attachment| attachment.instance_of?( Motion ) }.
+      reject { |attachment| attachment.instance_of?( Motion ) || attachment.instance_of?( MotionCommentReport ) }.
       sort { |x,y| x.document.size <=> y.document.size }.
       reduce(0) do |size, attachment|
       if ( size + attachment.document.size ) > THRESHOLD

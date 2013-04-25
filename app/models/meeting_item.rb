@@ -36,9 +36,16 @@ class MeetingItem < ActiveRecord::Base
     meeting_section.meeting.motions.allowed
   end
 
-  def enclosures
-    return [ motion ] + motion.attachments.to_a if motion
-    attachments
+  def enclosures(reset=false)
+    @enclosures = nil if reset
+    @enclosures ||= if motion
+      out = [ motion ]
+      out << MotionCommentReport.new( motion ) if motion.comment_until && motion.motion_comments.any?
+      out += motion.attachments
+      out
+    else
+      attachments
+    end
   end
 
   # Accepts motion optionally prefixed with R. #:
