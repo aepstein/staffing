@@ -46,8 +46,8 @@ namespace :notices do
 
   desc "Send notices for events occurring in last week for which no notice has been sent"
   task :motion_events => [ :environment ] do
-    MotionEvent.notifiable.where { |e| e.occurrence.gte( Time.zone.today - 1.week ) }.
-      no_notice.each { |e| e.send_notice! }
+    #MotionEvent.notifiable.where { |e| e.occurrence.gte( Time.zone.today - 1.week ) }.
+    #  no_notice.each { |e| e.send_notice! }
   end
 
   def notices_log(message)
