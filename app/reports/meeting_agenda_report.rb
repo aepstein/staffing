@@ -6,19 +6,20 @@ class MeetingAgendaReport < AbstractCommitteeReport
     super( meeting.committee, page_size: 'LETTER' )
   end
 
-  def draw_meeting_section(section)
+  def draw_meeting_section(section, position)
     bounding_box( [ 0, cursor - 6 ], width: 540 ) do
-      text "#{section.position.to_roman}.", style: :bold
+      text "#{position.to_roman}.", style: :bold
       bounding_box( [27, bounds.top], width: 513 ) do
         text "#{section.name}", style: :bold
-        section.meeting_items.each { |item| draw_meeting_item item }
+        i = 1;
+        section.meeting_items.each { |item| draw_meeting_item( item, i ); i += 1 }
       end
     end
   end
 
-  def draw_meeting_item(item)
+  def draw_meeting_item(item, position)
     bounding_box( [0, cursor - 3 ], width: 486 ) do
-      text "#{item.position.to_roman.downcase}."
+      text "#{position.to_roman.downcase}."
       bounding_box( [27, bounds.top], width: 486 ) do
         text "#{item.display_name} (#{item.duration} " +
           (item.duration == 1 ? 'minute' : 'minutes') + ")"
@@ -37,7 +38,8 @@ class MeetingAgendaReport < AbstractCommitteeReport
     text meeting.location, align: :center, size: 12
     move_down 24
     font 'Helvetica', size: 12 do
-      meeting.meeting_sections.each { |section| draw_meeting_section section }
+      i = 1;
+      meeting.meeting_sections.each { |section| draw_meeting_section( section, i ); i += 1 }
     end
     render
   end

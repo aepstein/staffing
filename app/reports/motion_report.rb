@@ -14,12 +14,6 @@ class MotionReport < AbstractCommitteeReport
     motion.motion_events.last
   end
 
-  def draw_line_numbers( from, to )
-    lines = ( ( from - to + 12 ) / 12 ).floor
-    text_box "#{(1..lines).to_a.join("\n")}", at: [ 0, from ], width: 18,
-      height: ( from - to )
-  end
-
   def motion_content
     out = ""
     out += class.markup_markdown(motion.content) if motion.content
@@ -56,7 +50,7 @@ class MotionReport < AbstractCommitteeReport
           draw_line_numbers first_line_at, 0
         end
         if page_number > 2
-          repeat( 2..(page - 1) ) do
+          repeat( 2..(page_number - 1) ) do
             draw_line_numbers 720, 0
           end
         end

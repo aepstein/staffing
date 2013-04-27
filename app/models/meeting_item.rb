@@ -36,9 +36,16 @@ class MeetingItem < ActiveRecord::Base
     meeting_section.meeting.motions.allowed
   end
 
-  def enclosures
-    return [ motion ] + motion.attachments.to_a if motion
-    attachments
+  def enclosures(reset=false)
+    @enclosures = nil if reset
+    @enclosures ||= if motion
+      out = [ motion ]
+      out << MotionCommentReport.new( motion ) if motion.comment_until && motion.motion_comments.any?
+      out += motion.attachments
+      out
+    else
+      attachments
+    end
   end
 
   # Accepts motion optionally prefixed with R. #:
@@ -62,15 +69,7 @@ class MeetingItem < ActiveRecord::Base
     when :file
       to_s.strip.downcase.gsub(/[^a-z0-9]/,'-').squeeze('-')
     else
-      if new_record?
-        "New Meeting Item"
-      elsif name?
-        name
-      elsif motion_name
-        motion_name
-      else
-        super()
-      end
+      new_record? ? "New Meeting Item" : display_name
     end
   end
 

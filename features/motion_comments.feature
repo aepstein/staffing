@@ -27,3 +27,13 @@ Scenario: Create/edit a motion comment
   When I update the motion comment
   Then I should see the edited motion comment
 
+Scenario Outline: Reports for meeting
+  Given a current published, proposed motion exists of sponsored origin to which I have a <relationship> relationship
+  And the motion <has> comments
+  When I download the comments pdf report for the motion
+  Then I should <see> the comments report
+  Examples:
+    |relationship | has    | see     |
+    |staff        | has    | see     |
+    |staff        | has no | not see |
+

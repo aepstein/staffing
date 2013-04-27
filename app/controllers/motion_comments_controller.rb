@@ -25,6 +25,20 @@ class MotionCommentsController < ApplicationController
     attribute_check: true, load_method: :motion_comment
   before_filter :reciprocate_attachments, only: [ :create, :update ]
 
+  def index
+    respond_to do |format|
+      format.pdf do
+        if motion.motion_comments.any?
+          report = MotionCommentReport.new( motion )
+          send_data report.to_pdf, filename: "comments-#{motion.to_s :file}.pdf",
+            type: 'application/pdf', disposition: 'inline'
+        else
+          redirect_to( motion, flash: { error: 'No comments provided for the motion.' } )
+        end
+      end
+    end
+  end
+
   # POST /motions/:motion_id/motion_comments
   # POST /motions/:motion_id/motion_comments.xml
   def create
