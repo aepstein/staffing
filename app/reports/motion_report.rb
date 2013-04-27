@@ -48,7 +48,7 @@ class MotionReport < AbstractCommitteeReport
     self.first_line_at = cursor
     font 'Helvetica', size: 12, kerning: true do
       span( 504, position: :right ) do
-        text motion_content
+        text motion_content, inline_format: true
       end
       if page_number > 1
         draw_line_numbers 720, cursor
