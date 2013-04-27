@@ -22,7 +22,7 @@ class MotionReport < AbstractCommitteeReport
 
   def motion_content
     out = ""
-    out += motion.content if motion.content
+    out += class.markup_markdown(motion.content) if motion.content
     out += motion.motion_meeting_segments.inject("") do |memo, segment|
       memo << "\n\n#{segment.to_s}\n\n#{segment.content}"
     end

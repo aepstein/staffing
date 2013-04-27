@@ -6,6 +6,27 @@ class AbstractCommitteeReport < Prawn::Document
   LETTERHEAD_CONTACT_OFFSET = 720
   LETTERHEAD_TEXT_START = 324
 
+  def self.markup_markdown( source )
+    out = source.clone
+    {
+      '\*\*' => 'b',
+      '__' => 'b',
+      '\+\+' => 'u',
+      '\-\-' => 'strikethrough',
+      '\*' => 'i',
+      '_' => 'i'
+    }.each do |mark, tag|
+      out.gsub! /#{mark}([^#{mark}]+)#{mark}/, "<#{tag}>\\1</#{tag}>"
+    end
+    {
+      '\+' => 'u',
+      '\-' => 'strikethrough'
+    }.each do |mark, tag|
+      out.gsub! /\[#{mark}([^#{mark}]+)#{mark}\]/, "<#{tag}>\\1</#{tag}>"
+    end
+    out
+  end
+
   def initialize(committee, options = {})
     self.committee = committee
     include_palatino
