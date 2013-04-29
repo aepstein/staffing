@@ -60,13 +60,11 @@ authorization do
     end
     has_permission_on :committees, to: :chair do
       if_attribute enrollments: {
-        id: is_in { user.enrollments.current.with_roles('chair').value_of(:id) },
-        votes: gt { 0 } }
+        id: is_in { user.enrollments.current.with_roles('chair').value_of(:id) } }
     end
     has_permission_on :committees, to: :vicechair do
       if_attribute enrollments: {
-        id: is_in { user.enrollments.current.with_roles('vicechair').value_of(:id) },
-        votes: gt { 0 } }
+        id: is_in { user.enrollments.current.with_roles('vicechair').value_of(:id) } }
     end
     has_permission_on :committees, to: :enroll, join_by: :or do
       if_attribute enrollments: {
