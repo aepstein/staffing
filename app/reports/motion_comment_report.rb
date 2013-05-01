@@ -32,7 +32,7 @@ class MotionCommentReport < AbstractCommitteeReport
   def to_s( format = nil )
     case format
     when :file
-      "comments-#{motion.to_s :file}.pdf"
+      "comments-#{motion.to_s :file}"
     else
       super()
     end
