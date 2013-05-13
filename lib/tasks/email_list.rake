@@ -1,4 +1,4 @@
-task :email_list => [ 'email_list:build', 'email_list:clean' ]
+task email_list: [ 'email_list:build', 'email_list:clean' ]
 
 namespace :email_list do
   desc "Build all email lists"
