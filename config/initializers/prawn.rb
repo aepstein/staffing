@@ -1,2 +1,2 @@
-require 'prawn/fast_png'
+#require 'prawn/fast_png'
 

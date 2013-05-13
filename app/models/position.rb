@@ -11,6 +11,12 @@ class Position < ActiveRecord::Base
   belongs_to :schedule, inverse_of: :positions
 
   has_many :memberships, inverse_of: :position, dependent: :destroy do
+  
+    def upcoming
+      upcoming_period = proxy_association.owner.periods.upcoming
+      return scoped.where { id.eq( nil ) } unless upcoming_period
+      scoped.overlap( upcoming_period.starts_at, upcoming_period.ends_at )
+    end
 
     # Repopulate for a period
     def repopulate_unassigned_for_period!( period )
@@ -70,7 +76,10 @@ class Position < ActiveRecord::Base
   has_many :users, through: :memberships do
     def assignable; User.assignable_to(proxy_association.owner); end
   end
-  has_many :periods, through: :schedule
+  has_many :periods, through: :schedule do
+    def active; current.first; end
+    def upcoming; active && active.subsequent; end
+  end
   has_many :answers, through: :membership_requests
   has_many :authorized_enrollments, through: :authority
   has_many :enrollments, inverse_of: :position, dependent: :destroy do
@@ -139,8 +148,9 @@ class Position < ActiveRecord::Base
   after_create :populate_slots!
   after_update :repopulate_slots!
 
-  def current_emails
-    memberships.assigned.current.all(include: [ :user ]).map { |membership| membership.user.email }
+  def emails(group)
+    memberships.send(group).assigned.all(include: [ :user ]).
+      map { |membership| membership.user.email }
   end
 
   def statuses=(statuses)

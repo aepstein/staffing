@@ -22,6 +22,7 @@ class Committee < ActiveRecord::Base
   belongs_to :brand, inverse_of: :committees
   belongs_to :meeting_template, inverse_of: :committees
   has_many :periods, through: :schedule do
+    def upcoming; active && active.subsequent; end
     def active; current.first; end
   end
   has_many :designees, inverse_of: :committee
@@ -34,6 +35,11 @@ class Committee < ActiveRecord::Base
     join_table: 'committees_watchers'
   has_many :positions, through: :enrollments
   has_many :memberships, through: :positions do
+    def upcoming
+      upcoming_period = proxy_association.owner.periods.upcoming
+      return scoped.where { id.eq( nil ) } unless upcoming_period
+      scoped.overlap( upcoming_period.starts_at, upcoming_period.ends_at )
+    end
     def tents(date)
       out = as_of(date).assigned.includes { [ user, enrollments ] }.except(:order).
       merge( User.unscoped.ordered ).order { enrollments.title }.
@@ -90,8 +96,8 @@ class Committee < ActiveRecord::Base
     "\"#{effective_contact_name}\" <#{effective_contact_email}>"
   end
 
-  def current_emails
-    memberships.current.includes(:designees, :user).except(:order).all.
+  def emails( group )
+    memberships.send(group).assigned.includes(:designees, :user).except(:order).all.
     inject([]) { |memo, membership|
       memo << membership.user.name( :email ) if membership.user_id
       membership.designees.each do |designee|

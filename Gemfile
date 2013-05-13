@@ -19,7 +19,7 @@ gem 'daemons'
 gem 'whenever', require: false
 gem 'escape_utils'
 gem 'prawn', '~> 1.0.0rc'
-gem 'prawn-fast-png'
+gem 'prawn-fast-png', require: 'prawn/fast_png'
 gem 'paper_trail', '~> 2.0'
 gem 'cornell_assemblies_rails',
   git: 'git://assembly.cornell.edu/git/cornell-assemblies-rails.git',
@@ -32,9 +32,9 @@ group :assets do
   gem 'sass-rails'
   gem 'coffee-rails'
   gem 'uglifier'
+  gem 'therubyracer', '~> 0.11.4', require: 'v8'
+  gem 'libv8', '~> 3.11.8'
   gem 'execjs'
-  gem 'therubyracer', '~> 0.10.1'
-  gem 'libv8', '~> 3.3.10'
 end
 group :development, :test do
   gem 'rspec', '~> 2.12'

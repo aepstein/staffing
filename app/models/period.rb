@@ -62,6 +62,10 @@ class Period < ActiveRecord::Base
         'cannot delete period if assigned memberships are associated'
     end
   end
+  
+  def subsequent
+    schedule.periods.where { |p| p.starts_at.eq( ends_at + 1.day ) }.first
+  end
 
   def tense
     return nil unless starts_at && ends_at
