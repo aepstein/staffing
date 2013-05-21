@@ -346,7 +346,6 @@ Then /^I should see the rejected membership request$/ do
     page.should have_text "Rejected at: #{@membership_request.rejected_at.to_s(:us_ordinal)}"
     page.should have_text "Rejected by authority: #{@membership_request.authorities.first.name}"
     page.should have_text "Rejected by user: #{@current_user.name(:net_id)}"
-    page.should have_text "Reject notice at: None sent."
     page.should have_text "No membership for you!"
   end
 end

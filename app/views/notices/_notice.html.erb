@@ -1,6 +1,6 @@
 <%notifiable ||= false%>
 <%=content_tag :tr do %>
   <%=content_tag( :td, notice.notifiable ) unless notifiable %>
-  <%=content_tag( :td, notice.created_at.to_s(:us_short) %>
+  <%=content_tag( :td, notice.created_at.to_s(:us_short) ) %>
   <%=content_tag( :td, notice.event ) %>
 <% end %>

@@ -1,14 +1,18 @@
 <% notifiable ||= false %>
-<%=content_tag :table, id: 'notices' do %>
-  <%=content_tag :thead do %>
-    <%content_tag :tr do %>
-      <%=content_tag( :th, "Notifiable" ) unless notifiable %>
-      <%=content_tag( :th, "When" ) %>
-      <%=content_tag( :th, "What" ) %>
+<% if notices.any? %>
+  <%=content_tag :table, id: 'notices' do %>
+    <%=content_tag :thead do %>
+      <%content_tag :tr do %>
+        <%=content_tag( :th, "Notifiable" ) unless notifiable %>
+        <%=content_tag( :th, "When" ) %>
+        <%=content_tag( :th, "What" ) %>
+      <% end %>
+    <% end %>
+    <%=content_tag :tbody do %>
+      <%=render partial: 'notices/notice', collection: notices,
+        locals: { notifiable: notifiable } %>
     <% end %>
   <% end %>
-  <%=content_tag :tbody do %>
-    <%=render partial: 'notices/notice', collection: notices,
-      locals: { notifiable: notifiable } %>
-  <% end %>
+<% else %>
+  <%=content_tag :p, "No notices." %>
 <% end %>
