@@ -135,9 +135,13 @@ describe User do
   end
 
   it 'should have no_renew_notice_since scope' do
-    old = create(:user, :renew_notice_at => ( Time.zone.now - 1.week ) )
-    recent = create(:user, :renew_notice_at => Time.zone.now )
-    @user.renew_notice_at.should be_nil
+    old = create(:user)
+    create(:notice, notifiable: old, event: 'renew').update_column(
+      :created_at, (Time.zone.now - 1.week) )
+    recent = create(:user)
+    create(:notice, notifiable: recent, event: 'renew').update_column(
+      :created_at, Time.zone.now)
+    @user.notices.for_event('renew').should be_empty
     scope = User.no_renew_notice_since( Time.zone.now - 1.day )
     scope.count.should eql 2
     scope.should include @user
@@ -145,9 +149,10 @@ describe User do
   end
 
   it 'should have a send_renew_notice! method' do
-    @user.renew_notice_at.should be_nil
+    @user.notices.for_event('renew').should be_empty
     @user.send_renew_notice!
-    @user.renew_notice_at.should_not be_nil
+    @user.association(:notices).reset
+    @user.notices.for_event('renew').should_not be_empty
   end
 
   it 'should have a to_email method that returns a valid email entry' do

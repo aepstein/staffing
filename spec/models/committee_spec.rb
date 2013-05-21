@@ -25,9 +25,9 @@ describe Committee do
     @committee.save.should be_false
   end
 
-  it 'should have current_emails that returns emails of current members and designees' do
+  it 'should have emails(:current) that returns emails of current members and designees' do
     designee = create(:designee)
-    emails = designee.committee.current_emails
+    emails = designee.committee.emails(:current)
     emails.length.should eql 2
     emails.should include designee.user.name :email
     emails.should include designee.membership.user.name :email

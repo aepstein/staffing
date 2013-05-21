@@ -322,8 +322,7 @@ class Membership < ActiveRecord::Base
   # If the user is blank, clear the notice fields
   def clear_notices
     return true unless user.blank?
-    self.join_notice_at = nil
-    self.leave_notice_at = nil
+    notices.clear
     true
   end
 

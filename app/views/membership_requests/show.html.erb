@@ -21,10 +21,6 @@
 </p>
 
 <p>
-  <b>Reject notice at:</b> <%=h membership_request.reject_notice_at? ? membership_request.reject_notice_at.to_s( :us_ordinal ) : "None sent." %>
-</p>
-
-<p>
   <b>Rejection comment:</b>
 </p>
 
@@ -60,9 +56,14 @@
   locals: { membership_request: membership_request } %>
 
 <p>
-  <b>Resume?</b> <%= membership_request.user.resume.blank? ? 'No' :  link_to('Yes', resume_user_path( membership_request.user, :format => :pdf ) ) %>
+  <b>Resume?</b> <%= membership_request.user.resume.blank? ? 'No' :  link_to('Yes', resume_user_path( membership_request.user, format: :pdf ) ) %>
 </p>
 <% end %><!-- #membership-request-<%= membership_request.id %> -->
+
+<%=content_tag :h3, "Notices" %>
+
+<%=render partial: 'notices/notices', object: membership_request.notices,
+  locals: { notifiable: membership_request } %>
 
 <p>
 <% if permitted_to?( :edit, membership_request ) -%>

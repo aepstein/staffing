@@ -316,8 +316,9 @@ end
 Then /^I should see the (join|leave) notice is sent$/ do |notice|
   visit membership_url @membership
   within("#membership-#{@membership.id}") do
-    page.should have_text( "#{notice.titleize} notice at: " +
-      @membership.send("#{notice}_notice_at").to_formatted_s(:long_ordinal) )
+    within("#notices") do
+      page.should have_text notice
+    end
   end
 end
 

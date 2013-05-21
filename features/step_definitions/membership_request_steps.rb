@@ -375,8 +375,9 @@ end
 Then /^I should see the (close|reject) notice is sent$/ do |notice|
   visit membership_request_url @membership_request
   within("#membership-request-#{@membership_request.id}") do
-    page.should have_text( "#{notice.titleize} notice at: " +
-      @membership_request.send("#{notice}_notice_at").to_formatted_s(:long_ordinal) )
+    within("#notices") do
+      page.should have_text notice
+    end
   end
 end
 

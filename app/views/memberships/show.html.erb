@@ -38,19 +38,8 @@
   locals: { user: membership.user } %>
 <% end %>
 
-<% if membership.join_notice_at? %>
-<p>
-  <b>Join notice at:</b> <%=h membership.join_notice_at.to_formatted_s( :long_ordinal ) %>
-</p>
-
-<% end %>
-
-<% if membership.leave_notice_at? %>
-<p>
-  <b>Leave notice at:</b> <%=h membership.leave_notice_at.to_formatted_s( :long_ordinal ) %>
-</p>
-
-<% end %>
+<%=render partial: 'notices/notices', object: membership.notices,
+  locals: { notifiable: membership } %>
 
 <% membership.designees.each do |designee| %>
 <p>

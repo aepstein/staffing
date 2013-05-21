@@ -363,8 +363,7 @@ describe Membership do
       notifiable_scenario
       Membership.join_notice_pending.length.should eql 1
       Membership.join_notice_pending.should include @focus_membership
-      @focus_membership.join_notice_at = Time.zone.now
-      @focus_membership.save!
+      create( :notice, notifiable: @focus_membership, event: 'join' )
       Membership.join_notice_pending.length.should eql 0
     end
 
@@ -372,34 +371,32 @@ describe Membership do
       notifiable_scenario Date.today - 1.year, Date.today - 1.day
       Membership.leave_notice_pending.length.should eql 1
       Membership.leave_notice_pending.should include @focus_membership
-      @focus_membership.leave_notice_at = Time.zone.now
-      @focus_membership.save!
+      create( :notice, notifiable: @focus_membership, event: 'leave' )
       Membership.leave_notice_pending.length.should eql 0
     end
 
     it 'should clear membership notices if user is blank' do
       membership.save!
-      membership.update_attribute :join_notice_at, Time.zone.now
-      membership.update_attribute :leave_notice_at, Time.zone.now
+      create( :notice, notifiable: membership, event: 'join' )
       membership.user = nil
       membership.save!
       membership.user_id.should be_nil
-      membership.join_notice_at.should be_nil
-      membership.leave_notice_at.should be_nil
+      membership.association(:notices).reset
+      membership.notices.should be_empty
     end
 
     it 'should have a send_join_notice! method' do
       membership.save!
       membership.send_join_notice!
       membership.reload
-      membership.join_notice_at.should_not be_nil
+      membership.notices.for_event('join').should_not be_empty
     end
 
     it 'should have a send_leave_notice! method' do
       membership.save!
       membership.send_leave_notice!
       membership.reload
-      membership.leave_notice_at.should_not be_nil
+      membership.notices.for_event('leave').should_not be_empty
     end
 
     def notifiable_scenario(starts_at = nil, ends_at = nil)

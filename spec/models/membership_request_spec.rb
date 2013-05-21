@@ -208,8 +208,8 @@ describe MembershipRequest do
     it  'should have a send_reject_notice! method which sends a rejection notice and saves' do
       @membership_request.reject!
       @membership_request.send_reject_notice!
-      @membership_request.reload
-      @membership_request.reject_notice_at.should_not be_nil
+      @membership_request.association(:notices).reset
+      @membership_request.notices.for_event('reject').should_not be_empty
     end
 
     it 'should have a reject_notice_pending scope' do

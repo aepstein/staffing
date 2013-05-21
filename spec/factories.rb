@@ -229,6 +229,11 @@ FactoryGirl.define do
         period: merged_motion.period, status: 'proposed'
     end
   end
+  
+  factory :notice do
+    notifiable { FactoryGirl.create(:membership) }
+    event 'join'
+  end
 
   factory :position do
     sequence(:name) { |n| "Position #{n}" }
