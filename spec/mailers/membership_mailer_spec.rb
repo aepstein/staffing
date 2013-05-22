@@ -3,10 +3,12 @@ require "spec_helper"
 describe MembershipMailer do
   include MailerSpecHelpers
   let(:authority) { create(:authority,
+    appoint_message: "Greetings from the *authority*.",
     join_message: "Welcome from the *authority*.",
     leave_message: "Farewell from the *authority*.") }
   let(:position) { create(:position,
     authority: authority,
+    appoint_message: "Congratulations on the *position*.",
     join_message: "Welcome to the *position*.",
     leave_message: "Farewell from the *position*.") }
   let(:enrollment) { create(:enrollment, position: membership.position,
@@ -14,6 +16,7 @@ describe MembershipMailer do
     title: "member",
     committee: create(:committee,
       name: 'Important Committee',
+      appoint_message: "Congratulations on the *committee*.",
       join_message: "Welcome to the *committee*.",
       leave_message: "Farewell from the *committee*.")) }
   let(:membership) { create(:membership, position: position) }
@@ -51,6 +54,50 @@ describe MembershipMailer do
     mail.cc.should_not include non_monitor.user.email
   end
 
+  describe "appoint" do
+    let(:mail) { MembershipMailer.appoint_notice( membership ) }
+
+    it "renders correct subject" do
+      membership.stub(:description).and_return("Requested Committee")
+      mail.subject.should eq "Your upcoming appointment to Requested Committee"
+    end
+
+    it "addresses to assignee of membership" do
+      should_be_to_assignee
+    end
+
+    it "copies the monitors who overlap" do
+      should_copy_monitors
+    end
+
+    it "addresses from authority effective contact" do
+      should_be_from_effective_contact
+    end
+
+    it "renders the standard body for a membership without enrollments" do
+      both_parts_should_match /Dear #{membership.user.first_name},/
+      both_parts_should_match <<EOS.gsub(/\s+/, " ").strip
+This notice is to inform you that you have been assigned a membership in
+#{membership.description}, for a term starting on
+#{membership.starts_at.to_formatted_s :long_ordinal} and ending on
+#{membership.ends_at.to_formatted_s :long_ordinal}.
+EOS
+      text_part_should_match /Greetings from the \*authority\*\./
+      html_part_should_match /Greetings from the <em>authority<\/em>\./
+      text_part_should_match /Congratulations on the \*position\*\./
+      html_part_should_match /Congratulations on the <em>position<\/em>\./
+      both_parts_should_not_match /you will hold the following committee enrollments:/
+    end
+
+    it "renders the enrollment information for a membership with enrollments" do
+      enrollment
+      both_parts_should_match /you will hold the following committee enrollments:/
+      both_parts_should_match /member of Important Committee with 1 vote/
+      text_part_should_match /Congratulations on the \*committee\*\./
+      html_part_should_match /Congratulations on the <em>committee<\/em>./
+    end
+  end
+
   describe "join" do
     let(:mail) { MembershipMailer.join_notice( membership ) }
 
@@ -74,7 +121,7 @@ describe MembershipMailer do
     it "renders the standard body for a membership without enrollments" do
       both_parts_should_match /Dear #{membership.user.first_name},/
       both_parts_should_match <<EOS.gsub(/\s+/, " ").strip
-This notice is to inform you that you have been assigned a membership in
+This notice is to inform you that you have begun a membership in
 #{membership.description}, for a term starting on
 #{membership.starts_at.to_formatted_s :long_ordinal} and ending on
 #{membership.ends_at.to_formatted_s :long_ordinal}.

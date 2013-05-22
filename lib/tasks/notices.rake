@@ -1,5 +1,5 @@
 task :notices => [ 'notices:leave', 'notices:join', 'notices:reject',
-  'notices:decline', 'notices:renew', 'notices:motion_events' ]
+  'notices:decline', 'notices:renew', 'notices:appoint', 'notices:motion_events' ]
 
 namespace :notices do
 
@@ -8,6 +8,14 @@ namespace :notices do
     Membership.leave_notice_pending.readonly(false).each do |membership|
       membership.send_leave_notice!
       notices_log "Sent leave notice for membership #{membership.id}."
+    end
+  end
+  
+  desc "Send notices for all memberships that have not yet begun"
+  task :appoint => [ :environment ] do
+    Membership.appoint_notice_pending.readonly(false).each do |membership|
+      membership.send_appoint_notice!
+      notices_log "Sent appoint notice for membership #{membership.id}."
     end
   end
 

@@ -148,6 +148,7 @@ class Membership < ActiveRecord::Base
       overlap( arel_table[:starts_at], arel_table[:ends_at] ).
       where( :user_id => user_id ) ) ) ) )
   }
+  scope :appoint_notice_pending, lambda { notifiable.future.no_appoint_notice }
   scope :join_notice_pending, lambda { notifiable.current.no_join_notice }
   scope :leave_notice_pending, lambda { notifiable.past.no_leave_notice }
   scope :decline_notice_pending, lambda { renewal_declined.no_decline_notice }

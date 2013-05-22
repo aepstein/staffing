@@ -3,7 +3,7 @@ Dear <%=h @membership.user.first_name %>,
 </p>
 
 <p>
-This notice is to inform you that you have been assigned a membership in <%=h @membership.description %>, for a term starting on <%= @membership.starts_at.to_s :long_ordinal %> and ending on <%= @membership.ends_at.to_s :long_ordinal %>.
+This notice is to inform you that you have begun a membership in <%=h @membership.description %>, for a term starting on <%= @membership.starts_at.to_s :long_ordinal %> and ending on <%= @membership.ends_at.to_s :long_ordinal %>.
 </p>
 
 <% if @membership.position.authority.join_message -%>

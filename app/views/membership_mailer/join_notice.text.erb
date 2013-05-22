@@ -1,6 +1,6 @@
 Dear <%= @membership.user.first_name %>,
 
-This notice is to inform you that you have been assigned a membership in <%= @membership.description %>, for a term starting on <%= @membership.starts_at.to_s :long_ordinal %> and ending on <%= @membership.ends_at.to_s :long_ordinal %>.
+This notice is to inform you that you have begun a membership in <%= @membership.description %>, for a term starting on <%= @membership.starts_at.to_s :long_ordinal %> and ending on <%= @membership.ends_at.to_s :long_ordinal %>.
 
 <% if @membership.position.authority.join_message -%>
 <%= @membership.position.authority.join_message %>

@@ -1,0 +1,27 @@
+Dear <%= @membership.user.first_name %>,
+
+This notice is to inform you that you have been assigned a membership in <%= @membership.description %>, for a term starting on <%= @membership.starts_at.to_s :long_ordinal %> and ending on <%= @membership.ends_at.to_s :long_ordinal %>.
+
+<% if @membership.position.authority.appoint_message -%>
+<%= @membership.position.authority.appoint_message %>
+
+<% end -%>
+<% if @membership.position.appoint_message -%>
+<%= @membership.position.appoint_message %>
+
+<% end -%>
+<% if @membership.position.enrollments.length > 0 -%>
+Concurrent with your appointment to this position, you will hold the following committee enrollments:
+<% @membership.position.enrollments.each do |enrollment| -%>
+<%= enrollment.title %> of <%= enrollment.committee %> with <%= pluralize enrollment.votes, 'vote' %>
+<% if enrollment.committee.appoint_message -%>
+<%= enrollment.committee.appoint_message %>
+<% end -%>
+
+<% end -%>
+<% end -%>
+
+Best regards,
+
+<%= @membership.position.authority.effective_contact_name %>
+

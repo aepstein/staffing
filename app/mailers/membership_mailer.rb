@@ -4,6 +4,16 @@ class MembershipMailer < ActionMailer::Base
   helper :application
   attr_accessor :membership
 
+  def appoint_notice(m)
+    self.membership = m
+    mail(
+      to: membership.user.to_email,
+      cc: membership_monitor_emails,
+      from: "\"#{membership.position.authority.effective_contact_name}\" <#{membership.position.authority.effective_contact_email}>",
+      subject: "Your upcoming appointment to #{membership.description}"
+    )
+  end
+
   def join_notice(m)
     self.membership = m
     mail(
