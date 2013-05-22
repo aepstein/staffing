@@ -191,8 +191,10 @@ class Membership < ActiveRecord::Base
   validate :must_be_within_period, :concurrent_memberships_must_not_exceed_slots
   validate :modifier_must_overlap, if: :modifier
 
-  before_save :clear_notices, :claim_membership_request, :undecline_if_renewed
-  after_save :populate_unassigned, :close_claimed_membership_request, :claim_renewed_memberships
+  before_save :clear_notices, :claim_membership_request,
+    :unclaim_membership_request, :undecline_if_renewed
+  after_save :populate_unassigned, :close_claimed_membership_request,
+    :claim_renewed_memberships
   after_destroy :populate_unassigned
 
   def decline_renewal(decliner_attributes, options={})
@@ -324,6 +326,11 @@ class Membership < ActiveRecord::Base
     return true unless user.blank?
     notices.clear
     true
+  end
+  
+  def unclaim_membership_request
+    return true unless membership_request.blank?
+    membership_request = nil if user != membership_request.user
   end
 
   # If this fulfills an active membership_request, assign it to that membership_request
