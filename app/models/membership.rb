@@ -1,5 +1,5 @@
 class Membership < ActiveRecord::Base
-  notifiable_events :join, :leave, :decline
+  notifiable_events :join, :leave, :decline, :appoint
 
   attr_accessible :renew_until, :renewal_confirmed_at, as: [ :default, :updator ]
   attr_accessible :user_name, :user_id, :period_id, :position_id,
