@@ -324,7 +324,10 @@ describe Membership do
     before(:each) { membership_request }
 
     it "should claim a matching membership_request" do
+      membership_request.active?.should be_true
       membership.membership_request.should eql membership_request
+      membership_request.reload
+      membership_request.closed?.should be_true
     end
 
     it "should not claim a membership_request for an inactive committee" do
@@ -346,6 +349,29 @@ describe Membership do
     it "should not claim a membership_request for non-requestable enrollment" do
       enrollment.update_attribute :requestable, false
       membership.membership_request.should be_nil
+    end
+    
+    it "should unclaim a membership_request if membership no longer has user assigned" do
+      membership.user = nil
+      membership.save!
+      membership.membership_request.should be_nil
+      membership_request.active?.should be_true
+    end
+    
+    it "should unclaim a membership_request if membership is assigned to a different user" do
+      membership.user = create(:user)
+      membership.save!
+      membership.membership_request.should be_nil
+      membership_request.active?.should be_true
+    end
+    
+    context "non-qualified user" do
+      let(:membership) { create( :membership, position: position ) }
+      
+      it "should not claim other user's membership_request" do
+        membership_request
+        membership.membership_request.should be_nil
+      end
     end
 
   end

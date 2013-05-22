@@ -329,8 +329,15 @@ class Membership < ActiveRecord::Base
   end
   
   def unclaim_membership_request
-    return true unless membership_request.blank?
-    membership_request = nil if user != membership_request.user
+    return true unless membership_request
+    if membership_request.user != user
+      if membership_request.closed? && ( membership_request.memberships - self ).any?
+        membership_request.reactivate
+        # TODO membership_request should see if there are any other memberships that can claim it
+      end
+      self.membership_request = nil
+    end
+    true
   end
 
   # If this fulfills an active membership_request, assign it to that membership_request
