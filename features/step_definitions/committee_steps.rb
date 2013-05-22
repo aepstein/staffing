@@ -96,6 +96,7 @@ When /^I create an committee$/ do
   fill_in "Publish email", with: "info@example.com"
   within_control_group('Active?') { choose 'No' }
   within_control_group('Sponsor?')  { choose 'Yes' }
+  fill_in "Appoint message", with: "You will soon be in *committee*."
   fill_in "Join message", with: "Welcome to *committee*."
   fill_in "Leave message", with: "You were *dropped* from the committee."
   fill_in "Reject message", with: "There were *no* slots."
@@ -124,6 +125,7 @@ Then /^I should see the new committee$/ do
     page.should have_text "Meeting template: Informal"
     page.should have_text "Brand: Prestigious"
     page.should have_text "Publish email: info@example.com"
+    page.should have_text "You will soon be in committee."
     page.should have_text "Welcome to committee."
     page.should have_text "You were dropped from the committee."
     page.should have_text "There were no slots."
@@ -150,6 +152,7 @@ When /^I update the committee$/ do
   select "Elaborate", from: "Meeting template"
   select "Silly", from: "Brand"
   fill_in "Publish email", with: "info@example.org"
+  fill_in "Appoint message", with: "Pre-welcome message"
   fill_in "Join message", with: "Welcome message"
   fill_in "Leave message", with: "Farewell message"
   fill_in "Reject message", with: "There were *not enough* slots."
@@ -169,6 +172,7 @@ Then /^I should see the edited committee$/ do
     page.should have_text "Meeting template: Elaborate"
     page.should have_text "Brand: Silly"
     page.should have_text "Publish email: info@example.org"
+    page.should have_text "Pre-welcome message"
     page.should have_text "Welcome message"
     page.should have_text "Farewell message"
     page.should have_text "There were not enough slots."

@@ -1,6 +1,7 @@
 class Authority < ActiveRecord::Base
   attr_accessible :name, :join_message, :leave_message, :committee_id,
-    :committee_name, :contact_name, :contact_email, :reject_message
+    :committee_name, :contact_name, :contact_email, :reject_message,
+    :appoint_message
 
   default_scope order( 'authorities.name ASC' )
 

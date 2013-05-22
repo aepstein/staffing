@@ -4,6 +4,7 @@
     url: committees_path( format: :json ), value_method: :to_s,
     hint: "Specify the committee, if any, whose members should be able to read " +
     "and comment on membership_requests under this authority." %>
+  <%= form.input :appoint_message %>
   <%= form.input :join_message %>
   <%= form.input :leave_message %>
   <%= form.input :reject_message %>

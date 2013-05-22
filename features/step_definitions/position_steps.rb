@@ -109,6 +109,7 @@ When /^I create a position$/ do
   fill_in "Minimum slots", with: "1"
   within_control_group("Statuses") { check "undergrad" }
   fill_in "Name", with: "Popular Committee Member"
+  fill_in "Appoint message", with: "You will soon be in *position*."
   fill_in "Join message", with: "Welcome to *committee*."
   fill_in "Leave message", with: "You were *dropped* from the committee."
   fill_in "Reject message", with: "There were *no* slots."
@@ -139,6 +140,7 @@ Then /^I should see the new position$/ do
     page.should have_text "Minimum slots: 1"
     page.should have_text "undergrad"
     page.should have_text "Name: Popular Committee Member"
+    page.should have_text "You will soon be in position."
     page.should have_text "Welcome to committee."
     page.should have_text "You were dropped from the committee."
     page.should have_text "There were no slots."
@@ -167,6 +169,7 @@ When /^I update the position$/ do
   fill_in "Minimum slots", with: "2"
   within_control_group("Statuses") { uncheck "undergrad" }
   fill_in "Name", with: "Normal Committee Member"
+  fill_in "Appoint message", with: "Pre-welcome!"
   fill_in "Join message", with: "Welcome!"
   fill_in "Leave message", with: "Goodbye!"
   fill_in "Reject message", with: "No more room!"
@@ -188,6 +191,7 @@ Then /^I should see the edited position$/ do
     page.should have_text "Minimum slots: 2"
     page.should have_no_text "undergrad"
     page.should have_text "Name: Normal Committee Member"
+    page.should have_text "Pre-welcome!"
     page.should have_text "Welcome!"
     page.should have_text "Goodbye!"
     page.should have_text "No more room!"

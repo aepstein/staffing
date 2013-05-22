@@ -82,6 +82,7 @@ When /^I create an authority$/ do
   visit(new_authority_url)
   fill_in 'Name', with: 'Supreme Authority'
   fill_in 'Committee', with: 'First committee'
+  fill_in 'Appoint message', with: 'You will soon be in the *committee*.'
   fill_in 'Join message', with: 'Welcome to *committee*.'
   fill_in 'Leave message', with: 'You were *dropped* from the committee.'
   fill_in 'Reject message', with: 'There were *no* slots.'
@@ -94,6 +95,7 @@ Then /^I should see the new authority$/ do
   within( "#authority-#{@authority.id}" ) do
     page.should have_text("Name: Supreme Authority")
     page.should have_text("Committee: First committee")
+    page.should have_text 'You will soon be in the committee.'
     page.should have_text("Welcome to committee.")
     page.should have_text("You were dropped from the committee.")
     page.should have_text("There were no slots.")
@@ -104,6 +106,7 @@ When /^I update the authority$/ do
   visit(edit_authority_url(@authority))
   fill_in 'Name', with: 'Subordinate Authority'
   fill_in 'Committee', with: 'Second committee'
+  fill_in 'Appoint message', with: 'Pre-welcome message'
   fill_in 'Join message', with: 'Welcome message'
   fill_in 'Leave message', with: 'Farewell message'
   fill_in 'Reject message', with: 'There were not enough slots.'
@@ -115,6 +118,7 @@ Then /^I should see the edited authority$/ do
   within("#authority-#{@authority.id}") do
     page.should have_text("Name: Subordinate Authority")
     page.should have_text("Committee: Second committee")
+    page.should have_text 'Pre-welcome message'
     page.should have_text("Welcome message")
     page.should have_text("Farewell message")
     page.should have_text("There were not enough slots.")

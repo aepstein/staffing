@@ -2,7 +2,7 @@ class Position < ActiveRecord::Base
   attr_accessible :authority_id, :quiz_id, :schedule_id, :slots, :name,
     :join_message, :leave_message, :statuses, :renewable, :notifiable,
     :designable, :active, :reject_message, :enrollments_attributes,
-    :minimum_slots
+    :minimum_slots, :appoint_message
 
   default_scope lambda { ordered }
 
