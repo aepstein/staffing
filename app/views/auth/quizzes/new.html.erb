@@ -1,0 +1,6 @@
+<%=content_tag :h1, "New quiz"%>
+
+<%= simple_form_for(quiz) do |f| %>
+  <%= render partial: 'quizzes/form', object: f %>
+<% end %>
+

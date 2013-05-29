@@ -1,0 +1,6 @@
+<%=content_tag :h1, "Edit #{motion.to_s :full}" %>
+
+<%= simple_form_for(motion) do |f| %>
+  <%= render partial: 'motions/form', object: f %>
+<% end %>
+

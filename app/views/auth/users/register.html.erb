@@ -1,0 +1,8 @@
+<%=content_tag :h1, "Register user" %>
+
+<%= simple_form_for(user, url: register_new_user_path, html: { multipart: true } ) do |f| %>
+  <%= render partial: 'users/form', object: f %>
+  <%= f.button :wrapped, label: 'Register',
+    cancel: ( sso_net_id ? home_path : login_path ) %>
+<% end %>
+

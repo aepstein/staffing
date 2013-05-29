@@ -1,0 +1,59 @@
+<h1>Renewal preferences for <%= user %></h1>
+
+<p>
+ Use this form to specify your membership renewal preferences for each of your
+ current or recently ended renewable memberships.  If you are not interested in
+ renewal of a particular position, you should leave the date blank for that
+ position.  If you are interested in renewal, you should specify the latest
+ end date to which you are interested to be reappointed to at this time.
+</p>
+
+<%= form_for( user, url: renew_user_memberships_path(user),
+  html: { class: 'form-horizontal' } ) do |form| %>
+  <%= render 'shared/error_messages', target: form.object %>
+  <table>
+  <thead>
+    <tr>
+      <th>Position</th>
+      <th>Ends on</th>
+      <th>Renew until</th>
+    </tr>
+  </thead>
+  <tbody>
+    <%= form.fields_for :memberships, user.memberships.renewal_candidate do |subform| %>
+
+      <%= table_row_tag( subform.object.errors.empty?, false, { id: "membership-#{subform.object.id}" } ) do %>
+        <% subform.object.renewal_confirmed_at = Time.zone.now %>
+        <%= subform.hidden_field :renewal_confirmed_at %>
+        <td><%= subform.label :renew_until, subform.object.position.to_s %></td>
+        <td><%= subform.object.ends_at.to_formatted_s :us_short %></td>
+        <td><%= subform.text_field :renew_until, value: subform.object.renew_until.try( :to_formatted_s, :us_short ), class: 'ui-date-picker' %><%= subform.hidden_field :renew_until, class: 'renew_until-alt' %></td>
+        <td></td>
+      <% end %>
+
+      <% if subform.object.errors.any? %>
+        <%= table_row_tag( true ) do %>
+          <td colspan="3"><span style="color: red;"><%= subform.object.errors.full_messages.join ', ' %></style></td>
+        <% end %>
+      <% end %>
+
+    <% end %>
+  </tbody>
+  </table>
+
+  <%=content_tag :div, class: 'control-group' do %>
+    <%= form.label :renewal_checkpoint, 'Notify again?', class: 'control-label' %>
+    <%=content_tag :div, class: 'controls' do %>
+      <%= form.select :renewal_checkpoint,
+            [ [ 'Yes', form.object.renewal_checkpoint.try(:to_s, :rfc822) ],
+              [ 'No', Time.zone.now.to_s( :rfc822 )] ] %>
+      <%=content_tag :p, class: 'help-block' do %>
+        Yes means you want to continue receiving notices about these renewal preferences.
+        No means you will not receive additional notices regarding these preferences.
+      <% end %>
+    <% end %>
+  <% end %>
+
+  <%= form.submit 'Update renewals', class: 'btn btn-primary' %>
+<% end %>
+
