@@ -1,0 +1,7 @@
+<h1>New membership for <%=h membership.position %></h1>
+
+<%= simple_form_for(membership, as: :membership,
+  url: polymorphic_path( [ membership.context, :memberships ] ) ) do |f| %>
+  <%= render partial: 'form', object: f %>
+<% end %>
+

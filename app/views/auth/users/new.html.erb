@@ -1,7 +1,0 @@
-<%=content_tag :h1, "New user" %>
-
-<%= simple_form_for(user, html: { multipart: true } ) do |f| %>
-  <%= render partial: 'users/form', object: f %>
-  <%= f.button :wrapped, cancel: ( user.id == current_user.id ? home_path : users_path ) %>
-<% end %>
-

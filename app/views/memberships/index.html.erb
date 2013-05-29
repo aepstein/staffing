@@ -1,0 +1,60 @@
+<h2><%=h params[:action].titleize %> memberships<%=h committee ?  " for #{committee}" : "" %><%=h user ?  " for #{user}" : "" %><%=h position ?  " for #{position}" : "" %><%=h authority ?  " for #{authority}" : "" %></h2>
+
+<%= form_for q, url: request.fullpath, method: :get do |form| %>
+  <% unless user %>
+  <p>
+    <%= form.label :user_name_cont,'User' %>
+    <%= form.text_field :user_name_cont %>
+  </p>
+  <% end %>
+  <% unless committee %>
+  <p>
+    <%= form.label :position_committees_name_cont, 'Committee' %>
+    <%= form.text_field :position_committees_name_cont %>
+  </p>
+  <% end %>
+  <% unless authority %>
+  <p>
+    <%= form.label :position_authority_name_cont, 'Authority' %>
+    <%= form.text_field :position_authority_name_cont %>
+  </p>
+  <% end %>
+  <% unless position %>
+  <p>
+    <%= form.label :position_name_cont, 'Position' %>
+    <%= form.text_field :position_name_cont %>
+  </p>
+  <% end %>
+  <p>
+    <%= form.label :starts_at_gt, 'Starts After' %>
+    <%= form.text_field :starts_at_gt %>
+  </p>
+  <p>
+    <%= form.label :starts_at_gt, 'Ends Before' %>
+    <%= form.text_field :ends_at_lt %>
+  </p>
+  <p>
+    <%= submit_tag 'Search' %>
+  </p>
+<% end %>
+
+<p>
+<%= paginate memberships %>
+</p>
+
+<%= render partial: 'memberships', object: memberships,
+  locals: { committee: committee, user: user, position: position,
+  membership_request: membership_request } %>
+
+<p>
+<%= paginate memberships %>
+</p>
+
+<hr />
+
+<p>
+<% if position && permitted_to?( :create, position.memberships.build_for_authorization ) %>
+<%= link_to 'New membership', new_position_membership_path(position) %>
+<% end %>
+</p>
+
