@@ -1,5 +1,5 @@
 class Membership < ActiveRecord::Base
-  notifiable_events :join, :leave, :decline
+  notifiable_events :join, :leave, :decline, :appoint
 
   attr_accessible :renew_until, :renewal_confirmed_at, as: [ :default, :updator ]
   attr_accessible :user_name, :user_id, :period_id, :position_id,
@@ -332,7 +332,7 @@ class Membership < ActiveRecord::Base
   def unclaim_membership_request
     return true unless membership_request
     if membership_request.user != user
-      if membership_request.closed? && ( membership_request.memberships - self ).empty?
+      if membership_request.closed? && ( membership_request.memberships - [ self ] ).empty?
         membership_request.reactivate
         # TODO membership_request should see if there are any other memberships that can claim it
       end
