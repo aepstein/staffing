@@ -1,6 +1,9 @@
 Given /^I have a single sign on net id$/ do
   @net_id = 'zzz999'
-  visit home_path( params: { sso_net_id: @net_id } )
+end
+
+When /^I try to log in with the single sign on$/ do
+  visit sso_login_path( provider: 'cornell', params: { sso_net_id: @net_id } )
 end
 
 Then /^I should be prompted to register$/ do
@@ -50,8 +53,12 @@ When /^the single sign on net id is associated with a user$/ do
   @current_user = create( :user, net_id: @net_id )
 end
 
-Then /^I should automatically log in when required$/ do
-  visit edit_user_path( @current_user )
-  current_path.should eql edit_user_path( @current_user )
+When /^I follow the log in link with forced single sign on$/ do
+  visit home_path( params: { force_sso: 'cornell' } )
+  click_link "Log In"
 end
+
+#Then /^I should automatically log in$/ do
+#  page.should have_text "Welcome, #{@current_user.first_name}"
+#end
 

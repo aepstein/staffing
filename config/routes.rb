@@ -129,10 +129,10 @@ Staffing::Application.routes.draw do
   end
   resources :schedules
   resources :users do
-    new do
-      get :register
-      post :register
-    end
+#    new do
+#      get :register
+#      post :register
+#    end
     member do
       get :resume, :tent
     end
@@ -174,6 +174,11 @@ Staffing::Application.routes.draw do
     end
   end
   resource :user_session, only: [:create]
+  
+  get '/sso/:provider/login', to: 'user_sessions#sso_login', as: 'sso_login',
+    constraints: SsoProviderConstraint.new
+  match '/sso/:provider/register', to: 'users#register', as: 'sso_register',
+    via: [ :get, :post ], constraints: SsoProviderConstraint.new
 
   match 'login', to: 'user_sessions#new', as: 'login'
   match 'logout', to: 'user_sessions#destroy', as: 'logout'

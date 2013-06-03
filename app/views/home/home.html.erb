@@ -1,3 +1,4 @@
+<% if current_user %>
 <%=content_tag :h1, "Welcome, #{current_user.first_name}" %>
 
 <%=content_tag :div, class: "tabbable" do %>
@@ -18,4 +19,5 @@
     <% end %>
   <% end %>
 <% end %>
-
+<% else %>
+<% end %>

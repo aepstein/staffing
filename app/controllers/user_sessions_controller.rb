@@ -4,19 +4,32 @@ class UserSessionsController < ApplicationController
 
   LOGIN_NOTICE = "You logged in successfully."
   LOGOUT_NOTICE = "You logged out successfully."
-
-  # GET /login
-  def new
-    respond_to do |format|
-      format.html do
-        if sso_net_id && current_user.blank?
-          redirect_to register_new_user_path, flash: { notice: 'You must register to access this page.' }
-        else
-          render action: :new
-        end
+  
+  # /sso/:provider/login
+  def sso_login
+    if sso_net_id
+      if current_user.blank?
+        redirect_to sso_register_path, flash: { notice: 'You must register to access this page.' }
+      else
+        redirect_to root_url, notice: LOGIN_NOTICE
       end
+    else
+      render action: :new
     end
   end
+
+  # GET /login
+#  def new
+#    respond_to do |format|
+#      format.html do
+#        if sso_net_id && current_user.blank?
+#          redirect_to sso_register_path, flash: { notice: 'You must register to access this page.' }
+#        else
+#          render action: :new
+#        end
+#      end
+#    end
+#  end
 
   # POST /user_session
   def create

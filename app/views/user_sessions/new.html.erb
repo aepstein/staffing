@@ -1,5 +1,19 @@
 <%=content_tag :h1, "Login" %>
 
+<% if Staffing::Application.sso_providers.any? %>
+<%=content_tag :p do %>
+Log in using your single sign on identity from a supported provider:
+<% end %>
+
+<%=render partial: 'user_sessions/sso_providers',
+  object: Staffing::Application.sso_providers %>
+  
+<%=content_tag :p do %>
+Alternatively, if you have a username and password unique to this service, you
+may use that local credential here:
+<% end %>
+<% end %>
+
 <%= form_tag user_session_path, class: "form-horizontal" do %>
   <%=content_tag :div, class: 'control-group' do %>
     <%=label_tag :net_id, 'Net Id', class: 'control-label' %>

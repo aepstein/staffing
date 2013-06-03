@@ -22,6 +22,14 @@ module Staffing
     def self.app_config
       @@app_config ||= YAML.load(File.read(File.expand_path('../application.yml', __FILE__)))[Rails.env]
     end
+    
+    def self.sso_providers
+      @@app_config_sso_providers ||= if app_config['sso_providers']
+        app_config['sso_providers']
+      else
+        {}
+      end
+    end
 
   end
 end
