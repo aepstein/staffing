@@ -12,7 +12,10 @@ Tabulous.setup do
       link_path { users_path }
       visible_when { permitted_to?( :staff, :users ) }
       enabled_when { true }
-      active_when { a_subtab_is_active }
+      active_when do
+        a_subtab_is_active
+        in_action('any').of_controller('memberships')
+      end
     end
     authorities_subtab do
       text { 'Authorities' }
