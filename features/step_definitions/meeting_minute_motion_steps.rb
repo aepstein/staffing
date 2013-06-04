@@ -8,9 +8,9 @@ When /^I create a minute motion for the meeting with (past|current|default) peri
   visit new_meeting_motion_path( @meeting )
   if period == 'default'
   elsif period == 'current'
-    select @current.to_s.squeeze(" "), from: 'Period'
+    select @current.to_s.strip.squeeze(" "), from: 'Period'
   else
-    select @past.to_s.squeeze(" "), from: 'Period'
+    select @past.to_s.strip.squeeze(" "), from: 'Period'
   end
   within_fieldset("Meeting Segments") do
     within_fieldset(@meeting.meeting_items.first.to_s) do

@@ -5,7 +5,9 @@ Tabulous.setup do
       link_path { home_path }
       visible_when { true }
       enabled_when { true }
-      active_when { in_action('any').of_controller('home') }
+      active_when do
+        in_action('any').of_controller('home')
+      end
     end
     admin_tab do
       text { 'Administration' }
@@ -15,6 +17,8 @@ Tabulous.setup do
       active_when do
         a_subtab_is_active
         in_action('any').of_controller('memberships')
+        in_action('any').of_controller('membership_requests')
+        in_action('any').of_controller('motion_comments')
       end
     end
     authorities_subtab do
@@ -99,7 +103,9 @@ Tabulous.setup do
       link_path { reviewable_memberships_path }
       visible_when { current_user && current_user.authorities.prospective.any? }
       enabled_when { true }
-      active_when { a_subtab_is_active }
+      active_when do
+        a_subtab_is_active
+      end
     end
     active_memberships_subtab do
       text { 'Active Memberships' }

@@ -172,6 +172,7 @@ When /^I update the user as (admin|staff|owner)$/ do |role|
 end
 
 When /^I register$/ do
+  visit sso_register_path( provider: 'cornell', params: { sso_net_id: @net_id } )
   step %{I fill in the user as owner}
   click_button 'Register'
 end
