@@ -126,6 +126,15 @@ Then /^I may( not)? decline the membership$/ do |negate|
   step %{I should#{negate} be authorized}
 end
 
+Then /^I may( not)? review the membership for renewal$/ do |negate|
+  visit renewable_reviewable_memberships_path
+  if negate.blank?
+    page.should have_selector "#membership-#{@membership.id}"
+  else
+    page.should have_no_selector "#membership-#{@membership.id}"
+  end
+end
+
 When /^I attempt to create a (past|current|future|pending|recent) membership as (?:(current|pending|future) )?(staff|authority)$/ do |member_tense, relation_tense, relation|
   role = case relation
   when 'staff'

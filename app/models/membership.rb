@@ -20,6 +20,11 @@ class Membership < ActiveRecord::Base
     inverse_of: :renewed_memberships
   belongs_to :declined_by_user, class_name: 'User',
     inverse_of: :declined_memberships
+  has_one :authority, through: :position
+  has_many :review_authorized_memberships, through: :authority,
+    source: :authorized_memberships, conditions: lambda { |membership|
+      [ "" ]
+    }
   has_many :enrollments, primary_key: :position_id,
     foreign_key: :position_id
   has_many :renewed_memberships, class_name: 'Membership',
