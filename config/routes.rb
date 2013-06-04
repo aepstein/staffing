@@ -115,12 +115,14 @@ Staffing::Application.routes.draw do
   resources :quizzes do
     resources :questions, only: [ :index ]
   end
-  scope 'review', as: :reviewable, defaults: { review: true } do
-    resources :memberships, only: [ :index ] do
+  namespace :review do
+    resources :memberships, only: [] do
       collection do
-        get :active
+        get :active, :renewable, :declined
       end
     end
+  end
+  scope 'review', as: :reviewable, defaults: { review: true } do
     resources :membership_requests, only: [ :index ] do
       collection do
         get :active, :inactive, :rejected
@@ -129,10 +131,6 @@ Staffing::Application.routes.draw do
   end
   resources :schedules
   resources :users do
-#    new do
-#      get :register
-#      post :register
-#    end
     member do
       get :resume, :tent
     end
