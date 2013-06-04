@@ -111,13 +111,13 @@ authorization do
     end
     has_permission_on :memberships, to: [ :decline ], join_by: :and do
       if_attribute declined_at: is { nil }, starts_at: lte { Time.zone.today },
-        renew_until: is_not { nil }, position: { renewable: true,
+        renew_until: gte { Time.zone.today }, position: {
         authority: { authorized_enrollments: {
         votes: gt { 0 },
         memberships: {
         user_id: is { user.id },
         starts_at: lte { object.renew_until },
-        ends_at: gt { [ object.ends_at, ( Time.zone.today - 1.day ) ].max },
+        ends_at: gt { object.ends_at }
       } } } }
     end
     has_permission_on :membership_requests, to: [ :manage, :show ] do

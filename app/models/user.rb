@@ -85,8 +85,8 @@ class User < ActiveRecord::Base
   has_many :renewable_memberships, through: :authorities,
     source: :memberships, uniq: true,
     conditions: lambda { |user|
-      [ "memberships_reviewable_memberships_join.starts_at <= memberships.renew_until AND " +
-        "memberships_reviewable_memberships_join.ends_at >= memberships.ends_at AND " +
+      [ "memberships_renewable_memberships_join.starts_at <= memberships.renew_until AND " +
+        "memberships_renewable_memberships_join.ends_at > memberships.ends_at AND " +
         "memberships.renew_until >= ?", Time.zone.today ] }
   has_many :sponsorships, inverse_of: :user
   has_many :motions, through: :sponsorships

@@ -27,21 +27,22 @@ Scenario Outline: Access control to decline
   Given an authorization scenario of a <member_tense> membership to which I have a <relationship> relationship
   And the position <renewable> renewable
   And the member <requested> requested renewal to <request_tense>
-  Then I <decline> decline the membership
+  Then I <review> review the membership for renewal
+  And I <decline> decline the membership
   Examples:
-    |member_tense|relationship     |renewable|requested|request_tense|decline|
-    |historic    |staff            |is       |has      |today        |may    |
-    |historic    |staff            |is not   |has      |today        |may not|
-    |historic    |staff            |is       |has not  |today        |may not|
-    |historic    |current authority|is       |has      |today        |may    |
-    |historic    |current authority|is not   |has      |today        |may not|
-    |historic    |current authority|is       |has not  |today        |may not|
-    |historic    |recent authority |is       |has      |next day     |may not|
-    |past        |pending authority|is       |has      |today        |may not|
-    |past        |pending authority|is       |has      |tomorrow     |may    |
-    |past        |pending authority|is       |has      |next day     |may not|
-    |current     |current authority|is       |has      |next day     |may not|
-    |current     |future authority |is       |has      |next day     |may    |
+    |member_tense|relationship     |renewable|requested|request_tense|review |decline|
+    |historic    |staff            |is       |has      |today        |may not|may    |
+    |historic    |staff            |is not   |has      |today        |may not|may not|
+    |historic    |staff            |is       |has not  |today        |may not|may not|
+    |historic    |current authority|is       |has      |today        |may    |may    |
+    |historic    |current authority|is not   |has      |today        |may    |may    |
+    |historic    |current authority|is       |has not  |today        |may not|may not|
+    |historic    |recent authority |is       |has      |next day     |may not|may not|
+    |past        |pending authority|is       |has      |today        |may not|may not|
+    |past        |pending authority|is       |has      |tomorrow     |may    |may    |
+    |past        |pending authority|is       |has      |next day     |may not|may not|
+    |current     |current authority|is       |has      |next day     |may not|may not|
+    |current     |future authority |is       |has      |next day     |may    |may    |
 
 @javascript
 Scenario Outline: Create/edit a membership
