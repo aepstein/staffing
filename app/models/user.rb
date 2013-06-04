@@ -81,6 +81,13 @@ class User < ActiveRecord::Base
       [ "memberships_reviewable_memberships_join.starts_at <= memberships.ends_at AND " +
         "memberships_reviewable_memberships_join.ends_at >= memberships.starts_at AND " +
         "memberships.ends_at >= ?", Time.zone.today ] }
+  # User has permission to renew or decline renewal
+  has_many :renewable_memberships, through: :authorities,
+    source: :memberships, uniq: true,
+    conditions: lambda { |user|
+      [ "memberships_reviewable_memberships_join.starts_at <= memberships.renew_until AND " +
+        "memberships_reviewable_memberships_join.ends_at >= memberships.ends_at AND " +
+        "memberships.renew_until >= ?", Time.zone.today ] }
   has_many :sponsorships, inverse_of: :user
   has_many :motions, through: :sponsorships
   has_many :peer_motions, through: :committees, source: :motions,
@@ -95,7 +102,7 @@ class User < ActiveRecord::Base
     def current
       scoped.where(
         'memberships.starts_at <= :d AND memberships.ends_at >= :d',
-        { :d => Time.zone.today }
+        { d: Time.zone.today }
       )
     end
     def requestable
