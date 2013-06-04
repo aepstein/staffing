@@ -3,16 +3,7 @@ module Review
     before_filter :require_user
     include ControllerModules::MembershipsController
     expose :q_scope do
-      case params[:action]
-      when 'assigned'
-        current_user.reviewable_memberships.assigned
-      when 'unassigned'
-        current_user.reviewable_memberships.unassigned
-      when 'renewable'
-        current_user.renewable_memberships.unrenewed.renewal_undeclined
-      when 'declined'
-        current_user.renewable_memberships.renewal_declined
-      end
+      review_scope :memberships, params[:action]
     end
     
     def assigned; index; end

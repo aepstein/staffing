@@ -108,28 +108,28 @@ Tabulous.setup do
       end
     end
     assigned_memberships_subtab do
-      text { 'Assigned Memberships' }
+      text { "Assigned Memberships (#{review_scope( :memberships, 'assigned' ).count})" }
       link_path { assigned_reviewable_memberships_path }
       visible_when { true }
       enabled_when { true }
       active_when { in_action('assigned').of_controller('review/memberships') }
     end
     unassigned_memberships_subtab do
-      text { 'Unassigned Memberships' }
+      text { "Unassigned Memberships (#{review_scope( :memberships, 'unassigned' ).count})" }
       link_path { unassigned_reviewable_memberships_path }
       visible_when { true }
       enabled_when { true }
       active_when { in_action('unassigned').of_controller('review/memberships') }
     end
     declined_memberships_subtab do
-      text { 'Declined Renewal Memberships' }
+      text { "Declined Renewal Memberships (#{review_scope( :memberships, 'declined' ).count})" }
       link_path { declined_reviewable_memberships_path }
       visible_when { true }
       enabled_when { true }
       active_when { in_action('declined').of_controller('review/memberships') }
     end
     unrenewed_memberships_subtab do
-      text { 'Renewal Requested Memberships' }
+      text { "Renewal Requested Memberships (#{review_scope( :memberships, 'renewable' ).count})" }
       link_path { renewable_reviewable_memberships_path }
       visible_when { true }
       enabled_when { true }
