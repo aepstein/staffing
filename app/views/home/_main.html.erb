@@ -2,27 +2,6 @@
 <%= link_to 'Click here', edit_user_path( current_user ) %> to update your personal and contact information.  If you are not <%=h current_user.name %>, please close the web browser completely and log in using your own credentials.
 </p>
 
-<% if current_user.authorities.authorized(0).length > 0 -%>
-<h2>Your Authorities</h2>
-
-<p>
-You may review membership requests and update memberships for the following authorities:
-</p>
-
-<ul>
-<% current_user.authorities.prospective.each do |authority| %>
-  <%= content_tag :li, id: "authority-#{authority.id}" do %>
-    <%= link_to h( authority ), authority %>
-    (<%= link_to 'renewable memberships', renewable_authority_memberships_path( authority ) %>)
-    (<%= link_to 'active membership requests', active_authority_membership_requests_path( authority ) %>)
-    (<%= link_to 'rejected membership requests', rejected_authority_membership_requests_path( authority ) %>)
-    (<%= link_to 'current memberships', current_authority_memberships_path( authority ) %>)
-    (<%= link_to 'future memberships', future_authority_memberships_path( authority ) %>)
-  <% end %>
-<% end %>
-</ul>
-
-<% end -%>
 <h2>Your Memberships</h2>
 
 <p>
