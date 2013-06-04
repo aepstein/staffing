@@ -313,6 +313,44 @@ describe Membership do
     new_designees.size.should eql 1
     new_designees.first.committee.should eql enrollment_no_designee.committee
   end
+  
+  context "decline renewal" do
+    let(:membership) { create( :membership, renew_until: ( Time.zone.today + 2.years ) ) }
+    let(:decline_attributes) { { decline_comment: "A decline message" } }
+    let(:decliner) { create(:user, admin: true) }
+    
+    it "should decline renewal with correct arguments" do
+      decline_membership
+      membership.errors.each { |k,v| puts "#{k}: #{v}" }
+      decline_membership.should be_true
+      membership.decline_comment.should eql decline_attributes[:decline_comment]
+      membership.declined_at.should_not be_nil
+      membership.declined_by_user.should_not be_nil
+    end
+    
+    it "should not decline if already renewed" do
+      next_period = create(:period, schedule: membership.period.schedule,
+        starts_at: membership.period.ends_at + 1.day)
+      new_membership = create(:membership, user: membership.user,
+        position: membership.position, period: next_period )
+      membership.renewed_by_membership = new_membership
+      membership.save!
+      decline_membership.should be_false
+    end
+    
+    it "should clear decline records if user changes" do
+      decline_membership
+      membership.user = create(:user)
+      membership.save!
+      membership.declined_at.should be_nil
+      membership.declined_by_user.should be_nil
+      membership.decline_comment.should be_nil
+    end
+    
+    def decline_membership
+      membership.decline_renewal( decline_attributes, user: decliner )
+    end
+  end
 
   context "claim membership_request" do
     let( :committee ) { enrollment.committee }

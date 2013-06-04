@@ -10,7 +10,7 @@ class Membership < ActiveRecord::Base
 
   include UserNameLookup
 
-  attr_accessor :modifier
+  attr_accessor :modifier, :in_decline
 
   belongs_to :user, inverse_of: :memberships
   belongs_to :period, inverse_of: :memberships
@@ -194,23 +194,31 @@ class Membership < ActiveRecord::Base
   validates :ends_at, timeliness: { type: :date, on_or_after: :starts_at }
   validates :renew_until, timeliness: { type: :date, after: :ends_at,
     allow_blank: true }
+  validates :declined_by_user, :decline_comment, presence: true, if: :in_decline
   validate :must_be_within_period, :concurrent_memberships_must_not_exceed_slots
   validate :modifier_must_overlap, if: :modifier
+  validate :must_fulfill_decline_requirements, if: :in_decline
 
-  before_save :clear_notices, :claim_membership_request,
+  before_save :clear_on_user_change, :claim_membership_request,
     :unclaim_membership_request, :undecline_if_renewed
   after_save :populate_unassigned, :close_claimed_membership_request,
     :claim_renewed_memberships
   after_destroy :populate_unassigned
 
-  def decline_renewal(decliner_attributes, options={})
-    assign_attributes decliner_attributes, as: :decliner
-    if declined_at?
-      errors.add :base, "already declined renewal"
+  def must_fulfill_decline_requirements
+    if renewed_by_membership
+      errors.add :base, "already renewed"
     end
+  end
+
+  def decline_renewal(decliner_attributes, options={})
+    self.in_decline = true
+    assign_attributes decliner_attributes, as: :decliner
     self.declined_at = Time.zone.now
     self.declined_by_user = options.delete(:user)
-    save
+    out = save
+    self.in_decline = false
+    out
   end
 
   def self.concurrent_counts( period, position_id )
@@ -328,9 +336,14 @@ class Membership < ActiveRecord::Base
   end
 
   # If the user is blank, clear the notice fields
-  def clear_notices
-    return true unless user.blank?
-    notices.clear
+  def clear_on_user_change
+    if persisted? && user_id_changed?
+      notices.clear
+      [ :declined_at, :declined_by_user, :decline_comment, :renew_until,
+        :renewal_confirmed_at, :renewed_by_membership ].each do |field|
+        self.send "#{field}=", nil
+      end
+    end
     true
   end
   
