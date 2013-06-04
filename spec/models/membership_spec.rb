@@ -97,6 +97,20 @@ describe Membership do
     end
 
   end
+  
+  context 'renewal preferences' do
+    let(:membership) { create( :renewable_membership,
+      renewal_confirmed_at: Time.zone.now,
+      renewed_by_membership: create(:membership) ) }
+      
+    it "should reset renewal preferences on user changes" do
+      membership.user = create(:user)
+      membership.save!
+      membership.renew_until.should be_nil
+      membership.renewed_by_membership.should be_nil
+      membership.renewal_confirmed_at.should be_nil
+    end
+  end
 
   context 'description' do
     let(:membership) { create(:membership) }
