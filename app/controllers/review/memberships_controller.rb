@@ -4,8 +4,10 @@ module Review
     include ControllerModules::MembershipsController
     expose :q_scope do
       case params[:action]
-      when 'active'
-        current_user.reviewable_memberships
+      when 'assigned'
+        current_user.reviewable_memberships.assigned
+      when 'unassigned'
+        current_user.reviewable_memberships.unassigned
       when 'renewable'
         current_user.renewable_memberships.unrenewed.renewal_undeclined
       when 'declined'
@@ -13,7 +15,8 @@ module Review
       end
     end
     
-    def active; index; end
+    def assigned; index; end
+    def unassigned; index; end
     def renewable; index; end
     def declined; index; end
 

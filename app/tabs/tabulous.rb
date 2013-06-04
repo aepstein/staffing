@@ -107,12 +107,33 @@ Tabulous.setup do
         a_subtab_is_active
       end
     end
-    active_memberships_subtab do
-      text { 'Active Memberships' }
+    assigned_memberships_subtab do
+      text { 'Assigned Memberships' }
       link_path { active_reviewable_memberships_path }
       visible_when { true }
       enabled_when { true }
-      active_when { in_action('active').of_controller('review/memberships') }
+      active_when { in_action('assigned').of_controller('review/memberships') }
+    end
+    unassigned_memberships_subtab do
+      text { 'Unassigned Memberships' }
+      link_path { active_reviewable_memberships_path }
+      visible_when { true }
+      enabled_when { true }
+      active_when { in_action('unassigned').of_controller('review/memberships') }
+    end
+    declined_memberships_subtab do
+      text { 'Declined Renewal Memberships' }
+      link_path { declined_reviewable_memberships_path }
+      visible_when { true }
+      enabled_when { true }
+      active_when { in_action('declined').of_controller('review/memberships') }
+    end
+    unrenewed_memberships_subtab do
+      text { 'Renewal Requested Memberships' }
+      link_path { renewable_reviewable_memberships_path }
+      visible_when { true }
+      enabled_when { true }
+      active_when { in_action('renewable').of_controller('review/memberships') }
     end
     active_membership_requests_subtab do
       text { 'Active Membership Requests' }

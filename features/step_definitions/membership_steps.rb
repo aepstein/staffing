@@ -105,7 +105,7 @@ Then /^I may( not)? see the membership$/ do |negate|
 end
 
 Then /^I may( not)? review the membership$/ do |negate|
-  visit(reviewable_memberships_url)
+  visit(assigned_reviewable_memberships_url)
   if negate.blank?
     page.should have_selector( "#membership-#{@membership.id}" )
   else

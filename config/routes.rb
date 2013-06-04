@@ -115,10 +115,10 @@ Staffing::Application.routes.draw do
   resources :quizzes do
     resources :questions, only: [ :index ]
   end
-  namespace :review do
+  namespace :review, as: :reviewable do
     resources :memberships, only: [] do
       collection do
-        get :active, :renewable, :declined
+        get :assigned, :unassigned, :renewable, :declined
       end
     end
   end
