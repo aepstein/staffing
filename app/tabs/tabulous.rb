@@ -136,14 +136,14 @@ Tabulous.setup do
       active_when { in_action('renewable').of_controller('review/memberships') }
     end
     active_membership_requests_subtab do
-      text { 'Active Membership Requests' }
+      text { "Active Membership Requests (#{review_scope( :membership_requests, 'active' ).count})" }
       link_path { active_reviewable_membership_requests_path }
       visible_when { true }
       enabled_when { true }
       active_when { in_action('active').of_controller('review/membership_requests') }
     end
     inactive_membership_requests_subtab do
-      text { 'Inactive Membership Requests' }
+      text { "Inactive Membership Requests (#{review_scope( :membership_requests, 'inactive' ).count})" }
       link_path { inactive_reviewable_membership_requests_path }
       visible_when { true }
       enabled_when { true }

@@ -14,15 +14,25 @@ class ApplicationController < ActionController::Base
   end
   
   def review_scope(controller, action)
-    case action.to_s
-    when 'assigned'
-      current_user.reviewable_memberships.assigned
-    when 'unassigned'
-      current_user.reviewable_memberships.unassigned
-    when 'renewable'
-      current_user.renewable_memberships.unrenewed.renewal_undeclined
-    when 'declined'
-      current_user.renewable_memberships.renewal_declined
+    case controller.to_s
+    when 'memberships'
+      case action.to_s
+      when 'assigned'
+        current_user.reviewable_memberships.assigned
+      when 'unassigned'
+        current_user.reviewable_memberships.unassigned
+      when 'renewable'
+        current_user.renewable_memberships.unrenewed.renewal_undeclined
+      when 'declined'
+        current_user.renewable_memberships.renewal_declined
+      end
+    when 'membership_requests'
+      case action.to_s
+      when 'active'
+        current_user.reviewable_membership_requests.active
+      when 'inactive'
+        current_user.reviewable_membership_requests.inactive
+      end
     end
   end
 end

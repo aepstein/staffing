@@ -1,0 +1,30 @@
+<h1>Review <%= params[:action] %> membership requests</h1>
+
+<%= form_for q, url: request.fullpath, method: :get do |form| %>
+  <p>
+    <%= form.label :user_name_cont,'User' %>
+    <%= form.text_field :user_name_cont %>
+  </p>
+  <p>
+    <%= form.label :committee_name_cont, 'Committee' %>
+    <%= form.text_field :committee_name_cont %>
+  </p>
+  <p>
+    <%= form.label :starts_at_gt, 'Desired start after' %>
+    <%= form.text_field :starts_at_gt %>
+  </p>
+  <p>
+    <%= form.label :ends_at_gt, 'Desired end before' %>
+    <%= form.text_field :ends_at_lt %>
+  </p>
+  <p>
+    <%= submit_tag 'Search' %>
+  </p>
+<% end %>
+
+<%= paginate membership_requests %>
+
+<%= render partial: "membership_requests/membership_requests", object: membership_requests %>
+
+<%= paginate membership_requests %>
+

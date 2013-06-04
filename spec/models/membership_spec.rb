@@ -629,8 +629,8 @@ describe Membership do
         m = past_period.memberships.
         where { |m| m.position_id.eq( membership.position_id ) }.first
         m.user = membership.user
-        m.renew_until = Time.zone.today + 1.year
         m.save!
+        m.update_attribute( :renew_until, ( Time.zone.today + 1.year ) )
         m
       }
 

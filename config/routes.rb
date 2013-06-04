@@ -121,11 +121,9 @@ Staffing::Application.routes.draw do
         get :assigned, :unassigned, :renewable, :declined
       end
     end
-  end
-  scope 'review', as: :reviewable, defaults: { review: true } do
-    resources :membership_requests, only: [ :index ] do
+    resources :membership_requests, only: [] do
       collection do
-        get :active, :inactive, :rejected
+        get :active, :inactive
       end
     end
   end
