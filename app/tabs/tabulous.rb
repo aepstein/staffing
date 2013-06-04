@@ -109,14 +109,14 @@ Tabulous.setup do
     end
     assigned_memberships_subtab do
       text { 'Assigned Memberships' }
-      link_path { active_reviewable_memberships_path }
+      link_path { assigned_reviewable_memberships_path }
       visible_when { true }
       enabled_when { true }
       active_when { in_action('assigned').of_controller('review/memberships') }
     end
     unassigned_memberships_subtab do
       text { 'Unassigned Memberships' }
-      link_path { active_reviewable_memberships_path }
+      link_path { unassigned_reviewable_memberships_path }
       visible_when { true }
       enabled_when { true }
       active_when { in_action('unassigned').of_controller('review/memberships') }

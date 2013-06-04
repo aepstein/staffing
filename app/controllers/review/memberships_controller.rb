@@ -24,7 +24,7 @@ module Review
 
     def index
       respond_to do |format|
-        format.html { render action: 'index' }
+        format.html { render :index }
         format.csv { csv_index }
       end
     end

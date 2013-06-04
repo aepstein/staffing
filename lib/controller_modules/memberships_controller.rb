@@ -1,8 +1,11 @@
 module ControllerModules
   module MembershipsController
-    module ClassMethods
+    def self.included(receiver)
+      receiver.send :include, InstanceMethods
+      receiver.expose( :q ) { q_scope.search params[:q] }
+      receiver.expose( :memberships ) { q.result.ordered.page params[:page] }
     end
-  
+
     module InstanceMethods
       protected
       def csv_index
@@ -34,16 +37,6 @@ module ControllerModules
         send_data csv_string, disposition: "attachment; filename=#{params[:action]}-memberships.csv",
           type: :csv
       end
-
-      def populate_designees
-        membership.designees.populate
-      end
-    end
-  
-    included do
-      extend ClassMethods
-      expose( :q ) { q_scope.search params[:q] }
-      expose( :memberships ) { q.result.ordered.page params[:page] }
-    end
+    end  
   end
 end
