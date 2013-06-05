@@ -16,7 +16,7 @@ module ControllerModules
           q.result.all.each do |membership|
             next unless permitted_to?( :show, membership )
             membership.enrollments.each do |enrollment|
-              next if committee && (enrollment.committee_id != committee.id)
+              next if defined?(committee) && committee && (enrollment.committee_id != committee.id)
               csv << ( [ membership.user_id? ? membership.user.first_name : '',
                          membership.user_id? ? membership.user.last_name : '',
                          membership.user_id? ? membership.user.net_id : '',
