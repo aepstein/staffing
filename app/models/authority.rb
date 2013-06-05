@@ -13,7 +13,8 @@ class Authority < ActiveRecord::Base
 
   belongs_to :committee, inverse_of: :authorities
   has_many :positions, inverse_of: :authority
-  has_many :membership_requests, through: :positions
+  has_many :membership_requests, through: :positions,
+    source: :candidate_membership_requests
   has_many :enrollments, through: :positions
   has_many :authorized_enrollments, primary_key: :committee_id,
     foreign_key: :committee_id, class_name: 'Enrollment'

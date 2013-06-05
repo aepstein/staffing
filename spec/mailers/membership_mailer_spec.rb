@@ -126,6 +126,9 @@ This notice is to inform you that you have begun a membership in
 #{membership.starts_at.to_formatted_s :long_ordinal} and ending on
 #{membership.ends_at.to_formatted_s :long_ordinal}.
 EOS
+      both_parts_should_match <<EOS.gsub(/\s+/, " ").strip
+You will not be asked to renew in the future.
+EOS
       text_part_should_match /Welcome from the \*authority\*\./
       html_part_should_match /Welcome from the <em>authority<\/em>\./
       text_part_should_match /Welcome to the \*position\*\./
@@ -139,6 +142,16 @@ EOS
       both_parts_should_match /member of Important Committee with 1 vote/
       text_part_should_match /Welcome to the \*committee\*\./
       html_part_should_match /Welcome to the <em>committee<\/em>./
+    end
+    
+    context "renewable membership" do
+      let(:position) { create(:position, renewable: true) }
+      
+      it "should indicate renewal will be requested at a later date" do
+        both_parts_should_match <<EOS.gsub(/\s+/, " ").strip
+You will be offered the opportunity to renew in the future.
+EOS
+      end
     end
   end
 

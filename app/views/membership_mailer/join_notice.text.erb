@@ -21,6 +21,8 @@ Concurrent with your appointment to this position, you hold the following commit
 <% end -%>
 <% end -%>
 
+You will <%if @membership.renewal_candidate?%>be offered the opportunity<% else %>not be asked<% end %> to renew in the future.
+
 Best regards,
 
 <%= @membership.position.authority.effective_contact_name %>

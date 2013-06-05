@@ -1,64 +1,62 @@
 require 'spec_helper'
 
 describe MembershipRequest do
-  before(:each) do
-    @membership_request = create(:membership_request)
-  end
+  let(:membership_request) { build(:membership_request) }
 
   it "should create a new instance given valid attributes" do
-    @membership_request.id.should_not be_nil
+    membership_request.save!
   end
 
-  it  'should not save without a start date' do
-    @membership_request.starts_at = nil
-    @membership_request.save.should be_false
+  it 'should not save without a start date' do
+    membership_request.starts_at = nil
+    membership_request.save.should be_false
   end
 
-  it  'should not save without an end date' do
-    @membership_request.ends_at = nil
-    @membership_request.save.should be_false
+  it 'should not save without an end date' do
+    membership_request.ends_at = nil
+    membership_request.save.should be_false
   end
 
-  it  'should not save with an end date that is before the start date' do
-    @membership_request.ends_at = @membership_request.starts_at
-    @membership_request.save.should be_false
+  it 'should not save with an end date that is before the start date' do
+    membership_request.ends_at = membership_request.starts_at
+    membership_request.save.should be_false
   end
 
-  it  'should not save without a committee' do
-    @membership_request.committee = nil
-    @membership_request.save.should be_false
+  it 'should not save without a committee' do
+    membership_request.committee = nil
+    membership_request.save.should be_false
   end
 
   it  'should not save without a user' do
-    @membership_request.user = nil
-    @membership_request.save.should be_false
+    membership_request.user = nil
+    membership_request.save.should be_false
   end
 
   it  'should not save a duplicate for certain user and committee' do
+    membership_request.save!
     duplicate = build(:membership_request)
-    duplicate.user = @membership_request.user
-    duplicate.committee = @membership_request.committee
+    duplicate.user = membership_request.user
+    duplicate.committee = membership_request.committee
     duplicate.save.should be_false
   end
 
   it 'should not create if for a committee and the user does not meet status requirements of the requestable positions for that committee' do
-    committee = create(:requestable_committee)
-    position = committee.positions.first
+    position = membership_request.committee.positions.first
     position.statuses = %w( undergrad )
     position.save!
-    membership_request = build(:membership_request, committee: committee)
+#    membership_request = build(:membership_request, committee: committee)
     membership_request.user.statuses.should_not include 'undergrad'
     membership_request.save.should be_false
   end
 
   it  'should have an questions method that returns only questions in the quiz of requestable if it is a position' do
     allowed = create(:question)
-    create(:quiz_question, quiz: @membership_request.requestable_positions.first.quiz,
+    create(:quiz_question, quiz: membership_request.requestable_positions.first.quiz,
       question: allowed, position: 1 )
-    @membership_request.requestable_positions.first.quiz.association(:questions).reset
+    membership_request.requestable_positions.first.quiz.association(:questions).reset
     unallowed = create(:question)
-    @membership_request.questions.size.should eql 1
-    @membership_request.questions.should include allowed
+    membership_request.questions.size.should eql 1
+    membership_request.questions.should include allowed
   end
 
   it  'should have an questions method that returns only questions in the quiz of allowed positions of associated committee' do
@@ -89,10 +87,11 @@ describe MembershipRequest do
     create(:enrollment, committee: committee, position: unallowed_position_membership_requestability)
     committee.reload
 
-    membership_request = build(:membership_request, :committee => committee, :user => user)
-    membership_request.questions.length.should eql 1
-    membership_request.questions.should include allowed
-    @membership_request.questions.length.should eql 0
+    questions_request = build(:membership_request, :committee => committee, :user => user)
+    questions_request.questions.length.should eql 1
+    questions_request.questions.should include allowed
+    membership_request.save!
+    membership_request.questions.length.should eql 0
   end
 
   it  'should have answers.populate that populates answers for questions not yet built' do
@@ -146,12 +145,13 @@ describe MembershipRequest do
   it  'should have a expired and unexpired scopes' do
     older = create(:expired_membership_request)
     old = create(:expired_membership_request, :ends_at => Date.today)
-    @membership_request.ends_at.should > Date.today
+    membership_request.save!
+    membership_request.ends_at.should > Date.today
     MembershipRequest.expired.length.should eql 2
     MembershipRequest.expired.should include older
     MembershipRequest.expired.should include old
     MembershipRequest.unexpired.length.should eql 1
-    MembershipRequest.unexpired.should include @membership_request
+    MembershipRequest.unexpired.should include membership_request
   end
 
   it  'should claim unrequested memberships that the membership_request could apply to' do
@@ -165,57 +165,57 @@ describe MembershipRequest do
   end
 
   context 'rejection' do
+    let(:membership_request) { create(:membership_request) }
     before(:each) do
-      MembershipRequest.reject_notice_pending.length.should eql 0
       @admin = create(:user, admin: true)
       @authorized = create(:user)
       enrollment = create(:enrollment)
-      @authority = @membership_request.authorities.first
+      @authority = membership_request.authorities.first
       @authority.committee = enrollment.committee
       @authority.save.should be_true
       membership = create(:membership, :position => enrollment.position, :user => @authorized )
       @unauthorized = create(:user)
-      @membership_request.rejected_by_user = @admin
-      @membership_request.rejected_by_authority = @authority
-      @membership_request.rejection_comment = 'a comment'
+      membership_request.rejected_by_user = @admin
+      membership_request.rejected_by_authority = @authority
+      membership_request.rejection_comment = 'a comment'
     end
 
     it  'should save with valid parameters from administrator' do
-      @membership_request.reject!
+      membership_request.reject!
     end
 
     it  'should save with valid parameters from authorized user for the authority' do
-      @membership_request.rejected_by_user = @authorized
-      @membership_request.reject!
+      membership_request.rejected_by_user = @authorized
+      membership_request.reject!
     end
 
     it  'should not save with valid parameters from unauthorized user for the authority' do
-      @membership_request.rejected_by_user = @unauthorized
-      @membership_request.reject.should be_false
+      membership_request.rejected_by_user = @unauthorized
+      membership_request.reject.should be_false
     end
 
     it  'should not save if rejected without a comment' do
-      @membership_request.rejection_comment = nil
-      @membership_request.reject.should be_false
+      membership_request.rejection_comment = nil
+      membership_request.reject.should be_false
     end
 
     it  'should have an unreject method that removes rejection status' do
-      @membership_request.reject!
-      @membership_request.reactivate.should be_true
-      @membership_request.rejected?.should be_false
+      membership_request.reject!
+      membership_request.reactivate.should be_true
+      membership_request.rejected?.should be_false
     end
 
     it  'should have a send_reject_notice! method which sends a rejection notice and saves' do
-      @membership_request.reject!
-      @membership_request.send_reject_notice!
-      @membership_request.association(:notices).reset
-      @membership_request.notices.for_event('reject').should_not be_empty
+      membership_request.reject!
+      membership_request.send_reject_notice!
+      membership_request.association(:notices).reset
+      membership_request.notices.for_event('reject').should_not be_empty
     end
 
     it 'should have a reject_notice_pending scope' do
-      @membership_request.reject!
+      membership_request.reject!
       MembershipRequest.reject_notice_pending.length.should eql 1
-      @membership_request.send_reject_notice!
+      membership_request.send_reject_notice!
       MembershipRequest.reject_notice_pending.length.should eql 0
     end
   end

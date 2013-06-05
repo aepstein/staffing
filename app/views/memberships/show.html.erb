@@ -30,13 +30,31 @@
 <% end %>
 
 <% if membership.renewed_memberships.any? %>
+<%=content_tag :h2, "Renewed memberships" %>
+
 <p>
-<b>Renewed memberships:</b>
+This membership renewed the following memberships:
 </p>
 
-<%=render partial: 'memberships', object: membership.renewed_memberships,
+<%=render partial: 'memberships/memberships', object: membership.renewed_memberships,
   locals: { user: membership.user } %>
 <% end %>
+
+<% if current_user && membership.renew_until? && membership.unrenewed? &&
+  current_user.reviewable_memberships.would_renew( membership ).any? %>
+<%=content_tag :h2, "Renewal options" %>
+<p>
+Incumbent has requested renewal until <%= membership.renew_until.to_s :rfc822 %>.
+Appointment of the user to any of the following memberships would renew this membership:
+</p>
+
+<%=render partial: 'memberships/memberships', object: current_user.reviewable_memberships.would_renew( membership ),
+  locals: { user: membership.user } %>
+<% end %>
+
+<%=content_tag :h2, "Notices sent regarding this membership" %>
+
+<p>The following notices were sent regarding this membership:</p>
 
 <%=render partial: 'notices/notices', object: membership.notices,
   locals: { notifiable: membership } %>

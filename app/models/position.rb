@@ -102,7 +102,8 @@ class Position < ActiveRecord::Base
     conditions: { requestable: true }
   has_many :requestable_committees, through: :requestable_enrollments,
     source: :committee, conditions: { active: true }
-  has_many :membership_requests, include: :user, through: :requestable_committees,
+  has_many :candidate_membership_requests, include: :user,
+    through: :requestable_committees, source: :membership_requests,
     conditions: "enrollments.position_id IN " +
       "(SELECT positions.id FROM positions WHERE ( positions.statuses_mask = 0 OR " +
       "(positions.statuses_mask & users.statuses_mask) > 0 ) AND " +
@@ -116,7 +117,11 @@ class Position < ActiveRecord::Base
       "#{status.nil? ? 0 : 2**User::STATUSES.index(status.to_s)}) " +
       "> 0 OR positions.statuses_mask = 0" )
   }
-  scope :assignable_to, lambda { |user| with_status(user.status).active }
+  scope :with_statuses_mask, lambda { |statuses_mask|
+    where( [ "positions.statuses_mask = 0 OR positions.statuses_mask & ? > 0",
+      statuses_mask ] )
+  }
+  scope :assignable_to, lambda { |user| with_statuses_mask(user.statuses_mask).active }
   scope :notifiable, where( notifiable: true )
   scope :renewable, where( renewable: true )
   scope :unrenewable, where( renewable: false )

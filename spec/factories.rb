@@ -6,7 +6,7 @@ FactoryGirl.define do
     question do |a|
       a.association( :question,
         quiz_questions: [ FactoryGirl.build(:quiz_question,
-          quiz: a.membership_request.requestable_positions.assignable.first.quiz,
+          quiz: a.membership_request.requestable_positions.first.quiz,
           question: nil) ] )
     end
     content 'blue'

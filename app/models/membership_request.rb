@@ -51,7 +51,7 @@ class MembershipRequest < ActiveRecord::Base
       proxy_association.owner.user.memberships.
       overlap( proxy_association.owner.starts_at, proxy_association.owner.ends_at ).
       where { |m| m.position_id.in(
-        proxy_association.owner.requestable_positions.assignable.select { id }
+        proxy_association.owner.requestable_positions.scoped.select { id }
       ) }
     end
     # For each of the user's assigned memberships that is not associated with a
@@ -63,14 +63,10 @@ class MembershipRequest < ActiveRecord::Base
       end
     end
   end
-  has_many :requestable_positions, through: :committee do
-    def assignable
-      assignable_to(proxy_association.owner.user)
-    end
-    def assignable_ids
-      assignable.map(&:id)
-    end
-  end
+  has_many :requestable_positions, through: :committee,
+    conditions: Proc.new { [ "statuses_mask = 0 OR statuses_mask & ? > 0",
+      user.statuses_mask ] }
+  has_many :authorities, through: :requestable_positions
 
   belongs_to :committee, inverse_of: :membership_requests
   belongs_to :user, inverse_of: :membership_requests
@@ -156,17 +152,13 @@ class MembershipRequest < ActiveRecord::Base
     QuizQuestion.includes { question }.order { [ quiz_id, position ] }.
       group { question_id }.
       where { |q| q.quiz_id.in(
-        requestable_positions.assignable.scoped.select { quiz_id } ) }.
+        requestable_positions.scoped.select { quiz_id } ) }.
       map(&:question)
   end
-
-  def authorities
-    Authority.joins { positions }.uniq.readonly(false).where { |a| a.positions.id.in(
-      requestable_positions.assignable.select { id } ) }
-  end
-
-  def authority_ids; authorities.map(&:id); end
-
+  
+  def expired?; ends_at < Time.zone.today; end
+  def unexpired?; !expired?; end
+  
   attr_accessor :new_position
 
   def new_position_options
@@ -193,7 +185,8 @@ class MembershipRequest < ActiveRecord::Base
   protected
 
   def must_have_assignable_position
-    if requestable_positions.assignable.empty?
+    return true unless user && committee
+    if requestable_positions.scoped.count == 0
       errors.add :user, "may not request membership in the committee"
     end
   end

@@ -60,7 +60,19 @@
 </p>
 <% end %><!-- #membership-request-<%= membership_request.id %> -->
 
-<%=content_tag :h3, "Notices" %>
+<% if current_user && membership_request.active? && membership_request.unexpired? &&
+  current_user.reviewable_memberships.would_close( membership_request ).any? %>
+<%=content_tag :h2, "Appointment options" %>
+<p>
+Appointment of the user to any of the following memberships would close this request:
+</p>
+
+<%=render partial: 'memberships/memberships',
+  object: current_user.reviewable_memberships.would_close( membership_request ),
+  locals: { committee: committee } %>
+<% end %>
+
+<%=content_tag :h2, "Notices" %>
 
 <%=render partial: 'notices/notices', object: membership_request.notices,
   locals: { notifiable: membership_request } %>

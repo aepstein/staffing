@@ -21,10 +21,6 @@ class Membership < ActiveRecord::Base
   belongs_to :declined_by_user, class_name: 'User',
     inverse_of: :declined_memberships
   has_one :authority, through: :position
-  has_many :review_authorized_memberships, through: :authority,
-    source: :authorized_memberships, conditions: lambda { |membership|
-      [ "" ]
-    }
   has_many :enrollments, primary_key: :position_id,
     foreign_key: :position_id
   has_many :renewed_memberships, class_name: 'Membership',
@@ -73,7 +69,8 @@ class Membership < ActiveRecord::Base
     [ "memberships.starts_at <= ? AND memberships.ends_at >= ? AND memberships.id <> ?",
       ends_at, starts_at, id ]
   }
-  has_many :membership_requests, through: :position do
+  has_many :membership_requests, through: :position,
+    source: :candidate_membership_requests do
     def overlapping
       overlap( proxy_association.owner.starts_at, proxy_association.owner.ends_at )
     end
@@ -83,6 +80,13 @@ class Membership < ActiveRecord::Base
     def assignable; User.assignable_to( proxy_association.owner.position ); end
   end
 
+  # Memberships that would close a membership request if assigned to its user
+  scope :would_close, lambda { |membership_request|
+    unassigned.
+    overlap( membership_request.starts_at, membership_request.ends_at ).
+    where { |r| r.position_id.in( membership_request.requestable_positions.
+      scoped.select { id } ) }
+  }
   # Memberships that could be renewed by assigning the user to this membership:
   # * assigned
   # * unrenewed
@@ -100,6 +104,19 @@ class Membership < ActiveRecord::Base
       User.unscoped.select { id }.where(
         "users.statuses_mask & #{membership.position.statuses_mask} > 0"
       ) ) }
+  }
+  # Memberships that would renew this membership if the user was assigned
+  scope :would_renew, lambda { |membership|
+    unassigned.
+    equivalent_committees_with( membership.position ).
+    where { |m| m.starts_at.gt( membership.ends_at ) &
+      m.starts_at.lte( membership.renew_until ) &
+      m.position_id.in(
+      Position.unscoped.select { id }.where( [
+        "statuses_mask = 0 OR statuses_mask & ? > 0",
+        membership.user.statuses_mask
+      ] )
+    ) }
   }
   scope :ordered, joins { user.outer }.
     order { [ ends_at.desc, starts_at.desc, users.last_name, users.first_name,
@@ -267,6 +284,12 @@ class Membership < ActiveRecord::Base
   def concurrent_counts; Membership.concurrent_counts self, position_id; end
 
   def max_concurrent_count; concurrent_counts.map(&:last).max; end
+  
+  def renewal_candidate?; Membership.renewal_candidate.include? self; end
+  
+  def renewed?; renewed_by_membership_id?; end
+  
+  def unrenewed?; !renewed?; end
 
   def confirmed?
     return false unless confirmed_at?
@@ -372,7 +395,7 @@ class Membership < ActiveRecord::Base
     self.declined_at = nil if renewed_by_membership
   end
 
-  # If this renews an existing membership, mark the membership renew
+  # If this renews an existing membership, mark the membership renewed
   def claim_renewed_memberships
     return true unless user_id_changed?
     renewed_memberships.clear unless renewed_memberships.empty?
