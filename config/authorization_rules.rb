@@ -41,10 +41,6 @@ authorization do
       :memberships, :motion_comments, :positions, :schedules ],
       to: [ :show, :index ]
     has_permission_on [ :motions, :membership_requests ], to: :index
-    has_permission_on :attachments, to: :show do
-      if_permitted_to :show, :attachable
-      if_attribute attachable_type: 'MotionComment'
-    end
     has_permission_on :committees, to: :vote do
       if_attribute enrollments: {
         position_id: is_in { user.memberships.current.value_of(:position_id) },
@@ -165,7 +161,6 @@ authorization do
       if_attribute watchers: contains { user }
     end
     has_permission_on :motions, to: :show do
-      if_attribute published: true
       if_attribute sponsorships: { user_id: is { user.id } }
       if_permitted_to :clerk, :meeting
     end
@@ -220,8 +215,17 @@ authorization do
     has_permission_on :users, to: [ :edit, :update, :show, :index ] do
       if_attribute id: is { user.id }
     end
+    
+    includes :guest
   end
   role :guest do
+    has_permission_on :attachments, to: :show do
+      if_permitted_to :show, :attachable
+      if_attribute attachable_type: 'MotionComment'
+    end
+    has_permission_on :motions, to: :show do
+      if_attribute published: true
+    end
     has_permission_on :meetings, to: [ :show, :index ] do
       if_attribute published: is { true }
       if_attribute starts_at: lt { Time.zone.now }
