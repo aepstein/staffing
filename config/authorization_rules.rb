@@ -222,6 +222,10 @@ authorization do
     end
   end
   role :guest do
+    has_permission_on :meetings, to: [ :show, :index ] do
+      if_attribute published: is { true }
+      if_attribute starts_at: lt { Time.zone.now }
+    end
     has_permission_on :user_sessions, to: [ :new, :create ]
     has_permission_on :users, to: [ :register ]
   end
