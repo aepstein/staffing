@@ -8,6 +8,12 @@
 </p>
 
 <p>
+  <b>Description:</b>
+</p>
+
+<%=markdown meeting.description %>
+
+<p>
   <b>Starts at:</b> <%= meeting.starts_at.to_formatted_s :us_ordinal %>
 </p>
 
@@ -21,6 +27,10 @@
 
 <p>
   <b>Location:</b> <%= meeting.location %>
+</p>
+
+<p>
+  <b>Room:</b> <%= meeting.room %>
 </p>
 
 <p>

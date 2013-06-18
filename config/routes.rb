@@ -54,7 +54,7 @@ Staffing::Application.routes.draw do
       put :publish
     end
     collection do
-      get :past, :current, :future
+      get :past, :current, :future, :published
     end
     resources :motions, only: [ :index, :new, :create ] do
       collection do

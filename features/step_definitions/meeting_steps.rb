@@ -108,9 +108,11 @@ When /^I create a meeting with a (named|motion) item as (staff|chair)$/ do |item
     end
     @start = ( Time.zone.now + 1.day ).floor
     @end = @start + 1.hour
+    fill_in "Description", with: "A *brief* meeting to discuss important business."
     fill_in "Starts at", with: "#{@start.to_s :us_short}"
     fill_in "Duration", with: 60
     fill_in "Location", with: "Green Room"
+    fill_in "Room", with: "Section A"
   end
   click_link 'Add Meeting Section'
   within_fieldset("New Meeting Section") do
@@ -140,12 +142,14 @@ Then /^I should see the new meeting with the (named|motion) item$/ do |item|
   within( ".alert" ) { page.should have_text( "Meeting created." ) }
   @meeting = Meeting.find( URI.parse(current_url).path.match(/[\d]+$/)[0].to_i )
   within( "#meeting-#{@meeting.id}" ) do
+    page.should have_text "A brief meeting to discuss important business."
     page.should have_text "Committee: #{@committee.name}"
     page.should have_text "Period: #{@current_period}"
     page.should have_text "Starts at: #{@start.to_s :us_ordinal}"
     page.should have_text "Ends at: #{@end.to_s :us_ordinal}"
     page.should have_text "Duration: 60 minutes"
     page.should have_text "Location: Green Room"
+    page.should have_text "Room: Section A"
     page.should have_text "Audio? No"
     page.should have_text "Editable minutes? No"
     page.should have_text "Published minutes? No"
@@ -164,9 +168,11 @@ When /^I update the meeting$/ do
   @end += 70.minutes
   visit(edit_meeting_path(@meeting))
   within_fieldset("Basic Information") do
+    fill_in "Description", with: "Much ado about nothing."
     fill_in "Starts at", with: "#{@start.to_s :us_short}"
     fill_in "Duration", with: "70"
     fill_in "Location", with: "Red Room"
+    fill_in "Room", with: "Section B"
     attach_file "Audio", File.expand_path("spec/assets/audio.mp3")
     attach_file "Editable minutes", temporary_file("minutes.doc",20.bytes)
     attach_file "Published minutes", temporary_file("minutes.pdf",20.bytes)
@@ -178,10 +184,12 @@ end
 Then /^I should see the edited meeting$/ do
   within('.alert') { page.should have_text( "Meeting updated." ) }
   within("#meeting-#{@meeting.id}") do
+    page.should have_text "Much ado about nothing."
     page.should have_text "Starts at: #{@start.to_s :us_ordinal}"
     page.should have_text "Ends at: #{@end.to_s :us_ordinal}"
     page.should have_text "Duration: 70"
     page.should have_text "Location: Red Room"
+    page.should have_text "Room: Section B"
     page.should have_text "Audio? Yes"
     page.should have_text "Editable minutes? Yes"
     page.should have_text "Published minutes? Yes"

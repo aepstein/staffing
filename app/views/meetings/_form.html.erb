@@ -7,9 +7,11 @@
     <%= form.association :period, collection: [ [ form.object.period.to_s, form.object.period.id ] ],
       disabled: true, hint: 'You may not change the period of the meeting.' %>
   <% end %>
+  <%= form.input :description, hint: "Briefly describe the business to be conducted at the meeting."%>
   <%= form.input :starts_at, as: :date_time_picker %>
   <%= form.input :duration, hint: 'What is the duration of the meeting in minutes?' %>
-  <%= form.input :location %>
+  <%= form.input :location, hint: "At which building will the meeting be held?" %>
+  <%= form.input :room, hint: "At which room within the building will the meeting be held?" %>
   <%= form.input :audio, as: :file %>
   <%= form.input :editable_minutes, as: :file %>
   <%= form.input :published_minutes, as: :file %>

@@ -21,9 +21,15 @@ class MeetingsController < ApplicationController
     scope ||= motion.meetings if motion
     scope ||= user.meetings if user
     scope ||= Meeting.scoped
-    scope = scope.past if params[:action] == 'past'
-    scope = scope.current if params[:action] == 'current'
-    scope = scope.future if params[:action] == 'future'
+    scope = case params[:action]
+    when 'past', 'current', 'future'
+      scope.send params[:action]
+    when 'published'
+      scope.where { starts_at.gte( Time.zone.now - 3.months ) &
+        starts_at.lte( Time.zone.now + 3.months ) }
+    else
+      scope
+    end
     scope = scope.where { |m| m.starts_at.gte( starts_at ) } if starts_at
     scope = scope.where { |m| m.starts_at.lte( ends_at ) } if ends_at
     scope
@@ -53,6 +59,7 @@ class MeetingsController < ApplicationController
   expose :meeting_attributes do
     permitted = [ :committee_id, :audio, :editable_minutes,
       :published_minutes, :starts_at, :duration, :location, :published,
+      :room, :description,
       meeting_sections_attributes: MeetingSection::PERMITTED_ATTRIBUTES ]
     if permitted_to?( :staff, meeting )
       permitted += [ :period_id ]
@@ -116,7 +123,14 @@ class MeetingsController < ApplicationController
       content_type: meeting.editable_minutes.content_type,
       disposition: 'attachment'
   end
-
+  
+  # GET /meetings/published.csv
+  def published
+    respond_to do |format|
+      format.csv { csv_index }
+    end
+  end
+  
   # GET /meetings/current
   # GET /meetings/current.xml
   # GET /committees/:committee_id/meetings/current
@@ -204,6 +218,33 @@ class MeetingsController < ApplicationController
   end
 
   private
+
+  def csv_index
+    csv_string = ""
+    CSV.generate csv_string do |csv|
+      csv << [ 'Unique ID', 'Title', 'Description', 'Date From', 'Date To',
+        'Start Time', 'End Time', 'Location', 'Event Website', 'Room',
+        'Contact E-Mail', 'Contact Name' ]
+      q.result.with_permissions_to(:show).all.each do |meeting|
+        csv << ( [
+          "meeting-#{meeting.id}",
+          "#{meeting.committee} Meeting",
+          meeting.description,
+          meeting.starts_at.to_date.to_formatted_s(:db),
+          meeting.ends_at.to_date.to_formatted_s(:db),
+          meeting.starts_at.strftime("%l:%M %p").strip,
+          meeting.ends_at.strftime("%l:%M %p").strip,
+          meeting.location,
+          meeting_url(meeting),
+          meeting.room,
+          meeting.effective_contact_email,
+          meeting.effective_contact_name
+        ] )
+      end
+    end
+    send_data csv_string, disposition: "attachment; filename=meetings.csv",
+      type: :csv
+  end
 
   def populate_meeting_sections
     meeting.meeting_sections.populate
