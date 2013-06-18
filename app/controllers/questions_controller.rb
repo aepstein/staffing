@@ -11,8 +11,12 @@ class QuestionsController < ApplicationController
   end
   expose( :questions ) { q.result.ordered.page(params[:page]) }
   expose :question_attributes do
-    params.require( :question ).permit(
-      :name, :content, :global, :disposition, { quiz_ids: [] } )
+    if params[:question]
+      params.require( :question ).permit(
+        :name, :content, :global, :disposition, { quiz_ids: [] } )
+    else
+      {}
+    end
   end
   expose :question, attributes: :question_attributes
   filter_access_to :new, :create, :edit, :update, :destroy, :show, :index,
