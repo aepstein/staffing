@@ -1,6 +1,7 @@
 class MeetingSectionTemplate < ActiveRecord::Base
-  attr_accessible :name, :meeting_template_id, :position,
-    :meeting_item_templates_attributes, :_destroy
+  PERMITTED_ATTRIBUTES = [ :id, :_destroy, :name, :meeting_template_id,
+    :position,
+    { meeting_item_templates_attributes: MeetingItemTemplate::PERMITTED_ATTRIBUTES } ]
   attr_readonly :meeting_template_id
 
   belongs_to :meeting_template, inverse_of: :meeting_section_templates

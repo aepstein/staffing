@@ -5,8 +5,6 @@ class Question < ActiveRecord::Base
     'Yes/No' => 'boolean'
   }
 
-  attr_accessible :name, :content, :global, :disposition, :quiz_ids
-
   scope :ordered, order { name }
 
   has_many :quiz_questions, inverse_of: :question, dependent: :destroy

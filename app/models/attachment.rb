@@ -1,6 +1,6 @@
 class Attachment < ActiveRecord::Base
-  attr_accessible :document, :document_cache, :description, :_destroy,
-    as: [ :admin, :staff, :default ]
+  PERMITTED_ATTRIBUTES = [ :id, :_destroy, :document, :document_cache,
+    :description ]
   attr_readonly :attachable_type, :attachable_id
 
   belongs_to :attachable, polymorphic: true

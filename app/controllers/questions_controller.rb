@@ -10,8 +10,13 @@ class QuestionsController < ApplicationController
     q_scope.search( params[:term] ? { name_cont: params[:term] } : params[:q] )
   end
   expose( :questions ) { q.result.ordered.page(params[:page]) }
-  expose :question
-  filter_resource_access
+  expose :question_attributes do
+    params.require( :question ).permit(
+      :name, :content, :global, :disposition, { quiz_ids: [] } )
+  end
+  expose :question, attributes: :question_attributes
+  filter_access_to :new, :create, :edit, :update, :destroy, :show, :index,
+    attribute_check: true, load_method: :question
 
   # POST /questions
   # POST /questions.xml

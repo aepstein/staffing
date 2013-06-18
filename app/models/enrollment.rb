@@ -1,7 +1,7 @@
 class Enrollment < ActiveRecord::Base
   ROLES = %w( chair vicechair monitor clerk )
-  attr_accessible :committee_id, :committee_name, :position_name, :position_id,
-    :title, :votes, :requestable, :roles
+  PERMITTED_ATTRIBUTES = [ :id, :_destroy, :committee_id, :committee_name,
+    :position_name, :position_id, :title, :votes, :requestable, { roles: [] } ]
   attr_readonly :committee_id, :position_id
 
   belongs_to :position, inverse_of: :enrollments

@@ -3,8 +3,17 @@ class MeetingTemplatesController < ApplicationController
   expose( :search ) { params[:term] ? { name_cont: params[:term] } : params[:q] }
   expose( :q ) { q_scope.search( search ) }
   expose( :meeting_templates ) { q.result.ordered.page(params[:page]) }
-  expose( :meeting_template )
-  filter_resource_access
+  expose :meeting_template_attributes do
+    if params[:meeting_template]
+      params.require(:meeting_template).permit( :name,
+        { meeting_section_templates_attributes: MeetingSectionTemplate::PERMITTED_ATTRIBUTES } )
+    else
+      {}
+    end
+  end
+  expose :meeting_template, attributes: :meeting_template_attributes
+  filter_access_to :new, :create, :edit, :update, :destroy, :show, :index,
+    attribute_check: true, load_method: :meeting_template
 
   # GET /meeting_templates
   def index

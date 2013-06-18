@@ -1,11 +1,5 @@
 class Membership < ActiveRecord::Base
   notifiable_events :join, :leave, :decline, :appoint
-
-  attr_accessible :renew_until, :renewal_confirmed_at, as: [ :default, :updator ]
-  attr_accessible :user_name, :user_id, :period_id, :position_id,
-    :membership_request_id, :starts_at, :ends_at, :designees_attributes,
-    :designees_attributes, as: [ :creator, :updator ]
-  attr_accessible :decline_comment, as: :decliner
   attr_readonly :position_id
 
   include UserNameLookup

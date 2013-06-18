@@ -1,12 +1,13 @@
 class MeetingItem < ActiveRecord::Base
+  PERMITTED_ATTRIBUTES = [ :id, :_destroy, :description, :duration, :name,
+    :position, :motion_id, :motion_name, :named,
+    { attachments_attributes: Attachment::PERMITTED_ATTRIBUTES } ]
+  attr_readonly :motion_id
+
   belongs_to :meeting_section, inverse_of: :meeting_items
   belongs_to :motion, inverse_of: :meeting_items
   has_many :motion_meeting_segments, inverse_of: :meeting_item, dependent: :nullify
   has_many :attachments, as: :attachable, dependent: :destroy
-  attr_accessible :description, :duration, :name, :position, :motion_id,
-    :motion_name, :_destroy, :attachments_attributes, :named,
-    as: [ :default, :staff ]
-  attr_readonly :motion_id
 
   attr_accessor :named
 

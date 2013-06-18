@@ -21,6 +21,7 @@ gem 'escape_utils'
 gem 'prawn', '~> 1.0.0rc'
 gem 'prawn-fast-png', require: 'prawn/fast_png'
 gem 'paper_trail', '~> 2.0'
+gem 'strong_parameters'
 gem 'cornell_assemblies_rails',
   git: 'git://assembly.cornell.edu/git/cornell-assemblies-rails.git',
   branch: '0-0-3'

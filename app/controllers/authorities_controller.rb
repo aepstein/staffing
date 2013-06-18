@@ -1,6 +1,11 @@
 class AuthoritiesController < ApplicationController
-  expose :authority
+  expose :authority, attributes: :authority_params
   expose :authorities
+  expose :authority_params do
+    params.require(:authority).permit( :name, :join_message, :leave_message,
+    :committee_id, :committee_name, :contact_name, :contact_email,
+    :reject_message, :appoint_message )
+  end
   filter_access_to :new, :create, :edit, :update, :index, :destroy
   respond_to :html, :xml
 

@@ -1,5 +1,5 @@
 class Answer < ActiveRecord::Base
-  attr_accessible :question_id, :content
+  PERMITTED_ATTRIBUTES = [ :id, :question_id, :content ]
   attr_readonly :question_id
 
   belongs_to :question, inverse_of: :answers

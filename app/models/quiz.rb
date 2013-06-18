@@ -1,6 +1,4 @@
 class Quiz < ActiveRecord::Base
-  attr_accessible :name, :quiz_questions_attributes
-
   default_scope lambda { ordered }
   scope :ordered, order { name }
 

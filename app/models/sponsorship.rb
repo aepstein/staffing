@@ -1,8 +1,8 @@
 class Sponsorship < ActiveRecord::Base
   include UserNameLookup
 
-  attr_accessible :motion_id, :user_id, :user_name, :on_behalf_of, :_destroy,
-    as: [ :admin, :default ]
+  PERMITTED_ATTRIBUTES = [ :id, :_destroy, :motion_id, :user_id, :user_name,
+    :on_behalf_of ]
   attr_readonly :motion_id, :user_id
 
   belongs_to :motion, inverse_of: :sponsorships

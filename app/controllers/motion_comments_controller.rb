@@ -10,11 +10,19 @@ class MotionCommentsController < ApplicationController
   expose :motion_comments do
     q.result.with_permissions_to(:show).ordered.page(params[:page])
   end
+  expose :motion_comment_attributes do
+    if params[:motion_comment]
+      params.require(:motion_comment).permit( :comment,
+       { attachments_attributes: Attachment::PERMITTED_ATTRIBUTES } )
+    else
+      {}
+    end
+  end
   expose :motion_comment do
     if params[:id]
       MotionComment.find(params[:id])
     else
-      motion.motion_comments.build( params[:motion_comment] ) do |comment|
+      motion.motion_comments.build( motion_comment_attributes ) do |comment|
         comment.user = current_user
       end
     end
@@ -56,7 +64,7 @@ class MotionCommentsController < ApplicationController
   # PUT /motion_comments/1
   # PUT /motion_comments/1.xml
   def update
-    motion_comment.assign_attributes params[:motion_comment]
+    motion_comment.assign_attributes motion_comment_attributes
     respond_to do |format|
       if motion_comment.save
         format.html { redirect_to motion_comment.motion, flash: { success: 'Motion comment updated.' } }

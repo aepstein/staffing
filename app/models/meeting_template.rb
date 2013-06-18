@@ -1,6 +1,4 @@
 class MeetingTemplate < ActiveRecord::Base
-  attr_accessible :name, :meeting_section_templates_attributes
-
   has_many :committees, inverse_of: :meeting_template, dependent: :nullify
   has_many :meeting_section_templates, inverse_of: :meeting_template,
     dependent: :destroy

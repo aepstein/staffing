@@ -28,13 +28,25 @@ class MembershipsController < ApplicationController
   end
   expose( :q ) { q_scope.search params[:q] }
   expose( :memberships ) { q.result.ordered.page params[:page] }
+  expose( :renew_user_memberships_attributes ) do
+    params.require(:user).permit( :id, :renewal_checkpoint,
+      { memberships_attributes: [ :id, :renew_until, :renewal_confirmed_at ] } )
+  end
+  expose( :decline_membership_attributes ) do
+    params.require(:membership).permit( :decline_comment )
+  end
+  expose( :membership_attributes ) do
+    params.require(:membership).permit( :user_name, :user_id, :period_id,
+      :position_id, :membership_request_id, :starts_at, :ends_at, {
+        designees_attributes: Designee::PERMITTED_ATTRIBUTES } )
+  end
   expose :membership do
     out = if params[:id]
       Membership.find params[:id]
     else
       position.memberships.build_for_authorization
     end
-    out.assign_attributes params[:membership], as: :creator if out.new_record? && params[:membership]
+    out.assign_attributes membership_attributes if out.new_record? && params[:membership]
     out
   end
   filter_access_to :new, :create, :edit, :update, :destroy, :show, :confirm,
@@ -48,7 +60,7 @@ class MembershipsController < ApplicationController
   def decline
     respond_to do |format|
       if request.request_method_symbol == :put
-        if membership.decline_renewal( params[:membership], user: current_user )
+        if membership.decline_renewal( decline_membership_attributes, user: current_user )
           format.html { redirect_to membership, flash: { success: 'Membership renewal declined.' } }
         else
           format.html
@@ -72,7 +84,7 @@ class MembershipsController < ApplicationController
         format.html
       else
         format.html do
-          if user.update_attributes( params[:user], as: :default )
+          if user.update_attributes( renew_user_memberships_attributes )
             flash[:success] = 'Renewal preferences updated.'
           else
             flash[:error] = 'Renewal preferences not updated.'
@@ -188,7 +200,7 @@ class MembershipsController < ApplicationController
   def update
     membership.modifier = current_user
     respond_to do |format|
-      membership.assign_attributes params[:membership], as: :updator
+      membership.assign_attributes membership_attributes
       if membership.save
         format.html { redirect_to( membership, flash: { success: 'Membership updated.' } ) }
       else
@@ -244,6 +256,5 @@ class MembershipsController < ApplicationController
   def populate_designees
     membership.designees.populate
   end
-
 end
 

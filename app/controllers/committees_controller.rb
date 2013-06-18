@@ -23,7 +23,14 @@ class CommitteesController < ApplicationController
   expose :committees do
     q.result.ordered.page(params[:page])
   end
-  expose :committee
+  expose :committee, attributes: :committee_attributes
+  expose :committee_attributes do
+    params.require(:committee).permit( :name, :description, :join_message,
+    :leave_message, :brand_id, :requestable, :public_url, :publish_email,
+    :meeting_template_id, :schedule_id, :reject_message, :active, :contact_name,
+    :contact_email, :sponsor, :appoint_message,
+    { enrollments_attributes: Enrollment::PERMITTED_ATTRIBUTES } )
+  end
   filter_access_to :new, :create, :edit, :update, :destroy, :show, :index, load_method: :committee
   filter_access_to :tents, :members, require: :enroll, load_method: :committee
   filter_access_to :requestable, require: :show, load_method: :user

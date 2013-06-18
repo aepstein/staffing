@@ -8,8 +8,13 @@ class SchedulesController < ApplicationController
   expose :schedules do
     q.result.ordered.page(params[:page])
   end
-  expose :schedule
-  filter_resource_access
+  expose :schedule_attributes do
+    params.require(:schedule).permit( :name,
+      { periods_attributes: [ :id, :_destroy, :starts_at, :ends_at ] } )
+  end
+  expose :schedule, attributes: :schedule_attributes
+  filter_access_to :new, :create, :edit, :update, :destroy, :show,
+    load_method: :schedule
 
   # POST /schedules
   # POST /schedules.xml

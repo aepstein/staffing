@@ -2,9 +2,6 @@ class Brand < ActiveRecord::Base
   CONTACT_ATTRIBUTES = [ :phone, :fax, :email, :web, :address_1, :address_2,
     :city, :state, :zip ]
 
-  attr_accessible :name, :logo, :phone, :fax, :email, :web, :address_1,
-    :address_2, :city, :state, :zip
-
   default_scope order( 'brands.name ASC' )
 
   mount_uploader :logo, VectorUploader

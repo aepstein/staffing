@@ -13,11 +13,6 @@ class Committee < ActiveRecord::Base
   scope :active, where { active.eq( true ) }
   scope :inactive, where { active.not_eq( true ) }
 
-  attr_accessible :name, :description, :join_message, :leave_message, :brand_id,
-    :requestable, :public_url, :publish_email, :meeting_template_id, :schedule_id,
-    :reject_message, :active, :contact_name, :contact_email, :sponsor,
-    :enrollments_attributes, :appoint_message
-
   belongs_to :schedule, inverse_of: :committees
   belongs_to :brand, inverse_of: :committees
   belongs_to :meeting_template, inverse_of: :committees

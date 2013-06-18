@@ -1,13 +1,13 @@
-<div id="meeting-template-<%= @meeting_template.id %>">
+<div id="meeting-template-<%= meeting_template.id %>">
 <p>
-  <b>Meeting template name:</b> <%=h @meeting_template.name %>
+  <b>Meeting template name:</b> <%=h meeting_template.name %>
 </p>
 
 <h2>Meeting Section Templates</h2>
 
 <%= render partial: 'meeting_section_templates/meeting_section_templates',
-  object: @meeting_template.meeting_section_templates,
-  locals: { meeting_template: @meeting_template } %>
+  object: meeting_template.meeting_section_templates,
+  locals: { meeting_template: meeting_template } %>
 
-</div> <!-- #meeting-template-<%= @meeting_template.id %> -->
+</div> <!-- #meeting-template-<%= meeting_template.id %> -->
 

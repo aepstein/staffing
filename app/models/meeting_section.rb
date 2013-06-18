@@ -1,6 +1,6 @@
 class MeetingSection < ActiveRecord::Base
-  attr_accessible :name, :position, :meeting_items_attributes, :_destroy,
-    as: [ :default, :staff ]
+  PERMITTED_ATTRIBUTES = [ :id, :_destroy, :name, :position,
+    meeting_items_attributes: MeetingItem::PERMITTED_ATTRIBUTES ]
 
   belongs_to :meeting, inverse_of: :meeting_sections
 

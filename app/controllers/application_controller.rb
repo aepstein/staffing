@@ -1,4 +1,7 @@
 class ApplicationController < ActionController::Base
+  decent_configuration do
+    strategy DecentExposure::StrongParametersStrategy
+  end
   helper_method :review_scope
   protect_from_forgery
 

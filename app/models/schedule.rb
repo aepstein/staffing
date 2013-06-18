@@ -1,6 +1,4 @@
 class Schedule < ActiveRecord::Base
-  attr_accessible :name, :periods_attributes
-
   default_scope lambda { ordered }
   scope :ordered, order { name }
 

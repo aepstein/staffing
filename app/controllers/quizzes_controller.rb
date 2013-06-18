@@ -1,17 +1,26 @@
 class QuizzesController < ApplicationController
   expose( :q_scope ) { Quiz.scoped }
   expose( :q ) { q_scope.search( params[:term] ? { name_cont: params[:term] } : params[:q] ) }
-  expose( :quizzes ) { q.result.ordered.page(params[:page]) }
+  expose( :quizzes ) { q.result.with_permissions_to(:show).ordered.page(params[:page]) }
+  expose( :quiz_attributes ) do
+    if params[:quiz]
+      params.require(:quiz).permit( :name,
+       { quiz_questions_attributes: [ :id, :_destroy, :position, :question_id ] } )
+    else
+      {}
+    end
+  end
   expose :quiz do
     quiz = if params[:id]
       Quiz.find params[:id]
     else
       Quiz.new
     end
-    quiz.assign_attributes params[:quiz]
+    quiz.assign_attributes quiz_attributes
     quiz
   end
-  filter_resource_access
+  filter_access_to :new, :create, :edit, :update, :destroy, :show, :index,
+    attribute_check: true, load_method: :quiz
 
   # POST /quizzes
   # POST /quizzes.xml

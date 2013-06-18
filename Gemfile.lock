@@ -270,6 +270,10 @@ GEM
       activesupport (~> 3.0)
       polyamorous (~> 0.5.0)
     state_machine (1.1.2)
+    strong_parameters (0.2.1)
+      actionpack (~> 3.0)
+      activemodel (~> 3.0)
+      railties (~> 3.0)
     tabulous (2.0.0)
       colored (~> 1.2.0)
       rails (>= 3.0, < 4.1.0)
@@ -338,6 +342,7 @@ DEPENDENCIES
   spork
   squeel
   state_machine
+  strong_parameters
   test-unit
   therubyracer (~> 0.11.4)
   uglifier

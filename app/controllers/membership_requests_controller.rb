@@ -33,6 +33,21 @@ class MembershipRequestsController < ApplicationController
       :default
     end
   end
+  expose :membership_request_attributes do
+    permitted = case assigner_role
+    when :rejector
+      [ :rejected_by_authority_id, :rejection_comment ]
+    else
+      [ :starts_at, :ends_at, :new_position, {
+        answers_attributes: Answer::PERMITTED_ATTRIBUTES,
+        user_attributes: User.permitted_attributes } ]
+    end
+    if params[:membership_request]
+      params.require(:membership_request).permit( *permitted )
+    else
+      {}
+    end
+  end
   expose :membership_request do
     out = if params[:id]
       MembershipRequest.find params[:id]
@@ -44,7 +59,7 @@ class MembershipRequestsController < ApplicationController
       committee.membership_requests.build
     end
     out.user ||= current_user
-    out.assign_attributes params[:membership_request], as: assigner_role
+    out.assign_attributes membership_request_attributes
     out
   end
   filter_access_to :new, :create, :edit, :update, :destroy, :show, :reject,

@@ -3,9 +3,6 @@ class MembershipRequest < ActiveRecord::Base
 
   has_paper_trail
 
-  attr_accessible :starts_at, :ends_at, :new_position, :answers_attributes,
-    :user_attributes
-  attr_accessible :rejected_by_authority_id, :rejection_comment, as: :rejector
   attr_readonly :user_id, :commitee_id
 
   has_many :answers, inverse_of: :membership_request do

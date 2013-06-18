@@ -43,7 +43,29 @@ class MeetingsController < ApplicationController
     out
   end
   expose( :role ) { permitted_to?(:staff, meeting) ? :staff : :default }
-  before_filter( only: [ :create, :update ] ) { meeting.assign_attributes params[:meeting], as: role }
+  expose :publish_meeting_attributes do
+    if params[:meeting]
+      params.require(:meeting).permit( :publish_to, :publish_note )
+    else
+      {}
+    end
+  end
+  expose :meeting_attributes do
+    permitted = [ :committee_id, :audio, :editable_minutes,
+      :published_minutes, :starts_at, :duration, :location, :published,
+      meeting_sections_attributes: MeetingSection::PERMITTED_ATTRIBUTES ]
+    if permitted_to?( :staff, meeting )
+      permitted += [ :period_id ]
+    end
+    if params[:meeting]
+      params.require(:meeting).permit( *permitted )
+    else
+      {}
+    end
+  end
+  before_filter( only: [ :create, :update ] ) do
+    meeting.assign_attributes meeting_attributes
+  end
   before_filter :populate_meeting_sections, only: [ :new, :edit ]
   before_filter :reciprocate_attachments, only: [ :create, :update ]
   filter_access_to :new, :create, :edit, :update, :destroy, :show, :publish,
@@ -74,7 +96,7 @@ class MeetingsController < ApplicationController
         meeting.publish_defaults
         format.html { render action: :publish }
       else
-        meeting.assign_attributes params[:meeting], as: :publisher
+        meeting.assign_attributes publish_meeting_attributes
         meeting.publish_from = current_user.email
         if meeting.publish
           format.html { redirect_to( meeting, flash: { success: 'Meeting published.' } ) }

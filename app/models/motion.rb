@@ -4,20 +4,41 @@ class Motion < ActiveRecord::Base
   EVENTS = [ :adopt, :amend, :divide, :implement, :merge, :propose, :refer,
     :reject, :restart, :withdraw ]
   EVENTS_PUTONLY = [ :restart, :unwatch, :watch ]
+  
+  def self.permitted_attributes(type)
+#  attr_accessible ,
+#    as: [ :admin, :default, :divider, :referrer, :amender ]
+#  attr_accessible :event_date, :event_description, as: [ :eventor, :merger ]
+#  attr_accessible :period_id, :comment_until, as: [ :admin ]
+#  attr_accessible :referring_motion_attributes, as: [ :referrer ]
+#  attr_accessible :referred_motions_attributes, as: [ :divider ]
+#  attr_accessible :committee_name, as: :referrer
+#  attr_accessible :motion_meeting_segments_attributes, as: [ :admin, :default, :amender ]
+    case type
+    when :default
+      [ :id, :name, :content, :description, :complete,
+        { motion_meeting_segments_attributes: [ :id, :_destroy, :position,
+            :content, :description, :minutes_from_start, :meeting_item_id ],
+          sponsorships_attributes: Sponsorship::PERMITTED_ATTRIBUTES,
+          attachments_attributes: Attachment::PERMITTED_ATTRIBUTES } ]
+    when :event
+      [ :event_date, :event_description ]
+    when :admin
+      permitted_attributes( :default ) + [ :period_id, :comment_until ]
+    when :referrer
+      permitted_attributes( :default ) + [ :committee_name, {
+        referring_motion_attributes: permitted_attributes( :event ) } ]
+    when :divide
+      permitted_attributes( :event ) + [ {
+        referred_motions_attributes: permitted_attributes( :default ) } ]
+    else
+      []
+    end
+  end
 
   has_paper_trail
   has_ancestry
 
-  attr_accessible :name, :content, :description, :complete,
-    :referring_motion_id, :sponsorships_attributes, :attachments_attributes,
-    :event_date, :event_description,
-    as: [ :admin, :default, :divider, :referrer, :amender ]
-  attr_accessible :event_date, :event_description, as: [ :eventor, :merger ]
-  attr_accessible :period_id, :comment_until, as: [ :admin ]
-  attr_accessible :referring_motion_attributes, as: [ :referrer ]
-  attr_accessible :referred_motions_attributes, as: [ :divider ]
-  attr_accessible :committee_name, as: :referrer
-  attr_accessible :motion_meeting_segments_attributes, as: [ :admin, :default, :amender ]
   attr_readonly :committee_id, :period_id, :position
 
   belongs_to :period, inverse_of: :motions
@@ -72,14 +93,16 @@ class Motion < ActiveRecord::Base
     def build_referee( referral_attributes = {} )
       referral_attributes ||= {}
       build( proxy_association.owner.attributes ) do |new_motion|
-        new_motion.assign_attributes referral_attributes, as: :referrer
+        new_motion.assign_attributes referral_attributes
         new_motion.period ||= new_motion.committee.periods.active if new_motion.committee
       end
     end
 
     def build_amendment( amendment_attributes = {} )
-      proxy_association.owner.amendment = build( proxy_association.owner.attributes ) do |new_motion|
-        new_motion.assign_attributes amendment_attributes, as: :amender
+      original_attributes = ActionController::Parameters.new( proxy_association.owner.attributes )
+      original_attributes = original_attributes.permit( *Motion.permitted_attributes(:default) )
+      proxy_association.owner.amendment = build( original_attributes ) do |new_motion|
+        new_motion.assign_attributes amendment_attributes
         new_motion.meeting = proxy_association.owner.meeting
         new_motion.committee = proxy_association.owner.committee
         new_motion.period = proxy_association.owner.period

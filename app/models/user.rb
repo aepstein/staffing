@@ -4,13 +4,7 @@ class User < ActiveRecord::Base
   has_phone :mobile_phone, :work_phone, :home_phone
 
   STATUSES = %w( staff faculty undergrad grad alumni temporary )
-  attr_accessible :first_name, :middle_name, :last_name, :email, :mobile_phone,
-    :work_phone, :home_phone, :work_address, :date_of_birth, :resume, :portrait,
-    :renewal_checkpoint, :memberships_attributes, :password,
-    :password_confirmation, as: [ :default, :admin, :staff ]
-  attr_accessible :net_id, :empl_id, :status, as: [ :admin, :staff ]
-  attr_accessible :admin, :staff, as: [ :admin ]
-
+  
   has_paper_trail
 
   has_many :memberships, inverse_of: :user do
@@ -191,6 +185,20 @@ class User < ActiveRecord::Base
 
   before_validation :import_ldap_attributes, on: :create
   before_validation { |r| r.renewal_checkpoint ||= Time.zone.now unless r.persisted? }
+
+  def self.permitted_attributes( role=nil )
+    case role
+    when :admin
+      permitted_attributes(:staff) + [ :admin, :staff ]
+    when :staff
+      permitted_attributes + [ :net_id, :empl_id, :status ]
+    else
+      [ :id, :first_name, :middle_name, :last_name, :email,
+        :mobile_phone, :work_phone, :home_phone, :work_address, :date_of_birth,
+        :resume, :portrait, :renewal_checkpoint, :password,
+        :password_confirmation ]
+    end
+  end
 
   def self.import_empl_id_from_csv_string( string )
     import_empl_id_from_csv( CSV.parse(string) )

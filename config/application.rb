@@ -18,6 +18,7 @@ module Staffing
     config.active_record.identity_map = true
     config.assets.enabled = true
     config.assets.version = '1.1'
+    config.active_record.whitelist_attributes = false
 
     def self.app_config
       @@app_config ||= YAML.load(File.read(File.expand_path('../application.yml', __FILE__)))[Rails.env]

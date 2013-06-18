@@ -14,7 +14,15 @@ class PositionsController < ApplicationController
   end
   expose( :q ) { q_scope.search( params[:term] ? { name_cont: params[:term] } : params[:q] ) }
   expose( :positions ) { q.result.ordered.page(params[:page]) }
-  expose :position
+  expose :position_attributes do
+    params.require( :position ).permit( :authority_id, :quiz_id, :schedule_id,
+    :slots, :name, :join_message, :leave_message, :renewable,
+    :notifiable, :designable, :active, :reject_message, :minimum_slots,
+    :appoint_message,
+    statuses: [],
+    enrollments_attributes: Enrollment::PERMITTED_ATTRIBUTES )
+  end
+  expose :position, attributes: :position_attributes
   filter_access_to :new, :create, :edit, :update, :destroy, :show
   filter_access_to :requestable, :index do
     permitted_to!( :show, user ) if user

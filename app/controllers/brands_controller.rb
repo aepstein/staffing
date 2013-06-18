@@ -1,6 +1,10 @@
 class BrandsController < ApplicationController
   expose :brands
-  expose :brand
+  expose :brand, attributes: :brand_attributes
+  expose :brand_attributes do
+    params.require(:brand).permit( :name, :logo, :phone, :fax, :email, :web,
+    :address_1, :address_2, :city, :state, :zip )
+  end
   filter_access_to :index, :new, :create, :edit, :update, :destroy, :show,
     load_method: :brand
   filter_access_to :thumb, require: :show, load_method: :brand

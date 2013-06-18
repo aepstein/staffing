@@ -26,6 +26,13 @@ class UsersController < ApplicationController
   end
   expose( :q ) { q_scope.search( params[:term] ? { name_cont: params[:term] } : params[:q] ) }
   expose( :users ) { q.result.with_permissions_to(:show).ordered.page(params[:page]) }
+  expose :user_attributes do
+    if params[:user]
+      params.require(:user).permit( *User.permitted_attributes(role) )
+    else
+      {}
+    end
+  end
   expose :user do
     out = if params[:id]
       User.find(params[:id])
@@ -135,7 +142,7 @@ class UsersController < ApplicationController
       if request.method_symbol == :get
         format.html
       else
-        user.assign_attributes params[:user], as: :default
+        user.assign_attributes user_attributes
         if user.save
           session[:user_id] = user.id
           format.html { redirect_to home_path, flash: { success: 'User registered.' } }
@@ -149,7 +156,7 @@ class UsersController < ApplicationController
   # POST /users
   # POST /users.xml
   def create
-    user.assign_attributes params[:user], as: role
+    user.assign_attributes user_attributes
     respond_to do |format|
       if user.save
         format.html { redirect_to user, flash: { success: 'User created.' } }
@@ -165,7 +172,7 @@ class UsersController < ApplicationController
   # PUT /users/1.xml
   def update
     respond_to do |format|
-      if user.update_attributes(params[:user], as: role)
+      if user.update_attributes( user_attributes )
         format.html { redirect_to user, flash: { success: 'User updated.' } }
         format.xml  { head :ok }
       else
