@@ -220,6 +220,9 @@ FactoryGirl.define do
     association :motion, status: 'proposed'
     occurrence { Time.zone.today }
     event { 'propose' }
+    factory :sponsored_motion_event do
+      motion { association :sponsored_motion, status: 'proposed' }
+    end
   end
 
   factory :motion_merger do
@@ -228,6 +231,12 @@ FactoryGirl.define do
       association :motion, committee: merged_motion.committee,
         period: merged_motion.period, status: 'proposed'
     end
+  end
+  
+  factory :motion_vote do
+    association :motion_event, factory: :sponsored_motion_event
+    user { motion_event.motion.sponsorships.first.user }
+    type 'affirmative'
   end
   
   factory :notice do

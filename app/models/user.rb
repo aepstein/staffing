@@ -7,6 +7,7 @@ class User < ActiveRecord::Base
   
   has_paper_trail
 
+  has_many :motion_votes, inverse_of: :user, dependent: :delete_all  
   has_many :memberships, inverse_of: :user do
     # Return memberships a user is authorized to review
     # User must have voting membership with future end date in committee of
@@ -71,21 +72,21 @@ class User < ActiveRecord::Base
   # User has permission to review memberships that overlap with authority to staff
   has_many :reviewable_memberships, through: :authorities,
     source: :memberships, uniq: true,
-    conditions: lambda { |user|
+    conditions: Proc.new {
       [ "memberships_reviewable_memberships_join.starts_at <= memberships.ends_at AND " +
         "memberships_reviewable_memberships_join.ends_at >= memberships.starts_at AND " +
         "memberships.ends_at >= ?", Time.zone.today ] }
   # User has permission to renew or decline renewal
   has_many :renewable_memberships, through: :authorities,
     source: :memberships, uniq: true,
-    conditions: lambda { |user|
+    conditions: Proc.new {
       [ "memberships_renewable_memberships_join.starts_at <= memberships.renew_until AND " +
         "memberships_renewable_memberships_join.ends_at > memberships.ends_at AND " +
         "memberships.renew_until >= ?", Time.zone.today ] }
   has_many :sponsorships, inverse_of: :user
   has_many :motions, through: :sponsorships
   has_many :peer_motions, through: :committees, source: :motions,
-    conditions: lambda { |user|
+    conditions: Proc.new {
       [ "motions.period_id IN (SELECT id FROM periods WHERE periods.starts_at <= memberships.ends_at AND " +
         "periods.ends_at >= memberships.starts_at) AND memberships.ends_at >= ?", Time.zone.today ] }
   has_and_belongs_to_many :watched_motions, class_name: 'Motion',

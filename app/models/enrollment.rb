@@ -13,6 +13,7 @@ class Enrollment < ActiveRecord::Base
     roles_mask.op('&',2**Enrollment::ROLES.index(role)).gt(0)
   end
 
+  scope :voting, lambda { where { votes.gt(0) } }
   scope :ordered, includes( :committee, :position ).
     order { [ committees.name, title, positions.name ] }
   scope :with_roles, lambda { |*roles| where {
