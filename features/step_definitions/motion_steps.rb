@@ -6,7 +6,7 @@ Then /^I should (not )?see the motion$/ do |negate|
   end
 end
 
-When /^I (adopt|amend|divide|implement|merge|propose|refer|reject|restart|withdraw) the motion$/ do |event|
+When /^I (adopt|amend|divide|implement|merge|propose|refer|reject|restart|unamend|withdraw) the motion$/ do |event|
   @event = event
   case @event
   when 'adopt'
@@ -55,6 +55,12 @@ When /^I (adopt|amend|divide|implement|merge|propose|refer|reject|restart|withdr
     click_button 'Reject'
   when 'restart'
     Capybara.current_session.driver.submit :put, restart_motion_url(@motion), {}
+  when 'unamend'
+    old_motion = @motion
+    step %q{I amend the motion}
+    @motion = Motion.find( URI.parse(current_url).path.match(/[\d]+$/)[0].to_i )
+    step %q{I reject the motion}
+    @event = 'unamend'
   when 'withdraw'
     visit(withdraw_motion_path(@motion))
     step %q{I fill in motion event details}
@@ -80,6 +86,7 @@ Then /^I should see confirmation of the event on the motion$/ do
     when 'refer'; 'referred'
     when 'reject'; 'rejected'
     when 'restart'; 'started'
+    when 'unamend'; 'rejected'
     when 'withdraw'; 'withdrawn'
   end
   @motion.reload
@@ -104,12 +111,17 @@ Then /^I should see confirmation of the event on the motion$/ do
   end
   step %Q{the final motion event should be correctly recorded} if @final_event
   # In case of amendment, propose event should also be recorded on amendment motion
-  if %w( amend divide refer )
+  if %w( amend divide refer ).include? @event
     @motion.referred_motions.each do |referred|
       @final_event = referred.motion_events.last
       @final_event.event.should eql 'propose'
       step %Q{the final motion event should be correctly recorded}
     end
+  end
+  if %w( unamend ).include? @event
+    @final_event = @motion.referring_motion.motion_events.last
+    @final_event.event.should eql 'unamend'
+    step %q{the final motion event should be correctly recorded}
   end
 end
 

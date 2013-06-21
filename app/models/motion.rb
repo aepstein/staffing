@@ -5,16 +5,7 @@ class Motion < ActiveRecord::Base
     :reject, :restart, :withdraw ]
   EVENTS_PUTONLY = [ :restart, :unwatch, :watch ]
   
-#TODO eliminate
   def self.permitted_attributes(type)
-#  attr_accessible ,
-#    as: [ :admin, :default, :divider, :referrer, :amender ]
-#  attr_accessible :event_date, :event_description, as: [ :eventor, :merger ]
-#  attr_accessible :period_id, :comment_until, as: [ :admin ]
-#  attr_accessible :referring_motion_attributes, as: [ :referrer ]
-#  attr_accessible :referred_motions_attributes, as: [ :divider ]
-#  attr_accessible :committee_name, as: :referrer
-#  attr_accessible :motion_meeting_segments_attributes, as: [ :admin, :default, :amender ]
     case type
     when :default
       [ :id, :name, :content, :description, :complete,
@@ -24,12 +15,6 @@ class Motion < ActiveRecord::Base
           attachments_attributes: Attachment::PERMITTED_ATTRIBUTES } ]
     when :admin
       permitted_attributes( :default ) + [ :period_id, :comment_until ]
-    when :referrer
-      permitted_attributes( :default ) + [ :committee_name, {
-        referring_motion_attributes: permitted_attributes( :event ) } ]
-    when :divide
-      permitted_attributes( :event ) + [ {
-        referred_motions_attributes: permitted_attributes( :default ) } ]
     else
       []
     end
@@ -91,11 +76,15 @@ class Motion < ActiveRecord::Base
       e
     end
     
-    def propose_from( event )
-      propose_event = populate_for 'propose'
-      propose_event.assign_attributes occurrence: event.occurrence,
+    def subsidiary_event( event_name, event )
+      subsidiary_event = populate_for event_name
+      subsidiary_event.assign_attributes occurrence: event.occurrence,
         description: event.description
-      proxy_association.owner.propose!
+      proxy_association.owner.send "#{event_name}!"
+    end
+    
+    def propose_from( event )
+      subsidiary_event 'propose', event
     end
   end
   has_one :terminal_motion_merger, inverse_of: :merged_motion, dependent: :destroy,
@@ -247,10 +236,14 @@ class Motion < ActiveRecord::Base
     before_transition all - :proposed => :proposed do |motion|
       motion.published = true
     end
-    #TODO fix this
-    before_transition :proposed => [ :rejected, :withdrawn ] do |motion|
+    around_transition :proposed => [ :rejected, :withdrawn ] do |motion, transition, block|
       if motion.referring_motion && motion.referring_motion.amended?
-        motion.referring_motion.unamend!
+        reject_event = motion.motion_events.populate_for transition.event.to_s
+        amended = motion.referring_motion
+        block.call
+        amended.motion_events.subsidiary_event 'unamend', reject_event
+      else
+        block.call
       end
     end
     around_transition :proposed => :divided do |motion, transition, block|

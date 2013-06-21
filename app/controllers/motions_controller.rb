@@ -28,17 +28,6 @@ class MotionsController < ApplicationController
   expose :motions do
     q.result.ordered.page(params[:page])
   end
-#  expose :amendment_attributes do
-#    permitted = Motion.permitted_attributes(:default) + permitted_event_motion_attributes
-#    if params[:amendment]
-#      params.require(:amendment).permit( *permitted )
-#    else
-#      {}
-#    end
-#  end
-#  expose( :amendment ) do
-#    motion.referred_motions.build_amendment( amendment_attributes )
-#  end
   expose :motion_attributes do
     permitted = Motion.permitted_attributes( permitted_to?(:admin) ? :admin : :default )
     if params[:motion]

@@ -165,4 +165,5 @@ Scenario Outline: Motion events with javascript
     |current vicechair|current|sponsored|   |proposed |merge    |
     |staff            |current|sponsored|   |adopted  |implement|
     |current vicechair|current|sponsored|   |proposed |refer    |
+    |current vicechair|current|sponsored|   |proposed |unamend  |
 
