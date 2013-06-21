@@ -90,6 +90,13 @@ class Motion < ActiveRecord::Base
       e.occurrence ||= Time.zone.today
       e
     end
+    
+    def propose_from( event )
+      propose_event = populate_for 'propose'
+      propose_event.assign_attributes occurrence: event.occurrence,
+        description: event.description
+      proxy_association.owner.propose!
+    end
   end
   has_one :terminal_motion_merger, inverse_of: :merged_motion, dependent: :destroy,
     class_name: 'MotionMerger', foreign_key: :merged_motion_id
@@ -100,12 +107,19 @@ class Motion < ActiveRecord::Base
   has_many :referred_motions, inverse_of: :referring_motion,
     class_name: 'Motion', foreign_key: :referring_motion_id,
     dependent: :restrict do
-    def populate_referee
+    def populate_single
       motion = if i = index { |m| m.new_record? }
         self[i]
       else
         build
       end
+    end
+    
+    def pending
+      select { |m| m.new_record? }
+    end
+    
+    def initialize_contents_from_referring_motion(motion)
       motion.description = proxy_association.owner.description
       motion.content = proxy_association.owner.content
       #TODO copy attachments
@@ -113,24 +127,20 @@ class Motion < ActiveRecord::Base
       motion
     end
     
-    def build_referee( referral_attributes = {} )
-      referral_attributes ||= {}
-      build( proxy_association.owner.attributes ) do |new_motion|
-        new_motion.assign_attributes referral_attributes
-        new_motion.period ||= new_motion.committee.periods.active if new_motion.committee
-      end
+    def populate_referee
+      motion = populate_single
+      initialize_contents_from_referring_motion motion
     end
-
-    def build_amendment( amendment_attributes = {} )
-      original_attributes = ActionController::Parameters.new( proxy_association.owner.attributes )
-      original_attributes = original_attributes.permit( *Motion.permitted_attributes(:default) )
-      proxy_association.owner.amendment = build( original_attributes ) do |new_motion|
-        new_motion.assign_attributes amendment_attributes
-        new_motion.meeting = proxy_association.owner.meeting
-        new_motion.committee = proxy_association.owner.committee
-        new_motion.period = proxy_association.owner.period
-        new_motion.name = proxy_association.owner.amendable_name
-      end
+    
+    def populate_amendment(initialize_contents=false)
+      motion = populate_single
+      source_attributes = proxy_association.owner.attributes
+      motion.assign_attributes meeting: proxy_association.owner.meeting,
+        committee: proxy_association.owner.committee,
+        period: proxy_association.owner.period,
+        name: proxy_association.owner.amendable_name
+      initialize_contents_from_referring_motion motion if initialize_contents
+      motion
     end
 
     def prepare_divided
@@ -194,9 +204,6 @@ class Motion < ActiveRecord::Base
   validates :period, presence: true, inclusion: { if: :committee,
     in: lambda { |motion| motion.committee.schedule.periods } }
   validates :committee, presence: true
-  validates :event_date, timeliness: { allow_blank: true, if: :period, type: :date,
-    on_or_after: :period_starts_at, on_or_before: lambda { Time.zone.today } }
-  # No validation on position -- this will be handled automatically
 
   before_create do |motion|
     if motion.referring_motion != motion.parent
@@ -227,49 +234,48 @@ class Motion < ActiveRecord::Base
         new_motion.watchers << motion.watchers
       end
     end
-    before_transition all => [ :referred ] do |motion, transition|
+    around_transition all => [ :referred ] do |motion, transition, block|
       event = motion.motion_events.populate_for( 'refer' )
       referee = motion.referred_motions.populate_referee
       if event.occurrence && referee.committee
         referee.period = referee.committee.schedule.periods.
           overlaps( event.occurrence, event.occurrence ).first
       end
+      block.call
+      referee.motion_events.propose_from event
     end
     before_transition all - :proposed => :proposed do |motion|
       motion.published = true
     end
-    before_transition :proposed => [ :implemented ] do |motion|
-      if motion.referring_motion.amended?
-        motion.referring_motion.amendment = motion
-        motion.referring_motion.event_date = motion.event_date
-        motion.referring_motion.event_description = motion.event_description
-        motion.referring_motion.motion_meeting_segments.amend_from_motion( motion )
-        motion.referring_motion.amend!
-      end
-    end
+    #TODO fix this
     before_transition :proposed => [ :rejected, :withdrawn ] do |motion|
       if motion.referring_motion && motion.referring_motion.amended?
         motion.referring_motion.unamend!
       end
     end
-    before_transition :proposed => :amended do |motion|
-      motion.amendment.propose!
+    around_transition :proposed => :divided do |motion, transition, block|
+      divide_event = motion.motion_events.populate_for transition.event.to_s
+      divisions = motion.referred_motions.pending
+      block.call
+      divisions.each do |division|
+        division.motion_events.propose_from divide_event
+      end
     end
-    before_transition :amended => :proposed do |motion|
-      motion.description = motion.amendment.description
-      motion.content = motion.amendment.content
-      # TODO copy attachments from amendment
+    around_transition :proposed => :amended do |motion, transition, block|
+      amend_event = motion.motion_events.populate_for transition.event.to_s
+      amendment = motion.referred_motions.populate_amendment
+      block.call
+      amendment.motion_events.propose_from amend_event
     end
-    # TODO do not automatically create event if an unsaved one is present
-    before_transition all => [ :started, :proposed, :divided,
-      :withdrawn, :adopted, :implemented, :rejected ] do |motion, transition|
+    before_transition all => [ :started, :proposed, :withdrawn, :adopted,
+      :implemented, :rejected ] do |motion, transition|
       motion.motion_events.populate_for transition.event.to_s
     end
     after_transition all => [ :merged ] do |motion|
       motion.terminal_merged_motion.watchers << motion.watchers
     end
 
-    state :proposed, :referred, :merged, :divided, :withdrawn, :adopted,
+    state :amended, :proposed, :referred, :merged, :divided, :withdrawn, :adopted,
       :implemented, :rejected
 
     state :started do
@@ -278,9 +284,6 @@ class Motion < ActiveRecord::Base
 #          errors.add :sponsorships, "cannot be empty for new motion"
 #        end
       end
-    end
-    state :amended do
-      validates :amendment, presence: true
     end
 
     event :propose do
@@ -292,7 +295,6 @@ class Motion < ActiveRecord::Base
     end
     event :amend do
       transition :proposed => :amended
-      transition :amended => :proposed
     end
     event :merge do
       transition :proposed => :merged
@@ -322,8 +324,6 @@ class Motion < ActiveRecord::Base
   end
 
   notifiable_events :propose
-  #TODO eliminate this approach to amendments
-  attr_accessor :amendment
 
   delegate :effective_contact_name_and_email, :effective_contact_email,
     :effective_contact_name, to: :committee

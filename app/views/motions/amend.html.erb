@@ -3,26 +3,33 @@
 <%= content_tag :p do %>
 Use this form to prepare an amended version of the motion.
 This will create an <em>amendment motion</em> in the committee.
-Once the amendment is adopted, it will be applied to the original motion.
+If the amendment is rejected, the original motion will be restored.
+If the amendment is adopted, it will supercede the original motion.
 Specify attachments only if they are to be substituted for or added to the original attachments.
-An amendment must have sponsors.
 <% end %>
 
-<%= simple_form_for amendment, as: :amendment,
+<%= simple_form_for motion, as: :motion,
   url: amend_motion_path( motion ), method: :put do |form| %>
   <%= render "shared/error_messages", target: form.object %>
   <%= form.simple_fields_for :motion_events,
-    form.object.motion_events.populate_for( 'propose' ) do |subform| %>
-    <%= render partial: 'motions/motion_event_fields', locals: { f: subform } %>
+    form.object.motion_events.populate_for( 'amend' ) do |subform| %>
+    <%= render partial: 'motions/motion_event_fields',
+      locals: { f: subform } %>
   <% end %>
-  <%= form.input :name, label: 'Name',
-    hint: 'What should be the new name of the amendment? (Usually best to use the default)' %>
-  <%= form.input :description, hint: 'Briefly describe amended purpose and effect of motion' %>
-  <%= form.input :content, hint: 'Provide the amended text of the motion' %>
-  <%= cocoon_fields form, :sponsorships, insertable: true %>
-  <%= cocoon_fields form, :attachments, insertable: true %>
-  <% if form.object.meeting %>
-    <%= cocoon_fields form, :motion_meeting_segments, label: 'Meeting Segments', insertable: true, ordered_by: :position %>
+  <%= form.simple_fields_for :referred_motions,
+    form.object.referred_motions.populate_single do |amendment_fields| %>
+    <%= amendment_fields.input :name, label: 'Name',
+      hint: 'What should be the new name of the amendment? (Usually best to use the default)' %>
+    <%= amendment_fields.input :description,
+      hint: 'Briefly describe amended purpose and effect of motion' %>
+    <%= amendment_fields.input :content,
+      hint: 'Provide the amended text of the motion' %>
+    <%= cocoon_fields amendment_fields, :sponsorships, insertable: true %>
+    <%= cocoon_fields amendment_fields, :attachments, insertable: true %>
+    <% if amendment_fields.object.meeting %>
+      <%= cocoon_fields amendment_fields, :motion_meeting_segments, 
+        label: 'Meeting Segments', insertable: true, ordered_by: :position %>
+    <% end %>
   <% end %>
   <%= form.button :wrapped, label: 'Amend', cancel: motion_path( motion ) %>
 <% end %>

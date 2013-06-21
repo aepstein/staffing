@@ -97,15 +97,20 @@ Then /^I should see confirmation of the event on the motion$/ do
     end
   end
   @final_event = case @event
-  when 'amend'
-    @amendment = Motion.find( URI.parse(current_url).path.match(/[\d]+$/)[0].to_i )
-    @amendment.motion_events.last
   when 'restart'
     nil
   else
    @motion.motion_events.last
   end
   step %Q{the final motion event should be correctly recorded} if @final_event
+  # In case of amendment, propose event should also be recorded on amendment motion
+  if %w( amend divide refer )
+    @motion.referred_motions.each do |referred|
+      @final_event = referred.motion_events.last
+      @final_event.event.should eql 'propose'
+      step %Q{the final motion event should be correctly recorded}
+    end
+  end
 end
 
 Then /^the final motion event should be correctly recorded$/ do

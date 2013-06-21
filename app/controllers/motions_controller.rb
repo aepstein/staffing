@@ -28,19 +28,19 @@ class MotionsController < ApplicationController
   expose :motions do
     q.result.ordered.page(params[:page])
   end
-  expose :amendment_attributes do
-    permitted = Motion.permitted_attributes(:default) + permitted_event_motion_attributes
-    if params[:amendment]
-      params.require(:amendment).permit( *permitted )
-    else
-      {}
-    end
-  end
-  expose( :amendment ) do
-    motion.referred_motions.build_amendment( amendment_attributes )
-  end
+#  expose :amendment_attributes do
+#    permitted = Motion.permitted_attributes(:default) + permitted_event_motion_attributes
+#    if params[:amendment]
+#      params.require(:amendment).permit( *permitted )
+#    else
+#      {}
+#    end
+#  end
+#  expose( :amendment ) do
+#    motion.referred_motions.build_amendment( amendment_attributes )
+#  end
   expose :motion_attributes do
-    permitted = *Motion.permitted_attributes( permitted_to?(:admin) ? :admin : :default )
+    permitted = Motion.permitted_attributes( permitted_to?(:admin) ? :admin : :default )
     if params[:motion]
       params.require(:motion).permit( *permitted )
     else
@@ -311,15 +311,19 @@ class MotionsController < ApplicationController
   def amend
     respond_to do |format|
       if request.method_symbol == :get
+        motion.referred_motions.populate_amendment true
         format.html
       else
-        amendment
+        permitted = [ referred_motion_attributes: 
+          Motion.permitted_attributes( permitted_to?(:admin) ? :admin : :default ) ] +
+          permitted_event_motion_attributes
+        motion.assign_attributes params.require(:motion).permit( *permitted )
         if motion.amend
-          format.html { redirect_to(amendment, notice: 'Motion amended.') }
+          format.html { redirect_to(motion.referred_motions.last, notice: 'Motion amended.') }
           format.xml  { head :ok }
         else
           format.html { render action: "amend" }
-          format.xml  { render xml: amendment.errors, status: :unprocessable_entity }
+          format.xml  { render xml: motion.errors, status: :unprocessable_entity }
         end
       end
     end
