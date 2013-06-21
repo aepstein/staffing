@@ -29,7 +29,7 @@ class MotionsController < ApplicationController
     q.result.ordered.page(params[:page])
   end
   expose :amendment_attributes do
-    permitted = Motion.permitted_attributes(:default) + Motion.permitted_attributes(:event)
+    permitted = Motion.permitted_attributes(:default) + permitted_event_motion_attributes
     if params[:amendment]
       params.require(:amendment).permit( *permitted )
     else
@@ -39,19 +39,6 @@ class MotionsController < ApplicationController
   expose( :amendment ) do
     motion.referred_motions.build_amendment( amendment_attributes )
   end
-  expose( :referred_motion_attributes ) do
-    permitted = [ :committee_name ] + Motion.permitted_attributes(:event)
-    if params[:referred_motion]
-      params.require(:referred_motion).permit( *permitted )
-    else
-      {}
-    end
-  end
-  expose :referred_motion do
-    out = motion.referred_motions.build_referee( referred_motion_attributes )
-    out.referring_motion.event_date, out.referring_motion.event_description = out.event_date, out.event_description
-    out
-  end
   expose :motion_attributes do
     permitted = *Motion.permitted_attributes( permitted_to?(:admin) ? :admin : :default )
     if params[:motion]
@@ -60,10 +47,23 @@ class MotionsController < ApplicationController
       {}
     end
   end
+  expose :permitted_event_motion_attributes do
+    permitted = [ motion_events_attributes: [ :description,
+      attachments_attributes: Attachment::PERMITTED_ATTRIBUTES ] ]
+    if permitted_to?(:admin, motion.committee)
+      permitted.last[:motion_events_attributes].unshift( :_destroy )
+    end
+    if permitted_to?(:staff, motion.committee)
+      permitted.last[:motion_events_attributes].unshift( :id, :event )
+    end
+    if permitted_to?(:vicechair, motion.committee)
+      permitted.last[:motion_events_attributes].unshift( :occurrence )
+    end
+    permitted
+  end
   expose :event_motion_attributes do
-    permitted = [ :id ] + Motion.permitted_attributes(:event)
     if params[:motion]
-      params.require(:motion).permit( *permitted )
+      params.require(:motion).permit( *permitted_event_motion_attributes )
     else
       {}
     end
@@ -84,7 +84,7 @@ class MotionsController < ApplicationController
   expose(:motion_merger_attributes) do
     if params[:motion_merger]
       params.require(:motion_merger).permit( :merged_motion_id, :motion_id,
-        { merged_motion_attributes: [ :id ] + Motion.permitted_attributes( :event ) } )
+        { merged_motion_attributes: [ :id ] + permitted_event_motion_attributes } )
     else
       {}
     end
@@ -278,7 +278,7 @@ class MotionsController < ApplicationController
           format.html { redirect_to motion.terminal_merged_motion, notice: 'Motion merged.' }
           format.xml { head :ok }
         else
-          format.html { redirect_to motion, alert: 'Cannot merge the motion.' }
+          format.html { render action: :merge }
           format.xml { render xml: motion.errors, status: :unprocessable_entity }
         end
       end
@@ -292,11 +292,13 @@ class MotionsController < ApplicationController
       if request.method_symbol == :get
         format.html { render action: :refer }
       else
-        referred_motion
+        permitted = permitted_event_motion_attributes +
+          [ { referred_motions_attributes: [ :committee_name, :name ] } ]
+        motion.assign_attributes params.require(:motion).permit( *permitted )
         if motion.refer
-          format.html { redirect_to(referred_motion, notice: 'Motion referred.') }
+          format.html { redirect_to(motion.referred_motions.last, notice: 'Motion referred.') }
           format.xml  { head :ok }
-      else
+        else
           format.html { render action: "refer" }
           format.xml  { render xml: motion.errors, status: :unprocessable_entity }
         end
@@ -312,8 +314,6 @@ class MotionsController < ApplicationController
         format.html
       else
         amendment
-        if params[:motion]
-        end
         if motion.amend
           format.html { redirect_to(amendment, notice: 'Motion amended.') }
           format.xml  { head :ok }
@@ -332,7 +332,8 @@ class MotionsController < ApplicationController
       if request.method_symbol == :get
         format.html { render action: :divide }
       else
-        motion.assign_attributes params.require(:motion).permit( *Motion.permitted_attributes( :divide ) )
+        permitted = Motion.permitted_attributes( :divide ) + permitted_event_motion_attributes
+        motion.assign_attributes params.require(:motion).permit( *permitted )
         motion.referred_motions.each { |m| m.committee = motion.committee; m.published = true; m.period = motion.period }
         if motion.divide
           format.html { redirect_to(motion, notice: 'Motion divided.') }

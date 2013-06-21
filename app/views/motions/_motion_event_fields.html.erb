@@ -1,0 +1,20 @@
+<% if permitted_to? :staff, f.object.motion.committee %>
+  <% if f.object.new_record? %>
+    <%= f.input :event,
+      label: 'Event type',
+      hint: 'What type of event should be recorded?' %>
+  <% end %>
+<% end %>
+<% if permitted_to? :vicechair, f.object.motion.committee %>
+  <%= f.input :occurrence, as: :date_picker,
+    label: "Event date",
+    hint: 'What is the effective date for this action?' %>
+<% else %>
+  <%= f.input :occurrence, as: :date_picker, disabled: true,
+    label: "Event date",
+    hint: "You may not alter the effective date for this action." %>
+<% end %>
+<%= f.input :description, as: :string, label: 'Event description',
+  hint: 'Any additional information about this action for the log.' %>
+
+

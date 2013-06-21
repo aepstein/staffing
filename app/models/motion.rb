@@ -80,7 +80,18 @@ class Motion < ActiveRecord::Base
   has_many :attachments, as: :attachable, dependent: :destroy
   has_many :meeting_items, dependent: :destroy, inverse_of: :motion
   has_many :meetings, through: :meeting_items
-  has_many :motion_events, dependent: :destroy, inverse_of: :motion
+  has_many :motion_events, dependent: :destroy, inverse_of: :motion do
+    def populate_for( event )
+      e = if i = index { |e| e.new_record? }
+        self[i]
+      else
+        build
+      end
+      e.event ||= event
+      e.occurrence ||= Time.zone.today
+      e
+    end
+  end
   has_one :terminal_motion_merger, inverse_of: :merged_motion, dependent: :destroy,
     class_name: 'MotionMerger', foreign_key: :merged_motion_id
   has_one :terminal_merged_motion, through: :terminal_motion_merger,
@@ -90,6 +101,19 @@ class Motion < ActiveRecord::Base
   has_many :referred_motions, inverse_of: :referring_motion,
     class_name: 'Motion', foreign_key: :referring_motion_id,
     dependent: :restrict do
+    def populate_referee
+      motion = if i = index { |m| m.new_record? }
+        self[i]
+      else
+        build
+      end
+      motion.description = proxy_association.owner.description
+      motion.content = proxy_association.owner.content
+      #TODO copy attachments
+      #TODO copy meeting segments or disallow referral of minutes motion
+      motion
+    end
+    
     def build_referee( referral_attributes = {} )
       referral_attributes ||= {}
       build( proxy_association.owner.attributes ) do |new_motion|
@@ -157,9 +181,11 @@ class Motion < ActiveRecord::Base
   scope :current, lambda { joins(:period).merge Period.unscoped.current }
   scope :in_process, lambda { with_status( :started, :proposed ) }
 
+  accepts_nested_attributes_for :motion_events, allow_destroy: true
   accepts_nested_attributes_for :attachments, allow_destroy: true
   accepts_nested_attributes_for :sponsorships, allow_destroy: true
   accepts_nested_attributes_for :referred_motions
+  accepts_nested_attributes_for :referring_motion
   accepts_nested_attributes_for :motion_meeting_segments, allow_destroy: true
 
   delegate :periods, :period_ids, to: :committee
@@ -202,6 +228,14 @@ class Motion < ActiveRecord::Base
         new_motion.watchers << motion.watchers
       end
     end
+    before_transition all => [ :referred ] do |motion, transition|
+      event = motion.motion_events.populate_for( 'refer' )
+      referee = motion.referred_motions.populate_referee
+      if event.occurrence && referee.committee
+        referee.period = referee.committee.schedule.periods.
+          overlaps( event.occurrence, event.occurrence ).first
+      end
+    end
     before_transition all - :proposed => :proposed do |motion|
       motion.published = true
     end
@@ -227,13 +261,10 @@ class Motion < ActiveRecord::Base
       motion.content = motion.amendment.content
       # TODO copy attachments from amendment
     end
-    after_transition all => [ :started, :proposed, :referred, :merged, :divided,
+    # TODO do not automatically create event if an unsaved one is present
+    before_transition all => [ :started, :proposed, :divided,
       :withdrawn, :adopted, :implemented, :rejected ] do |motion, transition|
-      motion.motion_events.create!(
-        event: transition.event.to_s,
-        description: motion.event_description,
-        occurrence: motion.event_date.blank? ? Time.zone.today : motion.event_date
-      )
+      motion.motion_events.populate_for transition.event.to_s
     end
     after_transition all => [ :merged ] do |motion|
       motion.terminal_merged_motion.watchers << motion.watchers
@@ -293,8 +324,7 @@ class Motion < ActiveRecord::Base
 
   notifiable_events :propose
 
-  attr_accessor :event_description, :amendment
-  attr_reader :event_date
+  attr_accessor :amendment
 
   delegate :effective_contact_name_and_email, :effective_contact_email,
     :effective_contact_name, to: :committee
@@ -373,7 +403,7 @@ class Motion < ActiveRecord::Base
     end
     candidate
   end
-
+  
   def populate_from_meeting
     return unless meeting
     self.name ||= "Minutes of #{meeting.starts_at.to_s :long}"

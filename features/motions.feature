@@ -145,15 +145,7 @@ Scenario Outline: Motion events without javascript
   Examples:
     |relationship     |tense  |origin   |pub|status  |event    |
     |current sponsor  |current|sponsored|un |started |propose  |
-    |current vicechair|current|referred |   |started |propose  |
     |current sponsor  |current|sponsored|   |proposed|withdraw |
-    |current vicechair|current|sponsored|   |proposed|adopt    |
-    |current vicechair|current|sponsored|   |proposed|merge    |
-    |current vicechair|current|sponsored|   |proposed|restart  |
-    |current vicechair|current|sponsored|   |proposed|refer    |
-    |staff            |current|sponsored|   |adopted |implement|
-    |current vicechair|current|sponsored|   |proposed|reject   |
-    |current vicechair|current|sponsored|   |proposed|withdraw |
 
 @javascript
 Scenario Outline: Motion events with javascript
@@ -161,8 +153,16 @@ Scenario Outline: Motion events with javascript
   When I <event> the motion
   Then I should see confirmation of the event on the motion
   Examples:
-    |relationship     |tense  |origin   |pub|status   |event   |
-    |current vicechair|current|sponsored|   |proposed |amend   |
-    |current vicechair|current|sponsored|   |proposed |divide  |
-    |current vicechair|current|sponsored|   |proposed |merge   |
+    |relationship     |tense  |origin   |pub|status   |event    |
+    |current vicechair|current|referred |   |started  |propose  |
+    |current vicechair|current|sponsored|   |proposed |adopt    |
+    |current vicechair|current|sponsored|   |proposed |restart  |
+    |current vicechair|current|sponsored|   |proposed |reject   |
+    |current vicechair|current|sponsored|   |proposed |withdraw |
+    |staff            |current|sponsored|un |started  |propose  |
+    |current vicechair|current|sponsored|   |proposed |amend    |
+    |current vicechair|current|sponsored|   |proposed |divide   |
+    |current vicechair|current|sponsored|   |proposed |merge    |
+    |staff            |current|sponsored|   |adopted  |implement|
+    |current vicechair|current|sponsored|   |proposed |refer    |
 

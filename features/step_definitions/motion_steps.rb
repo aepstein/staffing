@@ -11,20 +11,17 @@ When /^I (adopt|amend|divide|implement|merge|propose|refer|reject|restart|withdr
   case @event
   when 'adopt'
     visit(adopt_motion_path(@motion))
-    fill_in 'Adopt date', with: Time.zone.today.to_formatted_s(:us_short)
-    fill_in 'Event description', with: 'event details'
+    step %q{I fill in motion event details}
     click_button 'Adopt'
   when 'amend'
     visit(amend_motion_path(@motion))
-    fill_in 'Amend date', with: Time.zone.today.to_formatted_s(:us_short)
-    fill_in 'Event description', with: 'event details'
+    step %q{I fill in motion event details}
     fill_in 'Description', with: 'New description'
     fill_in 'Content', with: 'New content'
     click_button 'Amend'
   when 'divide'
     visit(divide_motion_path(@motion))
-    fill_in 'Divide date', with: Time.zone.today.to_formatted_s(:us_short)
-    fill_in 'Event description', with: 'event details'
+    step %q{I fill in motion event details}
     click_link 'Add Referred Motion'
     fill_in 'Name', with: 'Charter amendment'
     fill_in 'Description', with: 'This is a big change'
@@ -32,43 +29,44 @@ When /^I (adopt|amend|divide|implement|merge|propose|refer|reject|restart|withdr
     click_button 'Divide'
   when 'implement'
     visit(implement_motion_path(@motion))
-    fill_in 'Implement date', with: Time.zone.today.to_formatted_s(:us_short)
-    fill_in 'Event description', with: 'event details'
+    step %q{I fill in motion event details}
     click_button 'Implement'
   when 'merge'
     create :motion, committee: @motion.committee, period: @motion.period,
       name: 'Target', published: true, status: 'proposed'
     visit(merge_motion_path(@motion))
-    fill_in 'Merge date', with: Time.zone.today.to_formatted_s(:us_short)
-    fill_in 'Event description', with: 'event details'
+    step %q{I fill in motion event details}
     select 'Target', from: 'Motion'
     click_button 'Merge'
   when 'propose'
     visit(propose_motion_path(@motion))
-    fill_in 'Propose date', with: Time.zone.today.to_formatted_s(:us_short)
-    fill_in 'Event description', with: 'event details'
+    step %q{I fill in motion event details}
     click_button 'Propose'
   when 'refer'
     other_committee = create( :committee, schedule: @committee.schedule )
     visit(refer_motion_path(@motion))
-    fill_in 'Refer date', with: Time.zone.today.to_formatted_s(:us_short)
-    fill_in 'Event description', with: 'event details'
+    step %q{I fill in motion event details}
     fill_in 'Committee', with: other_committee.name
     fill_in 'Name', with: "#{@motion.name} referred"
     click_button 'Refer'
   when 'reject'
     visit(reject_motion_path(@motion))
-    fill_in 'Reject date', with: Time.zone.today.to_formatted_s(:us_short)
-    fill_in 'Event description', with: 'event details'
+    step %q{I fill in motion event details}
     click_button 'Reject'
   when 'restart'
     Capybara.current_session.driver.submit :put, restart_motion_url(@motion), {}
   when 'withdraw'
     visit(withdraw_motion_path(@motion))
-    fill_in 'Withdraw date', with: Time.zone.today.to_formatted_s(:us_short)
-    fill_in 'Event description', with: 'event details'
+    step %q{I fill in motion event details}
     click_button 'Withdraw'
   end
+end
+
+When /^I fill in motion event details$/ do
+  if %w( admin staff ).include? @role
+    fill_in 'Event date', with: (Time.zone.today - 1.day).to_formatted_s(:us_short)
+  end
+  fill_in 'Event description', with: 'event details'
 end
 
 Then /^I should see confirmation of the event on the motion$/ do
@@ -98,11 +96,25 @@ Then /^I should see confirmation of the event on the motion$/ do
       page.should have_text "Motion #{new_status}."
     end
   end
-  unless %w( restart amend ).include?( @event )
-    final_event = @motion.motion_events.last
-    final_event.occurrence.should eql Time.zone.today
-    final_event.description.should eql 'event details'
+  @final_event = case @event
+  when 'amend'
+    @amendment = Motion.find( URI.parse(current_url).path.match(/[\d]+$/)[0].to_i )
+    @amendment.motion_events.last
+  when 'restart'
+    nil
+  else
+   @motion.motion_events.last
   end
+  step %Q{the final motion event should be correctly recorded} if @final_event
+end
+
+Then /^the final motion event should be correctly recorded$/ do
+  if %w( admin staff ).include? @role
+    @final_event.occurrence.should eql( Time.zone.today - 1.day )
+  else
+    @final_event.occurrence.should eql Time.zone.today
+  end
+  @final_event.description.should eql 'event details'
 end
 
 Given /^(?:an? )(current|future|past) (un)?published, (\w+) motion exists of (sponsored|referred|meeting) origin to which I have a (?:(current|past|future) )?(admin|staff|chair|vicechair|voter|sponsor|nonsponsor|clerk|nonvoter|watcher|commenter|plain) relationship$/ do |motion_tense, publication, status, origin, tense, relationship|

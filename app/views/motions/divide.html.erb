@@ -10,7 +10,10 @@
 <%= content_tag( :div, id: "referred_motions" ) do %>
   <%= simple_form_for( motion, url: divide_motion_path( motion ),
     method: :put ) do |form| %>
-    <%= render partial: 'motions/event_fields', object: form %>
+  <%= form.simple_fields_for :motion_events,
+    form.object.motion_events.populate_for( 'divide' ) do |subform| %>
+    <%= render partial: 'motions/motion_event_fields', locals: { f: subform } %>
+  <% end %>
     <%= cocoon_fields( form, :referred_motions, insertable: true,
       label: "Dividing Motions", locals: { role: :divider } ) %>
     <%= form.button :wrapped, label: 'Divide', cancel: motion_path(form.object) %>

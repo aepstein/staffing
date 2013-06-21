@@ -11,6 +11,12 @@ Then /^I should be prompted to register$/ do
 end
 
 Given /^I log in as the (admin|staff|plain) user$/ do |type|
+  @role = case type
+  when 'admin', 'staff'
+    type
+  else
+    'user'
+  end
   @current_user = case type
   when 'admin'
     create :user, admin: true, first_name: "Senior", last_name: "Administrator"

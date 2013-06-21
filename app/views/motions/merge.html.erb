@@ -14,8 +14,13 @@ Use this form to merge the motion to another motion proposed before the same com
   url: merge_motion_path( motion_merger.merged_motion ),
   method: :put ) do |form| %>
 
+  <%= render "shared/error_messages", target: form.object %>
+
   <%= form.simple_fields_for :merged_motion do |merged_motion_fields| %>
-    <%= render partial: 'motions/event_fields', object: merged_motion_fields %>
+    <%= merged_motion_fields.simple_fields_for :motion_events,
+      merged_motion_fields.object.motion_events.populate_for( 'merge' ) do |subform| %>
+      <%= render partial: 'motions/motion_event_fields', locals: { f: subform } %>
+    <% end %>
   <% end %>
 
   <%= form.association :motion, as: :select,

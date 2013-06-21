@@ -7,7 +7,10 @@
 <%= simple_form_for motion, as: :motion,
   url: adopt_motion_path( motion ), method: :put do |form| %>
   <%= render "shared/error_messages", target: form.object %>
-  <%= render partial: 'motions/event_fields', object: form %>
+  <%= form.simple_fields_for :motion_events,
+    form.object.motion_events.populate_for( 'adopt' ) do |subform| %>
+    <%= render partial: 'motions/motion_event_fields', locals: { f: subform } %>
+  <% end %>
   <%= form.button :wrapped, label: 'Adopt', cancel: motion_path( form.object ) %>
 <% end %>
 
