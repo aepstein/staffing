@@ -5,6 +5,7 @@ class Motion < ActiveRecord::Base
     :reject, :restart, :withdraw ]
   EVENTS_PUTONLY = [ :restart, :unwatch, :watch ]
   
+#TODO eliminate
   def self.permitted_attributes(type)
 #  attr_accessible ,
 #    as: [ :admin, :default, :divider, :referrer, :amender ]
@@ -21,8 +22,6 @@ class Motion < ActiveRecord::Base
             :content, :description, :minutes_from_start, :meeting_item_id ],
           sponsorships_attributes: Sponsorship::PERMITTED_ATTRIBUTES,
           attachments_attributes: Attachment::PERMITTED_ATTRIBUTES } ]
-    when :event
-      [ :event_date, :event_description ]
     when :admin
       permitted_attributes( :default ) + [ :period_id, :comment_until ]
     when :referrer
@@ -323,7 +322,7 @@ class Motion < ActiveRecord::Base
   end
 
   notifiable_events :propose
-
+  #TODO eliminate this approach to amendments
   attr_accessor :amendment
 
   delegate :effective_contact_name_and_email, :effective_contact_email,
@@ -343,17 +342,6 @@ class Motion < ActiveRecord::Base
   def period_starts_at
     return nil unless period
     period.starts_at
-  end
-
-  # Populate the event date with
-  # * most meeting when scheduled, if any
-  # * most recent past meeting occurring same period, if any
-  # * today if period is current
-  # TODO - behavior depends on the action:
-  # * some actions don't require meetings so meeting-based default doesn't make
-  #   sense
-  def populate_event_date
-    # TODO
   end
 
   def users_for( population, options = {} )
@@ -440,6 +428,5 @@ class Motion < ActiveRecord::Base
       errors.add :period, 'must be in schedule of committee'
     end
   end
-
 end
 
