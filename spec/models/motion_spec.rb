@@ -100,7 +100,7 @@ describe Motion do
       motion
     end
 
-    let(:amendment) {  motion.referred_motions.build_amendment }
+    let(:amendment) {  motion.referred_motions.populate_amendment true }
 
     it "should save ancestry for a referee motion" do
       motion.parent.should eql motion.referring_motion
@@ -114,6 +114,13 @@ describe Motion do
       referee = referee_motion
       referee.referee?.should be_true
       referee.referring_motion.referee?.should be_false
+    end
+
+    it "should have a referred_motions.build_amendment method" do
+      amendment.name.should eql motion.amendable_name
+      amendment.content.should eql motion.content
+      amendment.committee.should eql motion.committee
+      amendment.period.should eql motion.period
     end
 
     it "should have a working build_amendment method" do
@@ -133,11 +140,6 @@ describe Motion do
       motion.amend!
       motion.reload
       motion.status.should eql 'amended'
-      amendment.adopt!
-      motion.reload
-      motion.status.should eql 'proposed'
-      motion.description.should eql amendment.description
-      motion.content.should eql amendment.content
     end
 
     it "should unamend a motion on reject" do
@@ -214,19 +216,5 @@ describe Motion do
       motion.amendable_name.should eql 'Amend Original #2'
     end
   end
-
-  context "amended motion" do
-    let(:motion) { create(:motion) }
-
-    it "should have a referred_motions.build_amendment method" do
-      amendment = motion.referred_motions.build_amendment
-      amendment.name.should eql motion.amendable_name
-      amendment.content.should eql motion.content
-      amendment.committee.should eql motion.committee
-      amendment.period.should eql motion.period
-      motion.amendment.should eql amendment
-    end
-  end
-
 end
 
