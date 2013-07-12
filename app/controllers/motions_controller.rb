@@ -327,7 +327,6 @@ class MotionsController < ApplicationController
       else
         permitted = Motion.permitted_attributes( :divide ) + permitted_event_motion_attributes
         motion.assign_attributes params.require(:motion).permit( *permitted )
-        motion.referred_motions.each { |m| m.committee = motion.committee; m.published = true; m.period = motion.period }
         if motion.divide
           format.html { redirect_to(motion, notice: 'Motion divided.') }
           format.xml  { head :ok }

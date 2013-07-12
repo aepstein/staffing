@@ -37,16 +37,6 @@ describe Motion do
       motion.save.should be_false
     end
 
-    it "should not save with an event date before period start" do
-      motion.event_date = motion.period.starts_at - 1.day
-      motion.save.should be_false
-    end
-
-    it "should not save with an event date after today" do
-      motion.event_date = Time.zone.today + 1.day
-      motion.save.should be_false
-    end
-
   end
 
   context "position" do
@@ -87,13 +77,12 @@ describe Motion do
     def divided_motions
       divided = create(:motion)
       divided.propose!
+      divided.motion_events.populate_for 'divide'
       2.times do |i|
         divided.referred_motions.build do |divisee|
           divisee.name = "Divided motion #{i}"
+          divisee.description = "some description"
           divisee.content = "some content"
-          divisee.committee = divided.committee
-          divisee.published = true
-          divisee.period = divided.period
         end
       end
       divided.divide!
@@ -104,10 +93,10 @@ describe Motion do
     def referee_motion
       referred = create(:motion)
       referred.propose!
-      motion = referred.referred_motions.build_referee(
-        committee_name: create(:committee, schedule: referred.committee.schedule ).name
-      )
-      motion.save!
+      motion = referred.referred_motions.populate_referee
+      motion.name = referred.name
+      motion.committee = create(:committee, schedule: referred.committee.schedule)
+      referred.refer!
       motion
     end
 

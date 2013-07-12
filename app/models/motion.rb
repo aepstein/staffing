@@ -135,9 +135,9 @@ class Motion < ActiveRecord::Base
     def prepare_divided
       each do |motion|
         next unless motion.new_record?
-        motion.committee = @motion.committee
+        motion.committee = proxy_association.owner.committee
         motion.published = true
-        motion.period = @motion.period
+        motion.period = proxy_association.owner.period
       end
     end
   end
@@ -183,7 +183,6 @@ class Motion < ActiveRecord::Base
   accepts_nested_attributes_for :attachments, allow_destroy: true
   accepts_nested_attributes_for :sponsorships, allow_destroy: true
   accepts_nested_attributes_for :referred_motions
-  accepts_nested_attributes_for :referring_motion
   accepts_nested_attributes_for :motion_meeting_segments, allow_destroy: true
 
   delegate :periods, :period_ids, to: :committee
@@ -248,6 +247,7 @@ class Motion < ActiveRecord::Base
     end
     around_transition :proposed => :divided do |motion, transition, block|
       divide_event = motion.motion_events.populate_for transition.event.to_s
+      motion.referred_motions.prepare_divided
       divisions = motion.referred_motions.pending
       block.call
       divisions.each do |division|
