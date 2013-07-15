@@ -1,6 +1,6 @@
 class MeetingMailer < ActionMailer::Base
   attr_accessor :meeting, :note
-  helper_method :meeting, :note, :linked_attachments
+  helper_method :clerks, :meeting, :note, :linked_attachments
   helper MeetingsHelper
 
   THRESHOLD = 2.megabytes
@@ -17,15 +17,15 @@ class MeetingMailer < ActionMailer::Base
 
   def minutes_notice( meeting, options = {})
     self.meeting = meeting
-    mail( to: clerks, from: meeting.effective_contact_name_and_email,
-      subject: "Minutes Needed for #{meeting.committee} Meeting on #{meeting.starts_at.to_date.to_s :long_ordinal}" )
+    mail( to: clerks.map(&:to_email), from: meeting.effective_contact_name_and_email,
+      subject: "Minutes Needed for #{meeting.committee} meeting on #{meeting.starts_at.to_date.to_s :long_ordinal}" )
   end
 
   def overdue_minutes_notice( meeting, options = {})
     self.meeting = meeting
-    mail( to: clerks, cc: vicechairs,
+    mail( to: clerks.map(&:to_email), cc: vicechairs,
       from: meeting.effective_contact_name_and_email,
-      subject: "Minutes Overdue for #{meeting.committee} Meeting on #{meeting.starts_at.to_date.to_s :long_ordinal}" )
+      subject: "Minutes Overdue for #{meeting.committee} meeting on #{meeting.starts_at.to_date.to_s :long_ordinal}" )
   end
 
   def clerks

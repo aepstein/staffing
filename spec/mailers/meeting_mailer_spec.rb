@@ -6,11 +6,30 @@ describe MeetingMailer do
   let(:item) { create(:meeting_item) }
   let(:section) { item.meeting_section }
   let(:meeting) { section.meeting }
-  let(:mail) { MeetingMailer.publish_notice( meeting,
-    to: "info@example.org", from: "current@example.org" ) }
+    
+  before(:each) { attachment; item.reload; meeting.reload }
+
+  describe "minutes_notice" do
+    let(:clerk) { create(:membership, position: create(:enrollment,
+      roles: %w( clerk ),
+      committee: meeting.committee).position ).user }
+    let(:committee) { meeting.committee }
+    let(:mail) { MeetingMailer.minutes_notice( meeting ) }
+    before(:each) { clerk }
+    
+    it "renders all the components" do
+      mail.subject.should eq "Minutes Needed for #{committee.name} meeting on #{meeting.starts_at.to_date.to_s :long_ordinal}"
+      mail.to.should include clerk.email
+      mail.from.should include  committee.effective_contact_email
+      both_parts_should_match /Dear #{clerk.first_name},/
+      both_parts_should_match /No minutes have been started for this meeting./
+      both_parts_should_match /Minutes must be proposed for the #{committee.name} meeting which occurred on #{meeting.starts_at.to_date.to_s :long_ordinal}./
+    end
+  end
 
   describe "publish_notice" do
-    before(:each) { attachment; item.reload; meeting.reload }
+    let(:mail) { MeetingMailer.publish_notice( meeting,
+      to: "info@example.org", from: "current@example.org" ) }
 
     it "renders all the components" do
       mail.subject.should eq("#{meeting.committee.name} Meeting on #{meeting.starts_at.to_date.to_s :long_ordinal}")

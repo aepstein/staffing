@@ -1,0 +1,14 @@
+Dear <%= clerks.map(&:first_name).uniq.listify %>,
+
+Minutes must be proposed for the <%= meeting.committee.name %> meeting which occurred on <%= meeting.starts_at.to_date.to_s :long_ordinal %>.
+
+<% if meeting.minute_motions.any? %>
+The following minutes have been filed for this meeting:
+<%= render partial: 'meeting_mailer/minute_motion',
+  collection: meeting.minute_motions %>
+<% else %>
+No minutes have been started for this meeting. You may prepare minutes online <<%=
+  new_meeting_motion_url( meeting ) %>>.
+<% end %>
+
+<%= meeting.committee.effective_contact_name %>
