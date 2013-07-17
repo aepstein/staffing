@@ -23,5 +23,14 @@ describe MeetingMailer do
       text_part_should_match "#{motion.to_s :numbered} <"
       html_part_should_match "#{motion.to_s :numbered}"
     end
+    
+    it "renders mentions the most recent meeting that has occurred" do
+      create(:meeting, committee: committee, period: motion.period,
+        starts_at: Time.zone.now - 1.week)
+      recent = create(:meeting, committee: committee, period: motion.period,
+        starts_at: Time.zone.now - 1.day)
+      mail
+      both_parts_should_match "#{committee.name} has not met since #{recent.starts_at.to_date.to_s :long_ordinal}."
+    end
   end
 end
