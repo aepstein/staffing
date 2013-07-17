@@ -216,5 +216,22 @@ describe Motion do
       motion.amendable_name.should eql 'Amend Original #2'
     end
   end
+  
+  context "scheduled/unscheduled scope" do
+    let(:item) { create :motion_meeting_item }
+    let(:motion) { item.motion }
+    
+    it "should have an unscheduled scope" do
+      Motion.unscheduled.should include motion
+      item.meeting.update_column :starts_at, ( Time.zone.now + 2.days )
+      Motion.unscheduled.should_not include motion
+    end
+    
+    it "should have a scheduled scope" do
+      Motion.scheduled.should_not include motion
+      item.meeting.update_column :starts_at, ( Time.zone.now + 2.days )
+      Motion.scheduled.should include motion
+    end
+  end
 end
 

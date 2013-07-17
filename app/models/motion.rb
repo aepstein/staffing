@@ -178,6 +178,8 @@ class Motion < ActiveRecord::Base
   scope :past, lambda { joins(:period).merge Period.unscoped.past }
   scope :current, lambda { joins(:period).merge Period.unscoped.current }
   scope :in_process, lambda { with_status( :started, :proposed ) }
+  scope :unscheduled, lambda { where { id.not_in( MeetingItem.future.select { motion_id } ) } }
+  scope :scheduled, lambda { where { id.in( MeetingItem.future.select { motion_id } ) } }
 
   accepts_nested_attributes_for :motion_events, allow_destroy: true
   accepts_nested_attributes_for :attachments, allow_destroy: true
