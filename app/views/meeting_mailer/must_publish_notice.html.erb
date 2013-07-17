@@ -1,0 +1,17 @@
+<p>
+Dear <%= vicechairs.map(&:first_name).listify %>,
+</p>
+
+<p>
+<%= meeting.committee.name %> is scheduled to meet <%=meeting.starts_at.to_s :long_ordinal%> at <%= meeting.location %> in <%= meeting.room %>, but the meeting has not yet been published.  You must publish the meeting so members and stakeholders can prepare for the meeting.
+</p>
+
+<p>
+You may <%= link_to 'review', meeting_url(meeting) %>, <%=link_to 'modify', edit_meeting_url( meeting ) %>, and
+<%=link_to 'publish', publish_meeting_url(meeting) %> the meeting online.
+</p>
+
+<p>
+<%= meeting.effective_contact_name %>
+</p>
+

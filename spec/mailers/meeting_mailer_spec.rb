@@ -8,6 +8,23 @@ describe MeetingMailer do
   let(:meeting) { section.meeting }
     
   before(:each) { attachment; item.reload; meeting.reload }
+  
+  describe "must_publish_notice" do
+    let(:vicechair) { create(:membership, position: create(:enrollment,
+      roles: %w( vicechair ),
+      committee: meeting.committee).position ).user }
+    let(:committee) { meeting.committee }
+    let(:mail)  { MeetingMailer.must_publish_notice meeting }
+    before(:each) { vicechair }
+    
+    it "renders all the components" do
+      mail.subject.should eq "Time to publish #{committee.name} meeting on #{meeting.starts_at.to_date.to_s :long_ordinal}"
+      mail.to.should include vicechair.email
+      mail.from.should include committee.effective_contact_email
+      both_parts_should_match /Dear #{vicechair.first_name},/
+      both_parts_should_match /#{committee.name} is scheduled to meet #{meeting.starts_at.to_s :long_ordinal} at #{meeting.location} in #{meeting.room}, but the meeting has not yet been published./
+    end
+  end
 
   describe "minutes_notice" do
     let(:clerk) { create(:membership, position: create(:enrollment,

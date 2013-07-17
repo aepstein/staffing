@@ -1,9 +1,15 @@
 class MeetingMailer < ActionMailer::Base
   attr_accessor :meeting, :note
-  helper_method :clerks, :meeting, :note, :linked_attachments
+  helper_method :clerks, :vicechairs, :meeting, :note, :linked_attachments
   helper MeetingsHelper
 
   THRESHOLD = 2.megabytes
+  
+  def must_publish_notice( meeting, options = {})
+    self.meeting = meeting
+    mail( to: vicechairs.map(&:to_email), from: meeting.effective_contact_name_and_email,
+      subject: "Time to publish #{meeting.committee.name} meeting on #{meeting.starts_at.to_date.to_s :long_ordinal}" )
+  end
 
   def publish_notice( meeting, options = {})
     self.meeting = meeting
