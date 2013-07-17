@@ -55,6 +55,9 @@ class Meeting < ActiveRecord::Base
     starts_at > ( Time.zone.today.to_time + 1.day ) } }
   scope :current, lambda { where { (starts_at >= Time.zone.today.to_time) &
     ( starts_at <= ( Time.zone.today.to_time + 1.day ) ) } }
+  scope :current_period, lambda { where { period_id.in( 
+    Period.current.select { id } ) } }
+  scope :recent, lambda { past.current_period.ordered }
 
   # Extract enclosures
   def attachments(reload = false)

@@ -1,0 +1,20 @@
+Dear <%= vicechairs.map(&:first_name).listify %>,
+
+<%= committee.name %> has not met since <%= if committee.meetings.recent.first
+    committee.meetings.recent.first.starts_at.to_date.to_s :long_ordinal
+  else
+    "the current session began on #{committee.schedule.periods.active.to_s :long_ordinal}"
+  end
+%>.
+
+<% if committee.motions.current.unscheduled.with_status(:proposed).any? %>
+The following motions have been proposed and are awaiting discussion and action:
+
+<%= render partial: 'committee_mailer/motion',
+  collection: committee.motions.current.unscheduled.with_status(:proposed) %>
+<% end %>
+
+You may schedule a meeting online <<%=new_committee_meeting_url committee %>>.
+
+<%= committee.effective_contact_name %>
+
