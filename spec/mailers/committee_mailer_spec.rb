@@ -11,9 +11,10 @@ describe MeetingMailer do
       committee: committee).position ).user }
     let(:mail) { CommitteeMailer.must_meet_notice( committee ) }
     
-    before(:each) { vicechair; motion.propose! }
+    before(:each) { vicechair }
     
     it "renders all the components" do
+      motion.propose!
       mail.subject.should eq "#{committee.name} must meet"
       mail.to.should include vicechair.email
       mail.from.should include committee.effective_contact_email
@@ -24,7 +25,16 @@ describe MeetingMailer do
       html_part_should_match "#{motion.to_s :numbered}"
     end
     
-    it "renders mentions the most recent meeting that has occurred" do
+    it "does not mention the most recent meeting if it occurred in the past period" do
+      past_period = create(:past_period, schedule: committee.schedule)
+      committee.reload
+      create(:meeting, committee: committee, period: past_period,
+        starts_at: past_period.starts_at + 1.week)
+      mail
+      both_parts_should_match "#{committee.name} has not met since the current session began on #{committee.schedule.periods.active.to_s :long_ordinal}."
+    end
+    
+    it "mentions the most recent meeting that has occurred" do
       create(:meeting, committee: committee, period: motion.period,
         starts_at: Time.zone.now - 1.week)
       recent = create(:meeting, committee: committee, period: motion.period,
