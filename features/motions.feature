@@ -146,6 +146,7 @@ Scenario Outline: Motion events without javascript
     |relationship     |tense  |origin   |pub|status  |event    |
     |current sponsor  |current|sponsored|un |started |propose  |
     |current sponsor  |current|sponsored|   |proposed|withdraw |
+    |current vicechair|current|sponsored|   |proposed|restart  |
 
 @javascript
 Scenario Outline: Motion events with javascript
@@ -156,7 +157,6 @@ Scenario Outline: Motion events with javascript
     |relationship     |tense  |origin   |pub|status   |event    |
     |current vicechair|current|referred |   |started  |propose  |
     |current vicechair|current|sponsored|   |proposed |adopt    |
-    |current vicechair|current|sponsored|   |proposed |restart  |
     |current vicechair|current|sponsored|   |proposed |reject   |
     |current vicechair|current|sponsored|   |proposed |withdraw |
     |staff            |current|sponsored|un |started  |propose  |

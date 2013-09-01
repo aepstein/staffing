@@ -13,6 +13,10 @@ class MotionMerger < ActiveRecord::Base
     in: lambda { |merger| merger.merged_motion.mergeable_motions }
   }
   validate :merged_motion_must_be_mergeable, on: :create
+  
+  before_validation on: :create do |merger|
+    merger.merged_motion.motion_events.populate_for 'merge'
+  end
 
   before_create do |merger|
     merger.merged_motion.lock!

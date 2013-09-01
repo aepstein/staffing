@@ -263,7 +263,7 @@ class Motion < ActiveRecord::Base
       amendment.motion_events.propose_from amend_event
     end
     before_transition all => [ :started, :proposed, :withdrawn, :adopted,
-      :implemented, :rejected, :merged ] do |motion, transition|
+      :implemented, :rejected ] do |motion, transition|
       motion.motion_events.populate_for transition.event.to_s
     end
     after_transition all => [ :merged ] do |motion|
