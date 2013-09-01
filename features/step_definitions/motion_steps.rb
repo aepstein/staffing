@@ -116,6 +116,7 @@ Then /^I should see confirmation of the event on the motion$/ do
       @final_event = referred.motion_events.last
       @final_event.event.should eql 'propose'
       step %Q{the final motion event should be correctly recorded}
+      within("#ancestors") { page.should have_text @motion.name }
     end
   end
   if %w( unamend ).include? @event

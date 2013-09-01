@@ -8,6 +8,16 @@
 
 <%= render partial: 'motion_events/motion_events',
   object: motion.motion_events, locals: { motion: motion } %>
+  
+<%=content_tag :h2, "Prior motions superseded by this motion" %>
+
+<%= render partial: 'motions/motions', object: motion.ancestors,
+  locals: { id: 'ancestors' } %>
+
+<%=content_tag :h2, "Later motions that supersede this motion" %>
+
+<%= render partial: 'motions/motions', object: motion.descendants,
+  locals: { id: 'descendants' } %>
 
 <p>
 <% if permitted_to? :edit, motion -%>

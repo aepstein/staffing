@@ -1,6 +1,7 @@
 <% committee ||= false %>
 <% period  ||= false %>
-<table id="motions">
+<% id ||= "motions" %>
+<table id="<%= id %>">
   <thead>
   <tr>
     <%=content_tag( :th, "Committee" ) unless committee %>
