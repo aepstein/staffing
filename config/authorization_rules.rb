@@ -71,8 +71,9 @@ authorization do
     end
     has_permission_on :meetings, to: :show do
       if_permitted_to :vicechair, :committee
-      if_attribute committee: { enrollments: { position_id: is_in { user.memberships.
-        where { ends_at.gte( Time.zone.today ) }.value_of(:position_id) } } }
+      if_attribute published: true
+#      if_attribute committee: { enrollments: { position_id: is_in { user.memberships.
+#        where { ends_at.gte( Time.zone.today ) }.value_of(:position_id) } } }
     end
     has_permission_on :meetings, to: [:create, :update, :publish], join_by: :and do
       if_permitted_to :vicechair, :committee

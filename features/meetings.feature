@@ -20,16 +20,16 @@ Scenario Outline: Access control
     |current chair   |un |current|may    |may    |may    |may    |
     |current chair   |un |recent |may    |may    |may    |may not|
     |current chair   |un |pending|may    |may    |may    |may    |
-    |recent chair    |un |current|may not|may not|may not|may not|
-    |recent chair    |un |current|may not|may not|may not|may not|
+    |recent chair    |un |current|may    |may not|may not|may not|
+    |recent chair    |un |pending|may not|may not|may not|may not|
     |pending chair   |un |current|may    |may not|may not|may not|
     |current voter   |un |current|may    |may not|may not|may not|
-    |current voter   |un |pending|may    |may not|may not|may not|
-    |pending voter   |un |pending|may    |may not|may not|may not|
+    |current voter   |un |pending|may not|may not|may not|may not|
+    |pending voter   |un |pending|may not|may not|may not|may not|
     |current nonvoter|un |current|may    |may not|may not|may not|
-    |current nonvoter|un |pending|may    |may not|may not|may not|
-    |pending nonvoter|un |pending|may    |may not|may not|may not|
-    |plain           |un |current|may not|may not|may not|may not|
+    |current nonvoter|un |pending|may not|may not|may not|may not|
+    |pending nonvoter|un |pending|may not|may not|may not|may not|
+    |plain           |un |pending|may not|may not|may not|may not|
     |plain           |un |recent |may    |may not|may not|may not|
     |plain           |   |current|may    |may not|may not|may not|
     |plain           |   |pending|may    |may not|may not|may not|
