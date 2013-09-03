@@ -26,8 +26,14 @@
         <% subform.object.renewal_confirmed_at = Time.zone.now %>
         <%= subform.hidden_field :renewal_confirmed_at %>
         <td><%= subform.label :renew_until, subform.object.position.to_s %></td>
-        <td><%= subform.object.ends_at.to_formatted_s :us_short %></td>
-        <td><%= subform.text_field :renew_until, value: subform.object.renew_until.try( :to_formatted_s, :us_short ), class: 'ui-date-picker' %><%= subform.hidden_field :renew_until, class: 'renew_until-alt' %></td>
+        <td><%= subform.object.ends_at.to_formatted_s :db %></td>
+        <%=content_tag :td  do %>
+          <%=content_tag :div, data: { behavior: "date-picker" }, class: "input-append date" do %>
+            <%= subform.text_field :renew_until,
+              value: subform.object.renew_until.try( :to_formatted_s, :db ) %>
+            <%= input_calendar_button %>
+          <% end %>
+        <% end %>
         <td></td>
       <% end %>
 

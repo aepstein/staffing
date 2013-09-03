@@ -10,6 +10,7 @@ gem 'squeel'
 gem 'ransack'
 gem 'ancestry'
 gem 'cornell_ldap', '>= 1.3.1'
+gem 'bcrypt-ruby', '~> 3.0.0'
 gem 'state_machine'
 gem 'declarative_authorization'
 gem 'carrierwave'
@@ -46,6 +47,8 @@ group :development do
 end
 group :test do
   gem 'test-unit', require: false
+  gem 'selenium-webdriver', require: false
+  gem 'cucumber', '~> 1.2.5', require: false
   gem 'cucumber-rails', require: false
   gem 'database_cleaner', require: false
   gem 'capybara', '~> 2.0'

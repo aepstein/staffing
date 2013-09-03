@@ -125,7 +125,7 @@ describe Motion do
 
     it "should have a working build_amendment method" do
       motion.propose!
-      amendment.name.should eql "Amend #{motion.name} #1"
+      amendment.name.should eql "Amended #{motion.name} #1"
       amendment.description.should eql motion.description
       amendment.content.should eql motion.content
     end
@@ -207,13 +207,13 @@ describe Motion do
     let(:motion) { create :motion, name: 'Original' }
 
     it "should return first name if there is no conflict" do
-      motion.amendable_name.should eql 'Amend Original #1'
+      motion.amendable_name.should eql 'Amended Original #1'
     end
 
     it "should return second name if there is a conflict" do
       create( :motion, committee: motion.committee, period: motion.period,
         name: motion.amendable_name )
-      motion.amendable_name.should eql 'Amend Original #2'
+      motion.amendable_name.should eql 'Amended Original #2'
     end
   end
   
@@ -223,13 +223,13 @@ describe Motion do
     
     it "should have an unscheduled scope" do
       Motion.unscheduled.should include motion
-      item.meeting.update_column :starts_at, ( Time.zone.now + 2.days )
+      item.meeting_section.meeting.update_column :starts_at, ( Time.zone.now + 2.days )
       Motion.unscheduled.should_not include motion
     end
     
     it "should have a scheduled scope" do
       Motion.scheduled.should_not include motion
-      item.meeting.update_column :starts_at, ( Time.zone.now + 2.days )
+      item.meeting_section.meeting.update_column :starts_at, ( Time.zone.now + 2.days )
       Motion.scheduled.should include motion
     end
   end

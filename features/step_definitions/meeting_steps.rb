@@ -109,7 +109,7 @@ When /^I create a meeting with a (named|motion) item as (staff|chair)$/ do |item
     @start = ( Time.zone.now + 1.day ).floor
     @end = @start + 1.hour
     fill_in "Description", with: "A *brief* meeting to discuss important business."
-    fill_in "Starts at", with: "#{@start.to_s :us_short}"
+    fill_in "Starts at", with: "#{@start.to_s :datetime_picker}"
     fill_in "Duration", with: 60
     fill_in "Location", with: "Green Room"
     fill_in "Room", with: "Section A"
@@ -169,7 +169,7 @@ When /^I update the meeting$/ do
   visit(edit_meeting_path(@meeting))
   within_fieldset("Basic Information") do
     fill_in "Description", with: "Much ado about nothing."
-    fill_in "Starts at", with: "#{@start.to_s :us_short}"
+    fill_in "Starts at", with: "#{@start.to_s :datetime_picker}"
     fill_in "Duration", with: "70"
     fill_in "Location", with: "Red Room"
     fill_in "Room", with: "Section B"

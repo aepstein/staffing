@@ -70,7 +70,7 @@ end
 
 When /^I fill in motion event details$/ do
   if %w( admin staff ).include? @role
-    fill_in 'Event date', with: (Time.zone.today - 1.day).to_formatted_s(:us_short)
+    fill_in 'Event date', with: (Time.zone.today - 1.day).to_formatted_s(:db)
   end
   fill_in 'Event description', with: 'event details'
 end

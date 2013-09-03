@@ -106,8 +106,8 @@ class User < ActiveRecord::Base
     end
     def authorized(votes = 1)
       return [] if proxy_association.owner.authorities.authorized(votes).empty?
-      Position.where( :authority_id.in => proxy_association.owner.authorities.
-          authorized( votes ).map(&:id) ).select('DISTINCT positions.*')
+      Position.where { |p| p.authority_id.in proxy_association.owner.authorities.
+          authorized( votes ).map(&:id) }.select('DISTINCT positions.*')
     end
   end
   has_many :declined_memberships, class_name: 'Membership',

@@ -380,7 +380,7 @@ class Motion < ActiveRecord::Base
 
   # Returns unique amendment name for the motion
   def amendable_name
-    candidate = "Amend #{name} #1"
+    candidate = "Amended #{name} #1"
     while committee.motions.where { |m| m.period_id.eq( period_id ) && m.name.eq( candidate ) }.exists? do
       candidate.gsub!( /#(\d+)$/ ) { "##{$1.to_i + 1}" }
     end

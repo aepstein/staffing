@@ -146,8 +146,8 @@ end
 When /^I fill in basic fields for the membership request$/ do
   @starts ||= Time.zone.today
   @ends ||= @starts + 2.years
-  fill_in 'Desired start date', with: @starts.to_s(:us_short)
-  fill_in 'Desired end date', with: @ends.to_s(:us_short)
+  fill_in 'Desired start date', with: @starts.to_s(:db)
+  fill_in 'Desired end date', with: @ends.to_s(:db)
 end
 
 When /^I create a membership request for the committee$/ do
