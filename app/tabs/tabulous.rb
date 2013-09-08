@@ -167,12 +167,8 @@ Tabulous.setup do
 
   customize do
     active_tab_clickable true
-#    always_render_subtabs false
     when_action_has_no_tab :raise_error
     renderer :bootstrap_pill
-#    html5 false
-#    tabs_ul_class "nav nav-pills"
-#    bootstrap_style_subtabs true
   end
 end
 
