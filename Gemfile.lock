@@ -9,7 +9,7 @@ GIT
 
 GIT
   remote: git://assembly.cornell.edu/git/cornell-assemblies-rails.git
-  revision: f884d694c675c140b545e9d13a116713ec88d651
+  revision: 5cacd94c09cc51a6ee8758b0685f5ee489724908
   branch: 0-0-3
   specs:
     cornell_assemblies_rails (0.0.3)
@@ -138,7 +138,7 @@ GEM
       factory_girl (~> 3.6.0)
       railties (>= 3.0.0)
     ffi (1.9.0)
-    fullcalendar-rails (1.6.1.0)
+    fullcalendar-rails (1.6.4.0)
     gettext (3.0.0)
       locale (>= 2.0.5)
       text
@@ -171,7 +171,7 @@ GEM
       treetop (~> 1.4.8)
     mime-types (1.25)
     mini_portile (0.5.1)
-    multi_json (1.7.9)
+    multi_json (1.8.0)
     mysql2 (0.3.13)
     net-ldap (0.3.1)
     net-scp (1.1.2)
@@ -192,7 +192,7 @@ GEM
       hashery (~> 2.0)
       ruby-rc4
       ttfunk
-    polyamorous (0.6.3)
+    polyamorous (0.6.4)
       activerecord (>= 3.0)
     polyglot (0.3.3)
     prawn (1.0.0.rc1)
@@ -269,7 +269,7 @@ GEM
       multi_json (~> 1.0)
       rack (~> 1.0)
       tilt (~> 1.1, != 1.3.0)
-    squeel (1.1.0)
+    squeel (1.1.1)
       activerecord (>= 3.0)
       activesupport (>= 3.0)
       polyamorous (~> 0.6.0)

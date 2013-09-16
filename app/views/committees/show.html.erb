@@ -58,33 +58,26 @@
 
 </div>
 
-
-<%=form_tag tents_committee_path(committee, format: :pdf), method: :get do %>
-<p>
-  <b><%=label_tag :as_of, 'As of' %></b>
-  <%=text_field_tag :as_of, as_of.to_s( :us_short ), class: 'ui-date-picker' %>
-  <%=hidden_field_tag :as_of, class: 'as_of-alt' %>
+<%=form_tag tents_committee_path(committee, format: :pdf), method: :get,
+  class: 'form-inline' do %>
+  <%=date_picker_field_tag :as_of, nil, class: 'input-small',
+    placeholder: as_of.to_s(:db) %>
   <%=submit_tag "Download Tent Cards" %>
-</p>
 <% end %>
 
-<%=form_tag members_committee_path(committee, format: :pdf), method: :get do %>
-<p>
-  <b><%=label_tag :as_of, 'As of' %></b>
-  <%=text_field_tag :as_of, as_of.to_s( :us_short ), class: 'ui-date-picker' %>
-  <%=hidden_field_tag :as_of, class: 'as_of-alt' %>
+<%=form_tag members_committee_path(committee, format: :pdf), method: :get,
+  class: 'form-inline' do %>
+  <%=date_picker_field_tag :as_of, nil, class: 'input-small',
+    placeholder: as_of.to_s(:db) %>
   <%=submit_tag "Download Membership Directory" %>
-</p>
 <% end %>
 
 <% if permitted_to? :manage, :users %>
-  <%=form_tag empl_ids_committee_path(committee, format: :pdf), method: :get do %>
-  <p>
-    <b><%=label_tag :as_of, 'As of' %></b>
-    <%=text_field_tag :as_of, as_of.to_s( :us_short ), class: 'ui-date-picker' %>
-    <%=hidden_field_tag :as_of, class: 'as_of-alt' %>
+  <%=form_tag empl_ids_committee_path(committee, format: :pdf), method: :get,
+    class: 'form-inline' do %>
+    <%=date_picker_field_tag :as_of, nil, class: 'input-small',
+      placeholder: as_of.to_s(:db) %>
     <%=submit_tag "Download Empl Id Directory" %>
-  </p>
   <% end %>
 <% end %>
 
@@ -97,8 +90,6 @@
 <%= nested_index committee, 'motions', %w( past current ) %> |
 <%= link_to 'List Positions', committee_positions_path(committee) %> |
 <%= nested_index committee, 'membership_requests', %w( active inactive ) %> |
-<%= link_to 'Tent cards (pdf)', tents_committee_path( committee, :format => :pdf ) %> |
-<%= link_to 'Members (pdf)', members_committee_path( committee, :format => :pdf ) %> |
 <%= link_to 'Back', committees_path %>
 </p>
 
