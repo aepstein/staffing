@@ -7,6 +7,8 @@ Tabulous.setup do
       enabled_when { true }
       active_when do
         in_action('any').of_controller('home')
+        in_action('any').of_controller('public/meetings')
+        in_action('any').of_controller('public/motions')
       end
     end
     admin_tab do

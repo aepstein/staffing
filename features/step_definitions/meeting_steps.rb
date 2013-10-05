@@ -1,6 +1,6 @@
-Given /^(?:an? )(current|recent|pending|future|past) (un)?published meeting exists of a committee to which I have a (?:(current|recent|pending) )?(admin|staff|chair|vicechair|voter|clerk|nonvoter|plain) relationship$/ do |meeting_tense, unpub, member_tense, relationship|
+Given /^(?:an? )(current|recent|pending|future|past) (un)?published meeting exists of a committee to which I have a (?:(current|recent|pending) )?(admin|staff|chair|vicechair|voter|clerk|nonvoter|plain|guest) relationship$/ do |meeting_tense, unpub, member_tense, relationship|
   committee_relationship = case relationship
-  when 'admin', 'staff', 'plain'
+  when 'admin', 'staff', 'plain', 'guest'
     nil
   else
     relationship
@@ -11,7 +11,9 @@ Given /^(?:an? )(current|recent|pending|future|past) (un)?published meeting exis
   else
     'plain'
   end
-  step %{I log in as the #{role} user}
+  if relationship != 'guest'
+    step %{I log in as the #{role} user}
+  end
   @committee = create :committee
   if committee_relationship
     step %{I have a #{member_tense} #{committee_relationship} relationship to the committee}
@@ -25,6 +27,17 @@ Given /^(?:an? )(current|recent|pending|future|past) (un)?published meeting exis
     @period = create( "#{meeting_tense}_period", schedule: @committee.schedule )
     @meeting = create :meeting, committee: @committee,
       period: @period, published: unpub.blank?
+  end
+end
+
+Then(/^I may( not)? drill down on the meeting through public listings$/) do |negate|
+  visit(public_meetings_url)
+  within("#meeting-#{@meeting.id}") do
+    if negate.blank?
+      page.should have_text "Show"
+    else
+      page.should have_no_text "Show"
+    end
   end
 end
 

@@ -135,10 +135,10 @@ Then /^the final motion event should be correctly recorded$/ do
   @final_event.description.should eql 'event details'
 end
 
-Given /^(?:an? )(current|future|past) (un)?published, (\w+) motion exists of (sponsored|referred|meeting) origin to which I have a (?:(current|past|future) )?(admin|staff|chair|vicechair|voter|sponsor|nonsponsor|clerk|nonvoter|watcher|commenter|plain) relationship$/ do |motion_tense, publication, status, origin, tense, relationship|
+Given /^(?:an? )(current|future|past) (un)?published, (\w+) motion exists of (sponsored|referred|meeting) origin to which I have a (?:(current|past|future) )?(admin|staff|chair|vicechair|voter|sponsor|nonsponsor|clerk|nonvoter|watcher|commenter|plain|guest) relationship$/ do |motion_tense, publication, status, origin, tense, relationship|
   Motion.delete_all
   committee_relationship = case relationship
-  when 'admin', 'staff', 'watcher', 'commenter', 'plain'
+  when 'admin', 'staff', 'watcher', 'commenter', 'plain', 'guest'
     nil
   when 'sponsor', 'nonsponsor'
     'voter'
@@ -151,7 +151,9 @@ Given /^(?:an? )(current|future|past) (un)?published, (\w+) motion exists of (sp
   else
     'plain'
   end
-  step %{I log in as the #{role} user}
+  if relationship != 'guest'
+    step %{I log in as the #{role} user}
+  end
   sponsor_flag = case relationship
   when 'nonsponsor'
     false
@@ -225,6 +227,15 @@ Then /^I may( not)? destroy the motion$/ do |negate|
   end
   Capybara.current_session.driver.submit :delete, motion_url(@motion), {}
   step %{I should#{negate} be authorized}
+end
+
+Then /^I may( not)? see the motion through public listings$/ do |negate|
+  visit(public_motions_url)
+  if negate.blank?
+    page.should have_selector( "#motion-#{@motion.id}" )
+  else
+    page.should have_no_selector( "#motion-#{@motion.id}" )
+  end
 end
 
 Then /^I may( not)? see the motion$/ do |negate|

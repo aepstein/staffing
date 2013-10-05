@@ -1,8 +1,7 @@
 class MotionsController < ApplicationController
-  expose( :committee ) { Committee.find params[:committee_id] if params[:committee_id] }
+  include ControllerModules::MotionsController
   expose( :user ) { User.find params[:user_id] if params[:user_id] }
   expose( :meeting ) { Meeting.find params[:meeting_id] if params[:meeting_id] }
-  expose( :period ) { Period.find params[:period_id] if params[:period_id] }
   expose( :context ) { meeting || user || committee }
   expose :q_scope do
     scope = context.motions if context
@@ -19,11 +18,6 @@ class MotionsController < ApplicationController
     end
     scope = scope.where( period_id: period.id ) if period
     scope
-  end
-  expose :q do
-    q_scope.with_permissions_to(:show).search(
-      params[:term] ? { name_cont: params[:term] } : params[:q]
-    )
   end
   expose :motions do
     q.result.ordered.page(params[:page])

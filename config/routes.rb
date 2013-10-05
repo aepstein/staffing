@@ -54,7 +54,7 @@ Staffing::Application.routes.draw do
       put :publish
     end
     collection do
-      get :past, :current, :future, :published
+      get :past, :current, :future
     end
     resources :motions, only: [ :index, :new, :create ] do
       collection do
@@ -114,6 +114,14 @@ Staffing::Application.routes.draw do
   resources :questions
   resources :quizzes do
     resources :questions, only: [ :index ]
+  end
+  namespace :public, as: :public do
+    resources :meetings, only: [ :index ]
+    resources :committees, only: [] do
+      resources :meetings, only: [ :index ]
+      resources :motions, only: [ :index ]
+    end
+    resources :motions, only: [ :index ]
   end
   namespace :review, as: :reviewable do
     resources :memberships, only: [] do

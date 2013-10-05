@@ -1,25 +1,11 @@
 class MeetingsController < ApplicationController
-  expose :starts_at do
-    if params[:start] && ( sanitized = params[:start].to_i ) > 0
-      Time.zone.at sanitized
-    else
-      nil
-    end
-  end
-  expose :ends_at do
-    if params[:end] && ( sanitized = params[:end].to_i ) > 0
-      Time.zone.at sanitized
-    else
-      nil
-    end
-  end
-  expose( :committee ) { Committee.find params[:committee_id] if params[:committee_id] }
+  include ControllerModules::MeetingsController
   expose( :motion ) { Motion.find params[:motion_id] if params[:motion_id] }
   expose( :user ) { User.find params[:user_id] if params[:user_id] }
   expose :q_scope do
-    scope ||= committee.meetings if committee
     scope ||= motion.meetings if motion
     scope ||= user.meetings if user
+    scope ||= committee.meetings if committee
     scope ||= Meeting.scoped
     scope = case params[:action]
     when 'past', 'current', 'future'
@@ -30,12 +16,11 @@ class MeetingsController < ApplicationController
     else
       scope
     end
-    scope = scope.where { |m| m.starts_at.gte( starts_at ) } if starts_at
-    scope = scope.where { |m| m.starts_at.lte( ends_at ) } if ends_at
+    scope = scope.where { |m| m.starts_at.gt( starts_at ) } if starts_at
+    scope = scope.where { |m| m.starts_at.lt( ends_at ) } if ends_at
     scope
   end
-  expose( :q ) { q_scope.search( params[:q] ) }
-  expose :meetings do
+  expose( :meetings ) do
     q.result.with_permissions_to(:show).ordered.page(params[:page])
   end
   expose :meeting do
@@ -122,13 +107,6 @@ class MeetingsController < ApplicationController
       filename: meeting.to_s(:editable_minutes_file),
       content_type: meeting.editable_minutes.content_type,
       disposition: 'attachment'
-  end
-  
-  # GET /meetings/published.csv
-  def published
-    respond_to do |format|
-      format.csv { csv_index }
-    end
   end
   
   # GET /meetings/current
@@ -218,33 +196,6 @@ class MeetingsController < ApplicationController
   end
 
   private
-
-  def csv_index
-    csv_string = ""
-    CSV.generate csv_string do |csv|
-      csv << [ 'Unique ID', 'Title', 'Description', 'Date From', 'Date To',
-        'Start Time', 'End Time', 'Location', 'Event Website', 'Room',
-        'Contact E-Mail', 'Contact Name' ]
-      q.result.with_permissions_to(:show).all.each do |meeting|
-        csv << ( [
-          "meeting-#{meeting.id}",
-          "#{meeting.committee} Meeting",
-          meeting.description,
-          meeting.starts_at.to_date.to_formatted_s(:db),
-          meeting.ends_at.to_date.to_formatted_s(:db),
-          meeting.starts_at.strftime("%l:%M %p").strip,
-          meeting.ends_at.strftime("%l:%M %p").strip,
-          meeting.location,
-          meeting_url(meeting),
-          meeting.room,
-          meeting.effective_contact_email,
-          meeting.effective_contact_name
-        ] )
-      end
-    end
-    send_data csv_string, disposition: "attachment; filename=meetings.csv",
-      type: :csv
-  end
 
   def populate_meeting_sections
     meeting.meeting_sections.populate

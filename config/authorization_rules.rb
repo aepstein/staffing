@@ -220,7 +220,7 @@ authorization do
       if_attribute attachable_type: 'MotionComment'
     end
     has_permission_on :motions, to: :show do
-      if_attribute published: true
+      if_attribute published: is { true }
     end
     has_permission_on :meetings, to: [ :show, :index ] do
       if_attribute published: is { true }

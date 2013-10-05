@@ -1,0 +1,8 @@
+<%=content_tag :h1, title %>
+
+<%= paginate motions %>
+
+<%=render partial: 'motions/motions', object: motions,
+  locals: { committee: committee, period: period } %>
+
+<%= paginate motions %>
