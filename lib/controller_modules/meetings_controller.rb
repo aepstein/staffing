@@ -46,7 +46,7 @@ module ControllerModules
               meeting.starts_at.strftime("%l:%M %p").strip,
               meeting.ends_at.strftime("%l:%M %p").strip,
               meeting.location,
-              meeting_url(meeting),
+              ( meeting.published? ? meeting_url(meeting) : '' ),
               meeting.room,
               meeting.effective_contact_email,
               meeting.effective_contact_name
