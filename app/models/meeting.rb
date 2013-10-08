@@ -89,6 +89,7 @@ class Meeting < ActiveRecord::Base
     if publish_to
       MeetingMailer.publish_notice( self, to: publish_to, from: publish_from,
         note: publish_note ).deliver
+      update_column :published, true
       true
     else
       errors.add :publish_to, 'may not be blank'

@@ -36,7 +36,7 @@ module ControllerModules
           csv << [ 'Unique ID', 'Title', 'Description', 'Date From', 'Date To',
             'Start Time', 'End Time', 'Location', 'Event Website', 'Room',
             'Contact E-Mail', 'Contact Name' ]
-          q.result.with_permissions_to(:show).all.each do |meeting|
+          q.result.all.each do |meeting|
             csv << ( [
               "meeting-#{meeting.id}",
               "#{meeting.committee} Meeting",
@@ -46,7 +46,7 @@ module ControllerModules
               meeting.starts_at.strftime("%l:%M %p").strip,
               meeting.ends_at.strftime("%l:%M %p").strip,
               meeting.location,
-              ( meeting.published? ? meeting_url(meeting) : '' ),
+              permitted_to?( :show, meeting ),
               meeting.room,
               meeting.effective_contact_email,
               meeting.effective_contact_name
