@@ -46,7 +46,7 @@ module ControllerModules
               meeting.starts_at.strftime("%l:%M %p").strip,
               meeting.ends_at.strftime("%l:%M %p").strip,
               meeting.location,
-              permitted_to?( :show, meeting ),
+              ( permitted_to?( :show, meeting ) ? meeting_url(meeting) : '' ),
               meeting.room,
               meeting.effective_contact_email,
               meeting.effective_contact_name
