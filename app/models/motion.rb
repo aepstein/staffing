@@ -63,7 +63,8 @@ class Motion < ActiveRecord::Base
     join_table: 'motions_watchers'
   has_many :attachments, as: :attachable, dependent: :destroy
   has_many :meeting_items, dependent: :destroy, inverse_of: :motion
-  has_many :meetings, through: :meeting_items
+  has_many :meeting_sections, through: :meeting_items
+  has_many :meetings, through: :meeting_sections
   has_many :motion_events, dependent: :destroy, inverse_of: :motion do
     def populate_for( event )
       e = if i = index { |e| e.new_record? }
