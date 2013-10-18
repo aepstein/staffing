@@ -2,7 +2,8 @@ module UserTentReports
 
   module InstanceMethods
 
-    def render_user_tent_reports( tents )
+    def render_user_tent_reports( tents, brand = nil )
+      brand = self.brand if brand.blank?
       respond_to do |format|
         format.pdf do
           report = UserTentReport.new( tents, brand )
