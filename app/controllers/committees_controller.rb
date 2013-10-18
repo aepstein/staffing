@@ -2,7 +2,7 @@ class CommitteesController < ApplicationController
   before_filter :require_user
   expose :as_of do
     begin
-      date = if params[:as_of]
+      date = if params[:as_of].present?
         Date.parse( params[:as_of] )
       end
     rescue ArgumentError
