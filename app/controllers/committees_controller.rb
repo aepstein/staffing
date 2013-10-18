@@ -51,7 +51,7 @@ class CommitteesController < ApplicationController
   # GET /committees/:id/tents.pdf
   include UserTentReports
   def tents
-    render_user_tent_reports committee.memberships.tents( as_of, committee.brand )
+    render_user_tent_reports committee.memberships.tents( as_of ), committee.brand
   end
 
   # GET /committees/:id/members.pdf
