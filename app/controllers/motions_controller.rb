@@ -32,7 +32,7 @@ class MotionsController < ApplicationController
   end
   expose :permitted_event_motion_attributes do
     permitted = [ motion_events_attributes: [ :description,
-      attachments_attributes: Attachment::PERMITTED_ATTRIBUTES ] ]
+      { attachments_attributes: Attachment::PERMITTED_ATTRIBUTES } ] ]
     if permitted_to?(:admin, motion.committee)
       permitted.last[:motion_events_attributes].unshift( :_destroy )
     end

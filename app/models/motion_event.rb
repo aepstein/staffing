@@ -40,6 +40,13 @@ class MotionEvent < ActiveRecord::Base
 
   delegate :period_starts_at, to: :motion
   
+  before_validation do |event|
+    event.attachments.select { |attachment| attachment.new_record? }.
+      each do |attachment|
+      attachment.attachable = event
+    end
+  end
+
   # Vote tally for particular type of vote
   def votes(type)
     send("unrecorded_#{type}_votes") + motion_votes.of_type(type).count

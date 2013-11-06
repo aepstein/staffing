@@ -16,5 +16,5 @@
 <% end %>
 <%= f.input :description, as: :string, label: 'Event description',
   hint: 'Any additional information about this action for the log.' %>
-
+<%= cocoon_fields f, :attachments, insertable: true %>
 

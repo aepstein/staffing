@@ -6,22 +6,22 @@ Then /^I should (not )?see the motion$/ do |negate|
   end
 end
 
-When /^I (adopt|amend|divide|implement|merge|propose|refer|reject|restart|unamend|withdraw) the motion$/ do |event|
+When /^I (adopt|amend|divide|implement|merge|propose|refer|reject|restart|unamend|withdraw) the motion with(out)? attachment$/ do |event, attach|
   @event = event
   case @event
   when 'adopt'
     visit(adopt_motion_path(@motion))
-    step %q{I fill in motion event details}
+    step "I fill in motion event details with#{attach} attachment"
     click_button 'Adopt'
   when 'amend'
     visit(amend_motion_path(@motion))
-    step %q{I fill in motion event details}
+    step "I fill in motion event details with#{attach} attachment"
     fill_in 'Description', with: 'New description'
     fill_in 'Content', with: 'New content'
     click_button 'Amend'
   when 'divide'
     visit(divide_motion_path(@motion))
-    step %q{I fill in motion event details}
+    step "I fill in motion event details with#{attach} attachment"
     click_link 'Add Referred Motion'
     fill_in 'Name', with: 'Charter amendment'
     fill_in 'Description', with: 'This is a big change'
@@ -29,29 +29,29 @@ When /^I (adopt|amend|divide|implement|merge|propose|refer|reject|restart|unamen
     click_button 'Divide'
   when 'implement'
     visit(implement_motion_path(@motion))
-    step %q{I fill in motion event details}
+    step "I fill in motion event details with#{attach} attachment"
     click_button 'Implement'
   when 'merge'
     create :motion, committee: @motion.committee, period: @motion.period,
       name: 'Target', published: true, status: 'proposed'
     visit(merge_motion_path(@motion))
-    step %q{I fill in motion event details}
+    step "I fill in motion event details with#{attach} attachment"
     select 'Target', from: 'Motion'
     click_button 'Merge'
   when 'propose'
     visit(propose_motion_path(@motion))
-    step %q{I fill in motion event details}
+    step "I fill in motion event details with#{attach} attachment"
     click_button 'Propose'
   when 'refer'
     other_committee = create( :committee, schedule: @committee.schedule )
     visit(refer_motion_path(@motion))
-    step %q{I fill in motion event details}
+    step "I fill in motion event details with#{attach} attachment"
     fill_in 'Committee', with: other_committee.name
     fill_in 'Name', with: "#{@motion.name} referred"
     click_button 'Refer'
   when 'reject'
     visit(reject_motion_path(@motion))
-    step %q{I fill in motion event details}
+    step "I fill in motion event details with#{attach} attachment"
     click_button 'Reject'
   when 'restart'
     Capybara.current_session.driver.submit :put, restart_motion_url(@motion), {}
@@ -63,19 +63,26 @@ When /^I (adopt|amend|divide|implement|merge|propose|refer|reject|restart|unamen
     @event = 'unamend'
   when 'withdraw'
     visit(withdraw_motion_path(@motion))
-    step %q{I fill in motion event details}
+    step "I fill in motion event details with#{attach} attachment"
     click_button 'Withdraw'
   end
 end
 
-When /^I fill in motion event details$/ do
+When /^I fill in motion event details with(out)? attachment$/ do |attach|
   if %w( admin staff ).include? @role
     fill_in 'Event date', with: (Time.zone.today - 1.day).to_formatted_s(:db)
   end
   fill_in 'Event description', with: 'event details'
+  if attach.blank?
+    click_link 'Add Attachment'
+    within_fieldset "Attachments" do
+      attach_file 'Attachment document', File.expand_path('spec/assets/empl_ids.csv')
+      fill_in 'Attachment description', with: 'Sample employee ids'
+    end
+  end
 end
 
-Then /^I should see confirmation of the event on the motion$/ do
+Then /^I should see confirmation of the event with(out)? attachment on the motion$/ do |attach|
   new_status = case @event
     when 'adopt'; 'adopted'
     when 'amend'; 'amended'
@@ -109,30 +116,36 @@ Then /^I should see confirmation of the event on the motion$/ do
   else
    @motion.motion_events.last
   end
-  step %Q{the final motion event should be correctly recorded} if @final_event
+  step "the final motion event should be correctly recorded with#{attach} attachment" if @final_event
   # In case of amendment, propose event should also be recorded on amendment motion
   if %w( amend divide refer ).include? @event
     @motion.referred_motions.each do |referred|
       @final_event = referred.motion_events.last
       @final_event.event.should eql 'propose'
-      step %Q{the final motion event should be correctly recorded}
+      step "the final motion event should be correctly recorded without attachment"
       within("#ancestors") { page.should have_text @motion.name }
     end
   end
   if %w( unamend ).include? @event
     @final_event = @motion.referring_motion.motion_events.last
     @final_event.event.should eql 'unamend'
-    step %q{the final motion event should be correctly recorded}
+    step "the final motion event should be correctly recorded without attachment"
   end
 end
 
-Then /^the final motion event should be correctly recorded$/ do
+Then /^the final motion event should be correctly recorded with(out)? attachment$/ do |attach|
   if %w( admin staff ).include? @role
     @final_event.occurrence.should eql( Time.zone.today - 1.day )
   else
     @final_event.occurrence.should eql Time.zone.today
   end
   @final_event.description.should eql 'event details'
+  if attach.blank?
+    @final_event.attachments.length.should eql 1
+    @final_event.attachments.first.description.should eql 'Sample employee ids'
+  else
+    @final_event.attachments.should be_empty
+  end
 end
 
 Given /^(?:an? )(current|future|past) (un)?published, (\w+) motion exists of (sponsored|referred|meeting) origin to which I have a (?:(current|past|future) )?(admin|staff|chair|vicechair|voter|sponsor|nonsponsor|clerk|nonvoter|watcher|commenter|plain|guest) relationship$/ do |motion_tense, publication, status, origin, tense, relationship|

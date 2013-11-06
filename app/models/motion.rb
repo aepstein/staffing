@@ -189,7 +189,7 @@ class Motion < ActiveRecord::Base
   accepts_nested_attributes_for :motion_meeting_segments, allow_destroy: true
 
   delegate :periods, :period_ids, to: :committee
-
+  
   validates :name, presence: true, uniqueness: {
     scope: [ :period_id, :committee_id ] }
   validates :period, presence: true, inclusion: { if: :committee,
@@ -206,6 +206,7 @@ class Motion < ActiveRecord::Base
     motion.peers.lock
     motion.position = motion.peers.scoped.reset.count + 1
   end
+
   # Lock the list of motions for the period during destroy
   before_destroy do |motion|
     motion.peers.lock

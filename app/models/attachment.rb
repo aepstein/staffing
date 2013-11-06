@@ -3,13 +3,13 @@ class Attachment < ActiveRecord::Base
     :description ]
   attr_readonly :attachable_type, :attachable_id
 
-  belongs_to :attachable, polymorphic: true
+  belongs_to :attachable, polymorphic: true, autosave: false
 
   has_paper_trail
 
   mount_uploader :document, DocumentUploader
 
-  validates :attachable, presence: true
+  validates :attachable, presence: true, on: :create
   validates :document, presence: true, integrity: true
   validates :description, presence: true,
     uniqueness: { scope: [ :attachable_id, :attachable_type ] }

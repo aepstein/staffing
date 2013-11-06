@@ -6,5 +6,6 @@
   <td><%= motion_event.occurrence %></td>
   <td><%= motion_event.event %></td>
   <td><%= motion_event.description %></td>
+  <%=content_tag :td, render( partial: 'attachments/attachments', object: motion_event.attachments ) %>
 </tr>
 

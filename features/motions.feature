@@ -140,8 +140,8 @@ Scenario: List/delete a motion
 
 Scenario Outline: Motion events without javascript
   Given a <tense> <pub>published, <status> motion exists of <origin> origin to which I have a <relationship> relationship
-  When I <event> the motion
-  Then I should see confirmation of the event on the motion
+  When I <event> the motion without attachment
+  Then I should see confirmation of the event on the motion without attachment
   Examples:
     |relationship     |tense  |origin   |pub|status  |event    |
     |current sponsor  |current|sponsored|un |started |propose  |
@@ -151,19 +151,20 @@ Scenario Outline: Motion events without javascript
 @javascript
 Scenario Outline: Motion events with javascript
   Given a <tense> <pub>published, <status> motion exists of <origin> origin to which I have a <relationship> relationship
-  When I <event> the motion
-  Then I should see confirmation of the event on the motion
+  When I <event> the motion with<attach> attachment
+  Then I should see confirmation of the event with<attach> attachment on the motion
   Examples:
-    |relationship     |tense  |origin   |pub|status   |event    |
-    |current vicechair|current|referred |   |started  |propose  |
-    |current vicechair|current|sponsored|   |proposed |adopt    |
-    |current vicechair|current|sponsored|   |proposed |reject   |
-    |current vicechair|current|sponsored|   |proposed |withdraw |
-    |staff            |current|sponsored|un |started  |propose  |
-    |current vicechair|current|sponsored|   |proposed |amend    |
-    |current vicechair|current|sponsored|   |proposed |divide   |
-    |current vicechair|current|sponsored|   |proposed |merge    |
-    |staff            |current|sponsored|   |adopted  |implement|
-    |current vicechair|current|sponsored|   |proposed |refer    |
-    |current vicechair|current|sponsored|   |proposed |unamend  |
+    |relationship     |tense  |origin   |pub|status   |event    |attach |
+    |current vicechair|current|referred |   |started  |propose  |out    |
+    |current vicechair|current|sponsored|   |proposed |adopt    |out    |
+    |current vicechair|current|sponsored|   |proposed |reject   |out    |
+    |current vicechair|current|sponsored|   |proposed |withdraw |out    |
+    |staff            |current|sponsored|un |started  |propose  |out    |
+    |current vicechair|current|sponsored|   |proposed |amend    |out    |
+    |current vicechair|current|sponsored|   |proposed |divide   |out    |
+    |current vicechair|current|sponsored|   |proposed |merge    |out    |
+    |staff            |current|sponsored|   |adopted  |implement|out    |
+    |current vicechair|current|sponsored|   |proposed |refer    |out    |
+    |current vicechair|current|sponsored|   |proposed |refer    |       |
+    |current vicechair|current|sponsored|   |proposed |unamend  |out    |
 
