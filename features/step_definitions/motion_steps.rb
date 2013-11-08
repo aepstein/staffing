@@ -262,20 +262,20 @@ Then /^I may( not)? see the motion$/ do |negate|
   end
 end
 
-When /^I create a motion as (voter|staff)$/ do |relationship|
-  role = case relationship
-  when 'staff'
-    'staff'
+When /^I create a motion as (voter|staff|admin)$/ do |relationship|
+  @role = case relationship
+  when 'admin', 'staff'
+    relationship
   else
     'plain'
   end
   committee_relationship = case relationship
-  when 'staff'
+  when 'admin', 'staff'
     nil
   else
     relationship
   end
-  step %{I log in as the #{role} user}
+  step %{I log in as the #{@role} user}
   @committee = create :committee
   if committee_relationship
     step %{I have a current #{committee_relationship} relationship to the committee}
@@ -298,7 +298,7 @@ When /^I create a motion as (voter|staff)$/ do |relationship|
   end
   @committee.update_attributes name: 'Powerful Committee'
   visit(new_committee_motion_path(@committee))
-  if relationship == 'staff'
+  if %w( admin staff ).include? relationship
     select @period.to_s.strip.squeeze(" "), from: 'Period'
     fill_in "Sponsor", with: "#{@sponsor.net_id}"
   else
@@ -311,6 +311,14 @@ When /^I create a motion as (voter|staff)$/ do |relationship|
   within_fieldset "Attachments" do
     attach_file 'Attachment document', File.expand_path('spec/assets/empl_ids.csv')
     fill_in 'Attachment description', with: 'Sample employee ids'
+  end
+  if %w( admin staff ).include? @role
+    click_link 'Add Motion Event'
+    within_fieldset "Motion Events" do
+      fill_in "Event type", with: "withdraw"
+      fill_in "Event date", with: Time.zone.today.to_s(:db)
+      fill_in "Event description", with: "Fake event"
+    end
   end
   click_button 'Create'
   @motion = Motion.find( URI.parse(current_url).path.match(/[\d]+$/)[0].to_i )
@@ -328,6 +336,12 @@ Then /^I should see the new motion$/ do
     page.should have_text("Whereas and Resolved")
     page.should have_text("Sample employee ids")
   end
+  if %w( admin staff ).include? @role
+    within("#motion-events > tbody tr:nth-of-type(1)") do
+      within("td:nth-of-type(1)") { page.should have_text Time.zone.today.to_s }
+      within("td:nth-of-type(2)") { page.should have_text "withdraw" }
+    end
+  end
 end
 
 When /^I update the motion$/ do
@@ -341,6 +355,11 @@ When /^I update the motion$/ do
     fill_in "Sponsor", with: "#{@alternate_sponsor.net_id}"
   end
   click_link "Remove Attachment"
+  if %w( admin ).include? @role
+    click_link "Remove Motion Event"
+  else
+    page.should have_no_text "Remove Motion Event"
+  end
   click_button "Update"
 end
 
@@ -354,10 +373,13 @@ Then /^I should see the edited motion$/ do
     page.should have_no_text("George Washington")
     page.should have_no_text("Sample employee ids")
   end
+  if %w( admin plain ).include? @role
+    page.should have_no_selector("#motion-events")
+  end
 end
 
 Given /^I have a referred motion as (vicechair|staff)$/ do |relationship|
-  role = case relationship
+  @role = case relationship
   when 'staff'
     'staff'
   else
@@ -369,7 +391,7 @@ Given /^I have a referred motion as (vicechair|staff)$/ do |relationship|
   else
     relationship
   end
-  step %{I log in as the #{role} user}
+  step %{I log in as the #{@role} user}
   @committee = create :committee
   if committee_relationship
     step %{I have a current #{committee_relationship} relationship to the committee}

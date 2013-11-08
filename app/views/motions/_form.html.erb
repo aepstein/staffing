@@ -13,6 +13,10 @@
   <%= form.input :comment_until, as: :date_time_picker,
     hint: "Specify to set a comment period from now until specified deadline." %>
   <% end %>
+  <% if permitted_to?( :staff, form.object ) %>
+    <%= cocoon_fields form, :motion_events, insertable: true,
+      locals: { nested: true } %>
+  <% end %>
   <%= cocoon_fields form, :sponsorships, insertable: true %>
   <%= cocoon_fields form, :attachments, insertable: true %>
   <% if form.object.meeting %>

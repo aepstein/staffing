@@ -41,6 +41,9 @@ end
 group :development, :test do
   gem 'rspec', '~> 2.12'
   gem 'rspec-rails', '~> 2.12'
+  gem 'spring', require: false
+  gem 'spring-commands-rspec', require: false
+  gem 'spring-commands-cucumber', require: false
 end
 group :development do
   gem 'ruby-graphviz', require: 'graphviz'
@@ -48,11 +51,10 @@ end
 group :test do
   gem 'test-unit', require: false
   gem 'selenium-webdriver', require: false
-  gem 'cucumber', '~> 1.2.5', require: false
+  gem 'cucumber', require: false
   gem 'cucumber-rails', require: false
   gem 'database_cleaner', require: false
   gem 'capybara', '~> 2.0'
-  gem 'spork', require: false
   gem 'factory_girl_rails', '~> 3.0', require: false
   gem 'launchy'
 end

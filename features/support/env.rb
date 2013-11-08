@@ -1,23 +1,16 @@
 require 'rubygems'
-require 'spork'
+require 'cucumber/rails'
 
-Spork.prefork do
-  require 'cucumber/rails'
+Capybara.default_selector = :css
 
-  Capybara.default_selector = :css
 
-end
+ActionController::Base.allow_rescue = false
 
-Spork.each_run do
-  ActionController::Base.allow_rescue = false
-
-  begin
-    require 'database_cleaner'
-    require 'database_cleaner/cucumber'
-    DatabaseCleaner.strategy = :truncation
-  rescue NameError
-    raise "You need to add database_cleaner to your Gemfile (in the :test group) if you wish to use it."
-  end
-
+begin
+  require 'database_cleaner'
+  require 'database_cleaner/cucumber'
+  DatabaseCleaner.strategy = :truncation
+rescue NameError
+  raise "You need to add database_cleaner to your Gemfile (in the :test group) if you wish to use it."
 end
 

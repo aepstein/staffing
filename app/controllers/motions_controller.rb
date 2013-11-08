@@ -24,6 +24,9 @@ class MotionsController < ApplicationController
   end
   expose :motion_attributes do
     permitted = Motion.permitted_attributes( permitted_to?(:admin) ? :admin : :default )
+    if permitted_to?( :staff, motion )
+      permitted += permitted_event_motion_attributes
+    end
     if params[:motion]
       params.require(:motion).permit( *permitted )
     else
@@ -56,7 +59,7 @@ class MotionsController < ApplicationController
       Motion.find params[:id]
     else
       source = ( meeting ? meeting.minute_motions : committee.motions )
-      source.build( motion_attributes )
+      source.build
     end
     if out.new_record?
       out.committee ||= out.meeting.committee if out.meeting
@@ -143,6 +146,7 @@ class MotionsController < ApplicationController
   # GET /committees/:committee_id/motions/new
   # GET /committees/:committee_id/motions/new.xml
   def new
+    motion.assign_attributes motion_attributes
     motion.sponsorships.build unless motion.meeting || motion.sponsorships.populate_for( current_user )
     motion.populate_from_meeting
     respond_to do |format|
@@ -154,6 +158,7 @@ class MotionsController < ApplicationController
   # POST /committees/:committee_id/motions
   # POST /committees/:committee_id/motions.xml
   def create
+    motion.assign_attributes motion_attributes
     motion.attachments.each { |a| a.attachable = motion }
     respond_to do |format|
       if motion.save

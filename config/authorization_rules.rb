@@ -1,7 +1,8 @@
 authorization do
   role :admin do
-    has_permission_on [ :authorities, :brands, :committees,
-      :meetings, :meeting_templates, :memberships, :motions, :motion_comments,
+    has_permission_on [ :committees ], to: [ :admin ]
+    has_permission_on [ :authorities, :brands, :committees, :meetings, 
+      :meeting_templates, :memberships, :motions, :motion_events, :motion_comments,
       :positions, :quizzes, :questions, :membership_requests, :schedules, :users,
       :user_renewal_notices, :sendings ],
       to: [ :manage ]

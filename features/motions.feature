@@ -116,8 +116,9 @@ Scenario Outline: Create/edit a sponsored motion
   Then I should see the edited motion
   Examples:
     |relationship|
-    |voter       |
+    |admin       |
     |staff       |
+    |voter       |
 
 @javascript
 Scenario Outline: Edit a referred motion
