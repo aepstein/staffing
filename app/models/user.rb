@@ -16,12 +16,20 @@ class User < ActiveRecord::Base
     def authorized
       Membership.authorized_user_id_equals proxy_association.owner.id
     end
+    def current_position_ids
+      @current_position_ids ||= current.value_of(:position_id)
+    end
   end
   has_many :enrollments, through: :memberships do
     def past; where { memberships.ends_at < Time.zone.today }; end
     def current
       where { memberships.starts_at <= Time.zone.today }.
       where { memberships.ends_at >= Time.zone.today }
+    end
+    def current_ids_with_roles( roles )
+      @current_ids_with_roles ||= Hash.new
+      @current_ids_with_roles[ roles ] ||= current.with_roles(roles).
+        value_of(:id)
     end
     def future; where { memberships.starts_at > Time.zone.today }; end
     def prospective

@@ -44,7 +44,7 @@ authorization do
     has_permission_on [ :motions, :membership_requests ], to: :index
     has_permission_on :committees, to: :vote do
       if_attribute enrollments: {
-        position_id: is_in { user.memberships.current.value_of(:position_id) },
+        position_id: is_in { user.memberships.current_position_ids },
         votes: gt { 0 } }
     end
     has_permission_on :committees, to: :sponsor, join_by: :and do
@@ -53,19 +53,19 @@ authorization do
     end
     has_permission_on :committees, to: :clerk, join_by: :and do
       if_attribute enrollments: {
-        id: is_in { user.enrollments.current.with_roles('clerk').value_of(:id) } }
+        id: is_in { user.enrollments.current_ids_with_roles('clerk') } }
     end
     has_permission_on :committees, to: :chair do
       if_attribute enrollments: {
-        id: is_in { user.enrollments.current.with_roles('chair').value_of(:id) } }
+        id: is_in { user.enrollments.current_ids_with_roles('chair') } }
     end
     has_permission_on :committees, to: :vicechair do
       if_attribute enrollments: {
-        id: is_in { user.enrollments.current.with_roles('vicechair').value_of(:id) } }
+        id: is_in { user.enrollments.current_ids_with_roles('vicechair') } }
     end
     has_permission_on :committees, to: :enroll, join_by: :or do
       if_attribute enrollments: {
-        position_id: is_in { user.memberships.current.value_of(:position_id) } }
+        position_id: is_in { user.memberships.current_position_ids } }
     end
     has_permission_on :meetings, to: :clerk do
       if_permitted_to :clerk, :committee
