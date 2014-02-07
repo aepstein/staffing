@@ -9,7 +9,7 @@ GIT
 
 GIT
   remote: git://assembly.cornell.edu/git/cornell-assemblies-rails.git
-  revision: 5cacd94c09cc51a6ee8758b0685f5ee489724908
+  revision: cfa863ebdd3cf92e6038d1f4c70cb277c72d6ee5
   branch: 0-0-3
   specs:
     cornell_assemblies_rails (0.0.3)
@@ -84,6 +84,12 @@ GEM
       i18n
       rake (>= 10.0.0)
       sshkit (~> 1.3)
+    capistrano-bundler (1.1.1)
+      capistrano (~> 3.0)
+      sshkit (>= 1.2.0)
+    capistrano-rails (1.1.1)
+      capistrano (~> 3.1)
+      capistrano-bundler (~> 1.1)
     capybara (2.2.1)
       mime-types (>= 1.16)
       nokogiri (>= 1.3.3)
@@ -323,7 +329,7 @@ DEPENDENCIES
   ancestry
   bcrypt-ruby (~> 3.0.0)
   blind_date (~> 1.0.2)
-  capistrano
+  capistrano-rails
   capybara (~> 2.0)
   carrierwave
   coffee-rails

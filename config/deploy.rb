@@ -1,42 +1,41 @@
-set :whenever_command, 'bundle exec whenever'
-require 'whenever/capistrano'
+# config valid only for Capistrano 3.1
+lock '3.1.0'
 
-set :application, "staffing"
-role :app, "kvm02.assembly.cornell.edu"
-role :web, "kvm02.assembly.cornell.edu"
-role :db,  "kvm02.assembly.cornell.edu", :primary => true
-
-set :user, "www-data"
-set :deploy_to, "/var/www/assembly/#{application}"
-set :deploy_via, :remote_cache
-set :use_sudo, false
-
-set :scm, "git"
-set :repository, "git://assembly.cornell.edu/git/#{application}.git"
-set :branch, "master"
-set :git_enable_submodules, 0
-
-set :default_environment, {
+set :user, 'www-data'
+set :application, 'staffing'
+set :repo_url, "git://assembly.cornell.edu/git/#{fetch(:application)}.git"
+set :deploy_to, "/var/www/assembly/#{fetch(:application)}"
+set :linked_files, %w{config/database.yml config/application.yml}
+set :linked_dirs, %w{db/uploads public/system db/fonts}
+set :default_env, {
   "RAILS_RELATIVE_URL_ROOT" => "/staffing"
 }
+#set :ssh_options, { verbose: :debug }
 
 namespace :deploy do
-  desc "Tell Passenger to restart the app."
+
+  task :whoami do
+    on roles(:all) do
+      execute :whoami
+    end
+  end
+
+  desc 'Restart application'
   task :restart do
-    run "touch #{current_path}/tmp/restart.txt"
+    on roles(:app), in: :sequence, wait: 5 do
+      execute :touch, release_path.join('tmp/restart.txt')
+    end
   end
 
-  desc "Symlink shared configs and folders on each release."
-  task :symlink_shared do
-    run "ln -nfs #{shared_path}/config/database.yml #{release_path}/config/database.yml"
-    run "ln -nfs #{shared_path}/config/application.yml #{release_path}/config/application.yml"
-    run "ln -nfs #{shared_path}/uploads #{release_path}/db/uploads"
-    run "ln -nfs #{shared_path}/system/production #{release_path}/public/system"
-    run "ln -nfs #{shared_path}/db/fonts #{release_path}/db/fonts"
-    #run "ln -nfs #{shared_path}/assets #{release_path}/public/assets"
+  after :publishing, :restart
+
+  after :restart, :clear_cache do
+    on roles(:web), in: :groups, limit: 3, wait: 10 do
+      # Here we can do anything such as:
+      # within release_path do
+      #   execute :rake, 'cache:clear'
+      # end
+    end
   end
+
 end
-
-after 'deploy:update_code', 'deploy:symlink_shared'
-after 'deploy:update', 'deploy:cleanup'
-

@@ -11,6 +11,13 @@ Tabulous.setup do
         in_action('any').of_controller('public/motions')
       end
     end
+    committees_tab do
+      text { 'Committees' }
+      link_path { committees_path }
+      visible_when { true }
+      enabled_when { true }
+      active_when { in_action('any').of_controller('committees') }
+    end
     admin_tab do
       text { 'Administration' }
       link_path { users_path }
@@ -43,13 +50,6 @@ Tabulous.setup do
       visible_when { true }
       enabled_when { true }
       active_when { in_action('any').of_controller('positions') }
-    end
-    committees_subtab do
-      text { 'Committees' }
-      link_path { committees_path }
-      visible_when { true }
-      enabled_when { true }
-      active_when { in_action('any').of_controller('committees') }
     end
     meeting_templates_subtab do
       text { 'Meeting Templates' }

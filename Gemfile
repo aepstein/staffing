@@ -3,7 +3,6 @@ gem 'rails', '~> 3.2'
 gem 'mysql2'
 gem 'rake'
 gem 'exception_notification', '~> 4.0'
-gem 'capistrano'
 gem 'validates_timeliness'
 gem 'gettext'
 gem 'squeel'
@@ -47,6 +46,7 @@ group :development, :test do
 end
 group :development do
   gem 'ruby-graphviz', require: 'graphviz'
+  gem 'capistrano-rails', require: false
 end
 group :test do
   gem 'test-unit', require: false

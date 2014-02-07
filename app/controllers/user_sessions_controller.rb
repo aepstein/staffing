@@ -11,10 +11,16 @@ class UserSessionsController < ApplicationController
       if current_user.blank?
         redirect_to sso_register_path, flash: { notice: 'You must register to access this page.' }
       else
-        redirect_to root_url, notice: LOGIN_NOTICE
+        redirect_back_or_default root_url, notice: LOGIN_NOTICE
       end
     else
       render action: :new
+    end
+  end
+  
+  def new
+    respond_to do |format|
+      format.html { render action: :new }
     end
   end
 
@@ -36,9 +42,9 @@ class UserSessionsController < ApplicationController
     return permission_denied if sso_net_id
     user = User.find_by_net_id(params[:net_id])
     if user && user.authenticate(params[:password])
-      reset_session
+      reset_session_with_redirect
       session[:user_id] = user.id
-      redirect_to root_url, notice: LOGIN_NOTICE
+      redirect_back_or_default root_url, notice: LOGIN_NOTICE
     else
       flash.now.alert = "Invalid net id or password"
       render "new"
