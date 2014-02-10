@@ -60,5 +60,13 @@ class MotionEvent < ActiveRecord::Base
         without_protection: true )
     end
   end
+  
+  def to_s(format=nil)
+    if motion
+      "#{motion.to_s format}-#{event}"
+    else
+      super()
+    end
+  end
 end
 
