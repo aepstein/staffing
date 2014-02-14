@@ -105,7 +105,23 @@ class MeetingsController < ApplicationController
   def editable_minutes
     send_file meeting.editable_minutes.current_path,
       filename: meeting.to_s(:editable_minutes_file),
-      content_type: meeting.editable_minutes.content_type,
+      content_type: meeting.editable_minutes_content_type,
+      disposition: 'attachment'
+  end
+  
+  # GET /meetings/:id/published_minutes.pdf
+  def published_minutes
+    send_file meeting.published_minutes.current_path,
+      filename: meeting.to_s(:published_minutes_file),
+      content_type: meeting.published_minutes_content_type,
+      disposition: 'attachment'
+  end
+  
+  # GET /meetings/:id/editable_minutes.mp3
+  def audio
+    send_file meeting.audio.current_path,
+      filename: meeting.to_s(:audio_file),
+      content_type: meeting.audio_content_type,
       disposition: 'attachment'
   end
   

@@ -133,11 +133,11 @@ class Meeting < ActiveRecord::Base
     when :time
       return "#{starts_at.to_formatted_s(:us_time)} - #{ends_at.to_formatted_s(:us_time)}".strip
     when :editable_minutes_file
-      return "#{@meeting.to_s :file}-editable_minutes.#{@meeting.editable_minutes.extension}"
+      return "#{to_s :file}-editable_minutes#{File.extname editable_minutes.path}"
     when :published_minutes_file
-      return "#{@meeting.to_s :file}-published_minutes.#{@meeting.published_minutes.extension}"
+      return "#{to_s :file}-published_minutes#{File.extname published_minutes.path}"
     when :audio_file
-      return "#{@meeting.to_s :file}-audio.#{@meeting.audio.extension}"
+      return "#{to_s :file}-audio#{File.extname audio.path}"
     else
       return starts_at.to_s :us_ordinal if starts_at?
     end

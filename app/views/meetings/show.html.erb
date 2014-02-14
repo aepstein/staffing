@@ -34,7 +34,8 @@
 </p>
 
 <p>
-  <b>Audio?</b> <%= meeting.audio.blank? ? 'No' : link_to( 'Yes', "#{root_path}#{meeting.audio.url}" )  %>
+  <b>Audio?</b> <%= meeting.audio.blank? ? 'No' : link_to( 'Yes',
+    audio_meeting_path( meeting ) )  %>
 </p>
 
 <%=content_tag :h3, 'Minutes' %>
@@ -45,11 +46,13 @@
 <%=link_to( 'Add Minutes', new_meeting_motion_path(meeting) ) if permitted_to?( :clerk, meeting ) %>
 
 <p>
-  <b>Editable minutes?</b> <%= meeting.editable_minutes.blank? ? 'No' : link_to( 'Yes', "#{root_path}#{meeting.editable_minutes.url}" )  %>
+  <b>Editable minutes?</b> <%= meeting.editable_minutes.blank? ? 'No' : link_to( 'Yes',
+    editable_minutes_meeting_path( meeting ) )  %>
 </p>
 
 <p>
-  <b>Published minutes?</b> <%= meeting.published_minutes.blank? ? 'No' : link_to( 'Yes', "#{root_path}#{meeting.published_minutes.url}" )  %>
+  <b>Published minutes?</b> <%= meeting.published_minutes.blank? ? 'No' : link_to( 'Yes',
+    published_minutes_meeting_path( meeting ) )  %>
 </p>
 
 <%= render partial: 'meeting_sections/meeting_sections',
