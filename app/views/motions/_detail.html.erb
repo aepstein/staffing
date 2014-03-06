@@ -41,6 +41,12 @@
 
 <p>Comments:</p>
 
+<% if motion.motion_comments.any? %>
+  <p>
+  <%= link_to "Comments Report (pdf)", motion_motion_comments_path( motion, format: :pdf ) %>
+  </p>
+<% end %>
+
 <%=render partial: 'motion_comments/motion_comments', object: motion.motion_comments %>
 
 <% if permitted_to? :comment, motion %>

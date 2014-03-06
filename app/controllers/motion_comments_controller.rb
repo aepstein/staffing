@@ -28,7 +28,7 @@ class MotionCommentsController < ApplicationController
     end
   end
   expose( :role ) { permitted_to?(:staff, meeting) ? :staff : :default }
-  before_filter :require_user
+  before_filter :require_user, except: [ :index ]
   filter_access_to :new, :create, :edit, :update, :destroy, :show,
     attribute_check: true, load_method: :motion_comment
   before_filter :reciprocate_attachments, only: [ :create, :update ]
