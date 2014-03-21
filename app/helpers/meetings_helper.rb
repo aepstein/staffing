@@ -71,6 +71,8 @@ module MeetingsHelper
         link_to attached_file, attachments[attached_file].url
       end
       content_tag :li, "#{anchor}#{attachment_description} [#{link}]".html_safe, id: "footnote-#{index}"
+    when :pdf
+      "#{attachment_description}"
     else
       "#{index}. #{attachment_description} [#{attachment_url(attachment)}]"
     end

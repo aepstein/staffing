@@ -1,5 +1,7 @@
 # Renders PDF membership directory
 class MeetingAgendaReport < AbstractCommitteeReport
+  include MeetingsHelper
+
   attr_accessor :meeting
   def initialize(meeting)
     self.meeting = meeting
@@ -7,22 +9,43 @@ class MeetingAgendaReport < AbstractCommitteeReport
   end
 
   def draw_meeting_section(section, position)
-    bounding_box( [ 0, cursor - 6 ], width: 540 ) do
+    span(540, position: :right) do
       text "#{position.to_roman}.", style: :bold
-      bounding_box( [27, bounds.top], width: 513 ) do
-        text "#{section.name}", style: :bold
-        i = 1;
-        section.meeting_items.each { |item| draw_meeting_item( item, i ); i += 1 }
-      end
     end
+    move_up 14
+    span(504, position: :right) do
+      text "#{section.name}", style: :bold
+    end
+    i = 1;
+    section.meeting_items.each { |item| draw_meeting_item( item, i ); i += 1 }
   end
 
   def draw_meeting_item(item, position)
-    bounding_box( [0, cursor - 3 ], width: 486 ) do
+    span(504, position: :right ) do
       text "#{position.to_roman.downcase}."
-      bounding_box( [27, bounds.top], width: 486 ) do
-        text "#{item.display_name} (#{item.duration} " +
-          (item.duration == 1 ? 'minute' : 'minutes') + ")"
+    end
+    move_up 14
+    span(468, position: :right ) do
+      text "#{item.display_name} (#{item.duration} " +
+        (item.duration == 1 ? 'minute' : 'minutes') + ") <sup>" +
+        footnotes_for_meeting_item_attachments( meeting, item, format: :text ) +
+        "</sup>",
+        inline_format: true
+    end
+  end
+  
+  def draw_meeting_attachments
+    span(540, position: :right) do
+      text "Attachments", style: :bold
+    end
+    move_down 12
+    meeting.attachments.values.flatten.each do |attachment|
+      span(504, position: :right) do
+        text "#{meeting.attachment_index(attachment)}."
+      end
+      move_up 14
+      span(468, position: :right) do
+        text footnote_for_meeting_attachment( meeting, attachment, format: :pdf )
       end
     end
   end
@@ -40,6 +63,12 @@ class MeetingAgendaReport < AbstractCommitteeReport
     font 'Helvetica', size: 12 do
       i = 1;
       meeting.meeting_sections.each { |section| draw_meeting_section( section, i ); i += 1 }
+      move_down 12
+      draw_meeting_attachments
+    end
+    if page_number > 1
+      number_pages "Page <page> of <total>", align: :center, style: :italic,
+        size: 10, width: 540, at: [ 0, 0 ]
     end
     render
   end
