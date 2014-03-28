@@ -48,6 +48,7 @@ class Period < ActiveRecord::Base
   validate :must_not_conflict_with_other_period
 
   after_create do |period|
+    period.schedule.association(:periods).reset
     period.memberships.populate_unassigned!
   end
   after_update do |period|

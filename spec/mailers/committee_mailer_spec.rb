@@ -26,8 +26,7 @@ describe MeetingMailer do
     end
     
     it "does not mention the most recent meeting if it occurred in the past period" do
-      past_period = create(:past_period, schedule: committee.schedule)
-      committee.reload
+      past_period = committee.schedule.periods.create attributes_for( :past_period, schedule: nil )
       create(:meeting, committee: committee, period: past_period,
         starts_at: past_period.starts_at + 1.week)
       mail

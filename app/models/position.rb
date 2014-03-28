@@ -27,7 +27,7 @@ class Position < ActiveRecord::Base
     # Create vacant memberships
     def populate_unassigned_for_period!( period )
       unless proxy_association.owner.schedule.periods.include? period
-        raise ArgumentError, "Period must be in current schedule"
+        raise ArgumentError, "Period must be in schedule"
       end
       memberships = vacancies_for_period( period ).inject([]) do |memo, point|
         if memo.length < point.last
