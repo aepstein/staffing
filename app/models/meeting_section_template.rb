@@ -14,7 +14,9 @@ class MeetingSectionTemplate < ActiveRecord::Base
   validates :meeting_template, presence: true
   validates :position, presence: true, numericality: { greater_than: 0 }
 
-  default_scope order { [ meeting_template_id, position ] }
+  default_scope { ordered }
+  scope :ordered, -> { order { [ meeting_section_templates.meeting_template_id, 
+    meeting_section_templates.position ] } }
 
   def populable_attributes
     { name: name, position: position }

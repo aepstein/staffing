@@ -6,7 +6,7 @@ class MotionVote < ActiveRecord::Base
   
   validates :motion_event, presence: true
   validates :user_id, presence: true, inclusion: {
-    in: lambda { |vote| vote.motion_event.user_ids },
+    in: ->(vote) { vote.motion_event.user_ids },
     if: :motion_event
   }
   

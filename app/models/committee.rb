@@ -1,7 +1,7 @@
 class Committee < ActiveRecord::Base
   default_scope { ordered }
 
-  scope :ordered, -> { order { name } }
+  scope :ordered, -> { order { committees.name } }
   scope :group_by_id, -> { group( :id ) }
   scope :requestable_for_user, lambda { |user|
     active.where { |c| c.id.in( Enrollment.unscoped.requestable.select(:committee_id).
@@ -53,10 +53,11 @@ class Committee < ActiveRecord::Base
         memberships.ends_at.gte( Time.zone.today ) }
     end
   end
-  has_many :requestable_enrollments, class_name: 'Enrollment',
-    conditions: { requestable: true }
-  has_many :requestable_positions, through: :requestable_enrollments,
-    source: :position, conditions: { active: true }
+  has_many :requestable_enrollments, -> { where requestable: true },
+    class_name: 'Enrollment'
+    
+  has_many :requestable_positions, -> { where active: true },
+    through: :requestable_enrollments, source: :position
 
   accepts_nested_attributes_for :enrollments, allow_destroy: true
 
@@ -92,7 +93,7 @@ class Committee < ActiveRecord::Base
   end
 
   def emails( group )
-    memberships.send(group).assigned.includes(:designees, :user).except(:order).all.
+    memberships.send(group).assigned.includes(:designees, :user).except(:order).
     inject([]) { |memo, membership|
       memo << membership.user.name( :email ) if membership.user_id
       membership.designees.each do |designee|

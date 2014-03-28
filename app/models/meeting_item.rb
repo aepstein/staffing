@@ -6,12 +6,14 @@ class MeetingItem < ActiveRecord::Base
 
   belongs_to :meeting_section, inverse_of: :meeting_items
   belongs_to :motion, inverse_of: :meeting_items
-  has_many :motion_meeting_segments, inverse_of: :meeting_item, dependent: :nullify
+  has_many :motion_meeting_segments, inverse_of: :meeting_item,
+    dependent: :nullify
   has_many :attachments, as: :attachable, dependent: :destroy
 
   attr_accessor :named
 
-  default_scope { order { [ meeting_section_id, position ] } }
+  default_scope { order { [ meeting_items.meeting_section_id,
+    meeting_items.position ] } }
   
   scope :future, lambda { joins { meeting_section }.
     where { meeting_sections.meeting_id.in( Meeting.future.select { id } ) } }

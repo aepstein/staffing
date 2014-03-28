@@ -58,12 +58,12 @@ class Membership < ActiveRecord::Base
   has_many :committees, through: :enrollments
   # Peer memberships overlap this membership and share at least one committee
   # The membership must be persisted in order to use this relation
-  has_many :peers, through: :committees, source: :memberships, uniq: true,
-    conditions: Proc.new {
-    [ "memberships.starts_at <= ? AND memberships.ends_at >= ? AND memberships.id <> ?",
-      ends_at, starts_at, id ]
-  }
-  has_many :membership_requests, through: :position,
+  has_many :peers, ->(membership) { where( [
+    "memberships.starts_at <= ? AND memberships.ends_at >= ? AND " +
+    "memberships.id <> ?",
+    membership.ends_at, membership.starts_at, membership.id ] ).distinct },
+    through: :committees, source: :memberships
+  has_many :membership_requests, -> { references(:user) }, through: :position,
     source: :candidate_membership_requests do
     def overlapping
       overlap( proxy_association.owner.starts_at, proxy_association.owner.ends_at )
@@ -168,8 +168,8 @@ class Membership < ActiveRecord::Base
   scope :join_notice_pending, lambda { notifiable.current.no_join_notice }
   scope :leave_notice_pending, lambda { notifiable.past.no_leave_notice }
   scope :decline_notice_pending, lambda { renewal_declined.no_decline_notice }
-  scope :notifiable, includes(:position).where { user_id != nil }.
-    merge( Position.unscoped.notifiable )
+  scope :notifiable, -> { where { ( user_id != nil ) & 
+    position_id.in( Position.unscoped.notifiable.select { id } ) } }
   scope :renewal_confirmed, lambda {
     renewal_candidate.where { renewal_confirmed_at != nil }
   }
@@ -224,7 +224,7 @@ class Membership < ActiveRecord::Base
 
   def decline_renewal(decliner_attributes, options={})
     self.in_decline = true
-    assign_attributes decliner_attributes, as: :decliner
+    assign_attributes decliner_attributes
     self.declined_at = Time.zone.now
     self.declined_by_user = options.delete(:user)
     out = save

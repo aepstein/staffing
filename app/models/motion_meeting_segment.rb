@@ -8,7 +8,7 @@ class MotionMeetingSegment < ActiveRecord::Base
   validates :minutes_from_start, numericality: { integer_only: true,
     greater_than: 0 }, allow_blank: true
 
-  scope :ordered, lambda { order { position } }
+  scope :ordered, -> { order { motion_meeting_segments.position } }
 
   def to_s
     if meeting_item

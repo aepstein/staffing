@@ -1,7 +1,7 @@
 class Period < ActiveRecord::Base
   attr_readonly :schedule_id
 
-  default_scope order { starts_at.desc }
+  default_scope { order { periods.starts_at.desc } }
 
   scope :past, lambda { where { ends_at < Time.zone.today } }
   scope :current, lambda { overlaps( Time.zone.today, Time.zone.today ) }
@@ -20,8 +20,8 @@ class Period < ActiveRecord::Base
     where( schedule_id: period.schedule_id ) }
 
   belongs_to :schedule, inverse_of: :periods
-  has_many :motions, inverse_of: :period, dependent: :restrict
-  has_many :meetings, inverse_of: :period, dependent: :restrict
+  has_many :motions, inverse_of: :period, dependent: :restrict_with_exception
+  has_many :meetings, inverse_of: :period, dependent: :restrict_with_exception
   has_many :memberships, inverse_of: :period, dependent: :destroy do
     def populate_unassigned!
       proxy_association.owner.schedule.positions.active.each do |position|

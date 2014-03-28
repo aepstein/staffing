@@ -1,8 +1,8 @@
 class Quiz < ActiveRecord::Base
   default_scope { ordered }
-  scope :ordered, -> { order { name } }
+  scope :ordered, -> { order { quizzes.name } }
 
-  has_many :positions, inverse_of: :quiz, dependent: :restrict
+  has_many :positions, inverse_of: :quiz, dependent: :restrict_with_exception
   has_many :quiz_questions, inverse_of: :quiz, dependent: :destroy
   has_many :questions, through: :quiz_questions
   has_many :enrollments, through: :positions

@@ -48,7 +48,7 @@ class MembershipRequest < ActiveRecord::Base
       proxy_association.owner.user.memberships.
       overlap( proxy_association.owner.starts_at, proxy_association.owner.ends_at ).
       where { |m| m.position_id.in(
-        proxy_association.owner.requestable_positions.scoped.select { id }
+        proxy_association.owner.requestable_positions.scope.select { id }
       ) }
     end
     # For each of the user's assigned memberships that is not associated with a
@@ -60,9 +60,9 @@ class MembershipRequest < ActiveRecord::Base
       end
     end
   end
-  has_many :requestable_positions, through: :committee,
-    conditions: Proc.new { [ "statuses_mask = 0 OR statuses_mask & ? > 0",
-      user.statuses_mask ] }
+  has_many :requestable_positions, ->(r) { where [
+    "statuses_mask = 0 OR statuses_mask & ? > 0", r.user.statuses_mask ] },
+    through: :committee
   has_many :authorities, through: :requestable_positions
 
   belongs_to :committee, inverse_of: :membership_requests
@@ -78,7 +78,7 @@ class MembershipRequest < ActiveRecord::Base
     where { |t| ( t.starts_at <= ends ) & ( t.ends_at >= starts ) }
   }
   scope :rejected, lambda { with_status( :rejected ) }
-  scope :unrejected, where( :rejected_at => nil )
+  scope :unrejected, -> { where( rejected_at: nil ) }
   scope :staffed, -> { joins( :memberships ) }
   scope :unstaffed, -> { joins( "LEFT JOIN memberships ON " +
     "memberships.membership_request_id = membership_requests.id" ).
@@ -145,19 +145,22 @@ class MembershipRequest < ActiveRecord::Base
   accepts_nested_attributes_for :answers
   accepts_nested_attributes_for :user
 
-  def questions
-    QuizQuestion.includes { question }.order { [ quiz_id, position ] }.
-      group { question_id }.
-      where { |q| q.quiz_id.in(
-        requestable_positions.scoped.select { quiz_id } ) }.
-      map(&:question)
-  end
-  
   def expired?; ends_at < Time.zone.today; end
   def unexpired?; !expired?; end
   
   attr_accessor :new_position
 
+  # Questions to include in membership application (quiz)
+  def questions
+    return Question.none unless committee && user
+    Question.joins(:quiz_questions).
+      where { |r| r.quiz_questions.quiz_id.in( 
+        committee.requestable_positions.
+        with_statuses_mask( user.statuses_mask ).
+        select { quiz_id } ) }.
+      order { [ quiz_questions.id, quiz_questions.position ] }
+  end
+      
   def new_position_options
     user.membership_requests.inject( new_record? ? { 'Last Position' => '' } : {} ) do |memo, membership_request|
       if membership_request == self
@@ -183,7 +186,7 @@ class MembershipRequest < ActiveRecord::Base
 
   def must_have_assignable_position
     return true unless user && committee
-    if requestable_positions.scoped.count == 0
+    if requestable_positions.count == 0
       errors.add :user, "may not request membership in the committee"
     end
   end

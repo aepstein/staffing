@@ -49,11 +49,11 @@ describe MembershipRequest do
     membership_request.save.should be_false
   end
 
-  it  'should have an questions method that returns only questions in the quiz of requestable if it is a position' do
+  it  'should have a questions method that returns only questions in the quiz of requestable if it is a position' do
     allowed = create(:question)
     create(:quiz_question, quiz: membership_request.requestable_positions.first.quiz,
       question: allowed, position: 1 )
-    membership_request.requestable_positions.first.quiz.association(:questions).reset
+    membership_request.save!
     unallowed = create(:question)
     membership_request.questions.size.should eql 1
     membership_request.questions.should include allowed
@@ -87,9 +87,10 @@ describe MembershipRequest do
     create(:enrollment, committee: committee, position: unallowed_position_membership_requestability)
     committee.reload
 
-    questions_request = build(:membership_request, :committee => committee, :user => user)
-    questions_request.questions.length.should eql 1
-    questions_request.questions.should include allowed
+    questions_request = build(:membership_request, committee: committee, user: user)
+    q = questions_request.questions
+    q.length.should eql 1
+    q.should include allowed
     membership_request.save!
     membership_request.questions.length.should eql 0
   end

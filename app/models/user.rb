@@ -56,9 +56,11 @@ class User < ActiveRecord::Base
     end
   end
   # Meetings which coincide with a membership
-  has_many :meetings, through: :committees, uniq: true,
-    conditions: "memberships.starts_at <= meetings.starts_at " +
-      "AND #{Membership.date_add :ends_at, 1, :days} > meetings.starts_at"
+  has_many :meetings, -> { where(
+    "memberships.starts_at <= meetings.starts_at " +
+    "AND #{Membership.date_add :ends_at, 1, :days} > meetings.starts_at" ).
+    distinct },
+    through: :committees
   has_many :authorities, through: :committees do
     def prospective
       where { committees.enrollments.memberships.ends_at > Time.zone.today }
@@ -71,39 +73,41 @@ class User < ActiveRecord::Base
   has_many :designees, inverse_of: :user
   has_many :membership_requests, inverse_of: :user
   # User has permission to review requests that overlap with authority to staff
-  has_many :reviewable_membership_requests, through: :authorities,
-    source: :membership_requests, include: :user, uniq: true,
-    conditions: lambda { |user|
-      [ "membership_requests.starts_at <= memberships.ends_at AND " +
-        "membership_requests.ends_at >= memberships.starts_at AND " +
-        "memberships.ends_at >= ?", Time.zone.today ] }
+  has_many :reviewable_membership_requests, -> { where( [
+    "membership_requests.starts_at <= memberships.ends_at AND " +
+    "membership_requests.ends_at >= memberships.starts_at AND " +
+    "memberships.ends_at >= ?", Time.zone.today ] ).
+    includes(:user).distinct },
+    through: :authorities, source: :membership_requests
   # User has permission to review memberships that overlap with authority to staff
-  has_many :reviewable_memberships, through: :authorities,
-    source: :memberships, uniq: true,
-    conditions: Proc.new {
-      [ "memberships_reviewable_memberships_join.starts_at <= memberships.ends_at AND " +
-        "memberships_reviewable_memberships_join.ends_at >= memberships.starts_at AND " +
-        "memberships.ends_at >= ?", Time.zone.today ] }
+  has_many :reviewable_memberships, -> { where( [
+    "memberships_reviewable_memberships_join.starts_at <= memberships.ends_at AND " +
+    "memberships_reviewable_memberships_join.ends_at >= memberships.starts_at AND " +
+    "memberships.ends_at >= ?", Time.zone.today ] ).
+    distinct },
+    through: :authorities, source: :memberships
   # User has permission to renew or decline renewal
-  has_many :renewable_memberships, through: :authorities,
-    source: :memberships, uniq: true,
-    conditions: Proc.new {
-      [ "memberships_renewable_memberships_join.starts_at <= memberships.renew_until AND " +
-        "memberships_renewable_memberships_join.ends_at > memberships.ends_at AND " +
-        "memberships.renew_until >= ?", Time.zone.today ] }
+  has_many :renewable_memberships, -> { where( [
+    "memberships_renewable_memberships_join.starts_at <= memberships.renew_until AND " +
+    "memberships_renewable_memberships_join.ends_at > memberships.ends_at AND " +
+    "memberships.renew_until >= ?", Time.zone.today ] ).
+    distinct },
+    through: :authorities, source: :memberships
   has_many :sponsorships, inverse_of: :user
   has_many :motions, through: :sponsorships
-  has_many :peer_motions, through: :committees, source: :motions,
-    conditions: Proc.new {
-      [ "motions.period_id IN (SELECT id FROM periods WHERE periods.starts_at <= memberships.ends_at AND " +
-        "periods.ends_at >= memberships.starts_at) AND memberships.ends_at >= ?", Time.zone.today ] }
+  has_many :peer_motions, -> { where [
+    "motions.period_id IN (SELECT id FROM periods WHERE periods.starts_at <= " +
+    "memberships.ends_at AND periods.ends_at >= memberships.starts_at) AND " +
+    "memberships.ends_at >= ?", Time.zone.today ] },
+    through: :committees, source: :motions
+    
   has_and_belongs_to_many :watched_motions, class_name: 'Motion',
     join_table: 'motions_watchers'
   has_many :answers, through: :membership_requests
   has_many :periods, through: :memberships
   has_many :positions, through: :memberships do
     def current
-      scoped.where(
+      all.where(
         'memberships.starts_at <= :d AND memberships.ends_at >= :d',
         { d: Time.zone.today }
       )
@@ -128,7 +132,7 @@ class User < ActiveRecord::Base
     if position.statuses_mask > 0
       with_statuses_mask( position.statuses_mask )
     else
-      scoped
+      all
     end
   }
   scope :renewable_to, lambda { |membership|

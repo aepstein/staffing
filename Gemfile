@@ -30,6 +30,7 @@ gem 'cornell-assemblies-branding',
 #  git: 'git://assembly.cornell.edu/git/cornell-assemblies-branding.git',
 #  branch: '0-0-3'
 gem 'valium', :git => 'git://github.com/jayrowe/valium.git'
+gem 'bundler', '~> 1.6.0'
 group :production do
   gem 'sass-rails'
   gem 'coffee-rails'

@@ -13,11 +13,11 @@ class MotionEvent < ActiveRecord::Base
   end
   has_one :committee, through: :motion
   # These are memberships that have a vote
-  has_many :memberships, through: :committee, uniq: true,
-    conditions: Proc.new {  [ "enrollments.votes > 0 AND " +
-      "memberships.starts_at <= :e AND memberships.ends_at >= :e",
-      e: occurrence ] }
-  has_many :users, through: :memberships, uniq: true
+  has_many :memberships, ->(e) { where( [ "enrollments.votes > 0 AND " +
+    "memberships.starts_at <= :e AND memberships.ends_at >= :e",
+    e: e.occurrence ] ).distinct }, through: :committee
+    
+  has_many :users, -> { distinct }, through: :memberships
   attr_readonly :event
 
   accepts_nested_attributes_for :motion_votes, allow_destroy: true
@@ -26,15 +26,15 @@ class MotionEvent < ActiveRecord::Base
   validates :motion, presence: true
   validates :occurrence, presence: true, timeliness: {
     type: :date, on_or_after: :period_starts_at,
-    on_or_before: lambda { Time.zone.today }, if: :motion
+    on_or_before: -> { Time.zone.today }, if: :motion
   }
   validates :event, presence: true
 
-  scope :ordered, lambda { order { [ occurrence, created_at ] } }
-  scope :occurred_since, lambda { |since| where { occurrence.gte( since ) } }
-  scope :notifiable, lambda { where { event.in( MotionEvent::NOTIFIABLE_EVENTS ) } }
-  scope :no_notice, where { notice_sent_at.eq( nil ) }
-  scope :no_notice_since, lambda { |since|
+  scope :ordered, -> { order { [ occurrence, created_at ] } }
+  scope :occurred_since, ->(since) { where { occurrence.gte( since ) } }
+  scope :notifiable, -> { where { event.in( MotionEvent::NOTIFIABLE_EVENTS ) } }
+  scope :no_notice, -> { where { notice_sent_at.eq( nil ) } }
+  scope :no_notice_since, ->(since) {
     where { notice_sent_at.eq( nil ) || notice_sent_at.lte( since ) }
   }
 

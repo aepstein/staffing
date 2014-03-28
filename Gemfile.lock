@@ -314,6 +314,7 @@ DEPENDENCIES
   ancestry
   bcrypt-ruby (~> 3.0.0)
   blind_date (~> 1.0.2)
+  bundler (~> 1.6.0)
   capistrano-rails
   capybara (~> 2.0)
   carrierwave

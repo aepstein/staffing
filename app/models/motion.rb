@@ -31,8 +31,9 @@ class Motion < ActiveRecord::Base
     class_name: 'Motion'
   belongs_to :meeting, inverse_of: :minute_motions
 
-  has_many :peers, through: :committee, source: :motions,
-    conditions: Proc.new { { period_id: period_id } }
+  has_many :peers, ->(motion) { where period_id: motion.period_id },
+    through: :committee, source: :motions
+    
   has_many :meeting_items, inverse_of: :motion, dependent: :destroy
   has_many :sponsorships, inverse_of: :motion, dependent: :destroy do
     def path
@@ -51,12 +52,14 @@ class Motion < ActiveRecord::Base
   has_many :users, through: :sponsorships do
     # Only voting members may be sponsors
     def allowed
-      return [] unless proxy_association.owner.committee && proxy_association.owner.period_id?
-      User.joins(:memberships).merge(
-        proxy_association.owner.committee.memberships.where( 'enrollments.votes > 0' ).
+      return User.none unless proxy_association.owner.committee &&
+        proxy_association.owner.period_id?
+      User.where { |u| u.id.in( 
+        proxy_association.owner.committee.memberships.
         overlap( proxy_association.owner.period.starts_at,
-        proxy_association.owner.period.ends_at ).except(:order)
-      )
+          proxy_association.owner.period.ends_at ).
+        where( 'enrollments.votes > 0' ).except(:order).select { user_id }
+      ) }
     end
   end
   has_and_belongs_to_many :watchers, class_name: 'User',
@@ -96,7 +99,7 @@ class Motion < ActiveRecord::Base
   has_many :merged_motions, through: :motion_mergers, source: :merged_motion
   has_many :referred_motions, inverse_of: :referring_motion,
     class_name: 'Motion', foreign_key: :referring_motion_id,
-    dependent: :restrict do
+    dependent: :restrict_with_exception do
     def populate_single
       motion = if i = index { |m| m.new_record? }
         self[i]
@@ -204,18 +207,18 @@ class Motion < ActiveRecord::Base
       motion.published = true
     end
     motion.peers.lock
-    motion.position = motion.peers.scoped.reset.count + 1
+    motion.position = motion.peers.scope.reset.count + 1
   end
 
   # Lock the list of motions for the period during destroy
   before_destroy do |motion|
     motion.peers.lock
-    motion.position = Motion.scoped.reset.where { |m| m.id.eq( motion.id ) }.
+    motion.position = Motion.all.reset.where { |m| m.id.eq( motion.id ) }.
       value_of(:position).first
   end
   # After destroy reposition subsequent items accordingly
   after_destroy do |motion|
-    motion.peers.scoped.reset.where { |m| m.position.gt( motion.position ) }.
+    motion.peers.scope.reset.where { |m| m.position.gt( motion.position ) }.
       update_all( "position = position - 1" )
   end
 

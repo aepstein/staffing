@@ -93,20 +93,21 @@ class Position < ActiveRecord::Base
     end
   end
   has_many :committees, through: :enrollments
-  has_many :requestable_enrollments, class_name: 'Enrollment',
-    conditions: { requestable: true }
-  has_many :requestable_committees, through: :requestable_enrollments,
-    source: :committee, conditions: { active: true }
-  has_many :candidate_membership_requests, include: :user,
-    through: :requestable_committees, source: :membership_requests,
-    conditions: "enrollments.position_id IN " +
+  has_many :requestable_enrollments, -> { where requestable: true },
+    class_name: 'Enrollment'
+  has_many :requestable_committees, -> { where active: true },
+    through: :requestable_enrollments, source: :committee
+  has_many :candidate_membership_requests,
+    -> { includes(:user).where( [ "enrollments.position_id IN " +
       "(SELECT positions.id FROM positions WHERE ( positions.statuses_mask = 0 OR " +
       "(positions.statuses_mask & users.statuses_mask) > 0 ) AND " +
-      "(positions.active = #{connection.quote true}) )"
+      "(positions.active = ?) )", true ] ).references(:user) },
+    through: :requestable_committees, source: :membership_requests
+
 
   accepts_nested_attributes_for :enrollments, allow_destroy: true
 
-  scope :ordered, order { name }
+  scope :ordered, -> { order { positions.name } }
   scope :with_status, lambda { |status|
     where( "(positions.statuses_mask & " +
       "#{status.nil? ? 0 : 2**User::STATUSES.index(status.to_s)}) " +
@@ -117,12 +118,12 @@ class Position < ActiveRecord::Base
       statuses_mask ] )
   }
   scope :assignable_to, lambda { |user| with_statuses_mask(user.statuses_mask).active }
-  scope :notifiable, where( notifiable: true )
-  scope :renewable, where( renewable: true )
-  scope :unrenewable, where( renewable: false )
-  scope :designable, where( designable: true )
-  scope :active, where( active: true )
-  scope :inactive, where { active.not_eq( true ) }
+  scope :notifiable, -> { where( notifiable: true ) }
+  scope :renewable, -> { where( renewable: true ) }
+  scope :unrenewable, -> { where( renewable: false ) }
+  scope :designable, -> { where( designable: true ) }
+  scope :active, -> { where( active: true ) }
+  scope :inactive, -> { where { active.not_eq( true ) } }
   # Other positions that are enrolled in exactly the same committees as this
   # * presume same position means same committees
   # * presume different position means different committees if other position has no commmittees

@@ -98,13 +98,11 @@ describe Position do
       it 'should have a membership.vacancies_for_period' do
         m = position.memberships.build
         m.assign_attributes( { period: period, starts_at: period.starts_at + 2.days,
-          ends_at: period.ends_at - 2.days, user: create(:user) },
-          without_protection: true )
+          ends_at: period.ends_at - 2.days, user: create(:user) } )
         m.save!
         m = position.memberships.build
         m.assign_attributes( { period: period, starts_at: period.starts_at,
-          ends_at: period.ends_at - 1.days, user: create(:user) },
-          without_protection: true )
+          ends_at: period.ends_at - 1.days, user: create(:user) } )
         m.save!
         Membership.unassigned.delete_all
         vacancies = position.memberships.vacancies_for_period(period)

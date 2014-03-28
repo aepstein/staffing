@@ -5,7 +5,7 @@ class Question < ActiveRecord::Base
     'Yes/No' => 'boolean'
   }
 
-  scope :ordered, -> { order { name } }
+  scope :ordered, -> { order { questions.name } }
 
   has_many :quiz_questions, inverse_of: :question, dependent: :destroy
   has_many :quizzes, through: :quiz_questions

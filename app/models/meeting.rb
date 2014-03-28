@@ -21,8 +21,9 @@ class Meeting < ActiveRecord::Base
       proxy_association.owner.committee.meeting_template
     end
   end
-  has_many :meeting_items, through: :meeting_sections,
-    order: 'meeting_sections.position, meeting_items.position'
+  has_many :meeting_items, -> { order( 
+    'meeting_sections.position, meeting_items.position' ) },
+    through: :meeting_sections
   has_many :motions, through: :meeting_sections do
     # Allowed motions are in same committee and period as the meeting
     def allowed
