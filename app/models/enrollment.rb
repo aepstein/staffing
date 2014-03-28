@@ -14,15 +14,15 @@ class Enrollment < ActiveRecord::Base
   end
 
   scope :voting, lambda { where { votes.gt(0) } }
-  scope :ordered, includes( :committee, :position ).
-    order { [ committees.name, title, positions.name ] }
+  scope :ordered, -> { includes( :committee, :position ).
+    order { [ committees.name, title, positions.name ] } }
   scope :with_roles, lambda { |*roles| where {
       [ my { roles } ].flatten.
       map { |role| sift :role_mask_contains, role }.reduce(&:|)
     }
   }
-  scope :requestable, where { requestable.eq(true) }
-  scope :unrequestable, where { requestable.not_eq(true) }
+  scope :requestable, -> { where { requestable.eq(true) } }
+  scope :unrequestable, -> { where { requestable.not_eq(true) } }
 
   validates :position, presence: true
   validates :committee, presence: true

@@ -112,13 +112,13 @@ class Membership < ActiveRecord::Base
       ] )
     ) }
   }
-  scope :ordered, joins { user.outer }.
+  scope :ordered, -> { joins { user.outer }.
     order { [ ends_at.desc, starts_at.desc, users.last_name, users.first_name,
-    users.middle_name ] }
-  scope :assigned, where { user_id.not_eq( nil ) }
-  scope :unassigned, where( :user_id => nil )
-  scope :requested, where { membership_request_id != nil }
-  scope :unrequested, where( :membership_request_id => nil )
+    users.middle_name ] } }
+  scope :assigned, -> { where { user_id.not_eq( nil ) } }
+  scope :unassigned, -> { where( :user_id => nil ) }
+  scope :requested, -> { where { membership_request_id != nil } }
+  scope :unrequested, -> { where( :membership_request_id => nil ) }
   scope :ends_within, lambda { |range|
     where { ends_at.gte( Time.zone.today - range ) &
       ends_at.lte( Time.zone.today + range ) }
@@ -176,8 +176,8 @@ class Membership < ActiveRecord::Base
   scope :renewal_unconfirmed, lambda {
     renewal_candidate.where( renewal_confirmed_at: nil )
   }
-  scope :renewed, where { renewed_by_membership_id != nil }
-  scope :unrenewed, where( :renewed_by_membership_id => nil )
+  scope :renewed, -> { where { renewed_by_membership_id != nil } }
+  scope :unrenewed, -> { where( :renewed_by_membership_id => nil ) }
   scope :user_name_cont, lambda { |text|
     where { |t| t.user_id.in( User.unscoped.select { id }.name_cont( text ) ) }
   }

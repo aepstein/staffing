@@ -3,7 +3,7 @@ require File.expand_path('../boot', __FILE__)
 require 'rails/all'
 
 if defined?(Bundler)
-  Bundler.require *Rails.groups(:assets => %w(development test))
+  Bundler.require(:default, Rails.env)
 end
 
 
@@ -15,10 +15,8 @@ module Staffing
     config.time_zone = 'Eastern Time (US & Canada)'
     config.action_mailer.default_url_options = { :host => "assembly.cornell.edu/staffing", :protocol => 'https' }
     config.autoload_paths << "#{Rails.root}/app/reports"
-    config.active_record.identity_map = true
     config.assets.enabled = true
     config.assets.version = '1.1'
-    config.active_record.whitelist_attributes = false
 
     def self.app_config
       @@app_config ||= YAML.load(File.read(File.expand_path('../application.yml', __FILE__)))[Rails.env]

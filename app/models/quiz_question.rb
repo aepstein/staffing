@@ -8,7 +8,7 @@ class QuizQuestion < ActiveRecord::Base
   validates :question_id, uniqueness: { scope: :quiz_id }
   validates :position, presence: true, numericality: { greater_than: 0 }
 
-  default_scope order { position }
+  default_scope { order { position } }
 
   def to_s
     if persisted?

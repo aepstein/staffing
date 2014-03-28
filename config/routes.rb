@@ -184,9 +184,9 @@ Staffing::Application.routes.draw do
   match '/sso/:provider/register', to: 'users#register', as: 'sso_register',
     via: [ :get, :post ], constraints: SsoProviderConstraint.new
 
-  match 'login', to: 'user_sessions#new', as: 'login'
-  match 'logout', to: 'user_sessions#destroy', as: 'logout'
-  match 'home', to: 'home#home', as: 'home'
+  get 'login', to: 'user_sessions#new', as: 'login'
+  get 'logout', to: 'user_sessions#destroy', as: 'logout'
+  get 'home', to: 'home#home', as: 'home'
 
   root to: 'home#home'
 end

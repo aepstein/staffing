@@ -1,5 +1,5 @@
 class Position < ActiveRecord::Base
-  default_scope lambda { ordered }
+  default_scope { ordered }
 
   belongs_to :authority, inverse_of: :positions
   belongs_to :quiz, inverse_of: :positions

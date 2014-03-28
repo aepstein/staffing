@@ -175,7 +175,7 @@ class Motion < ActiveRecord::Base
   end
   has_many :motion_comments, inverse_of: :motion, dependent: :destroy
 
-  scope :ordered, order { position }
+  scope :ordered, -> { order { position } }
   scope :past, lambda { joins(:period).merge Period.unscoped.past }
   scope :current, lambda { joins(:period).merge Period.unscoped.current }
   scope :in_process, lambda { with_status( :started, :proposed ) }

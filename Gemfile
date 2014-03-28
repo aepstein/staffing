@@ -1,11 +1,11 @@
 source 'http://rubygems.org'
-gem 'rails', '~> 3.2'
+gem 'rails', '~> 4.0.0'
 gem 'mysql2'
 gem 'rake'
 gem 'exception_notification', '~> 4.0'
 gem 'validates_timeliness'
 gem 'gettext'
-gem 'squeel'
+gem 'squeel', git: 'git://github.com/activerecord-hackery/squeel'
 gem 'ransack'
 gem 'ancestry'
 gem 'cornell_ldap', '>= 1.3.1'
@@ -14,22 +14,23 @@ gem 'state_machine'
 gem 'declarative_authorization'
 gem 'carrierwave'
 gem 'blind_date', '~> 1.0.2'
-gem 'acts_as_list', '~> 0.1.9'
+gem 'acts_as_list', '~> 0.4'
 gem 'daemons'
 gem 'whenever', require: false
 gem 'escape_utils'
 gem 'prawn', '~> 1.0.0rc'
 gem 'prawn-fast-png', require: 'prawn/fast_png'
-gem 'paper_trail', '~> 2.0'
-gem 'strong_parameters'
+gem 'paper_trail', '~> 3.0'
 gem 'cornell_assemblies_rails',
-  git: 'git://assembly.cornell.edu/git/cornell-assemblies-rails.git',
-  branch: '0-0-3'
+  path: '/home/ari/code/cornell-assemblies-rails'
+#  git: 'git://assembly.cornell.edu/git/cornell-assemblies-rails.git',
+#  branch: '0-0-3'
 gem 'cornell-assemblies-branding',
-  git: 'git://assembly.cornell.edu/git/cornell-assemblies-branding.git',
-  branch: '0-0-3'
-gem 'valium'
-group :assets do
+  path: '/home/ari/code/cornell-assemblies-branding'
+#  git: 'git://assembly.cornell.edu/git/cornell-assemblies-branding.git',
+#  branch: '0-0-3'
+gem 'valium', :git => 'git://github.com/jayrowe/valium.git'
+group :production do
   gem 'sass-rails'
   gem 'coffee-rails'
   gem 'uglifier'

@@ -1,5 +1,5 @@
 class Authority < ActiveRecord::Base
-  default_scope order( 'authorities.name ASC' )
+  default_scope { order( 'authorities.name ASC' ) }
 
   scope :user_id_equals, lambda { |user_id|
     select("DISTINCT #{arel_table.name}.*").joins(:authorized_enrollments).

@@ -18,5 +18,6 @@ Staffing::Application.configure do
     sender_address: %{"Assemblies IT Support" <assembly-it@cornell.edu>},
     exception_recipients: %w{assembly-it@cornell.edu}
   }
+  config.eager_load = true
 end
 

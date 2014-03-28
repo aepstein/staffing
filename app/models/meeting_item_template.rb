@@ -15,7 +15,7 @@ class MeetingItemTemplate < ActiveRecord::Base
     template.duration = nil if template.duration.blank?
   end
 
-  default_scope order { [ meeting_section_template_id, position ] }
+  default_scope { order { [ meeting_section_template_id, position ] } }
 
   def populable_attributes
     { name: name, duration: duration, description: description,

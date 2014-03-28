@@ -11,7 +11,7 @@ class MeetingItem < ActiveRecord::Base
 
   attr_accessor :named
 
-  default_scope order { [ meeting_section_id, position ] }
+  default_scope { order { [ meeting_section_id, position ] } }
   
   scope :future, lambda { joins { meeting_section }.
     where { meeting_sections.meeting_id.in( Meeting.future.select { id } ) } }

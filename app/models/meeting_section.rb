@@ -9,7 +9,7 @@ class MeetingSection < ActiveRecord::Base
 
   accepts_nested_attributes_for :meeting_items, allow_destroy: true
 
-  default_scope order { [ meeting_id, position ] }
+  default_scope { order { [ meeting_id, position ] } }
 
   validates :meeting, presence: true
   validates :name, presence: true, uniqueness: { scope: :meeting_id }

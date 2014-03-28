@@ -7,7 +7,7 @@ class MeetingTemplate < ActiveRecord::Base
 
   validates :name, presence: true, uniqueness: true
 
-  scope :ordered, order { name }
+  scope :ordered, -> { order { name } }
 
   def to_s; name? ? name : super; end
 end

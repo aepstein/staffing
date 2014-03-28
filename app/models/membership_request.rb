@@ -70,8 +70,8 @@ class MembershipRequest < ActiveRecord::Base
   belongs_to :rejected_by_authority, class_name: 'Authority'
   belongs_to :rejected_by_user, class_name: 'User'
 
-  scope :ordered, joins { user.outer }.
-    order { [ user.last_name, user.first_name, position ] }
+  scope :ordered, -> { joins { user.outer }.
+    order { [ user.last_name, user.first_name, position ] } }
   scope :unexpired, lambda { where { ends_at > Time.zone.today } }
   scope :expired, lambda { where { ends_at <= Time.zone.today } }
   scope :overlap, lambda { |starts, ends|
@@ -79,10 +79,10 @@ class MembershipRequest < ActiveRecord::Base
   }
   scope :rejected, lambda { with_status( :rejected ) }
   scope :unrejected, where( :rejected_at => nil )
-  scope :staffed, joins( :memberships )
-  scope :unstaffed, joins( "LEFT JOIN memberships ON " +
+  scope :staffed, -> { joins( :memberships ) }
+  scope :unstaffed, -> { joins( "LEFT JOIN memberships ON " +
     "memberships.membership_request_id = membership_requests.id" ).
-    where { memberships.id.eq( nil ) }
+    where { memberships.id.eq( nil ) } }
   scope :active, lambda { unexpired.with_status(:active) }
   scope :inactive, lambda {
     where { ( ends_at <= Time.zone.today ) | ( status != 'active' ) } }

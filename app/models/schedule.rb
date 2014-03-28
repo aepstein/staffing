@@ -1,6 +1,6 @@
 class Schedule < ActiveRecord::Base
-  default_scope lambda { ordered }
-  scope :ordered, order { name }
+  default_scope { ordered }
+  scope :ordered, -> { order { name } }
 
   has_many :positions, inverse_of: :schedule, dependent: :destroy
   has_many :periods, inverse_of: :schedule, dependent: :destroy do
