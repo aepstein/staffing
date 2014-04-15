@@ -3,7 +3,7 @@ class AbstractCommitteeReport < Prawn::Document
 
   attr_accessor :committee
   attr_accessor :letterhead_contact_offset
-  LETTERHEAD_CONTACT_OFFSET = 720
+  LETTERHEAD_CONTACT_OFFSET = 684
   LETTERHEAD_TEXT_START = 324
 
   def self.markup_markdown( source )
@@ -30,7 +30,7 @@ class AbstractCommitteeReport < Prawn::Document
   def initialize(committee, options = {})
     self.committee = committee
     include_palatino
-    super( options.merge( { page_size: 'LETTER' } ) )
+    super( options.merge( { page_size: 'LETTER', bottom_margin: 36 } ) )
   end
 
   def contact_attributes
@@ -44,7 +44,7 @@ class AbstractCommitteeReport < Prawn::Document
 
   def draw_letterhead
     brand = committee.brand || Brand.first
-    image brand.logo.letterhead.store_path, height: 72, at: [ 0,720 ]
+    image brand.logo.letterhead.store_path, height: 72, at: [ 0,684 ]
     font 'Palatino' do
       draw_letterhead_address contact_attributes[:address_1]
       draw_letterhead_address contact_attributes[:address_2] if contact_attributes[:address_2]
