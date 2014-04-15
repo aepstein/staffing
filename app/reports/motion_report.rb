@@ -3,7 +3,7 @@ class MotionReport < AbstractCommitteeReport
   attr_accessor :motion, :first_line_at
   def initialize(motion)
     self.motion = motion
-    super( motion.committee, page_size: 'LETTER' )
+    super( motion.committee )
   end
 
   def sponsors
@@ -57,7 +57,7 @@ class MotionReport < AbstractCommitteeReport
       else
         draw_line_numbers first_line_at, cursor
       end
-      number_pages "#{accommodations_text}Page <page> of <total>",
+      number_pages "#{accommodations_text}Page <page> of <total>\n\n",
         align: :center, style: :italic, size: 10, width: 540, at: [ 0, 0 ]
     end
     render

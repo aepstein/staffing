@@ -5,7 +5,7 @@ class MeetingAgendaReport < AbstractCommitteeReport
   attr_accessor :meeting
   def initialize(meeting)
     self.meeting = meeting
-    super( meeting.committee, page_size: 'LETTER' )
+    super( meeting.committee )
   end
 
   def draw_meeting_section(section, position)
@@ -66,7 +66,7 @@ class MeetingAgendaReport < AbstractCommitteeReport
       move_down 12
       draw_meeting_attachments
     end
-    number_pages "#{accommodations_text}Page <page> of <total>",
+    number_pages "#{accommodations_text}Page <page> of <total>\n\n",
       align: :center, style: :italic, size: 10, width: 540, at: [ 0, 0 ]
     render
   end
