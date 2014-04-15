@@ -30,7 +30,7 @@ class AbstractCommitteeReport < Prawn::Document
   def initialize(committee, options = {})
     self.committee = committee
     include_palatino
-    super( options.merge( { page_size: 'LETTER' } ) )
+    super( options.merge( { page_size: 'LETTER', bottom_margin: 108 } ) )
   end
 
   def contact_attributes
@@ -58,8 +58,9 @@ class AbstractCommitteeReport < Prawn::Document
   end
 
   def accommodations_text
-    "For special accommodations, contact Office of the Assemblies (607) 255-3715 " +
-    "or Student Disability Services (607) 254-4545 prior to the meeting.\n"
+    "If you are in need of special accommodations, contact Office of the " +
+    "Assemblies at (607) 255-3715 or Student Disability Services at (607) " +
+    "254-4545 prior to the meeting.\n"
   end
 
   def draw_letterhead_address( text )
