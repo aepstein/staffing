@@ -66,7 +66,7 @@ class MeetingAgendaReport < AbstractCommitteeReport
       move_down 12
       draw_meeting_attachments
     end
-    number_pages "#{accommodations_text}Page <page> of <total>\n\n",
+    number_pages "#{accommodations_text}Page <page> of <total>",
       align: :center, style: :italic, size: 10, width: 540, at: [ 0, 0 ]
     render
   end
