@@ -45,13 +45,13 @@ class MotionReport < AbstractCommitteeReport
         text motion_content, inline_format: true
       end
       if page_number > 1
-        draw_line_numbers 720, cursor
+        draw_line_numbers LETTERHEAD_CONTACT_OFFSET, cursor
         repeat([1]) do
           draw_line_numbers first_line_at, 0
         end
         if page_number > 2
           repeat( 2..(page_number - 1) ) do
-            draw_line_numbers 720, 0
+            draw_line_numbers LETTERHEAD_CONTACT_OFFSET, 0
           end
         end
       else
