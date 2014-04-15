@@ -57,6 +57,11 @@ class AbstractCommitteeReport < Prawn::Document
     move_down [ 72, letterhead_height ].max
   end
 
+  def accommodations_text
+    "For special accommodations, contact Office of the Assemblies (607) 255-3715 " +
+    "or Student Disability Services (607) 254-4545 prior to the meeting.\n"
+  end
+
   def draw_letterhead_address( text )
     self.letterhead_contact_offset ||= LETTERHEAD_CONTACT_OFFSET
     text_box text, size: 11, at: [ LETTERHEAD_TEXT_START, letterhead_contact_offset ]
