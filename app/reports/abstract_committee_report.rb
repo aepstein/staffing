@@ -30,7 +30,7 @@ class AbstractCommitteeReport < Prawn::Document
   def initialize(committee, options = {})
     self.committee = committee
     include_palatino
-    super( options.merge( { page_size: 'LETTER', bottom_margin: 108 } ) )
+    super( options.merge( { page_size: 'LETTER', bottom_margin: 72 } ) )
   end
 
   def contact_attributes
