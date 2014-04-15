@@ -40,7 +40,8 @@ Then /^I may( not)? see the authority$/ do |negate|
 end
 
 Then /^I may( not)? create authorities$/ do |negate|
-  Capybara.current_session.driver.submit :post, authorities_url, {}
+  Capybara.current_session.driver.submit :post, authorities_url,
+    { "authority" => { "name" => "" } }
   step %{I should#{negate} be authorized}
   visit(new_authority_url)
   step %{I should#{negate} be authorized}
@@ -53,7 +54,8 @@ Then /^I may( not)? create authorities$/ do |negate|
 end
 
 Then /^I may( not)? update the authority$/ do |negate|
-  Capybara.current_session.driver.submit :put, authority_url(@authority), {}
+  Capybara.current_session.driver.submit :put, authority_url(@authority),
+    { "authority" => { "name" => "" } }
   step %{I should#{negate} be authorized}
   visit(edit_authority_url(@authority))
   step %{I should#{negate} be authorized}

@@ -42,7 +42,8 @@ Then /^I may( not)? see the committee$/ do |negate|
 end
 
 Then /^I may( not)? create committees$/ do |negate|
-  Capybara.current_session.driver.submit :post, committees_url, {}
+  Capybara.current_session.driver.submit :post, committees_url,
+    { "committee" => { "name" => "" } }
   step %{I should#{negate} be authorized}
   visit(new_committee_url)
   step %{I should#{negate} be authorized}
@@ -55,7 +56,8 @@ Then /^I may( not)? create committees$/ do |negate|
 end
 
 Then /^I may( not)? update the committee$/ do |negate|
-  Capybara.current_session.driver.submit :put, committee_url(@committee), {}
+  Capybara.current_session.driver.submit :put, committee_url(@committee),
+    { "committee" => { "name" => "" } }
   step %{I should#{negate} be authorized}
   visit(edit_committee_url(@committee))
   step %{I should#{negate} be authorized}

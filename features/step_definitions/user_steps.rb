@@ -42,8 +42,9 @@ Then /^I may( not)? see the user$/ do |negate|
 end
 
 Then /^I may( not)? create users$/ do |negate|
-  Capybara.current_session.driver.submit :post, users_url, {}
-  step %{I should#{negate} be authorized}
+  Capybara.current_session.driver.submit :post, users_url,
+    { "user" => { "first_name" => "" } }
+  step %{I should#{negate} be authorized
   visit(new_user_url)
   step %{I should#{negate} be authorized}
   visit(users_url)
@@ -55,7 +56,8 @@ Then /^I may( not)? create users$/ do |negate|
 end
 
 Then /^I may( not)? update the user$/ do |negate|
-  Capybara.current_session.driver.submit :put, user_url(@user), {}
+  Capybara.current_session.driver.submit :put, user_url(@user),
+    { "user" => { "first_name" => "" } }
   step %{I should#{negate} be authorized}
   visit(edit_user_url(@user))
   step %{I should#{negate} be authorized}
@@ -72,7 +74,9 @@ end
 Then /^I may( not)? set renewal preferences for the user$/ do |negate|
   visit renew_user_memberships_url @user
   step %{I should#{negate} be authorized}
-  Capybara.current_session.driver.submit :put, renew_user_memberships_url(@user), {}
+  Capybara.current_session.driver.submit :put,
+    renew_user_memberships_url(@user),
+    { "user" => { "memberships_attributes" => {} } }
   step %{I should#{negate} be authorized}
 end
 

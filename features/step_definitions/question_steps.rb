@@ -15,7 +15,8 @@ Then /^I may( not)? see the question$/ do |negate|
 end
 
 Then /^I may( not)? create questions$/ do |negate|
-  Capybara.current_session.driver.submit :post, questions_url, {}
+  Capybara.current_session.driver.submit :post, questions_url,
+    { "question" => { "name" => "" } }
   step %{I should#{negate} be authorized}
   visit(new_question_url)
   step %{I should#{negate} be authorized}
@@ -28,7 +29,8 @@ Then /^I may( not)? create questions$/ do |negate|
 end
 
 Then /^I may( not)? update the question$/ do |negate|
-  Capybara.current_session.driver.submit :put, question_url(@question), {}
+  Capybara.current_session.driver.submit :put, question_url(@question),
+    { "question" => { "name" => "" } }
   step %{I should#{negate} be authorized}
   visit(edit_question_url(@question))
   step %{I should#{negate} be authorized}

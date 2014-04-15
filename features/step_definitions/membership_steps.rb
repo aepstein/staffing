@@ -63,12 +63,15 @@ Then /^I may( not)? create memberships for the position$/ do |negate|
   else
     page.should have_no_text('New membership')
   end
-  Capybara.current_session.driver.submit :post, position_memberships_url(@position), {}
+  Capybara.current_session.driver.submit :post,
+    position_memberships_url(@position),
+    { "membership" => { "starts_at" => "" } }
   step %{I should#{negate} be authorized}
 end
 
 Then /^I may( not)? update the membership$/ do |negate|
-  Capybara.current_session.driver.submit :put, membership_url(@membership), {}
+  Capybara.current_session.driver.submit :put, membership_url(@membership),
+    { "membership" => { "starts_at" => "" } }
   step %{I should#{negate} be authorized}
   visit(edit_membership_url(@membership))
   step %{I should#{negate} be authorized}

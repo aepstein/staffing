@@ -53,7 +53,8 @@ Then /^I may( not)? see the position$/ do |negate|
 end
 
 Then /^I may( not)? create positions$/ do |negate|
-  Capybara.current_session.driver.submit :post, positions_url, {}
+  Capybara.current_session.driver.submit :post, positions_url,
+    { "position" => { "name" => "" } }
   step %{I should#{negate} be authorized}
   visit(new_position_url)
   step %{I should#{negate} be authorized}
@@ -66,7 +67,8 @@ Then /^I may( not)? create positions$/ do |negate|
 end
 
 Then /^I may( not)? update the position$/ do |negate|
-  Capybara.current_session.driver.submit :put, position_url(@position), {}
+  Capybara.current_session.driver.submit :put, position_url(@position),
+    { "position" => { "name" => "" } }
   step %{I should#{negate} be authorized}
   visit(edit_position_url(@position))
   step %{I should#{negate} be authorized}

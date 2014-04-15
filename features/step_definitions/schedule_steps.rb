@@ -15,7 +15,8 @@ Then /^I may( not)? see the schedule$/ do |negate|
 end
 
 Then /^I may( not)? create schedules$/ do |negate|
-  Capybara.current_session.driver.submit :post, schedules_url, {}
+  Capybara.current_session.driver.submit :post, schedules_url,
+    { "schedule" => { "name" => "" } }
   step %{I should#{negate} be authorized}
   visit(new_schedule_url)
   step %{I should#{negate} be authorized}
@@ -28,7 +29,8 @@ Then /^I may( not)? create schedules$/ do |negate|
 end
 
 Then /^I may( not)? update the schedule$/ do |negate|
-  Capybara.current_session.driver.submit :put, schedule_url(@schedule), {}
+  Capybara.current_session.driver.submit :put, schedule_url(@schedule),
+    { "schedule" => { "name" => "" } }
   step %{I should#{negate} be authorized}
   visit(edit_schedule_url(@schedule))
   step %{I should#{negate} be authorized}

@@ -32,7 +32,7 @@ gem 'cornell-assemblies-branding',
 gem 'valium', :git => 'git://github.com/jayrowe/valium.git'
 gem 'bundler', '~> 1.6.0'
 group :production do
-  gem 'sass-rails'
+  gem 'sass-rails', '~> 4.0.2'
   gem 'coffee-rails'
   gem 'uglifier'
   gem 'therubyracer', '~> 0.11.4', require: 'v8'

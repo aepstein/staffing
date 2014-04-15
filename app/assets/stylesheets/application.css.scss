@@ -28,12 +28,12 @@ fieldset.cocoon {
   }
 
   .links a {
-    @extend .button;
+/*    @extend .button; */
   }
 
   .nested-fields.ui-sortable {
     fieldset {
-      border-top: solid #777 12px;
+      border-top: solid #777 12px;  
       cursor: move;
     }
   }

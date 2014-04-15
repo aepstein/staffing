@@ -69,7 +69,8 @@ Then /^I may( not)? create meetings$/ do |negate|
 end
 
 Then /^I may( not)? update the meeting$/ do |negate|
-  Capybara.current_session.driver.submit :put, meeting_url(@meeting), {}
+  Capybara.current_session.driver.submit :put, meeting_url(@meeting),
+    { "meeting" => { "starts_at" => "" } }
   step %{I should#{negate} be authorized}
   visit(edit_meeting_url(@meeting))
   step %{I should#{negate} be authorized}

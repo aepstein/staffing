@@ -201,12 +201,16 @@ Then /^I may( not)? (adopt|amend|divide|implement|merge|propose|refer|reject|res
     visit(send("#{event}_motion_path", @motion))
     step %{I should#{negate} be authorized}
   end
-  Capybara.current_session.driver.submit :put, send("#{event}_motion_url", @motion), {}
+  Capybara.current_session.driver.submit :put,
+    send("#{event}_motion_url", @motion),
+    { "motion" => { "id" => "" } }
   step %{I should#{negate} be authorized}
 end
 
 Then /^I may( not)? create motions for the committee$/ do |negate|
-  Capybara.current_session.driver.submit :post, committee_motions_url(@committee), {}
+  Capybara.current_session.driver.submit :post,
+    committee_motions_url(@committee),
+    { "motion" => { "name" => "" } }
   step %{I should#{negate} be authorized}
   visit(new_committee_motion_url(@committee))
   step %{I should#{negate} be authorized}
@@ -219,7 +223,8 @@ Then /^I may( not)? create motions for the committee$/ do |negate|
 end
 
 Then /^I may( not)? update the motion$/ do |negate|
-  Capybara.current_session.driver.submit :put, motion_url(@motion), {}
+  Capybara.current_session.driver.submit :put, motion_url(@motion),
+    { "motion" => { "name" => "" } }
   step %{I should#{negate} be authorized}
   visit(edit_motion_url(@motion))
   step %{I should#{negate} be authorized}

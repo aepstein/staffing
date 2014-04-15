@@ -15,7 +15,8 @@ Then /^I may( not)? see the quiz$/ do |negate|
 end
 
 Then /^I may( not)? create quizzes$/ do |negate|
-  Capybara.current_session.driver.submit :post, quizzes_url, {}
+  Capybara.current_session.driver.submit :post, quizzes_url,
+    { "quiz" => { "name" => "" } }
   step %{I should#{negate} be authorized}
   visit(new_quiz_url)
   step %{I should#{negate} be authorized}
@@ -28,7 +29,8 @@ Then /^I may( not)? create quizzes$/ do |negate|
 end
 
 Then /^I may( not)? update the quiz$/ do |negate|
-  Capybara.current_session.driver.submit :put, quiz_url(@quiz), {}
+  Capybara.current_session.driver.submit :put, quiz_url(@quiz),
+    { "quiz" => { "name" => "" } }
   step %{I should#{negate} be authorized}
   visit(edit_quiz_url(@quiz))
   step %{I should#{negate} be authorized}

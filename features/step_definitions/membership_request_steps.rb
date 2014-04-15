@@ -38,9 +38,11 @@ Then /^I may( not)? create membership requests for the committee$/ do |negate|
   if negate.blank?
     visit(new_committee_membership_request_url(@committee))
     step %{I should be authorized}
-    Capybara.current_session.driver.submit :post, committee_membership_requests_url(@committee), {}
+    Capybara.current_session.driver.submit :post,
+      committee_membership_requests_url(@committee),
+      { "membership_request" => { "starts_at" => "" } }
     step %{I should be authorized}
-else
+  else
     visit(new_committee_membership_request_url(@committee))
     step %{I fill in basic fields for the membership request}
     click_button 'Create'
@@ -49,7 +51,9 @@ else
 end
 
 Then /^I may( not)? update the membership request$/ do |negate|
-  Capybara.current_session.driver.submit :put, membership_request_url(@membership_request), {}
+  Capybara.current_session.driver.submit :put,
+    membership_request_url(@membership_request),
+    { "membership_request" => { "starts_at" => "" } }
   step %{I should#{negate} be authorized}
   visit(edit_membership_request_url(@membership_request))
   step %{I should#{negate} be authorized}
@@ -105,7 +109,9 @@ Then /^I may( not)? reject the membership request$/ do |negate|
   end
   visit(reject_membership_request_url(@membership_request))
   step %{I should#{negate} be authorized}
-  Capybara.current_session.driver.submit :put, reject_membership_request_url(@membership_request), {}
+  Capybara.current_session.driver.submit :put,
+    reject_membership_request_url(@membership_request),
+    {}
   step %{I should#{negate} be authorized}
 end
 

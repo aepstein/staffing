@@ -19,7 +19,9 @@ Given /^the motion is (never|no longer|still) open for comment$/ do |open|
 end
 
 Then /^I may( not)? create comments for the motion$/ do |negate|
-  Capybara.current_session.driver.submit :post, motion_motion_comments_url(@motion), {}
+  Capybara.current_session.driver.submit :post,
+    motion_motion_comments_url(@motion),
+    { "motion_comment" => { "comment" => "" } }
   step %{I should#{negate} be authorized}
   visit(new_motion_motion_comment_url(@motion))
   step %{I should#{negate} be authorized}
@@ -32,7 +34,9 @@ Then /^I may( not)? create comments for the motion$/ do |negate|
 end
 
 Then /^I may( not)? update the motion comment$/ do |negate|
-  Capybara.current_session.driver.submit :put, motion_comment_url(@motion_comment), {}
+  Capybara.current_session.driver.submit :put,
+    motion_comment_url(@motion_comment),
+    { "motion_comment" => { "comment" => "" } }
   step %{I should#{negate} be authorized}
   visit(edit_motion_comment_url(@motion_comment))
   step %{I should#{negate} be authorized}

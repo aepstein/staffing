@@ -15,7 +15,8 @@ Then /^I may( not)? see the brand$/ do |negate|
 end
 
 Then /^I may( not)? create brands$/ do |negate|
-  Capybara.current_session.driver.submit :post, brands_url, {}
+  Capybara.current_session.driver.submit :post, brands_url,
+    { "brand" => { "name" => "" } }
   step %{I should#{negate} be authorized}
   visit(new_brand_url)
   step %{I should#{negate} be authorized}
@@ -28,7 +29,8 @@ Then /^I may( not)? create brands$/ do |negate|
 end
 
 Then /^I may( not)? update the brand$/ do |negate|
-  Capybara.current_session.driver.submit :put, brand_url(@brand), {}
+  Capybara.current_session.driver.submit :put, brand_url(@brand),
+    { "brand" => { "name" => "" } }
   step %{I should#{negate} be authorized}
   visit(edit_brand_url(@brand))
   step %{I should#{negate} be authorized}

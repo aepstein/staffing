@@ -15,7 +15,8 @@ Then /^I may( not)? see the meeting template$/ do |negate|
 end
 
 Then /^I may( not)? create meeting templates$/ do |negate|
-  Capybara.current_session.driver.submit :post, meeting_templates_url, {}
+  Capybara.current_session.driver.submit :post, meeting_templates_url,
+    { "meeting_template" => { "name" => "" } }
   step %{I should#{negate} be authorized}
   visit(new_meeting_template_url)
   step %{I should#{negate} be authorized}
@@ -28,7 +29,9 @@ Then /^I may( not)? create meeting templates$/ do |negate|
 end
 
 Then /^I may( not)? update the meeting template$/ do |negate|
-  Capybara.current_session.driver.submit :put, meeting_template_url(@meeting_template), {}
+  Capybara.current_session.driver.submit :put,
+    meeting_template_url(@meeting_template),
+    { "meeting_template" => { "name" => "" } }
   step %{I should#{negate} be authorized}
   visit(edit_meeting_template_url(@meeting_template))
   step %{I should#{negate} be authorized}
