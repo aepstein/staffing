@@ -36,8 +36,9 @@ class Committee < ActiveRecord::Base
       scoped.overlap( upcoming_period.starts_at, upcoming_period.ends_at )
     end
     def tents(date)
-      out = as_of(date).assigned.includes { [ user, enrollments ] }.except(:order).
-      merge( User.unscoped.ordered ).order { enrollments.title }.
+      out = as_of(date).assigned.includes(:user, :enrollments).
+      references(:users, :enrollments).except(:order).
+      order { enrollments.title }.
       inject({}) do |memo, membership|
         memo[membership.user] ||= []
         memo[membership.user] += membership.enrollments.map(&:title)

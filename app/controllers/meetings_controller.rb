@@ -6,7 +6,7 @@ class MeetingsController < ApplicationController
     scope ||= motion.meetings if motion
     scope ||= user.meetings if user
     scope ||= committee.meetings if committee
-    scope ||= Meeting.scoped
+    scope ||= Meeting.all
     scope = case params[:action]
     when 'past', 'current', 'future'
       scope.send params[:action]

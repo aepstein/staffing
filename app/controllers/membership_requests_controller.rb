@@ -7,7 +7,7 @@ class MembershipRequestsController < ApplicationController
   expose( :context ) { authority || committee || user }
   expose :q_scope do
     scope = context.membership_requests.scoped if context
-    scope ||= MembershipRequest.scoped
+    scope ||= MembershipRequest.all
     scope = case params[:action]
     when 'expired', 'unexpired', 'active', 'inactive', 'rejected'
       scope.send params[:action]

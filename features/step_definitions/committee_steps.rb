@@ -257,7 +257,7 @@ Given /^a report scenario of a committee to which I have a (?:(current|past|futu
   create :membership, position: create( :enrollment, committee: @committee ).position
 end
 
-When /^I download the (members (?:csv|pdf)|tents pdf|emplid csv) report for the committee$/ do |type|
+When /^I download the (members (?:csv|pdf)|tents pdf|emplid pdf) report for the committee$/ do |type|
   VectorUploader.enable_processing = true
   create :brand
   VectorUploader.enable_processing = false
@@ -268,8 +268,8 @@ When /^I download the (members (?:csv|pdf)|tents pdf|emplid csv) report for the 
     visit(members_committee_url(@committee, format: :pdf))
   when 'tents pdf'
     visit(tents_committee_url(@committee, format: :pdf))
-  when 'emplid csv'
-    visit(empl_ids_committee_url(@committee, format: :csv))
+  when 'emplid pdf'
+    visit(empl_ids_committee_url(@committee, format: :pdf))
   end
 end
 

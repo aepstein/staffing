@@ -1,5 +1,5 @@
 class QuizzesController < ApplicationController
-  expose( :q_scope ) { Quiz.scoped }
+  expose( :q_scope ) { Quiz.all }
   expose( :q ) { q_scope.search( params[:term] ? { name_cont: params[:term] } : params[:q] ) }
   expose( :quizzes ) { q.result.with_permissions_to(:show).ordered.page(params[:page]) }
   expose( :quiz_attributes ) do

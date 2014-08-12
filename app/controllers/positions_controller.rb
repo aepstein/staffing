@@ -4,7 +4,7 @@ class PositionsController < ApplicationController
   expose( :context ) { committee || user }
   expose :q_scope do
     scope = context.positions if context
-    scope ||= Position.scoped
+    scope ||= Position.all
     case params[:action]
     when 'current', 'past', 'future', 'requestable'
       scope.send params[:action]

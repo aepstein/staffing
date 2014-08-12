@@ -8,9 +8,9 @@ class MembershipsController < ApplicationController
   expose( :membership_request ) { MembershipRequest.find params[:membership_request_id] if params[:membership_request_id] }
   expose( :context ) { position || committee || user || authority || membership_request }
   expose :q_scope do
-    scope = context.memberships.scoped if context
+    scope = context.memberships if context
     scope = current_user.reviewable_memberships if params[:review]
-    scope ||= Membership.scoped
+    scope ||= Membership.all
     scope = case params[:action]
     when 'renewable'
       scope.renewal_candidate.renewal_undeclined.renew_until( Time.zone.today )
@@ -228,7 +228,7 @@ class MembershipsController < ApplicationController
     CSV.generate csv_string do |csv|
       csv << [ 'first', 'last','netid','email','mobile','position','committee',
         'title','vote','period','starts at','ends at','renew until?' ]
-      q.result.all.each do |membership|
+      q.result.each do |membership|
         next unless permitted_to?( :show, membership )
         membership.enrollments.each do |enrollment|
           next if committee && (enrollment.committee_id != committee.id)

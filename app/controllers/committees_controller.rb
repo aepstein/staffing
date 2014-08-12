@@ -15,7 +15,7 @@ class CommitteesController < ApplicationController
   expose :q_scope do
     scope = user.committees.requestable if params[:action] == 'requestable'
     scope ||= user.committees.scoped if user
-    scope ||= Committee.scoped
+    scope ||= Committee.all
   end
   expose :q do
     q_scope.search( params[:term] ? { name_cont: params[:term] } : params[:q] )

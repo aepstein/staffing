@@ -60,5 +60,5 @@ Scenario Outline: Reports for committee
     |staff        |members csv|
     |staff        |members pdf|
     |staff        |tents pdf  |
-    |staff        |emplid csv |
+    |staff        |emplid pdf |
 

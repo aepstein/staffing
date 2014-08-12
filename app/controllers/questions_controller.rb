@@ -3,7 +3,7 @@ class QuestionsController < ApplicationController
   expose( :context ) { quiz }
   expose :q_scope do
     scope = context.questions if context
-    scope ||= Question.scoped
+    scope ||= Question.all
     scope.scoped
   end
   expose :q do

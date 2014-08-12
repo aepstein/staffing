@@ -14,7 +14,7 @@ class UsersController < ApplicationController
   expose( :context ) { membership || motion || committee }
   expose :q_scope do
     scope = context.users if context
-    scope ||= User.scoped
+    scope ||= User.all
     case params[:action]
     when 'allowed'
       scope.allowed

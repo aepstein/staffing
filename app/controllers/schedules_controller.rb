@@ -1,6 +1,6 @@
 class SchedulesController < ApplicationController
   expose :q_scope do
-    Schedule.scoped
+    Schedule.all
   end
   expose :q do
     q_scope.search( params[:term] ? { name_cont: params[:term] } : params[:q] )

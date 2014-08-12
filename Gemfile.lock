@@ -9,7 +9,7 @@ GIT
 
 GIT
   remote: git://github.com/aepstein/declarative_authorization.git
-  revision: d0e8720a5bc0f4367ebf5441651a690054721342
+  revision: 4920e15fedbe95597d586bbfc85786b86104d105
   branch: rails4
   specs:
     declarative_authorization (1.0.0.pre)
@@ -33,8 +33,8 @@ PATH
     cornell_assemblies_rails (0.0.4)
       bcrypt-ruby (~> 3.0)
       bluecloth (~> 2.0)
-      bootstrap-datetimepicker-rails (~> 0.0.11)
       bootstrap-sass (~> 3.1)
+      bootstrap3-datetimepicker-rails (~> 3.0)
       cocoon (~> 1.0)
       cornell_ldap (~> 1.4.3)
       cornell_netid (~> 1.1)
@@ -86,9 +86,10 @@ GEM
     blind_date (1.0.2)
       activerecord (>= 2.3.4)
     bluecloth (2.2.0)
-    bootstrap-datetimepicker-rails (0.0.11)
     bootstrap-sass (3.2.0.1)
       sass (~> 3.2)
+    bootstrap3-datetimepicker-rails (3.0.2.1)
+      momentjs-rails (>= 2.8.1)
     builder (3.1.4)
     capistrano (3.2.1)
       i18n
@@ -185,6 +186,8 @@ GEM
     mime-types (1.25.1)
     mini_portile (0.6.0)
     minitest (4.7.5)
+    momentjs-rails (2.8.1)
+      railties (>= 3.1)
     multi_json (1.10.1)
     multi_test (0.1.1)
     mysql2 (0.3.16)

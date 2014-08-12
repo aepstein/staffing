@@ -5,7 +5,7 @@ class MotionsController < ApplicationController
   expose( :context ) { meeting || user || committee }
   expose :q_scope do
     scope = context.motions if context
-    scope ||= Motion.scoped
+    scope ||= Motion.all
     case params[:action]
     when 'allowed'
       scope = scope.allowed
@@ -13,8 +13,6 @@ class MotionsController < ApplicationController
       scope = scope.send params[:action]
     when 'proposed'
       scope = scope.send :with_status, :proposed
-    else
-      scope = scope.scoped
     end
     scope = scope.where( period_id: period.id ) if period
     scope
