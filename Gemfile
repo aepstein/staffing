@@ -11,7 +11,9 @@ gem 'ancestry'
 gem 'cornell_ldap', '>= 1.3.1'
 gem 'bcrypt-ruby', '~> 3.0.0'
 gem 'state_machine'
-gem 'declarative_authorization'
+gem 'declarative_authorization',
+  git: 'git://github.com/aepstein/declarative_authorization.git',
+  branch: 'rails4'
 gem 'carrierwave'
 gem 'blind_date', '~> 1.0.2'
 gem 'acts_as_list', '~> 0.4'

@@ -5,7 +5,7 @@ class MeetingAgendaReport < AbstractCommitteeReport
   attr_accessor :meeting
   def initialize(meeting)
     self.meeting = meeting
-    super( meeting.committee, page_size: 'LETTER' )
+    super( meeting.committee )
   end
 
   def draw_meeting_section(section, position)
