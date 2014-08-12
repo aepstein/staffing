@@ -27,7 +27,7 @@ You have <%= link_to pluralize( current_user.membership_requests.unexpired.count
 </p>
 
 <p>
-You may browse <%= link_to pluralize( current_user.committees.requestable.count("committees.id", distinct: true), 'committee' ), requestable_user_committees_path( current_user ) %> for which you are eligible to request membership.
+You may browse <%= link_to pluralize( current_user.committees.requestable.distinct.count("committees.id"), 'committee' ), requestable_user_committees_path( current_user ) %> for which you are eligible to request membership.
 </p>
 
 <h4>Active Requests</h4>
