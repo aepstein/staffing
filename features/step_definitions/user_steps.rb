@@ -44,7 +44,7 @@ end
 Then /^I may( not)? create users$/ do |negate|
   Capybara.current_session.driver.submit :post, users_url,
     { "user" => { "first_name" => "" } }
-  step %{I should#{negate} be authorized
+  step %{I should#{negate} be authorized}
   visit(new_user_url)
   step %{I should#{negate} be authorized}
   visit(users_url)
