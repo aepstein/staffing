@@ -1,5 +1,6 @@
 development:
   session_secret: f09175c170734f89eb54ce2ce4a0fa4994c96f347e2ed842587dadcdcbcdd7a46de5624dd74685f8cc731e257d6cc772482a3560b878e713c6a91baf2e4e4bae
+  session_secret_key_base: 1746199963f239347ec093b4cd90ad9748ab1b88aeff5423b87cda2add280dc8faf64f6c2d236c266629cdefd21bed41ee756b8ec616e470d4c3e9f261c06345
   defaults:
     authority:
       contact_name: 'Office of the Assemblies'
@@ -17,6 +18,7 @@ development:
 
 test:
   session_secret: f09175c170734f89eb54ce2ce4a0fa4994c96f347e2ed842587dadcdcbcdd7a46de5624dd74685f8cc731e257d6cc772482a3560b878e713c6a91baf2e4e4bae
+  session_secret_key_base: 1746199963f239347ec093b4cd90ad9748ab1b88aeff5423b87cda2add280dc8faf64f6c2d236c266629cdefd21bed41ee756b8ec616e470d4c3e9f261c06345
   force_sso: false
   sso_providers:
     - name: "Cornell University NetID"
@@ -38,6 +40,7 @@ test:
 
 production:
   session_secret: f09175c170734f89eb54ce2ce4a0fa4994c96f347e2ed842587dadcdcbcdd7a46de5624dd74685f8cc731e257d6cc772482a3560b878e713c6a91baf2e4e4bae
+  session_secret_key_base: 1746199963f239347ec093b4cd90ad9748ab1b88aeff5423b87cda2add280dc8faf64f6c2d236c266629cdefd21bed41ee756b8ec616e470d4c3e9f261c06345
   defaults:
     authority:
       contact_name: 'Office of the Assemblies'
