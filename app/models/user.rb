@@ -77,7 +77,7 @@ class User < ActiveRecord::Base
     "membership_requests.starts_at <= memberships.ends_at AND " +
     "membership_requests.ends_at >= memberships.starts_at AND " +
     "memberships.ends_at >= ?", Time.zone.today ] ).
-    includes(:user).distinct },
+    includes(:user).references(:user).distinct },
     through: :authorities, source: :membership_requests
   # User has permission to review memberships that overlap with authority to staff
   has_many :reviewable_memberships, -> { where( [

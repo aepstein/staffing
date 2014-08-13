@@ -158,7 +158,7 @@ class MembershipRequest < ActiveRecord::Base
         committee.requestable_positions.
         with_statuses_mask( user.statuses_mask ).
         select { quiz_id } ) }.
-      order { [ quiz_questions.id, quiz_questions.position ] }
+      order { [ quiz_questions.quiz_id, quiz_questions.position ] }
   end
       
   def new_position_options

@@ -79,7 +79,7 @@ class Membership < ActiveRecord::Base
     unassigned.
     overlap( membership_request.starts_at, membership_request.ends_at ).
     where { |r| r.position_id.in( membership_request.requestable_positions.
-      scoped.select { id } ) }
+      scope.select { id } ) }
   }
   # Memberships that could be renewed by assigning the user to this membership:
   # * assigned
