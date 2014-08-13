@@ -1,22 +1,20 @@
 <% if current_user %>
 <%=content_tag :h1, "Welcome, #{current_user.first_name}" %>
 
-<%=content_tag :div, class: "tabbable" do %>
-  <%=content_tag :ul, class: "nav nav-tabs" do %>
-    <%=content_tag :li, content_tag(:a, "Main", href: "#main", data: { toggle: "tab" }), class: "active" %>
-    <%=content_tag :li, content_tag(:a, "Meetings", href: "#meetings", data: { toggle: "tab" }) %>
-    <%=content_tag :li, content_tag(:a, "Motions", href: "#motions", data: { toggle: "tab" }) %>
+<%=content_tag :ul, class: "nav nav-tabs" do %>
+  <%=content_tag :li, content_tag(:a, "Main", href: "#main", data: { toggle: "tab" }), class: "active" %>
+  <%=content_tag :li, content_tag(:a, "Meetings", href: "#meetings", data: { toggle: "tab" }) %>
+  <%=content_tag :li, content_tag(:a, "Motions", href: "#motions", data: { toggle: "tab" }) %>
+<% end %>
+<%=content_tag :div, class: "tab-content" do %>
+  <%=content_tag :div, class: "tab-pane active", id: "main" do %>
+    <%= render partial: "home/main" %>
   <% end %>
-  <%=content_tag :div, class: "tab-content" do %>
-    <%=content_tag :div, class: "tab-pane active", id: "main" do %>
-      <%= render partial: "home/main" %>
-    <% end %>
-    <%=content_tag :div, class: "tab-pane", id: "meetings" do %>
-      <%= render partial: "home/meetings" %>
-    <% end %>
-    <%=content_tag :div, class: "tab-pane", id: "motions" do %>
-      <%= render partial: "home/motions" %>
-    <% end %>
+  <%=content_tag :div, class: "tab-pane", id: "meetings" do %>
+    <%= render partial: "home/meetings" %>
+  <% end %>
+  <%=content_tag :div, class: "tab-pane", id: "motions" do %>
+    <%= render partial: "home/motions" %>
   <% end %>
 <% end %>
 <% else %>

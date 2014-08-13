@@ -4,18 +4,10 @@ module ControllerModules
       receiver.send :include, InstanceMethods
       receiver.send :extend, ClassMethods
       receiver.expose( :starts_at ) do
-        if params[:start] && ( sanitized = params[:start].to_i ) > 0
-          Time.zone.at sanitized
-        else
-          nil
-        end
+        params[:start].to_time if params[:start]
       end
       receiver.expose( :ends_at ) do
-        if params[:end] && ( sanitized = params[:end].to_i ) > 0
-          Time.zone.at sanitized
-        else
-          nil
-        end
+        params[:end].to_time if params[:end]
       end
       receiver.expose( :committee ) do
         Committee.find params[:committee_id] if params[:committee_id]

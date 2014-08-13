@@ -20,7 +20,6 @@ class MeetingsController < ApplicationController
     scope = scope.where { |m| m.starts_at.lt( ends_at ) } if ends_at
     scope.with_permissions_to(:show).ordered
   end
-  expose(:q) { q_scope.search params[:q] }
   expose( :meetings ) do
     q.result.page(params[:page])
   end

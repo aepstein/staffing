@@ -32,11 +32,11 @@ end
 
 When /^I go to my meetings dashboard$/ do
   visit home_path
-  within(".tabbable") { click_link "Meetings" }
+  within(".nav-tabs") { click_link "Meetings" }
 end
 
 When /^I go to my motions dashboard$/ do
   visit home_path
-  within(".tabbable") { click_link "Motions" }
+  within(".nav-tabs") { click_link "Motions" }
 end
 

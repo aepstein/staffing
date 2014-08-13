@@ -5,7 +5,7 @@ gem 'rake'
 gem 'exception_notification', '~> 4.0'
 gem 'validates_timeliness'
 gem 'gettext'
-gem 'squeel', git: 'git://github.com/activerecord-hackery/squeel'
+gem 'squeel', '~> 1.2'
 gem 'ransack'
 gem 'ancestry'
 gem 'cornell_ldap', '>= 1.3.1'
@@ -33,6 +33,8 @@ gem 'cornell-assemblies-branding',
 #  branch: '0-0-3'
 gem 'valium', :git => 'git://github.com/jayrowe/valium.git'
 gem 'bundler', '~> 1.6.0'
+gem 'fullcalendar-rails',
+  git: 'https://github.com/bokmann/fullcalendar-rails.git'
 group :production do
   gem 'sass-rails', '~> 4.0.2'
   gem 'coffee-rails'
