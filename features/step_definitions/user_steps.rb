@@ -74,9 +74,10 @@ end
 Then /^I may( not)? set renewal preferences for the user$/ do |negate|
   visit renew_user_memberships_url @user
   step %{I should#{negate} be authorized}
-  Capybara.current_session.driver.submit :put,
+  Capybara.current_session.driver.submit( :put,
     renew_user_memberships_url(@user),
-    { "user" => { "memberships_attributes" => {} } }
+    { "user" => { "renewal_checkpoint" => "0",
+      "memberships_attributes" => Hash.new } } )
   step %{I should#{negate} be authorized}
 end
 
