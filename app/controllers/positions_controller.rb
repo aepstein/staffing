@@ -9,7 +9,7 @@ class PositionsController < ApplicationController
     when 'current', 'past', 'future', 'requestable'
       scope.send params[:action]
     else
-      scope.scoped
+      scope
     end
   end
   expose( :q ) { q_scope.search( params[:term] ? { name_cont: params[:term] } : params[:q] ) }

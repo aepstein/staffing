@@ -57,9 +57,9 @@ When /^I (adopt|amend|divide|implement|merge|propose|refer|reject|restart|unamen
     Capybara.current_session.driver.submit :put, restart_motion_url(@motion), {}
   when 'unamend'
     old_motion = @motion
-    step %q{I amend the motion}
+    step %q{I amend the motion without attachment}
     @motion = Motion.find( URI.parse(current_url).path.match(/[\d]+$/)[0].to_i )
-    step %q{I reject the motion}
+    step %q{I reject the motion without attachment}
     @event = 'unamend'
   when 'withdraw'
     visit(withdraw_motion_path(@motion))

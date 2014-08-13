@@ -142,7 +142,7 @@ Scenario: List/delete a motion
 Scenario Outline: Motion events without javascript
   Given a <tense> <pub>published, <status> motion exists of <origin> origin to which I have a <relationship> relationship
   When I <event> the motion without attachment
-  Then I should see confirmation of the event on the motion without attachment
+  Then I should see confirmation of the event without attachment on the motion
   Examples:
     |relationship     |tense  |origin   |pub|status  |event    |
     |current sponsor  |current|sponsored|un |started |propose  |
