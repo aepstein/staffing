@@ -9,7 +9,7 @@ gem 'squeel', git: 'git://github.com/activerecord-hackery/squeel'
 gem 'ransack'
 gem 'ancestry'
 gem 'cornell_ldap', '>= 1.3.1'
-gem 'bcrypt-ruby', '~> 3.0.0'
+gem 'bcrypt-ruby'
 gem 'state_machine'
 gem 'declarative_authorization',
   git: 'git://github.com/aepstein/declarative_authorization.git',

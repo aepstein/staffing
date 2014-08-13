@@ -4,7 +4,8 @@
   <%=content_tag :h1, "New motion for #{context}" %>
 <% end %>
 
-<%= simple_form_for( motion, url: polymorphic_path([ context, :motions ]) ) do |f| %>
+<%= simple_form_for( motion, wrapper: :horizontal_form,
+  url: polymorphic_path([ context, :motions ]) ) do |f| %>
   <%= render partial: 'form', object: f %>
 <% end %>
 

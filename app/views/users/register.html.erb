@@ -1,6 +1,7 @@
 <%=content_tag :h1, "Register user" %>
 
-<%= simple_form_for(user, url: sso_register_path( provider: params[:provider] ),
+<%= simple_form_for(user, wrapper: :horizontal_form,
+  url: sso_register_path( provider: params[:provider] ),
   html: { multipart: true } ) do |f| %>
   <%= render partial: 'form', object: f %>
   <%= f.button :wrapped, label: 'Register',

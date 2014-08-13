@@ -1,32 +1,32 @@
 <%=content_tag :h1, "Login" %>
 
 <% if Staffing::Application.sso_providers.any? %>
-<%=content_tag :p do %>
-Log in using your single sign on identity from a supported provider:
-<% end %>
+  <%=content_tag :p do %>
+  Log in using your single sign on identity from a supported provider:
+  <% end %>
 
-<%=render partial: 'user_sessions/sso_providers',
-  object: Staffing::Application.sso_providers %>
+  <%=render partial: 'user_sessions/sso_providers',
+    object: Staffing::Application.sso_providers %>
   
-<%=content_tag :p do %>
-Alternatively, if you have a username and password unique to this service, you
-may use that local credential here:
+  <%=content_tag :p do %>
+  Alternatively, if you have a username and password unique to this service, you
+  may use that local credential here:
+  <% end %>
 <% end %>
-<% end %>
 
-<%= form_tag user_session_path, class: "form-horizontal" do %>
-  <%=content_tag :div, class: 'control-group' do %>
-    <%=label_tag :net_id, 'Net Id', class: 'control-label' %>
-    <%=content_tag :div, text_field_tag( :net_id, params[:net_id] ), class: 'controls' %>
+<%= form_tag user_session_path, class: "form-inline" do %>
+  <%=content_tag :div, class: 'form-group' do %>
+    <%=label_tag :net_id, 'Net Id', class: "sr-only" %>
+    <%=text_field_tag :net_id, params[:net_id], class: 'form-control',
+      placeholder: "Enter Username" %>
   <% end %>
 
-  <%=content_tag :div, class: 'control-group' do %>
-    <%=label_tag :password, 'Password', class: 'control-label' %>
-    <%=content_tag :div, password_field_tag( :password ), class: 'controls' %>
+  <%=content_tag :div, class: 'form-group' do %>
+    <%=label_tag :password, 'Password', class: "sr-only" %>
+    <%=password_field_tag :password, "", class: 'form-control',
+      placeholder: "Enter Password" %>
   <% end %>
 
-  <%=content_tag :div, class: 'form-actions' do %>
-    <%=button_tag "Log in", type: 'submit', class: 'btn btn-primary' %>
-  <% end %>
+  <%=button_tag "Log in", type: 'submit', class: 'btn btn-default' %>
 <% end %>
 

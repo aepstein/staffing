@@ -10,7 +10,7 @@ Use this form to merge the motion to another motion proposed before the same com
 
 <%=content_tag :h2, "Motion to which it will be merged" %>
 
-<%= simple_form_for( motion_merger, as: :motion_merger,
+<%= simple_form_for( motion_merger, wrapper: :horizontal_form, as: :motion_merger,
   url: merge_motion_path( motion_merger.merged_motion ),
   method: :put ) do |form| %>
 

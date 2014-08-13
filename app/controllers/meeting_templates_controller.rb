@@ -1,5 +1,5 @@
 class MeetingTemplatesController < ApplicationController
-  expose( :q_scope ) { MeetingTemplate.scoped }
+  expose( :q_scope ) { MeetingTemplate.all }
   expose( :search ) { params[:term] ? { name_cont: params[:term] } : params[:q] }
   expose( :q ) { q_scope.search( search ) }
   expose( :meeting_templates ) { q.result.ordered.page(params[:page]) }

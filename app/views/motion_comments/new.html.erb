@@ -1,6 +1,7 @@
 <h1>New comment for <%= motion_comment.motion %></h1>
 
-<%= simple_form_for( motion_comment, url: motion_motion_comments_path(motion_comment.motion),
+<%= simple_form_for( motion_comment, wrapper: :horizontal_form,
+  url: motion_motion_comments_path(motion_comment.motion),
   html: { multipart: true } ) do |f| %>
   <%= render partial: 'form', object: f %>
 <% end %>

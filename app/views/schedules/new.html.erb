@@ -1,6 +1,6 @@
 <%=content_tag :h1, "New schedule" %>
 
-<%= simple_form_for(schedule) do |f| %>
+<%= simple_form_for(schedule, wrapper: :horizontal_form) do |f| %>
   <%= render partial: 'form', object: f %>
 <% end %>
 

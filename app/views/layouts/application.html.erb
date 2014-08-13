@@ -40,19 +40,19 @@
 
 <hr class="banner-separator" />
 
-<div class="navbar navbar-inverse">
-  <div class="navbar-inner">
-    <div class="container">
-      <a class="btn btn-navbar" data-toggle="collapse" data-target=".nav-collapse">
-        <span class="icon-bar"></span>
-        <span class="icon-bar"></span>
-        <span class="icon-bar"></span>
-      </a>
-      <a class="brand" href="#">Shared Governance</a>
-      <div class="nav-collapse collapse">
-      <%= tabs %>
-      </div><!--/.nav-collapse -->
-    </div>
+<div class="navbar navbar-inverse" role="navigation">
+  <div class="container">
+    <button type="button" class="navbar-toggle" data-toggle="collapse" 
+      data-target=".navbar-collapse">
+      <span class="sr-only">Toggle navigation</span>
+      <span class="icon-bar"></span>
+      <span class="icon-bar"></span>
+      <span class="icon-bar"></span>
+    </button>
+    <a class="navbar-brand" href="#">Shared Governance</a>
+    <div class="collapse navbar-collapse">
+    <%= tabs %>
+    </div><!--/.navbar-collapse -->
   </div>
 </div>
 

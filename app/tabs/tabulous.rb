@@ -170,7 +170,7 @@ Tabulous.setup do
   customize do
     active_tab_clickable true
     when_action_has_no_tab :raise_error
-    renderer :bootstrap_pill
+    renderer :bootstrap_navbar
   end
 end
 

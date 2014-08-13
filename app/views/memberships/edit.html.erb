@@ -1,6 +1,6 @@
 <h2>Editing membership for <%=h membership.position %></h2>
 
-<%= simple_form_for(membership) do |f| %>
+<%= simple_form_for(membership, wrapper: :horizontal_form) do |f| %>
   <%= render partial: 'form', object: f %>
 <% end %>
 

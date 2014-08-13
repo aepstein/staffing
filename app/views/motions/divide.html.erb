@@ -8,7 +8,8 @@
 <%= render partial: 'motions/detail', locals: { motion: motion } %>
 
 <%= content_tag( :div, id: "referred_motions" ) do %>
-  <%= simple_form_for( motion, url: divide_motion_path( motion ),
+  <%= simple_form_for( motion, wrapper: :horizontal_form,
+    url: divide_motion_path( motion ),
     method: :put ) do |form| %>
   <%= form.simple_fields_for :motion_events,
     form.object.motion_events.populate_for( 'divide' ) do |subform| %>

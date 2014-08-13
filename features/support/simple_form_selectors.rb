@@ -1,13 +1,13 @@
 Capybara.add_selector(:control_group) do
   xpath do |content|
-    XPath.descendant(:*)[ XPath.attr(:class).contains( "control-group" ) &
+    XPath.descendant(:*)[ XPath.attr(:class).contains( "form-group" ) &
     XPath.child(:label)[XPath.string.n.equals(content)] ]
   end
 end
 
 Capybara.add_selector(:control_group_containing) do
   xpath do |content|
-    XPath.descendant(:*)[ XPath.attr(:class).contains( "control-group" ) &
+    XPath.descendant(:*)[ XPath.attr(:class).contains( "form-group" ) &
     XPath.child(:label)[XPath.string.n.contains(content)] ]
   end
 end

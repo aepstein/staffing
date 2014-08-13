@@ -2,9 +2,12 @@
 
 <p>Use this page to generate an email notice on your behalf to a recipient with the agenda and attachments for the meeting.</p>
 
-<%= simple_form_for meeting, url: publish_meeting_path(meeting), method: :put do |form| %>
-  <%= form.input :publish_to, label: 'To', hint: 'To what address will this be published?' %>
-  <%= form.input :publish_note, as: :text, label: 'Note', hint: 'Provide a custom note at the top of the message.' %>
+<%= simple_form_for meeting, wrapper: :horizontal_form,
+  url: publish_meeting_path(meeting), method: :put do |form| %>
+  <%= form.input :publish_to, label: 'To',
+    hint: 'To what address will this be published?' %>
+  <%= form.input :publish_note, as: :text, label: 'Note',
+    hint: 'Provide a custom note at the top of the message.' %>
 
   <%= form.button :wrapped, label: 'Publish', cancel: meeting_path(form.object) %>
 <% end %>

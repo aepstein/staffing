@@ -1,6 +1,6 @@
 <%=content_tag :h1, "Edit #{motion.to_s :full}" %>
 
-<%= simple_form_for(motion) do |f| %>
+<%= simple_form_for(motion, wrapper: :horizontal_form) do |f| %>
   <%= render partial: 'form', object: f %>
 <% end %>
 

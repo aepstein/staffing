@@ -5,7 +5,7 @@
   The motion will be yanked from any future meetings for which it is scheduled.
 <% end %>
 
-<%= simple_form_for motion, as: :motion,
+<%= simple_form_for motion, wrapper: :horizontal_form, as: :motion,
   url: withdraw_motion_path( motion ), method: :put do |form| %>
   <%= render "shared/error_messages", target: form.object %>
   <%= form.simple_fields_for :motion_events,

@@ -1,6 +1,6 @@
 <h1>Editing meeting template</h1>
 
-<%= simple_form_for(meeting_template) do |f| %>
+<%= simple_form_for(meeting_template, wrapper: :horizontal_form) do |f| %>
   <%= render partial: 'form', object: f %>
 <% end %>
 

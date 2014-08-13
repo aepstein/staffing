@@ -6,11 +6,12 @@ Use this form to decline renewal of the membership described below.
 
 <%= render partial: 'memberships/detail', locals: { membership: membership } %>
 
-<%= simple_form_for(membership, as: :membership,
+<%= simple_form_for(membership, wrapper: :horizontal_form, as: :membership,
   url: decline_membership_path( membership ), method: :put ) do |form| %>
   <%= render "shared/error_messages", target: form.object %>
   <%= form.input :decline_comment, label: 'Comment',
     hint: 'Include a brief explanation for why renewal is being declined.' %>
-  <%= form.button :button, 'Decline Renewal' %> or <%=link_to "Cancel", membership_path(membership) %>
+  <%= form.button :button, 'Decline Renewal' %> or 
+  <%=link_to "Cancel", membership_path(membership) %>
 <% end %>
 

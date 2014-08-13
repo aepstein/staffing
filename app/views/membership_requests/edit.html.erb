@@ -1,6 +1,7 @@
 <%=content_tag :h1, "Edit #{membership_request}" %>
 
-<%= simple_form_for(membership_request, html: { multipart: true }) do |f| %>
+<%= simple_form_for(membership_request, wrapper: :horizontal_form,
+  html: { multipart: true }) do |f| %>
   <%= render partial: 'form', object: f %>
 <% end %>
 

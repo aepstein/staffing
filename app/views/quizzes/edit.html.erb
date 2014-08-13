@@ -1,6 +1,6 @@
 <%=content_tag :h1, "Edit quiz #{quiz}" %>
 
-<%= simple_form_for(quiz) do |f| %>
+<%= simple_form_for(quiz, wrapper: :horizontal_form) do |f| %>
   <%= render partial: 'form', object: f %>
 <% end %>
 
