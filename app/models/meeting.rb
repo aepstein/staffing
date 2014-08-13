@@ -6,6 +6,7 @@ class Meeting < ActiveRecord::Base
   belongs_to :committee, inverse_of: :meetings
   belongs_to :period, inverse_of: :meetings
 
+  has_many :enrollments, through: :committee
   has_many :meeting_sections, inverse_of: :meeting, dependent: :destroy do
     def populate
       return unless template && length == 0

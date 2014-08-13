@@ -9,7 +9,7 @@ GIT
 
 GIT
   remote: git://github.com/aepstein/declarative_authorization.git
-  revision: 4920e15fedbe95597d586bbfc85786b86104d105
+  revision: 4bbf62072753ed03512777fece72f30752d7d7be
   branch: rails4
   specs:
     declarative_authorization (1.0.0.pre)
