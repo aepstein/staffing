@@ -106,6 +106,10 @@ GEM
       rack (>= 1.0.0)
       rack-test (>= 0.5.4)
       xpath (~> 2.0)
+    capybara-screenshot (0.3.21)
+      capybara (>= 1.0, < 3)
+      colorize
+      launchy
     carrierwave (0.10.0)
       activemodel (>= 3.2.0)
       activesupport (>= 3.2.0)
@@ -332,6 +336,7 @@ DEPENDENCIES
   bundler (~> 1.6.0)
   capistrano-rails
   capybara (~> 2.0)
+  capybara-screenshot
   carrierwave
   coffee-rails
   cornell-assemblies-branding!

@@ -190,6 +190,7 @@ Then /^I should( not)? see the modifier error message$/ do |negate|
     within(".error_messages") { page.should have_text "must have authority to modify the position between" }
   else
     @membership = Membership.find( URI.parse(current_url).path.match(/[\d]+$/)[0].to_i )
+    screenshot_and_open_image
     within('.alert') { page.should have_text('Membership created.') }
   end
 end

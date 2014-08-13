@@ -61,6 +61,7 @@ group :test do
   gem 'cucumber-rails', require: false
   gem 'database_cleaner', require: false
   gem 'capybara', '~> 2.0'
+  gem 'capybara-screenshot'
   gem 'factory_girl_rails', '~> 3.0', require: false
   gem 'launchy'
 end
