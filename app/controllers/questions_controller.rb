@@ -4,7 +4,7 @@ class QuestionsController < ApplicationController
   expose :q_scope do
     scope = context.questions if context
     scope ||= Question.all
-    scope.scoped
+    scope
   end
   expose :q do
     q_scope.search( params[:term] ? { name_cont: params[:term] } : params[:q] )

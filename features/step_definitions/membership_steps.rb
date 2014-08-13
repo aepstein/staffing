@@ -385,9 +385,9 @@ end
 Then /^I may( not)? renew the membership$/ do |negate|
   visit renew_user_memberships_url @membership.user
   if negate.blank?
-    page.should have_selector "#membership-#{@membership.id}"
+    page.should have_control_group "#{@membership.position.name}"
   else
-    page.should have_no_selector "#membership-#{@membership.id}"
+    page.should have_no_control_group "#{@membership.position.name}"
   end
 end
 

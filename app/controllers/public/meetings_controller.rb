@@ -3,7 +3,7 @@ module Public
     include ControllerModules::MeetingsController
     expose :q_scope do
       scope ||= committee.meetings if committee
-      scope ||= Meeting.scoped
+      scope ||= Meeting.all
       scope = scope.where { |m| m.starts_at.gte( e_starts ) }
       scope = scope.where { |m| m.starts_at.lte( e_ends ) }
       scope

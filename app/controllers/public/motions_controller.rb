@@ -3,7 +3,7 @@ module Public
     include ControllerModules::MotionsController
     expose :q_scope do
       scope ||= committee.motions if committee
-      scope ||= Motion.scoped
+      scope ||= Motion.all
       scope = if period
         scope.where { |m| m.period_id.eq( period.id ) }
       else
