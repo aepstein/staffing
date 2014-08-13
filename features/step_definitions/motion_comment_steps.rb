@@ -122,7 +122,6 @@ When /^I download the comments pdf report for the motion$/ do
 end
 
 Then /^I should( not)? see the comments report$/ do |negate|
-#  save_and_open_page
   if negate.blank?
     page.response_headers["Content-Disposition"].should eql "inline; filename=\"comments-#{@motion.to_s :file}.pdf\""
   else
