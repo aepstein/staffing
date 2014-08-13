@@ -1,4 +1,6 @@
 class Designee < ActiveRecord::Base
+  include UserNameLookup
+  
   PERMITTED_ATTRIBUTES = [ :id, :_destroy, :committee_id, :user_id, :user_name ]
   attr_readonly :committee_id
 
@@ -18,20 +20,6 @@ class Designee < ActiveRecord::Base
       except(:order).include?( membership.position ) )
       errors.add :committee, "has no designable positions corresponding to this membership"
     end
-  end
-
-  def user_name=(name)
-    if name.to_net_ids.empty?
-      self.user = User.find_by_net_id name[/\(([^\s]*)\)/,1]
-    else
-      self.user = User.find_or_create_by_net_id name.to_net_ids.first
-    end
-    self.user = nil if user && user.id.nil?
-  end
-
-  def user_name
-    return unless user
-    "#{user.name} (#{user.net_id})"
   end
 end
 

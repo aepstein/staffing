@@ -21,7 +21,7 @@ class UsersController < ApplicationController
     when 'staff', 'admin'
       scope.where( params[:action].to_sym => true )
     else
-      scope.scoped
+      scope
     end
   end
   expose( :q ) { q_scope.search( params[:term] ? { name_cont: params[:term] } : params[:q] ) }

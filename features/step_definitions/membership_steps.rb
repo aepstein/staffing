@@ -346,14 +346,14 @@ end
 
 When /^I fill in (a|no) renewal for the membership$/ do |v|
   visit renew_user_memberships_path( @membership.user )
-  within("#membership-#{@membership.id}") do
-    fill_in "#{@membership.position}",
-      with: ( v == 'a' ? ( @membership.ends_at + 1.year ).to_formatted_s(:db) : '' )
-  end
+  fill_in "#{@membership.position.name}",
+    with: ( v == 'a' ? ( @membership.ends_at + 1.year ).to_formatted_s(:db) : '' )
 end
 
 When /^I submit renewals with renotification (en|dis)abled$/ do |renotify|
-  select( ( renotify == 'en' ? "Yes" : "No" ), from: "Notify again?" )
+  within_control_group "Notify again?" do
+    choose( renotify == 'en' ? "Yes" : "No" )
+  end
   click_button 'Update renewals'
 end
 

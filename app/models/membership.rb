@@ -21,7 +21,8 @@ class Membership < ActiveRecord::Base
     inverse_of: :renewed_by_membership, foreign_key: :renewed_by_membership_id,
     dependent: :nullify do
     def candidates
-      Membership.unscoped.includes(:user).renewable_to( proxy_association.owner ).
+      Membership.unscoped.includes(:user).references(:user).
+      renewable_to( proxy_association.owner ).
       merge( User.unscoped.ordered )
     end
   end
