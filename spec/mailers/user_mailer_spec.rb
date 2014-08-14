@@ -1,6 +1,6 @@
 require "spec_helper"
 
-describe UserMailer do
+describe UserMailer, :type => :mailer do
   include MailerSpecHelpers
   let(:position) { create(:position, name: 'Important Position', renewable: true) }
   let (:membership) { create(:membership, position: position) }
@@ -9,9 +9,9 @@ describe UserMailer do
     let(:mail) { UserMailer.renew_notice( membership.user ) }
 
     it "has correct headers" do
-      mail.subject.should eq "Your action is required to renew committee memberships"
-      mail.to.should eq([membership.user.email])
-      mail.from.should eq(["info@example.org"])
+      expect(mail.subject).to eq "Your action is required to renew committee memberships"
+      expect(mail.to).to eq([membership.user.email])
+      expect(mail.from).to eq(["info@example.org"])
     end
 
     it "renders the correct messages in the body with unconfirmed membership" do

@@ -1,6 +1,6 @@
 require 'spec_helper'
 
-describe MembershipRequest do
+describe MembershipRequest, :type => :model do
   let(:membership_request) { build(:membership_request) }
 
   it "should create a new instance given valid attributes" do
@@ -9,27 +9,27 @@ describe MembershipRequest do
 
   it 'should not save without a start date' do
     membership_request.starts_at = nil
-    membership_request.save.should be_false
+    expect(membership_request.save).to be false
   end
 
   it 'should not save without an end date' do
     membership_request.ends_at = nil
-    membership_request.save.should be_false
+    expect(membership_request.save).to be false
   end
 
   it 'should not save with an end date that is before the start date' do
     membership_request.ends_at = membership_request.starts_at
-    membership_request.save.should be_false
+    expect(membership_request.save).to be false
   end
 
   it 'should not save without a committee' do
     membership_request.committee = nil
-    membership_request.save.should be_false
+    expect(membership_request.save).to be false
   end
 
   it  'should not save without a user' do
     membership_request.user = nil
-    membership_request.save.should be_false
+    expect(membership_request.save).to be false
   end
 
   it  'should not save a duplicate for certain user and committee' do
@@ -37,7 +37,7 @@ describe MembershipRequest do
     duplicate = build(:membership_request)
     duplicate.user = membership_request.user
     duplicate.committee = membership_request.committee
-    duplicate.save.should be_false
+    expect(duplicate.save).to be false
   end
 
   it 'should not create if for a committee and the user does not meet status requirements of the requestable positions for that committee' do
@@ -45,8 +45,8 @@ describe MembershipRequest do
     position.statuses = %w( undergrad )
     position.save!
 #    membership_request = build(:membership_request, committee: committee)
-    membership_request.user.statuses.should_not include 'undergrad'
-    membership_request.save.should be_false
+    expect(membership_request.user.statuses).not_to include 'undergrad'
+    expect(membership_request.save).to be false
   end
 
   it  'should have a questions method that returns only questions in the quiz of requestable if it is a position' do
@@ -55,13 +55,13 @@ describe MembershipRequest do
       question: allowed, position: 1 )
     membership_request.save!
     unallowed = create(:question)
-    membership_request.questions.size.should eql 1
-    membership_request.questions.should include allowed
+    expect(membership_request.questions.size).to eql 1
+    expect(membership_request.questions).to include allowed
   end
 
   it  'should have an questions method that returns only questions in the quiz of allowed positions of associated committee' do
     user = create(:user, :status => 'undergrad')
-    user.status.should eql 'undergrad'
+    expect(user.status).to eql 'undergrad'
 
     allowed = create(:question, :name => 'allowed')
     unallowed = create(:question, :name => 'unallowed')
@@ -89,10 +89,10 @@ describe MembershipRequest do
 
     questions_request = build(:membership_request, committee: committee, user: user)
     q = questions_request.questions
-    q.length.should eql 1
-    q.should include allowed
+    expect(q.length).to eql 1
+    expect(q).to include allowed
     membership_request.save!
-    membership_request.questions.length.should eql 0
+    expect(membership_request.questions.length).to eql 0
   end
 
   it  'should have answers.populate that populates answers for questions not yet built' do
@@ -125,34 +125,34 @@ describe MembershipRequest do
       position: create(:position, quiz: full_quiz), requestable: true).committee )
     a = membership_request.answers.build
     a.question = unanswered_local
-    membership_request.answers.send(:populated_question_ids).size.should eql 1
-    membership_request.answers.send(:populated_question_ids).should include unanswered_local.id
+    expect(membership_request.answers.send(:populated_question_ids).size).to eql 1
+    expect(membership_request.answers.send(:populated_question_ids)).to include unanswered_local.id
     answers = membership_request.answers.populate
-    answers.length.should eql 3
+    expect(answers.length).to eql 3
     question_ids = answers.map { |answer| answer.question_id }
-    question_ids.should include unanswered_global.id
-    question_ids.should include answered_local.id
-    question_ids.should include answered_global.id
+    expect(question_ids).to include unanswered_global.id
+    expect(question_ids).to include answered_local.id
+    expect(question_ids).to include answered_global.id
     qa = membership_request.answers.inject({}) do |memo, answer|
       memo[answer.question] = answer.content
       memo
     end
-    qa[unanswered_local].blank?.should be_true
-    qa[unanswered_global].blank?.should be_true
-    qa[answered_local].blank?.should be_true
-    qa[answered_global].should eql 'most recent answer'
+    expect(qa[unanswered_local].blank?).to be true
+    expect(qa[unanswered_global].blank?).to be true
+    expect(qa[answered_local].blank?).to be true
+    expect(qa[answered_global]).to eql 'most recent answer'
   end
 
   it  'should have a expired and unexpired scopes' do
     older = create(:expired_membership_request)
     old = create(:expired_membership_request, :ends_at => Date.today)
     membership_request.save!
-    membership_request.ends_at.should > Date.today
-    MembershipRequest.expired.length.should eql 2
-    MembershipRequest.expired.should include older
-    MembershipRequest.expired.should include old
-    MembershipRequest.unexpired.length.should eql 1
-    MembershipRequest.unexpired.should include membership_request
+    expect(membership_request.ends_at).to be > Date.today
+    expect(MembershipRequest.expired.length).to eql 2
+    expect(MembershipRequest.expired).to include older
+    expect(MembershipRequest.expired).to include old
+    expect(MembershipRequest.unexpired.length).to eql 1
+    expect(MembershipRequest.unexpired).to include membership_request
   end
 
   it  'should claim unrequested memberships that the membership_request could apply to' do
@@ -160,9 +160,9 @@ describe MembershipRequest do
     r = build(:membership_request, user: m.user)
     create(:enrollment, requestable: true, position: m.position, committee: r.committee)
 #    r.stub!(:position_ids).and_return([m.position_id])
-    r.save.should be_true
-    r.memberships.size.should eql 1
-    r.memberships.should include m
+    expect(r.save).to be true
+    expect(r.memberships.size).to eql 1
+    expect(r.memberships).to include m
   end
 
   context 'rejection' do
@@ -173,7 +173,7 @@ describe MembershipRequest do
       enrollment = create(:enrollment)
       @authority = membership_request.authorities.first
       @authority.committee = enrollment.committee
-      @authority.save.should be_true
+      expect(@authority.save).to be true
       membership = create(:membership, :position => enrollment.position, :user => @authorized )
       @unauthorized = create(:user)
       membership_request.rejected_by_user = @admin
@@ -192,32 +192,32 @@ describe MembershipRequest do
 
     it  'should not save with valid parameters from unauthorized user for the authority' do
       membership_request.rejected_by_user = @unauthorized
-      membership_request.reject.should be_false
+      expect(membership_request.reject).to be false
     end
 
     it  'should not save if rejected without a comment' do
       membership_request.rejection_comment = nil
-      membership_request.reject.should be_false
+      expect(membership_request.reject).to be false
     end
 
     it  'should have an unreject method that removes rejection status' do
       membership_request.reject!
-      membership_request.reactivate.should be_true
-      membership_request.rejected?.should be_false
+      expect(membership_request.reactivate).to be true
+      expect(membership_request.rejected?).to be false
     end
 
     it  'should have a send_reject_notice! method which sends a rejection notice and saves' do
       membership_request.reject!
       membership_request.send_reject_notice!
       membership_request.association(:notices).reset
-      membership_request.notices.for_event('reject').should_not be_empty
+      expect(membership_request.notices.for_event('reject')).not_to be_empty
     end
 
     it 'should have a reject_notice_pending scope' do
       membership_request.reject!
-      MembershipRequest.reject_notice_pending.length.should eql 1
+      expect(MembershipRequest.reject_notice_pending.length).to eql 1
       membership_request.send_reject_notice!
-      MembershipRequest.reject_notice_pending.length.should eql 0
+      expect(MembershipRequest.reject_notice_pending.length).to eql 0
     end
   end
 
@@ -249,7 +249,7 @@ describe MembershipRequest do
     position.reload
     create(:period, schedule: position.schedule)
     membership = position.memberships.first
-    membership.position_id.should eql position.id
+    expect(membership.position_id).to eql position.id
     if params[:membership_request_expired]
       membership_request.ends_at = membership.starts_at - 1.day
       membership_request.starts_at = membership_request.ends_at - 1.year
@@ -263,10 +263,10 @@ describe MembershipRequest do
 #    scope = MembershipRequest.joins(:user).interested_in( membership ).uniq
     scope = membership.membership_requests.overlapping
     if params[:success]
-      scope.length.should eql 1
-      scope.should include membership_request
+      expect(scope.length).to eql 1
+      expect(scope).to include membership_request
     else
-      scope.length.should eql 0
+      expect(scope.length).to eql 0
     end
   end
 

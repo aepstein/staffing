@@ -1,6 +1,6 @@
 require "spec_helper"
 
-describe MembershipRequestMailer do
+describe MembershipRequestMailer, :type => :mailer do
   include MailerSpecHelpers
   let(:position) { create( :position,
     name: 'Interesting Position',
@@ -15,7 +15,7 @@ describe MembershipRequestMailer do
   let(:membership_request) { create(:membership_request, committee: enrollment.committee) }
 
   def should_be_to_requestor
-      mail.to.should eq([membership_request.user.email])
+      expect(mail.to).to eq([membership_request.user.email])
   end
 
   describe "reject" do
@@ -28,9 +28,9 @@ describe MembershipRequestMailer do
     let(:mail) { MembershipRequestMailer.reject_notice( membership_request ) }
 
     it "has correct headers" do
-      mail.subject.should eq "Your request for appointment to #{membership_request.committee} was declined"
+      expect(mail.subject).to eq "Your request for appointment to #{membership_request.committee} was declined"
       should_be_to_requestor
-      mail.from.should eq(["madison@example.com"])
+      expect(mail.from).to eq(["madison@example.com"])
     end
 
     it "renders the correct messages in the body" do
@@ -55,9 +55,9 @@ EOS
     let(:mail) { MembershipRequestMailer.close_notice( membership_request ) }
 
     it "has correct headers" do
-      mail.subject.should eq "Your request for appointment to #{membership_request.committee} was approved"
+      expect(mail.subject).to eq "Your request for appointment to #{membership_request.committee} was approved"
       should_be_to_requestor
-      mail.from.should eq(["info@example.org"])
+      expect(mail.from).to eq(["info@example.org"])
     end
 
     it "renders the correct messages in the body with no memberships" do

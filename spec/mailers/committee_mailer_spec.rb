@@ -1,6 +1,6 @@
 require "spec_helper"
 
-describe MeetingMailer do
+describe MeetingMailer, :type => :mailer do
   include MailerSpecHelpers
   let(:motion) { create :motion }
   let(:committee) { motion.committee }
@@ -15,9 +15,9 @@ describe MeetingMailer do
     
     it "renders all the components" do
       motion.propose!
-      mail.subject.should eq "#{committee.name} must meet"
-      mail.to.should include vicechair.email
-      mail.from.should include committee.effective_contact_email
+      expect(mail.subject).to eq "#{committee.name} must meet"
+      expect(mail.to).to include vicechair.email
+      expect(mail.from).to include committee.effective_contact_email
       both_parts_should_match "Dear #{vicechair.first_name},"
       both_parts_should_match "#{committee.name} has not met since the current session began on #{committee.schedule.periods.active.to_s :long_ordinal}."
       both_parts_should_match "The following motions have been proposed and are awaiting discussion and action:"

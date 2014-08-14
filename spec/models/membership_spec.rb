@@ -1,6 +1,6 @@
 require 'spec_helper'
 
-describe Membership do
+describe Membership, :type => :model do
   let(:membership) { build(:membership) }
 
   context 'validation' do
@@ -24,37 +24,37 @@ describe Membership do
 
     it 'should not save without a period' do
       membership.period = nil
-      membership.save.should be_false
+      expect(membership.save).to be false
     end
 
     it 'should not save without a position' do
       membership.position = nil
-      membership.save.should be_false
+      expect(membership.save).to be false
     end
 
     it 'should not save without a start date' do
       membership.starts_at = nil
-      membership.save.should be_false
+      expect(membership.save).to be false
     end
 
     it 'should not save with a start date before the period start date' do
       membership.starts_at = (membership.period.starts_at - 1.day)
-      membership.save.should be_false
+      expect(membership.save).to be false
     end
 
     it 'should not save without an end date' do
       membership.ends_at = nil
-      membership.save.should be_false
+      expect(membership.save).to be false
     end
 
     it 'should not save with an end date that is after the period end date' do
       membership.ends_at = (membership.period.ends_at + 1.day)
-      membership.save.should be_false
+      expect(membership.save).to be false
     end
 
     it 'should not save with an end date that is before the start date' do
       membership.ends_at = (membership.starts_at - 1.day)
-      membership.save.should be_false
+      expect(membership.save).to be false
     end
 
     it 'should not save with a duplicate user/position/period' do
@@ -62,12 +62,12 @@ describe Membership do
       membership.position.update_attribute :slots, 2
       duplicate = build( :membership, user: membership.user,
         period: membership.period, position: membership.position )
-      duplicate.save.should be_false
+      expect(duplicate.save).to be false
     end
 
     it 'should not save with an invalid renew_until value' do
       membership.renew_until = membership.ends_at
-      membership.save.should be_false
+      expect(membership.save).to be false
     end
 
     it "should not save if it exceeds concurrent counts" do
@@ -75,7 +75,7 @@ describe Membership do
       conflict = build( :membership, position: membership.position,
         period: membership.period, starts_at: membership.starts_at + 1.day,
         ends_at: membership.ends_at - 1.day )
-      conflict.save.should be_false
+      expect(conflict.save).to be false
     end
 
     it "should save with a valid modifier" do
@@ -86,14 +86,14 @@ describe Membership do
     it "should not save with a non-overlapping early modifier" do
       modifier_membership.update_column :ends_at, ( membership.starts_at - 1.day )
       membership.modifier = modifier
-      membership.save.should be_false
+      expect(membership.save).to be false
     end
 
     it "should not save with a non-overlapping late modifier" do
       modifier_membership.update_column :starts_at, ( membership.ends_at + 1.day )
       modifier_membership.save!
       membership.modifier = modifier
-      membership.save.should be_false
+      expect(membership.save).to be false
     end
 
   end
@@ -106,9 +106,9 @@ describe Membership do
     it "should reset renewal preferences on user changes" do
       membership.user = create(:user)
       membership.save!
-      membership.renew_until.should be_nil
-      membership.renewed_by_membership.should be_nil
-      membership.renewal_confirmed_at.should be_nil
+      expect(membership.renew_until).to be_nil
+      expect(membership.renewed_by_membership).to be_nil
+      expect(membership.renewal_confirmed_at).to be_nil
     end
   end
 
@@ -124,17 +124,17 @@ describe Membership do
 
     it "should return requested committee if membership fulfills request" do
       membership_request
-      membership.description.should eq membership_request.committee.name
+      expect(membership.description).to eq membership_request.committee.name
     end
 
     it "should return first requestable committee if requestable" do
       committee
       membership.reload
-      membership.description.should eq committee.name
+      expect(membership.description).to eq committee.name
     end
 
     it "should return position name if no requestable committee associated" do
-      membership.description.should eq membership.position.name
+      expect(membership.description).to eq membership.position.name
     end
   end
 
@@ -144,8 +144,8 @@ describe Membership do
       ends_at: Time.zone.today + 2.days }
 
     it "should include/exclude qualifying membership" do
-      Membership.ends_within(1.week).should include membership
-      Membership.ends_within(1.day).should_not include membership
+      expect(Membership.ends_within(1.week)).to include membership
+      expect(Membership.ends_within(1.day)).not_to include membership
     end
 
   end
@@ -157,38 +157,38 @@ describe Membership do
     let(:future) { create(:future_membership) }
 
     it "past should return only past" do
-      Membership.past.should include past
-      Membership.past.should_not include current, future
+      expect(Membership.past).to include past
+      expect(Membership.past).not_to include current, future
     end
 
     it "current should include only current" do
-      Membership.current.should include current
-      Membership.current.should_not include past, future
+      expect(Membership.current).to include current
+      expect(Membership.current).not_to include past, future
     end
 
     it "future should include only future" do
-      Membership.future.should include future
-      Membership.future.should_not include current, past
+      expect(Membership.future).to include future
+      expect(Membership.future).not_to include current, past
     end
 
     it "current_or_future should include current and future only" do
-      Membership.current_or_future.should include current, future
-      Membership.current_or_future.should_not include past
+      expect(Membership.current_or_future).to include current, future
+      expect(Membership.current_or_future).not_to include past
     end
 
     it "as_of today should include only current" do
-      Membership.as_of(Time.zone.today).should include current
-      Membership.as_of(Time.zone.today).should_not include past, future
+      expect(Membership.as_of(Time.zone.today)).to include current
+      expect(Membership.as_of(Time.zone.today)).not_to include past, future
     end
 
     it "overlap(current.ends_at, future.starts_at) should include current, future only" do
-      Membership.overlap(current.ends_at,future.starts_at).should include current, future
-      Membership.overlap(current.ends_at,future.starts_at).should_not include past
+      expect(Membership.overlap(current.ends_at,future.starts_at)).to include current, future
+      expect(Membership.overlap(current.ends_at,future.starts_at)).not_to include past
     end
 
     it "no_overlap(current.ends_at, future.starts_at) should include past only" do
-      Membership.no_overlap(current.ends_at,future.starts_at).should include past
-      Membership.no_overlap(current.ends_at,future.starts_at).should_not include current, future
+      expect(Membership.no_overlap(current.ends_at,future.starts_at)).to include past
+      expect(Membership.no_overlap(current.ends_at,future.starts_at)).not_to include current, future
     end
   end
 
@@ -197,12 +197,12 @@ describe Membership do
       renew_until: Time.zone.today + 1.week }
 
     it "should include qualifying membership" do
-      Membership.renew_until( Time.zone.today ).should include membership
-      Membership.renew_until( Time.zone.today + 1.month ).should_not include membership
+      expect(Membership.renew_until( Time.zone.today )).to include membership
+      expect(Membership.renew_until( Time.zone.today + 1.month )).not_to include membership
     end
 
     it "should be called with Time.zone.today by renew_active" do
-      Membership.should_receive( :renew_until ).with( Time.zone.today )
+      expect(Membership).to receive( :renew_until ).with( Time.zone.today )
       Membership.renew_active
     end
   end
@@ -212,14 +212,14 @@ describe Membership do
     let(:membership) { create :membership }
 
     it "should include/exclude qualifying membership" do
-      Membership.assigned.should include membership
-      Membership.unassigned.should_not include membership
+      expect(Membership.assigned).to include membership
+      expect(Membership.unassigned).not_to include membership
     end
 
     it "should exclude/include membership without user" do
       membership.user = nil; membership.save!
-      Membership.assigned.should_not include membership
-      Membership.unassigned.should include membership
+      expect(Membership.assigned).not_to include membership
+      expect(Membership.unassigned).to include membership
     end
 
   end
@@ -232,14 +232,14 @@ describe Membership do
       user: membership_request.user, membership_request: membership_request }
 
     it "should include/exclude qualifying membership" do
-      Membership.requested.should include membership
-      Membership.unrequested.should_not include membership
+      expect(Membership.requested).to include membership
+      expect(Membership.unrequested).not_to include membership
     end
 
     it "should exclude/include membership without membership_request" do
       membership.membership_request = nil; membership.save!
-      Membership.requested.should_not include membership
-      Membership.unrequested.should include membership
+      expect(Membership.requested).not_to include membership
+      expect(Membership.unrequested).to include membership
     end
 
   end
@@ -258,11 +258,11 @@ describe Membership do
         ends_at: membership.ends_at, position: membership.position,
         period: membership.period, user: create(:user) )
       counts = over.concurrent_counts
-      counts[0].should eql [membership.starts_at, 1]
-      counts[1].should eql [second.starts_at, 2]
-      counts[2].should eql [second.ends_at, 2]
-      counts[3].should eql [membership.ends_at, 1]
-      counts.size.should eql 4
+      expect(counts[0]).to eql [membership.starts_at, 1]
+      expect(counts[1]).to eql [second.starts_at, 2]
+      expect(counts[2]).to eql [second.ends_at, 2]
+      expect(counts[3]).to eql [membership.ends_at, 1]
+      expect(counts.size).to eql 4
     end
   end
 
@@ -273,32 +273,32 @@ describe Membership do
     }
 
     it "should start with one assigned and one vacant membership" do
-      membership.position.memberships.assigned.count.should eql 1
-      membership.position.memberships.unassigned.count.should eql 1
+      expect(membership.position.memberships.assigned.count).to eql 1
+      expect(membership.position.memberships.unassigned.count).to eql 1
     end
 
     it 'should generate unassigned memberships when an membership membership is created' do
-      membership.position.memberships.count.should eql 2
-      membership.position.memberships.should include membership
-      membership.position.memberships.unassigned.count.should eql 1
-      membership.position.memberships.unassigned.first.id.should > membership.id
+      expect(membership.position.memberships.count).to eql 2
+      expect(membership.position.memberships).to include membership
+      expect(membership.position.memberships.unassigned.count).to eql 1
+      expect(membership.position.memberships.unassigned.first.id).to be > membership.id
     end
 
     it 'should regenerate unassigned memberships when an membership membership is altered' do
       unassigned = membership.position.memberships.unassigned.first
       membership.ends_at -= 1.days
       membership.save
-      membership.position.memberships.count.should eql 3
-      membership.position.memberships.should include membership
-      membership.position.memberships.unassigned.count.should eql 2
+      expect(membership.position.memberships.count).to eql 3
+      expect(membership.position.memberships).to include membership
+      expect(membership.position.memberships.unassigned.count).to eql 2
     end
 
     it 'should regenerate unassigned memberships when an membership membership is destroyed' do
       membership.destroy
-      membership.position.memberships.count.should eql 2
-      membership.position.memberships(true).should_not include membership
-      membership.position.memberships.unassigned.count.should eql 2
-      membership.position.memberships.unassigned.each { |m| m.id.should > membership.id }
+      expect(membership.position.memberships.count).to eql 2
+      expect(membership.position.memberships(true)).not_to include membership
+      expect(membership.position.memberships.unassigned.count).to eql 2
+      membership.position.memberships.unassigned.each { |m| expect(m.id).to be > membership.id }
     end
 
     it 'should not regenerate unassigned membership when an membership membership is destroyed if the position is inactive' do
@@ -307,7 +307,7 @@ describe Membership do
       position.save!
       membership.destroy
       position.memberships.reset
-      position.memberships.unassigned.length.should eql 0
+      expect(position.memberships.unassigned.length).to eql 0
     end
 
   end
@@ -318,14 +318,14 @@ describe Membership do
     enrollment_existing_designee = create(:enrollment, position: membership.position)
     enrollment_no_designee = create(:enrollment, position: membership.position)
     irrelevant_enrollment = create(:enrollment)
-    irrelevant_enrollment.position.should_not eql membership.position
+    expect(irrelevant_enrollment.position).not_to eql membership.position
     designee = create(:designee, membership: membership,
       committee: enrollment_existing_designee.committee)
     membership.designees.reload
-    membership.designees.size.should eql 1
+    expect(membership.designees.size).to eql 1
     new_designees = membership.designees.populate
-    new_designees.size.should eql 1
-    new_designees.first.committee.should eql enrollment_no_designee.committee
+    expect(new_designees.size).to eql 1
+    expect(new_designees.first.committee).to eql enrollment_no_designee.committee
   end
   
   context "decline renewal" do
@@ -336,10 +336,10 @@ describe Membership do
     it "should decline renewal with correct arguments" do
       decline_membership
       membership.errors.each { |k,v| puts "#{k}: #{v}" }
-      decline_membership.should be_true
-      membership.decline_comment.should eql decline_attributes[:decline_comment]
-      membership.declined_at.should_not be_nil
-      membership.declined_by_user.should_not be_nil
+      expect(decline_membership).to be true
+      expect(membership.decline_comment).to eql decline_attributes[:decline_comment]
+      expect(membership.declined_at).not_to be_nil
+      expect(membership.declined_by_user).not_to be_nil
     end
     
     it "should not decline if already renewed" do
@@ -349,16 +349,16 @@ describe Membership do
         position: membership.position, period: next_period )
       membership.renewed_by_membership = new_membership
       membership.save!
-      decline_membership.should be_false
+      expect(decline_membership).to be false
     end
     
     it "should clear decline records if user changes" do
       decline_membership
       membership.user = create(:user)
       membership.save!
-      membership.declined_at.should be_nil
-      membership.declined_by_user.should be_nil
-      membership.decline_comment.should be_nil
+      expect(membership.declined_at).to be_nil
+      expect(membership.declined_by_user).to be_nil
+      expect(membership.decline_comment).to be_nil
     end
     
     def decline_membership
@@ -376,45 +376,45 @@ describe Membership do
     before(:each) { membership_request }
 
     it "should claim a matching membership_request" do
-      membership_request.active?.should be_true
-      membership.membership_request.should eql membership_request
+      expect(membership_request.active?).to be true
+      expect(membership.membership_request).to eql membership_request
       membership_request.reload
-      membership_request.closed?.should be_true
+      expect(membership_request.closed?).to be true
     end
 
     it "should not claim a membership_request for an inactive committee" do
       committee.update_attribute :active, false
-      membership.membership_request.should be_nil
+      expect(membership.membership_request).to be_nil
     end
 
     it "should not claim a membership_request for a non-matching status position" do
       position.update_attribute :statuses_mask, 2
-      ( position.statuses_mask & membership_request.user.statuses_mask ).should eql 0
-      membership.membership_request.should be_nil
+      expect( position.statuses_mask & membership_request.user.statuses_mask ).to eql 0
+      expect(membership.membership_request).to be_nil
     end
 
     it "should not claim a membership_request for an inactive position" do
       position.update_attribute :active, false
-      membership.membership_request.should be_nil
+      expect(membership.membership_request).to be_nil
     end
 
     it "should not claim a membership_request for non-requestable enrollment" do
       enrollment.update_attribute :requestable, false
-      membership.membership_request.should be_nil
+      expect(membership.membership_request).to be_nil
     end
     
     it "should unclaim a membership_request if membership no longer has user assigned" do
       membership.user = nil
       membership.save!
-      membership.membership_request.should be_nil
-      membership_request.active?.should be_true
+      expect(membership.membership_request).to be_nil
+      expect(membership_request.active?).to be true
     end
     
     it "should unclaim a membership_request if membership is assigned to a different user" do
       membership.user = create(:user)
       membership.save!
-      membership.membership_request.should be_nil
-      membership_request.active?.should be_true
+      expect(membership.membership_request).to be_nil
+      expect(membership_request.active?).to be true
     end
     
     context "non-qualified user" do
@@ -422,7 +422,7 @@ describe Membership do
       
       it "should not claim other user's membership_request" do
         membership_request
-        membership.membership_request.should be_nil
+        expect(membership.membership_request).to be_nil
       end
     end
 
@@ -432,25 +432,25 @@ describe Membership do
 
     it 'should have a notifiable scope that returns only memberships with users and notifiable position' do
       notifiable_scenario
-      Membership.notifiable.length.should eql 1
-      Membership.notifiable.should include @focus_membership
-      Membership.count.should eql 4
+      expect(Membership.notifiable.length).to eql 1
+      expect(Membership.notifiable).to include @focus_membership
+      expect(Membership.count).to eql 4
     end
 
     it 'should have a join_notice_pending scope that returns only memberships that are awaiting join notice' do
       notifiable_scenario
-      Membership.join_notice_pending.length.should eql 1
-      Membership.join_notice_pending.should include @focus_membership
+      expect(Membership.join_notice_pending.length).to eql 1
+      expect(Membership.join_notice_pending).to include @focus_membership
       create( :notice, notifiable: @focus_membership, event: 'join' )
-      Membership.join_notice_pending.length.should eql 0
+      expect(Membership.join_notice_pending.length).to eql 0
     end
 
     it 'should have a leave_notice_pending scope that returns only memberships that are awaiting leave notice' do
       notifiable_scenario Date.today - 1.year, Date.today - 1.day
-      Membership.leave_notice_pending.length.should eql 1
-      Membership.leave_notice_pending.should include @focus_membership
+      expect(Membership.leave_notice_pending.length).to eql 1
+      expect(Membership.leave_notice_pending).to include @focus_membership
       create( :notice, notifiable: @focus_membership, event: 'leave' )
-      Membership.leave_notice_pending.length.should eql 0
+      expect(Membership.leave_notice_pending.length).to eql 0
     end
 
     it 'should clear membership notices if user is blank' do
@@ -458,23 +458,23 @@ describe Membership do
       create( :notice, notifiable: membership, event: 'join' )
       membership.user = nil
       membership.save!
-      membership.user_id.should be_nil
+      expect(membership.user_id).to be_nil
       membership.association(:notices).reset
-      membership.notices.should be_empty
+      expect(membership.notices).to be_empty
     end
 
     it 'should have a send_join_notice! method' do
       membership.save!
       membership.send_join_notice!
       membership.reload
-      membership.notices.for_event('join').should_not be_empty
+      expect(membership.notices.for_event('join')).not_to be_empty
     end
 
     it 'should have a send_leave_notice! method' do
       membership.save!
       membership.send_leave_notice!
       membership.reload
-      membership.notices.for_event('leave').should_not be_empty
+      expect(membership.notices.for_event('leave')).not_to be_empty
     end
 
     def notifiable_scenario(starts_at = nil, ends_at = nil)
@@ -495,20 +495,20 @@ describe Membership do
       renewable: true ) }
 
     it "should include/exclude qualifying membership" do
-      Membership.renewable.should include membership
-      Membership.unrenewable.should_not include membership
+      expect(Membership.renewable).to include membership
+      expect(Membership.unrenewable).not_to include membership
     end
 
     it "should exclude/include an inactive position" do
       membership.position.update_attribute :active, false
-      Membership.renewable.should_not include membership
-      Membership.unrenewable.should include membership
+      expect(Membership.renewable).not_to include membership
+      expect(Membership.unrenewable).to include membership
     end
 
     it "should exclude/include non-renewable position membership" do
       membership.position.update_attribute :renewable, false
-      Membership.renewable.should_not include membership
-      Membership.unrenewable.should include membership
+      expect(Membership.renewable).not_to include membership
+      expect(Membership.unrenewable).to include membership
     end
 
   end
@@ -522,21 +522,21 @@ describe Membership do
     before(:each) { peer_enrollment }
 
     it "should include valid peer" do
-      membership.peers.should include peer
-      membership.peers.should_not include membership
+      expect(membership.peers).to include peer
+      expect(membership.peers).not_to include membership
     end
 
     it "should not include non-overlapping peer" do
       peer.update_column :starts_at, Time.zone.today
       membership.update_column :ends_at, Time.zone.today - 1.day
-      membership.peers.should_not include peer
+      expect(membership.peers).not_to include peer
     end
 
     it "should support with_roles scope" do
-      membership.peers.with_roles('chair').should be_empty
+      expect(membership.peers.with_roles('chair')).to be_empty
       peer_enrollment.roles = %w( chair )
       peer_enrollment.save!
-      membership.peers.with_roles('chair').should include peer
+      expect(membership.peers.with_roles('chair')).to include peer
     end
   end
 
@@ -565,50 +565,50 @@ describe Membership do
         position: membership.position, period: past_period ) }
 
       it "should include a conforming membership" do
-        Membership.renewal_candidate.should include membership
+        expect(Membership.renewal_candidate).to include membership
       end
 
       it "should not include a non-renewable membership" do
         membership.position.update_attribute :renewable, false
-        Membership.unrenewable.should include membership
-        Membership.renewal_candidate.should_not include membership
+        expect(Membership.unrenewable).to include membership
+        expect(Membership.renewal_candidate).not_to include membership
       end
 
       it "should not include an unassigned membership" do
         membership.user = nil; membership.save!
-        Membership.unassigned.should include membership
-        Membership.renewal_candidate.should_not include membership
+        expect(Membership.unassigned).to include membership
+        expect(Membership.renewal_candidate).not_to include membership
       end
 
       it "should not include a renewed membership" do
         membership.update_attribute :renewed_by_membership_id, future_membership.id
-        Membership.renewed.should include membership
-        Membership.renewal_candidate.should_not include membership
+        expect(Membership.renewed).to include membership
+        expect(Membership.renewal_candidate).not_to include membership
       end
 
       it "should not include an abridged membership" do
         membership.ends_at -= 1.month
         membership.save!
-        Membership.abridged.should include membership
-        Membership.renewal_candidate.should_not include membership
+        expect(Membership.abridged).to include membership
+        expect(Membership.renewal_candidate).not_to include membership
       end
 
       it "should not include a future membership" do
-        Membership.future.should include future_membership
-        Membership.recent.should_not include future_membership
-        Membership.renewal_candidate.should_not include future_membership
+        expect(Membership.future).to include future_membership
+        expect(Membership.recent).not_to include future_membership
+        expect(Membership.renewal_candidate).not_to include future_membership
       end
 
       it "should include a past membership" do
-        Membership.past.should include past_membership
-        Membership.recent.should include past_membership
-        Membership.renewal_candidate.should include past_membership
+        expect(Membership.past).to include past_membership
+        expect(Membership.recent).to include past_membership
+        expect(Membership.renewal_candidate).to include past_membership
       end
 
       it "should not include an ancient membership" do
-        Membership.past.should include ancient_membership
-        Membership.recent.should_not include ancient_membership
-        Membership.renewal_candidate.should_not include ancient_membership
+        expect(Membership.past).to include ancient_membership
+        expect(Membership.recent).not_to include ancient_membership
+        expect(Membership.renewal_candidate).not_to include ancient_membership
       end
 
     end
@@ -635,7 +635,7 @@ describe Membership do
       }
 
       def setup_same_committees
-        membership.position.should_not eql other_membership.position
+        expect(membership.position).not_to eql other_membership.position
         create :enrollment, position: membership.position, committee: committee
         create :enrollment, position: other_membership.position, committee: committee
       end
@@ -646,36 +646,36 @@ describe Membership do
       end
 
       it "should include a conforming membership" do
-        Membership.renewable_to(future_membership).should include membership
+        expect(Membership.renewable_to(future_membership)).to include membership
       end
 
       it "should include a conforming membership (with same committees)" do
         setup_same_committees
-        Membership.renewable_to(future_membership).should include membership, other_membership
+        expect(Membership.renewable_to(future_membership)).to include membership, other_membership
       end
 
       it "should include a conforming membership (with matching status)" do
         other_membership.position.statuses = [ membership.user.status ]
         other_membership.position.save!
         setup_same_committees
-        Membership.renewable_to(future_membership).should include membership, other_membership
+        expect(Membership.renewable_to(future_membership)).to include membership, other_membership
       end
 
       it "should include conforming past membership of current membership" do
         setup_past_membership
-        Membership.renewable_to(membership).should include past_membership
+        expect(Membership.renewable_to(membership)).to include past_membership
       end
 
       it "should not include a past membership that has a past renew_until" do
         setup_past_membership
         past_membership.update_attribute :renew_until, Time.zone.today - 1.day
-        Membership.renewable_to(membership).should_not include past_membership
+        expect(Membership.renewable_to(membership)).not_to include past_membership
       end
 
       it "should not include a membership that has a non-overlapping renew_until" do
         membership.update_attribute :renew_until, future_membership.starts_at + 1.week
         future_membership.update_attribute :starts_at, membership.renew_until + 1.month
-        Membership.renewable_to(future_membership).should_not include membership
+        expect(Membership.renewable_to(future_membership)).not_to include membership
       end
 
       it "should not include a membership that overlaps" do
@@ -687,37 +687,37 @@ describe Membership do
         other_membership.ends_at += 1.week
         other_membership.period = other_membership.position.schedule.periods.first
         other_membership.save!
-        Membership.renewable_to(future_membership).should_not include other_membership
+        expect(Membership.renewable_to(future_membership)).not_to include other_membership
       end
 
       it "should not include a membership with different position (no committees)" do
-        Membership.renewable_to(future_membership).should_not include other_membership
+        expect(Membership.renewable_to(future_membership)).not_to include other_membership
       end
 
       it "should not include a membership without committee of subject" do
         setup_same_committees
         create(:enrollment, position: membership.position)
-        Membership.renewable_to(future_membership).should_not include other_membership
+        expect(Membership.renewable_to(future_membership)).not_to include other_membership
       end
 
       it "should not include a membership with committees not in subject" do
         setup_same_committees
         create(:enrollment, position: other_membership.position)
-        Membership.renewable_to(future_membership).should_not include other_membership
+        expect(Membership.renewable_to(future_membership)).not_to include other_membership
       end
 
       it "should not include a membership belonging to a user of non-matching status" do
         setup_same_committees
         future_membership.position.statuses = %w( undergrad ); membership.save!
         other_membership.user.status = 'grad'; other_membership.user.save!
-        Membership.renewable_to(future_membership).should_not include other_membership
+        expect(Membership.renewable_to(future_membership)).not_to include other_membership
       end
 
       it "should add a membership to renewed_memberships if renewable_to" do
         future_membership.user = membership.user
         future_membership.save!
-        future_membership.renewed_memberships.should include membership
-        Membership.renewable_to(future_membership).should_not include membership
+        expect(future_membership.renewed_memberships).to include membership
+        expect(Membership.renewable_to(future_membership)).not_to include membership
       end
 
     end

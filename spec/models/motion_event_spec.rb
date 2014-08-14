@@ -1,6 +1,6 @@
 require 'spec_helper'
 
-describe MotionEvent do
+describe MotionEvent, :type => :model do
 
   let(:event) { build(:motion_event) }
 
@@ -10,27 +10,27 @@ describe MotionEvent do
 
   it "should not save without a motion" do
     event.motion = nil
-    event.save.should be_false
+    expect(event.save).to be false
   end
 
   it "should not save without an occurrence" do
     event.occurrence = nil
-    event.save.should be_false
+    expect(event.save).to be false
   end
 
   it "should not save without an event" do
     event.event = nil
-    event.save.should be_false
+    expect(event.save).to be false
   end
 
   it "should not save with an occurrence before the motion's period start" do
     event.occurrence = event.motion.period.starts_at - 1.day
-    event.save.should be_false
+    expect(event.save).to be false
   end
 
   it "should not save with an occurrence after today" do
     event.occurrence = Time.zone.today + 1.day
-    event.save.should be_false
+    expect(event.save).to be false
   end
 end
 

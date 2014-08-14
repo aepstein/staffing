@@ -1,6 +1,6 @@
 require 'spec_helper'
 
-describe Position do
+describe Position, :type => :model do
 
   let(:position) { build :position }
 
@@ -12,45 +12,45 @@ describe Position do
 
     it 'should not save without a name' do
       position.name = nil
-      position.save.should be_false
+      expect(position.save).to be false
     end
 
     it 'should not save with a duplicate name' do
       position.save!
       duplicate = build(:position, :name => position.name)
-      duplicate.save.should be_false
+      expect(duplicate.save).to be false
     end
 
     it 'should not save without an authority' do
       position.authority = nil
-      position.save.should be_false
+      expect(position.save).to be false
     end
 
     it 'should not save without a quiz' do
       position.quiz = nil
-      position.save.should be_false
+      expect(position.save).to be false
     end
 
     it 'should not save without a schedule' do
       position.schedule = nil
-      position.save.should be_false
+      expect(position.save).to be false
     end
 
     it 'should not save without a number of slots specified' do
       position.slots = nil
-      position.save.should be_false
+      expect(position.save).to be false
       position.slots = ""
-      position.save.should be_false
+      expect(position.save).to be false
       position.slots = -1
-      position.save.should be_false
+      expect(position.save).to be false
     end
 
     it "should not save without valid minimum_slots" do
       position.minimum_slots = nil
-      position.save.should be_false
+      expect(position.save).to be false
       position.slots = 1
       position.minimum_slots = 2
-      position.save.should be_false
+      expect(position.save).to be false
     end
 
   end
@@ -63,11 +63,11 @@ describe Position do
       let(:position) { create(:position, schedule: period.schedule) }
 
       it 'should create unassigned shifts when it is created' do
-        position.memberships.unassigned.count.should eql 1
-        position.memberships.count.should eql 1
+        expect(position.memberships.unassigned.count).to eql 1
+        expect(position.memberships.count).to eql 1
         position.memberships.each do |membership|
-          membership.starts_at.should eql period.starts_at
-          membership.ends_at.should eql period.ends_at
+          expect(membership.starts_at).to eql period.starts_at
+          expect(membership.ends_at).to eql period.ends_at
         end
       end
 
@@ -75,17 +75,17 @@ describe Position do
         position.slots += 1
         position.minimum_slots += 1
         position.save!
-        position.memberships.count.should eql 2
+        expect(position.memberships.count).to eql 2
         position.memberships.each do |membership|
-          membership.starts_at.should eql period.starts_at
-          membership.ends_at.should eql period.ends_at
+          expect(membership.starts_at).to eql period.starts_at
+          expect(membership.ends_at).to eql period.ends_at
         end
       end
 
       it 'should delete unassigned memberships for an inactivated position' do
         position.active = false
         position.save!
-        Membership.where( position_id: position.id ).should be_empty
+        expect(Membership.where( position_id: position.id )).to be_empty
       end
 
     end
@@ -106,7 +106,7 @@ describe Position do
         m.save!
         Membership.unassigned.delete_all
         vacancies = position.memberships.vacancies_for_period(period)
-        vacancies.should eql [
+        expect(vacancies).to eql [
           [period.starts_at, 1], [period.starts_at + 1.day, 1],
           [period.starts_at + 2.days, 0], [period.ends_at - 2.days, 0],
           [period.ends_at - 1.day, 1], [period.ends_at, 2]
@@ -114,27 +114,27 @@ describe Position do
       end
 
       it 'should delete unassigned memberships when period\'s minimum slots are decreased' do
-        position.memberships.count.should eql 2
+        expect(position.memberships.count).to eql 2
         position.minimum_slots -= 1
         position.save!
-        position.memberships.unassigned.count.should eql position.memberships.count
-        position.memberships.count.should eql position.minimum_slots
+        expect(position.memberships.unassigned.count).to eql position.memberships.count
+        expect(position.memberships.count).to eql position.minimum_slots
         position.memberships.each do |membership|
-          membership.starts_at.should eql period.starts_at
-          membership.ends_at.should eql period.ends_at
+          expect(membership.starts_at).to eql period.starts_at
+          expect(membership.ends_at).to eql period.ends_at
         end
-        position.memberships.count.should eql 1
+        expect(position.memberships.count).to eql 1
       end
 
       it 'should not delete assigned memberships when period slots are decreased' do
         first = position.memberships.first
         first.user = create(:user)
-        first.save.should eql true
+        expect(first.save).to eql true
         position.slots -= 1
         position.minimum_slots -= 1
         position.save!
-        position.memberships.size.should eql 1
-        position.memberships.should include first
+        expect(position.memberships.size).to eql 1
+        expect(position.memberships).to include first
       end
 
     end
@@ -147,28 +147,28 @@ describe Position do
     let(:position) { create(:position) }
 
     it "should include self equivalent" do
-      Position.equivalent_committees_with(position).should include position
+      expect(Position.equivalent_committees_with(position)).to include position
     end
 
     it "should include other with same committees equivalent" do
       other_position = create( :enrollment, committee: committee ).position
-      Position.equivalent_committees_with(position).should include position, other_position
+      expect(Position.equivalent_committees_with(position)).to include position, other_position
     end
 
     it "should exclude other without its committee" do
       other_position = create( :position )
       committee
-      Position.equivalent_committees_with(position).should_not include other_position
+      expect(Position.equivalent_committees_with(position)).not_to include other_position
     end
 
     it "should exclude other with committee it does not have" do
       other_position = create( :enrollment ).position
-      Position.equivalent_committees_with(position).should_not include other_position
+      expect(Position.equivalent_committees_with(position)).not_to include other_position
     end
 
     it "should exclude other if neither has committees" do
       other_position = create( :position )
-      Position.equivalent_committees_with(position).should_not include other_position
+      expect(Position.equivalent_committees_with(position)).not_to include other_position
     end
 
   end

@@ -12,11 +12,11 @@ module MailerSpecHelpers
   end
 
   def text_part_should_not_match( content )
-    text_part.body.encoded.should_not match(content)
+    expect(text_part.body.encoded).not_to match(content)
   end
 
   def html_part_should_not_match( content )
-    html_part.body.encoded.should_not match(content)
+    expect(html_part.body.encoded).not_to match(content)
   end
 
   def both_parts_should_not_match( content )
@@ -25,11 +25,11 @@ module MailerSpecHelpers
   end
 
   def text_part_should_match( content )
-    text_part.body.encoded.should match(content)
+    expect(text_part.body.encoded).to match(content)
   end
 
   def html_part_should_match( content )
-    html_part.body.encoded.should match(content)
+    expect(html_part.body.encoded).to match(content)
   end
 
   def both_parts_should_match( content )

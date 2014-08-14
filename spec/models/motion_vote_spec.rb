@@ -1,6 +1,6 @@
 require 'spec_helper'
 
-describe MotionVote do
+describe MotionVote, :type => :model do
   let(:motion_vote) { build :motion_vote }
   
   it "should save with valid attributes" do
@@ -9,12 +9,12 @@ describe MotionVote do
   
   it "should not save without a motion event" do
     motion_vote.motion_event = nil
-    motion_vote.save.should be_false
+    expect(motion_vote.save).to be false
   end
   
   it "should not save without a user" do
     motion_vote.user = nil
-    motion_vote.save.should be_false
+    expect(motion_vote.save).to be false
   end
   
   it "should not save with a user who is not in the motion event users" do
@@ -25,6 +25,6 @@ describe MotionVote do
       ends_at: good_membership.starts_at - 1.day
     bad_membership = create :membership, position: position, period: prior
     motion_vote.user = bad_membership.user
-    motion_vote.save.should be_false
+    expect(motion_vote.save).to be false
   end
 end

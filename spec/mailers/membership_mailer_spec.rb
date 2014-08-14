@@ -1,6 +1,6 @@
 require "spec_helper"
 
-describe MembershipMailer do
+describe MembershipMailer, :type => :mailer do
   include MailerSpecHelpers
   let(:authority) { create(:authority,
     appoint_message: "Greetings from the *authority*.",
@@ -22,13 +22,13 @@ describe MembershipMailer do
   let(:membership) { create(:membership, position: position) }
 
   def should_be_to_assignee
-      mail.to.should eq([membership.user.email])
+      expect(mail.to).to eq([membership.user.email])
   end
 
   def should_be_from_effective_contact
-    membership.position.authority.stub(:effective_contact_email).and_return("madison@example.com")
-    membership.position.authority.stub(:effective_contact_name).and_return("James Madison")
-    mail.from.should eq(["madison@example.com"])
+    allow(membership.position.authority).to receive(:effective_contact_email).and_return("madison@example.com")
+    allow(membership.position.authority).to receive(:effective_contact_name).and_return("James Madison")
+    expect(mail.from).to eq(["madison@example.com"])
   end
 
   def should_copy_monitors
@@ -47,19 +47,19 @@ describe MembershipMailer do
     non_monitor = create(:membership)
     create(:enrollment, committee: enrollment.committee, roles: %w( vicechair ),
       position: non_monitor.position )
-    mail.cc.should include monitor.user.email
-    mail.cc.should include pro_monitor.user.email
-    mail.cc.should_not include old_monitor.user.email
-    mail.cc.should_not include no_overlap_monitor.user.email
-    mail.cc.should_not include non_monitor.user.email
+    expect(mail.cc).to include monitor.user.email
+    expect(mail.cc).to include pro_monitor.user.email
+    expect(mail.cc).not_to include old_monitor.user.email
+    expect(mail.cc).not_to include no_overlap_monitor.user.email
+    expect(mail.cc).not_to include non_monitor.user.email
   end
 
   describe "appoint" do
     let(:mail) { MembershipMailer.appoint_notice( membership ) }
 
     it "renders correct subject" do
-      membership.stub(:description).and_return("Requested Committee")
-      mail.subject.should eq "Your upcoming appointment to Requested Committee"
+      allow(membership).to receive(:description).and_return("Requested Committee")
+      expect(mail.subject).to eq "Your upcoming appointment to Requested Committee"
     end
 
     it "addresses to assignee of membership" do
@@ -102,8 +102,8 @@ EOS
     let(:mail) { MembershipMailer.join_notice( membership ) }
 
     it "renders correct subject" do
-      membership.stub(:description).and_return("Requested Committee")
-      mail.subject.should eq "Your appointment to Requested Committee"
+      allow(membership).to receive(:description).and_return("Requested Committee")
+      expect(mail.subject).to eq "Your appointment to Requested Committee"
     end
 
     it "addresses to assignee of membership" do
@@ -159,8 +159,8 @@ EOS
     let(:mail) { MembershipMailer.leave_notice( membership ) }
 
     it "renders correct subject" do
-      membership.stub(:description).and_return("Requested Committee")
-      mail.subject.should eq "Expiration of your appointment to Requested Committee"
+      allow(membership).to receive(:description).and_return("Requested Committee")
+      expect(mail.subject).to eq "Expiration of your appointment to Requested Committee"
     end
 
     it "addresses to assignee of membership" do
@@ -203,8 +203,8 @@ EOS
     let(:mail) { MembershipMailer.decline_notice( membership ) }
 
     it "renders correct subject" do
-      membership.stub(:description).and_return("Requested Committee")
-      mail.subject.should eq "Renewal of your appointment to Requested Committee was declined"
+      allow(membership).to receive(:description).and_return("Requested Committee")
+      expect(mail.subject).to eq "Renewal of your appointment to Requested Committee was declined"
     end
 
     it "addresses to assignee of membership" do

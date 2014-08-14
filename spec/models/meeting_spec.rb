@@ -1,70 +1,70 @@
 require 'spec_helper'
 
-describe Meeting do
+describe Meeting, :type => :model do
   before(:each) do
     @meeting = create(:meeting)
   end
 
   it "should create a new instance given valid attributes" do
-    create(:meeting).id.should_not be_nil
+    expect(create(:meeting).id).not_to be_nil
   end
 
   it 'should not save without a committee' do
     @meeting.committee = nil
-    @meeting.save.should be_false
+    expect(@meeting.save).to be false
   end
 
   it 'should not save without a period' do
     @meeting.period = nil
-    @meeting.save.should be_false
+    expect(@meeting.save).to be false
   end
 
   it 'should not save without starts_at' do
     @meeting.starts_at = nil
-    @meeting.save.should be_false
+    expect(@meeting.save).to be false
   end
 
   it 'should not save with a duration or with an invalid duration' do
     @meeting.duration = nil
-    @meeting.save.should be_false
+    expect(@meeting.save).to be false
     @meeting.duration = 0
-    @meeting.save.should be_false
+    expect(@meeting.save).to be false
   end
 
   it 'should not save without a location' do
     @meeting.location = nil
-    @meeting.save.should be_false
+    expect(@meeting.save).to be false
   end
 
   it 'should not save with a period from a different schedule than that of committee' do
     @meeting.period = create(:period)
     @meeting.starts_at = @meeting.period.starts_at.to_time + 1.hour
-    @meeting.save.should be_false
+    expect(@meeting.save).to be false
   end
 
   it 'should not save with a starts_at outside the period' do
     @meeting.starts_at = @meeting.period.starts_at.to_time - 1.day
-    @meeting.save.should be_false
+    expect(@meeting.save).to be false
     @meeting.starts_at = @meeting.period.ends_at.to_time + 1.day
-    @meeting.save.should be_false
+    expect(@meeting.save).to be false
   end
 
   it 'should have a past scope' do
     setup_past_and_future
-    Meeting.past.count.should eql 1
-    Meeting.past.should include @past
+    expect(Meeting.past.count).to eql 1
+    expect(Meeting.past).to include @past
   end
 
   it 'should have a current scope' do
     setup_past_and_future
-    Meeting.current.count.should eql 1
-    Meeting.current.should include @meeting
+    expect(Meeting.current.count).to eql 1
+    expect(Meeting.current).to include @meeting
   end
 
   it 'should have a future scope' do
     setup_past_and_future
-    Meeting.future.count.should eql 1
-    Meeting.future.should include @future
+    expect(Meeting.future.count).to eql 1
+    expect(Meeting.future).to include @future
   end
 
   it 'should have motions.allowed that returns only matching committee and period of meeting' do
@@ -73,14 +73,14 @@ describe Meeting do
     new_period = create( :period, :schedule => @meeting.period.schedule, :starts_at => ( @meeting.period.ends_at + 1.day ) )
     @meeting.reload
     same_committee = create(:motion, :committee => @meeting.committee, :period => new_period )
-    same_period.period.should eql @meeting.period
-    same_period.committee.should_not eql @meeting.committee
-    same_committee.committee.should eql @meeting.committee
-    same_committee.period.should_not eql @meeting.period
-    @meeting.motions.allowed.count.should eql 1
-    @meeting.motions.allowed.should include allowed
-    @meeting.motions.allowed.should_not include same_period
-    @meeting.motions.allowed.should_not include same_committee
+    expect(same_period.period).to eql @meeting.period
+    expect(same_period.committee).not_to eql @meeting.committee
+    expect(same_committee.committee).to eql @meeting.committee
+    expect(same_committee.period).not_to eql @meeting.period
+    expect(@meeting.motions.allowed.count).to eql 1
+    expect(@meeting.motions.allowed).to include allowed
+    expect(@meeting.motions.allowed).not_to include same_period
+    expect(@meeting.motions.allowed).not_to include same_committee
   end
 
   context "meeting sections" do
@@ -94,24 +94,24 @@ describe Meeting do
         meeting.save!
         section = meeting.meeting_sections.first
         section_template = meeting_template.meeting_section_templates.first
-        section.name.should eql section_template.name
-        section.position.should eql section_template.position
+        expect(section.name).to eql section_template.name
+        expect(section.position).to eql section_template.position
         item = section.meeting_items.first
         item_template = section_template.meeting_item_templates.first
-        item.name.should eql item_template.name
-        item.duration.should eql item_template.duration
-        item.description.should eql item_template.description
-        item.position.should eql item_template.position
+        expect(item.name).to eql item_template.name
+        expect(item.duration).to eql item_template.duration
+        expect(item.description).to eql item_template.description
+        expect(item.position).to eql item_template.position
       end
 
       it "should not populate if the meeting already has a section" do
         section = meeting.meeting_sections.build name: 'Unusual Structure', position: 1
         meeting.meeting_sections.populate
         meeting.save!
-        meeting.meeting_sections.length.should eql 1
-        meeting.meeting_sections.should include section
-        section.name.should eql 'Unusual Structure'
-        section.meeting_items.should be_empty
+        expect(meeting.meeting_sections.length).to eql 1
+        expect(meeting.meeting_sections).to include section
+        expect(section.name).to eql 'Unusual Structure'
+        expect(section.meeting_items).to be_empty
       end
     end
   end

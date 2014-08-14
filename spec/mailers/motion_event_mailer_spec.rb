@@ -9,20 +9,20 @@ shared_context "with chair and no vicechair" do
   before(:each) { chair }
 
   def should_be_to_chair
-    mail.to.should_not include vicechair.email
-    mail.to.should include chair.email
+    expect(mail.to).not_to include vicechair.email
+    expect(mail.to).to include chair.email
     both_parts_should_match /Dear #{chair.first_name},/
   end
 
   def should_be_to_vicechair
-    mail.to.should_not include vicechair.email
-    mail.to.should include chair.email
+    expect(mail.to).not_to include vicechair.email
+    expect(mail.to).to include chair.email
     both_parts_should_match /Dear #{chair.first_name},/
   end
 
   def should_cc_vicechair
-    mail.cc.should_not include vicechair.email
-    mail.cc.should include chair.email
+    expect(mail.cc).not_to include vicechair.email
+    expect(mail.cc).to include chair.email
   end
 end
 
@@ -30,24 +30,24 @@ shared_context "with chair and vicechair" do
   before(:each) { chair; vicechair }
 
   def should_be_to_chair
-    mail.to.should_not include vicechair.email
-    mail.to.should include chair.email
+    expect(mail.to).not_to include vicechair.email
+    expect(mail.to).to include chair.email
     both_parts_should_match /Dear #{chair.first_name},/
   end
 
   def should_be_to_vicechair
-    mail.to.should include vicechair.email
-    mail.to.should_not include chair.email
+    expect(mail.to).to include vicechair.email
+    expect(mail.to).not_to include chair.email
     both_parts_should_match /Dear #{vicechair.first_name},/
   end
 
   def should_cc_vicechair
-    mail.cc.should include vicechair.email
-    mail.cc.should_not include chair.email
+    expect(mail.cc).to include vicechair.email
+    expect(mail.cc).not_to include chair.email
   end
 end
 
-describe MotionEventMailer do
+describe MotionEventMailer, :type => :mailer do
   include MailerSpecHelpers
   let(:committee) { create(:committee, name: "Busy Committee") }
   let(:sponsor) { motion.users.first }
@@ -60,7 +60,7 @@ describe MotionEventMailer do
   let(:mail) { described_class.event_notice( motion_event ) }
 
   def should_have_layout
-    mail.from.should include committee.effective_contact_email
+    expect(mail.from).to include committee.effective_contact_email
     both_parts_should_match /#{committee.effective_contact_name}/
     both_parts_should_match /#{committee.effective_contact_email}/
   end
@@ -70,21 +70,21 @@ describe MotionEventMailer do
   end
 
   def should_be_to_sponsor
-    mail.to.should include sponsor.email
+    expect(mail.to).to include sponsor.email
     both_parts_should_match /Dear #{sponsor.first_name},/
   end
 
   def should_cc_sponsor
-    mail.cc.should include sponsor.email
+    expect(mail.cc).to include sponsor.email
   end
 
   def should_be_to_referring_sponsor
-    mail.to.should include referring_sponsor.email
+    expect(mail.to).to include referring_sponsor.email
     both_parts_should_match /Dear #{referring_sponsor.first_name},/
   end
 
   def should_cc_referring_sponsor
-    mail.cc.should include referring_sponsor.email
+    expect(mail.cc).to include referring_sponsor.email
   end
 
   context "propose" do
@@ -94,7 +94,7 @@ describe MotionEventMailer do
     def should_have_propose
       should_be_to_vicechair
       should_have_layout
-      mail.subject.should eq "#{motion.to_s :full} proposed"
+      expect(mail.subject).to eq "#{motion.to_s :full} proposed"
       both_parts_should_match /on #{motion_event.occurrence.to_s :long_ordinal} for consideration by #{motion.committee}./
       both_parts_should_match /You may [\w\,\s]+ the motion here:/
     end
@@ -134,7 +134,7 @@ describe MotionEventMailer do
 
     def should_have_restart
       should_have_layout
-      mail.subject.should eq "#{motion.to_s :full} restarted"
+      expect(mail.subject).to eq "#{motion.to_s :full} restarted"
       both_parts_should_match /#{motion.to_s :full} has been restarted and is now ready for you to edit further./
       both_parts_should_match /You may [\w\,\s]+ the motion here:/
     end
@@ -166,7 +166,7 @@ describe MotionEventMailer do
 
     def should_have_withdraw
       should_have_layout
-      mail.subject.should eq "#{motion.to_s :full} withdrawn"
+      expect(mail.subject).to eq "#{motion.to_s :full} withdrawn"
       both_parts_should_match /You withdrew #{motion.to_s :numbered} from consideration by #{motion.committee} on #{motion_event.occurrence.to_s :long_ordinal}./
       both_parts_should_match /You may [\w\,\s]+ the motion here:/
     end
@@ -198,7 +198,7 @@ describe MotionEventMailer do
 
     def should_have_reject
       should_have_layout
-      mail.subject.should eq "#{motion.to_s :full} rejected"
+      expect(mail.subject).to eq "#{motion.to_s :full} rejected"
       both_parts_should_match /#{motion.to_s :numbered} was rejected by #{motion.committee} on #{motion_event.occurrence.to_s :long_ordinal}./
       both_parts_should_match /No further actions are allowed or required regarding the motion./
     end
@@ -230,7 +230,7 @@ describe MotionEventMailer do
 
     def should_have_amend
       should_have_layout
-      mail.subject.should eq "#{motion.to_s :full} amended"
+      expect(mail.subject).to eq "#{motion.to_s :full} amended"
       both_parts_should_match /#{motion.committee} amended #{motion.to_s :numbered} on #{motion_event.occurrence.to_s :long_ordinal}./
       both_parts_should_match /You may [\w\,\s]+ the motion here:/
     end
@@ -279,7 +279,7 @@ describe MotionEventMailer do
 
     def should_have_divide
       should_have_layout
-      mail.subject.should eq "#{motion.to_s :full} divided"
+      expect(mail.subject).to eq "#{motion.to_s :full} divided"
       both_parts_should_match /#{motion.committee} divided #{motion.to_s :numbered} on #{motion_event.occurrence.to_s :long_ordinal}./
       both_parts_should_match /No further actions are allowed or required regarding the motion./
       both_parts_should_match /#{dividing_motions[0].to_s :numbered}/
@@ -320,7 +320,7 @@ describe MotionEventMailer do
 
     def should_have_merge
       should_have_layout
-      mail.subject.should eq "#{motion.to_s :full} merged"
+      expect(mail.subject).to eq "#{motion.to_s :full} merged"
       both_parts_should_match /#{motion.committee} merged #{motion.to_s :numbered} into #{motion_merger.motion.to_s :numbered} on #{motion_event.occurrence.to_s :long_ordinal}./
       both_parts_should_match /No further actions are allowed or required regarding the motion./
     end
@@ -352,7 +352,7 @@ describe MotionEventMailer do
 
     def should_have_adopt
       should_have_layout
-      mail.subject.should eq "#{motion.to_s :full} adopted"
+      expect(mail.subject).to eq "#{motion.to_s :full} adopted"
       both_parts_should_match /#{motion.committee} adopted #{motion.to_s :numbered} on #{motion_event.occurrence.to_s :long_ordinal}./
       both_parts_should_match /You may [\w\,\s]+ the motion here:/
     end
@@ -374,7 +374,7 @@ describe MotionEventMailer do
 
     def should_have_implement
       should_have_layout
-      mail.subject.should eq "#{motion.to_s :full} implemented"
+      expect(mail.subject).to eq "#{motion.to_s :full} implemented"
       both_parts_should_match /#{motion.committee} implemented #{motion.to_s :numbered} on #{motion_event.occurrence.to_s :long_ordinal}./
       both_parts_should_match /No further actions are allowed or required regarding the motion./
     end

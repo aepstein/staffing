@@ -1,6 +1,6 @@
 require 'spec_helper'
 
-describe Motion do
+describe Motion, :type => :model do
   let(:motion) { build :motion }
 
   context 'validation' do
@@ -11,30 +11,30 @@ describe Motion do
 
     it 'should not save without a name' do
       motion.name = nil
-      motion.save.should be_false
+      expect(motion.save).to be false
     end
 
     it 'should not save with a duplicate name for given committee and period' do
       motion.save!
       duplicate = create( :motion, committee: motion.committee, period: motion.period )
       duplicate.name = motion.name
-      duplicate.save.should be_false
+      expect(duplicate.save).to be false
     end
 
     it 'should not save without a period' do
       motion.period = nil
-      motion.save.should be_false
+      expect(motion.save).to be false
     end
 
     it 'should not save with a period that is not in the schedule of the committee' do
       motion.period = create(:period)
-      motion.committee.schedule.periods.should_not include motion.period
-      motion.save.should be_false
+      expect(motion.committee.schedule.periods).not_to include motion.period
+      expect(motion.save).to be false
     end
 
     it 'should not save without a committee' do
       motion.committee = nil
-      motion.save.should be_false
+      expect(motion.save).to be false
     end
 
   end
@@ -45,12 +45,12 @@ describe Motion do
       create( :past_period, schedule: motion.committee.schedule ) }
 
     it "should be 1 for the first item, 2 for the next" do
-      motion.position.should eql 1
-      create(:motion, committee: motion.committee, period: motion.period).position.should eql 2
+      expect(motion.position).to eql 1
+      expect(create(:motion, committee: motion.committee, period: motion.period).position).to eql 2
     end
 
     it "should be 1 for a different period" do
-      create(:motion, committee: motion.committee, period: past).position.should eql 1
+      expect(create(:motion, committee: motion.committee, period: past).position).to eql 1
     end
 
     it "should reposition subsequent items for same committee/period on destroy" do
@@ -59,14 +59,14 @@ describe Motion do
         create(:motion, committee: motion.committee, period: past)
         memo << create(:motion, committee: motion.committee, period: motion.period)
       end
-      motions.map(&:position).should eql [2,3]
+      expect(motions.map(&:position)).to eql [2,3]
       motions.first.destroy
       motions.last.reload
-      motions.last.position.should eql 2
+      expect(motions.last.position).to eql 2
       motion.reload
-      motion.position.should eql 1
-      motion.committee.motions.where { |m| m.period_id.eq( past.id ) }.
-        value_of(:position).should eql [1,2,3]
+      expect(motion.position).to eql 1
+      expect(motion.committee.motions.where { |m| m.period_id.eq( past.id ) }.
+        value_of(:position)).to eql [1,2,3]
     end
   end
 
@@ -86,7 +86,7 @@ describe Motion do
         end
       end
       divided.divide!
-      divided.referred_motions.length.should eql 2
+      expect(divided.referred_motions.length).to eql 2
       divided.referred_motions
     end
 
@@ -103,43 +103,43 @@ describe Motion do
     let(:amendment) {  motion.referred_motions.populate_amendment true }
 
     it "should save ancestry for a referee motion" do
-      motion.parent.should eql motion.referring_motion
+      expect(motion.parent).to eql motion.referring_motion
     end
 
     it 'should have a referee? method that indicates if it originates from a referred motion' do
-      motion.referee?.should be_false
+      expect(motion.referee?).to be false
       divisee = divided_motions.first
-      divisee.referee?.should be_false
-      divisee.referring_motion.referee?.should be_false
+      expect(divisee.referee?).to be false
+      expect(divisee.referring_motion.referee?).to be false
       referee = referee_motion
-      referee.referee?.should be_true
-      referee.referring_motion.referee?.should be_false
+      expect(referee.referee?).to be true
+      expect(referee.referring_motion.referee?).to be false
     end
 
     it "should have a referred_motions.build_amendment method" do
-      amendment.name.should eql motion.amendable_name
-      amendment.content.should eql motion.content
-      amendment.committee.should eql motion.committee
-      amendment.period.should eql motion.period
+      expect(amendment.name).to eql motion.amendable_name
+      expect(amendment.content).to eql motion.content
+      expect(amendment.committee).to eql motion.committee
+      expect(amendment.period).to eql motion.period
     end
 
     it "should have a working build_amendment method" do
       motion.propose!
-      amendment.name.should eql "Amended #{motion.name} #1"
-      amendment.description.should eql motion.description
-      amendment.content.should eql motion.content
+      expect(amendment.name).to eql "Amended #{motion.name} #1"
+      expect(amendment.description).to eql motion.description
+      expect(amendment.content).to eql motion.content
     end
 
     it "should apply adopted amendment changes to amended motion" do
       motion.propose!
       amendment.description = 'Different description'
       amendment.content = 'Different content'
-      motion.description.should_not eql amendment.description
-      motion.content.should_not eql amendment.content
-      motion.status.should eql 'proposed'
+      expect(motion.description).not_to eql amendment.description
+      expect(motion.content).not_to eql amendment.content
+      expect(motion.status).to eql 'proposed'
       motion.amend!
       motion.reload
-      motion.status.should eql 'amended'
+      expect(motion.status).to eql 'amended'
     end
 
     it "should unamend a motion on reject" do
@@ -147,10 +147,10 @@ describe Motion do
       amendment
       motion.amend!
       motion.reload
-      motion.status.should eql 'amended'
+      expect(motion.status).to eql 'amended'
       amendment.reject!
       motion.reload
-      motion.status.should eql 'proposed'
+      expect(motion.status).to eql 'proposed'
     end
 
   end
@@ -170,10 +170,10 @@ describe Motion do
       wrong_period_user = create( :membership, period: wrong_period, position: right_position ).user
       wrong_committee_user = create( :membership, period: motion.period, position: wrong_position ).user
       motion.reload
-      motion.users.allowed.should include allowed_user
-      motion.users.allowed.should_not include wrong_period_user
-      motion.users.allowed.should_not include wrong_committee_user
-      motion.users.allowed.length.should eql 1
+      expect(motion.users.allowed).to include allowed_user
+      expect(motion.users.allowed).not_to include wrong_period_user
+      expect(motion.users.allowed).not_to include wrong_committee_user
+      expect(motion.users.allowed.length).to eql 1
     end
 
   end
@@ -182,14 +182,14 @@ describe Motion do
 
     it 'should have a current scope that returns motions with a current period' do
       setup_temporal_motions
-      Motion.current.length.should eql 1
-      Motion.current.should include @current
+      expect(Motion.current.length).to eql 1
+      expect(Motion.current).to include @current
     end
 
     it 'should have a past scope that returns motions with a past period' do
       setup_temporal_motions
-      Motion.past.length.should eql 1
-      Motion.past.should include @past
+      expect(Motion.past.length).to eql 1
+      expect(Motion.past).to include @past
     end
 
     def setup_temporal_motions
@@ -207,13 +207,13 @@ describe Motion do
     let(:motion) { create :motion, name: 'Original' }
 
     it "should return first name if there is no conflict" do
-      motion.amendable_name.should eql 'Amended Original #1'
+      expect(motion.amendable_name).to eql 'Amended Original #1'
     end
 
     it "should return second name if there is a conflict" do
       create( :motion, committee: motion.committee, period: motion.period,
         name: motion.amendable_name )
-      motion.amendable_name.should eql 'Amended Original #2'
+      expect(motion.amendable_name).to eql 'Amended Original #2'
     end
   end
   
@@ -222,15 +222,15 @@ describe Motion do
     let(:motion) { item.motion }
     
     it "should have an unscheduled scope" do
-      Motion.unscheduled.should include motion
+      expect(Motion.unscheduled).to include motion
       item.meeting_section.meeting.update_column :starts_at, ( Time.zone.now + 2.days )
-      Motion.unscheduled.should_not include motion
+      expect(Motion.unscheduled).not_to include motion
     end
     
     it "should have a scheduled scope" do
-      Motion.scheduled.should_not include motion
+      expect(Motion.scheduled).not_to include motion
       item.meeting_section.meeting.update_column :starts_at, ( Time.zone.now + 2.days )
-      Motion.scheduled.should include motion
+      expect(Motion.scheduled).to include motion
     end
   end
 end

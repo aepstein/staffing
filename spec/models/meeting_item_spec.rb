@@ -1,6 +1,6 @@
 require 'spec_helper'
 
-describe MeetingItem do
+describe MeetingItem, :type => :model do
   let( :meeting_item ) { build :meeting_item }
 
   context "validations" do
@@ -10,7 +10,7 @@ describe MeetingItem do
 
     it "should not save without a name" do
       meeting_item.name = nil
-      meeting_item.save.should be_false
+      expect(meeting_item.save).to be false
     end
 
     it "should not save with a duplicate name" do
@@ -22,9 +22,9 @@ describe MeetingItem do
 
     it "should not save without a duration" do
       meeting_item.duration = nil
-      meeting_item.save.should be_false
+      expect(meeting_item.save).to be false
       meeting_item.duration = 0
-      meeting_item.save.should be_false
+      expect(meeting_item.save).to be false
     end
 
     context "with motion" do
@@ -39,24 +39,24 @@ describe MeetingItem do
 
       it "should not save with name" do
         meeting_item.name = 'a name'
-        meeting_item.save.should be_false
+        expect(meeting_item.save).to be false
       end
 
       it "should not save with duplicate motion" do
         meeting_item.save!
         duplicate = build( :motion_meeting_item, motion: meeting_item.motion,
           meeting_section: meeting_item.meeting_section )
-        duplicate.save.should be_false
+        expect(duplicate.save).to be false
       end
 
       it "should set motion from plain name" do
         meeting_item.motion_name = other_motion.name
-        meeting_item.motion.should eql other_motion
+        expect(meeting_item.motion).to eql other_motion
       end
 
       it "should set motion from R: #: name" do
         meeting_item.motion_name = other_motion.to_s(:numbered)
-        meeting_item.motion.should eql other_motion
+        expect(meeting_item.motion).to eql other_motion
       end
     end
   end

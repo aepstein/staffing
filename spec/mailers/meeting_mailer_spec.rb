@@ -1,6 +1,6 @@
 require "spec_helper"
 
-describe MeetingMailer do
+describe MeetingMailer, :type => :mailer do
   include MailerSpecHelpers
   let(:attachment) { create(:attachment, attachable: item) }
   let(:item) { create(:meeting_item) }
@@ -18,9 +18,9 @@ describe MeetingMailer do
     before(:each) { vicechair }
     
     it "renders all the components" do
-      mail.subject.should eq "Time to publish #{committee.name} meeting on #{meeting.starts_at.to_date.to_s :long_ordinal}"
-      mail.to.should include vicechair.email
-      mail.from.should include committee.effective_contact_email
+      expect(mail.subject).to eq "Time to publish #{committee.name} meeting on #{meeting.starts_at.to_date.to_s :long_ordinal}"
+      expect(mail.to).to include vicechair.email
+      expect(mail.from).to include committee.effective_contact_email
       both_parts_should_match /Dear #{vicechair.first_name},/
       both_parts_should_match /#{committee.name} is scheduled to meet #{meeting.starts_at.to_s :long_ordinal} at #{meeting.location} in #{meeting.room}, but the meeting has not yet been published./
     end
@@ -35,9 +35,9 @@ describe MeetingMailer do
     before(:each) { clerk }
     
     it "renders all the components" do
-      mail.subject.should eq "Minutes Needed for #{committee.name} meeting on #{meeting.starts_at.to_date.to_s :long_ordinal}"
-      mail.to.should include clerk.email
-      mail.from.should include  committee.effective_contact_email
+      expect(mail.subject).to eq "Minutes Needed for #{committee.name} meeting on #{meeting.starts_at.to_date.to_s :long_ordinal}"
+      expect(mail.to).to include clerk.email
+      expect(mail.from).to include  committee.effective_contact_email
       both_parts_should_match /Dear #{clerk.first_name},/
       both_parts_should_match /No minutes have been started for this meeting./
       both_parts_should_match /Minutes must be proposed for the #{committee.name} meeting which occurred on #{meeting.starts_at.to_date.to_s :long_ordinal}./
@@ -49,9 +49,9 @@ describe MeetingMailer do
       to: "info@example.org", from: "current@example.org" ) }
 
     it "renders all the components" do
-      mail.subject.should eq("#{meeting.committee.name} Meeting on #{meeting.starts_at.to_date.to_s :long_ordinal}")
-      mail.to.should include "info@example.org"
-      mail.from.should include "current@example.org"
+      expect(mail.subject).to eq("#{meeting.committee.name} Meeting on #{meeting.starts_at.to_date.to_s :long_ordinal}")
+      expect(mail.to).to include "info@example.org"
+      expect(mail.from).to include "current@example.org"
       both_parts_should_match /AGENDA/
       both_parts_should_match /#{meeting.committee.name}/
       both_parts_should_match /#{meeting.starts_at.to_date.to_s :long_ordinal}/
