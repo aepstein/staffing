@@ -1,5 +1,5 @@
-# config valid only for Capistrano 3.1
-lock '3.1.0'
+# config valid only for Capistrano 3.2
+lock '3.2.1'
 
 set :user, 'www-data'
 set :application, 'staffing'

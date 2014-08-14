@@ -1,31 +1,15 @@
 GIT
-  remote: git://github.com/aepstein/declarative_authorization.git
-  revision: 4bbf62072753ed03512777fece72f30752d7d7be
-  branch: rails4
-  specs:
-    declarative_authorization (1.0.0.pre)
-
-GIT
-  remote: git://github.com/jayrowe/valium.git
-  revision: 05e76d35edea582b44b9c9a786cdd393d219fd5e
-  specs:
-    valium (0.5.0)
-      activerecord (>= 3.0.2)
-
-GIT
-  remote: https://github.com/bokmann/fullcalendar-rails.git
-  revision: fbf0bfeb364f55a54a0b35935684291c570e0291
-  specs:
-    fullcalendar-rails (2.0.1.0)
-
-PATH
-  remote: /home/ari/code/cornell-assemblies-branding
+  remote: git://assembly.cornell.edu/git/cornell-assemblies-branding.git
+  revision: 1efb11704c311b579fb86524216e4edf71ebbf65
+  branch: 0-0-4
   specs:
     cornell-assemblies-branding (0.0.3)
       cornell_assemblies_rails (~> 0.0.3)
 
-PATH
-  remote: /home/ari/code/cornell-assemblies-rails
+GIT
+  remote: git://assembly.cornell.edu/git/cornell-assemblies-rails.git
+  revision: e59830b6980cfef23305e633d486fd8eb6a018b2
+  branch: 0-0-4
   specs:
     cornell_assemblies_rails (0.0.4)
       bcrypt-ruby (~> 3.0)
@@ -45,6 +29,26 @@ PATH
       simple_form (~> 3.1.0.rc2)
       squeel (~> 1.0)
       tabulous (~> 2.0)
+
+GIT
+  remote: git://github.com/aepstein/declarative_authorization.git
+  revision: 4bbf62072753ed03512777fece72f30752d7d7be
+  branch: rails4
+  specs:
+    declarative_authorization (1.0.0.pre)
+
+GIT
+  remote: git://github.com/jayrowe/valium.git
+  revision: 05e76d35edea582b44b9c9a786cdd393d219fd5e
+  specs:
+    valium (0.5.0)
+      activerecord (>= 3.0.2)
+
+GIT
+  remote: https://github.com/bokmann/fullcalendar-rails.git
+  revision: fbf0bfeb364f55a54a0b35935684291c570e0291
+  specs:
+    fullcalendar-rails (2.0.1.0)
 
 GEM
   remote: http://rubygems.org/
