@@ -3,8 +3,6 @@ require 'cucumber/rails'
 require 'capybara-screenshot/cucumber'
 
 Capybara.default_selector = :css
-
-
 ActionController::Base.allow_rescue = false
 
 begin
