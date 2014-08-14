@@ -1,9 +1,9 @@
 GIT
   remote: git://assembly.cornell.edu/git/cornell-assemblies-branding.git
-  revision: 1efb11704c311b579fb86524216e4edf71ebbf65
+  revision: 17c236e18e899775f417d236c5aef57e21d446e1
   branch: 0-0-4
   specs:
-    cornell-assemblies-branding (0.0.3)
+    cornell-assemblies-branding (0.0.4)
       cornell_assemblies_rails (~> 0.0.3)
 
 GIT
