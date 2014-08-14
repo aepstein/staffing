@@ -46,9 +46,9 @@ Then /^I may( not)? see the position$/ do |negate|
   step %{I should#{negate} be authorized}
   visit(positions_url)
   if negate.blank?
-    page.should have_selector( "#position-#{@position.id}" )
+    expect( page ).to have_selector( "#position-#{@position.id}" )
   else
-    page.should have_no_selector( "#position-#{@position.id}" )
+    expect( page ).to have_no_selector( "#position-#{@position.id}" )
   end
 end
 
@@ -60,9 +60,9 @@ Then /^I may( not)? create positions$/ do |negate|
   step %{I should#{negate} be authorized}
   visit(positions_url)
   if negate.blank?
-    page.should have_text('New position')
+    expect( page ).to have_text('New position')
   else
-    page.should have_no_text('New position')
+    expect( page ).to have_no_text('New position')
   end
 end
 
@@ -74,18 +74,18 @@ Then /^I may( not)? update the position$/ do |negate|
   step %{I should#{negate} be authorized}
   visit(positions_url)
   if negate.blank?
-    within("#position-#{@position.id}") { page.should have_text('Edit') }
+    within("#position-#{@position.id}") { expect( page ).to have_text('Edit') }
   else
-    page.should have_no_text('Edit')
+    expect( page ).to have_no_text('Edit')
   end
 end
 
 Then /^I may( not)? destroy the position$/ do |negate|
   visit(positions_url)
   if negate.blank?
-    within("#position-#{@position.id}") { page.should have_text('Destroy') }
+    within("#position-#{@position.id}") { expect( page ).to have_text('Destroy') }
   else
-    page.should have_no_text('Destroy')
+    expect( page ).to have_no_text('Destroy')
   end
   Capybara.current_session.driver.submit :delete, position_url(@position), {}
   step %{I should#{negate} be authorized}
@@ -129,31 +129,31 @@ When /^I create a position$/ do
 end
 
 Then /^I should see the new position$/ do
-  within( ".alert" ) { page.should have_text( "Position created." ) }
+  within( ".alert" ) { expect( page ).to have_text( "Position created." ) }
   within( "#position-#{@position.id}" ) do
-    page.should have_text "Authority: Supreme"
-    page.should have_text "Quiz: Generic"
-    page.should have_text "Schedule: Annual"
-    page.should have_text "Renewable? Yes"
-    page.should have_text "Notifiable? Yes"
-    page.should have_text "Designable? Yes"
-    page.should have_text "Active? Yes"
-    page.should have_text "Slots: 1"
-    page.should have_text "Minimum slots: 1"
-    page.should have_text "undergrad"
-    page.should have_text "Name: Popular Committee Member"
-    page.should have_text "You will soon be in position."
-    page.should have_text "Welcome to committee."
-    page.should have_text "You were dropped from the committee."
-    page.should have_text "There were no slots."
-    page.should have_no_text "No enrollments."
+    expect( page ).to have_text "Authority: Supreme"
+    expect( page ).to have_text "Quiz: Generic"
+    expect( page ).to have_text "Schedule: Annual"
+    expect( page ).to have_text "Renewable? Yes"
+    expect( page ).to have_text "Notifiable? Yes"
+    expect( page ).to have_text "Designable? Yes"
+    expect( page ).to have_text "Active? Yes"
+    expect( page ).to have_text "Slots: 1"
+    expect( page ).to have_text "Minimum slots: 1"
+    expect( page ).to have_text "undergrad"
+    expect( page ).to have_text "Name: Popular Committee Member"
+    expect( page ).to have_text "You will soon be in position."
+    expect( page ).to have_text "Welcome to committee."
+    expect( page ).to have_text "You were dropped from the committee."
+    expect( page ).to have_text "There were no slots."
+    expect( page ).to have_no_text "No enrollments."
     step %{I should see the following enrollments:}, table(%{
       | Cool Committee | Voting Member | 1 |
     })
     enrollment = @position.enrollments.first
     within("tr#enrollment-#{enrollment.id}") do
-      within("td:nth-of-type(4)") { page.should have_text "Yes" }
-      within("td:nth-of-type(5)") { page.should have_text "vicechair, monitor" }
+      within("td:nth-of-type(4)") { expect( page ).to have_text "Yes" }
+      within("td:nth-of-type(5)") { expect( page ).to have_text "vicechair, monitor" }
     end
   end
 end
@@ -180,24 +180,24 @@ When /^I update the position$/ do
 end
 
 Then /^I should see the edited position$/ do
-  within('.alert') { page.should have_text( "Position updated." ) }
+  within('.alert') { expect( page ).to have_text( "Position updated." ) }
   within("#position-#{@position.id}") do
-    page.should have_text "Authority: Inferior"
-    page.should have_text "Quiz: Specialized"
-    page.should have_text "Schedule: Semester"
-    page.should have_text "Renewable? No"
-    page.should have_text "Notifiable? No"
-    page.should have_text "Designable? No"
-    page.should have_text "Active? No"
-    page.should have_text "Slots: 2"
-    page.should have_text "Minimum slots: 2"
-    page.should have_no_text "undergrad"
-    page.should have_text "Name: Normal Committee Member"
-    page.should have_text "Pre-welcome!"
-    page.should have_text "Welcome!"
-    page.should have_text "Goodbye!"
-    page.should have_text "No more room!"
-    page.should have_text "No enrollments."
+    expect( page ).to have_text "Authority: Inferior"
+    expect( page ).to have_text "Quiz: Specialized"
+    expect( page ).to have_text "Schedule: Semester"
+    expect( page ).to have_text "Renewable? No"
+    expect( page ).to have_text "Notifiable? No"
+    expect( page ).to have_text "Designable? No"
+    expect( page ).to have_text "Active? No"
+    expect( page ).to have_text "Slots: 2"
+    expect( page ).to have_text "Minimum slots: 2"
+    expect( page ).to have_no_text "undergrad"
+    expect( page ).to have_text "Name: Normal Committee Member"
+    expect( page ).to have_text "Pre-welcome!"
+    expect( page ).to have_text "Welcome!"
+    expect( page ).to have_text "Goodbye!"
+    expect( page ).to have_text "No more room!"
+    expect( page ).to have_text "No enrollments."
   end
 end
 
@@ -211,7 +211,7 @@ When /^I "(.+)" the (\d+)(?:st|nd|rd|th) position$/ do |text, position|
   within("table > tbody > tr:nth-child(#{position.to_i})") do
     click_link "#{text}"
   end
-  within(".alert") { page.should have_text("Position destroyed.") }
+  within(".alert") { expect( page ).to have_text("Position destroyed.") }
 end
 
 Then /^I should see the following positions:$/ do |table|

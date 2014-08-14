@@ -34,9 +34,9 @@ Then(/^I may( not)? drill down on the meeting through public listings$/) do |neg
   visit(public_meetings_url)
   within("#meeting-#{@meeting.id}") do
     if negate.blank?
-      page.should have_text "Show"
+      expect( page ).to have_text "Show"
     else
-      page.should have_no_text "Show"
+      expect( page ).to have_no_text "Show"
     end
   end
 end
@@ -46,9 +46,9 @@ Then /^I may( not)? see the meeting$/ do |negate|
   step %{I should#{negate} be authorized}
   visit(committee_meetings_url(@meeting))
   if negate.blank?
-    page.should have_selector( "#meeting-#{@meeting.id}" )
+    expect( page ).to have_selector( "#meeting-#{@meeting.id}" )
   else
-    page.should have_no_selector( "#meeting-#{@meeting.id}" )
+    expect( page ).to have_no_selector( "#meeting-#{@meeting.id}" )
   end
 end
 
@@ -62,9 +62,9 @@ Then /^I may( not)? create meetings$/ do |negate|
   end
   visit(committee_meetings_url(@committee))
   if negate.blank?
-    page.should have_text('New meeting')
+    expect( page ).to have_text('New meeting')
   else
-    page.should have_no_text('New meeting')
+    expect( page ).to have_no_text('New meeting')
   end
 end
 
@@ -76,18 +76,18 @@ Then /^I may( not)? update the meeting$/ do |negate|
   step %{I should#{negate} be authorized}
   visit(committee_meetings_url(@committee))
   if negate.blank?
-    within("#meeting-#{@meeting.id}") { page.should have_text('Edit') }
+    within("#meeting-#{@meeting.id}") { expect( page ).to have_text('Edit') }
   else
-    page.should have_no_text('Edit')
+    expect( page ).to have_no_text('Edit')
   end
 end
 
 Then /^I may( not)? destroy the meeting$/ do |negate|
   visit(committee_meetings_url(@committee))
   if negate.blank?
-    within("#meeting-#{@meeting.id}") { page.should have_text('Destroy') }
+    within("#meeting-#{@meeting.id}") { expect( page ).to have_text('Destroy') }
   elsif page.has_selector?("#meeting-#{@meeting.id}")
-    within("#meeting-#{@meeting.id}") { page.should have_no_text('Destroy') }
+    within("#meeting-#{@meeting.id}") { expect( page ).to have_no_text('Destroy') }
   end
   Capybara.current_session.driver.submit :delete, meeting_url(@meeting), {}
   step %{I should#{negate} be authorized}
@@ -153,26 +153,26 @@ When /^I create a meeting with a (named|motion) item as (staff|chair)$/ do |item
 end
 
 Then /^I should see the new meeting with the (named|motion) item$/ do |item|
-  within( ".alert" ) { page.should have_text( "Meeting created." ) }
+  within( ".alert" ) { expect( page ).to have_text( "Meeting created." ) }
   @meeting = Meeting.find( URI.parse(current_url).path.match(/[\d]+$/)[0].to_i )
   within( "#meeting-#{@meeting.id}" ) do
-    page.should have_text "A brief meeting to discuss important business."
-    page.should have_text "Committee: #{@committee.name}"
-    page.should have_text "Period: #{@current_period}"
-    page.should have_text "Starts at: #{@start.to_s :us_ordinal}"
-    page.should have_text "Ends at: #{@end.to_s :us_ordinal}"
-    page.should have_text "Duration: 60 minutes"
-    page.should have_text "Location: Green Room"
-    page.should have_text "Room: Section A"
-    page.should have_text "Audio? No"
-    page.should have_text "Editable minutes? No"
-    page.should have_text "Published minutes? No"
-    page.should have_text "New Business"
+    expect( page ).to have_text "A brief meeting to discuss important business."
+    expect( page ).to have_text "Committee: #{@committee.name}"
+    expect( page ).to have_text "Period: #{@current_period}"
+    expect( page ).to have_text "Starts at: #{@start.to_s :us_ordinal}"
+    expect( page ).to have_text "Ends at: #{@end.to_s :us_ordinal}"
+    expect( page ).to have_text "Duration: 60 minutes"
+    expect( page ).to have_text "Location: Green Room"
+    expect( page ).to have_text "Room: Section A"
+    expect( page ).to have_text "Audio? No"
+    expect( page ).to have_text "Editable minutes? No"
+    expect( page ).to have_text "Published minutes? No"
+    expect( page ).to have_text "New Business"
     if item == 'named'
-      page.should have_text "Presentation on Campus Master Plan"
-      page.should have_text "Sample employee ids"
+      expect( page ).to have_text "Presentation on Campus Master Plan"
+      expect( page ).to have_text "Sample employee ids"
     else
-      page.should have_text "R. 1: Get Something Done"
+      expect( page ).to have_text "R. 1: Get Something Done"
     end
   end
 end
@@ -196,21 +196,21 @@ When /^I update the meeting$/ do
 end
 
 Then /^I should see the edited meeting$/ do
-  within('.alert') { page.should have_text( "Meeting updated." ) }
+  within('.alert') { expect( page ).to have_text( "Meeting updated." ) }
   within("#meeting-#{@meeting.id}") do
-    page.should have_text "Much ado about nothing."
-    page.should have_text "Starts at: #{@start.to_s :us_ordinal}"
-    page.should have_text "Ends at: #{@end.to_s :us_ordinal}"
-    page.should have_text "Duration: 70"
-    page.should have_text "Location: Red Room"
-    page.should have_text "Room: Section B"
-    page.should have_text "Audio? Yes"
-    page.should have_text "Editable minutes? Yes"
-    page.should have_text "Published minutes? Yes"
-    page.should have_no_text "New Business"
-    page.should have_no_text "Presentation on Campus Master Plan"
-    page.should have_no_text "Sample employee ids"
-    page.should have_no_text "R. 1: Get Something Done"
+    expect( page ).to have_text "Much ado about nothing."
+    expect( page ).to have_text "Starts at: #{@start.to_s :us_ordinal}"
+    expect( page ).to have_text "Ends at: #{@end.to_s :us_ordinal}"
+    expect( page ).to have_text "Duration: 70"
+    expect( page ).to have_text "Location: Red Room"
+    expect( page ).to have_text "Room: Section B"
+    expect( page ).to have_text "Audio? Yes"
+    expect( page ).to have_text "Editable minutes? Yes"
+    expect( page ).to have_text "Published minutes? Yes"
+    expect( page ).to have_no_text "New Business"
+    expect( page ).to have_no_text "Presentation on Campus Master Plan"
+    expect( page ).to have_no_text "Sample employee ids"
+    expect( page ).to have_no_text "R. 1: Get Something Done"
   end
 end
 
@@ -234,7 +234,7 @@ When /^I "(.+)" the (\d+)(?:st|nd|rd|th) meeting$/ do |text, meeting|
   within("table > tbody > tr:nth-child(#{meeting.to_i})") do
     click_link "#{text}"
   end
-  within(".alert") { page.should have_text("Meeting destroyed.") }
+  within(".alert") { expect( page ).to have_text("Meeting destroyed.") }
 end
 
 Then /^I should see the following meetings:$/ do |table|
@@ -268,14 +268,14 @@ When /^I publish the meeting$/ do
 end
 
 Then /^I should see the published meeting$/ do
-  within(".alert") { page.should have_text "Meeting published." }
+  within(".alert") { expect( page ).to have_text "Meeting published." }
 end
 
 Then /^I should( not)? see the meeting$/ do |negate|
   if negate.present?
-    page.should_not have_selector("#meeting-#{@meeting.id}")
+    expect( page ).to_not have_selector("#meeting-#{@meeting.id}")
   else
-    page.should have_selector("#meeting-#{@meeting.id}")
+    expect( page ).to have_selector("#meeting-#{@meeting.id}")
   end
 end
 

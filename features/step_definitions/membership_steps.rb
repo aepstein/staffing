@@ -59,9 +59,9 @@ Then /^I may( not)? create memberships for the position$/ do |negate|
   step %{I should#{negate} be authorized}
   visit(position_memberships_url(@position))
   if negate.blank?
-    page.should have_text('New membership')
+    expect( page ).to have_text('New membership')
   else
-    page.should have_no_text('New membership')
+    expect( page ).to have_no_text('New membership')
   end
   Capybara.current_session.driver.submit :post,
     position_memberships_url(@position),
@@ -77,10 +77,10 @@ Then /^I may( not)? update the membership$/ do |negate|
   step %{I should#{negate} be authorized}
   visit(position_memberships_url(@position))
   if negate.blank?
-    within("#membership-#{@membership.id}") { page.should have_text('Edit') }
+    within("#membership-#{@membership.id}") { expect( page ).to have_text('Edit') }
   else
     if page.has_selector?("#membership-#{@membership.id}")
-      within("#membership-#{@membership.id}") { page.should have_no_text('Edit') }
+      within("#membership-#{@membership.id}") { expect( page ).to have_no_text('Edit') }
     end
   end
 end
@@ -88,9 +88,9 @@ end
 Then /^I may( not)? destroy the membership$/ do |negate|
   visit(position_memberships_url(@position))
   if negate.blank?
-    within("#membership-#{@membership.id}") { page.should have_text('Destroy') }
+    within("#membership-#{@membership.id}") { expect( page ).to have_text('Destroy') }
   else
-    page.should have_no_text('Destroy')
+    expect( page ).to have_no_text('Destroy')
   end
   Capybara.current_session.driver.submit :delete, membership_url(@membership), {}
   step %{I should#{negate} be authorized}
@@ -101,28 +101,28 @@ Then /^I may( not)? see the membership$/ do |negate|
   step %{I should#{negate} be authorized}
   visit(position_memberships_url(@position))
   if negate.blank?
-    page.should have_selector( "#membership-#{@membership.id}" )
+    expect( page ).to have_selector( "#membership-#{@membership.id}" )
   else
-    page.should have_no_selector( "#membership-#{@membership.id}" )
+    expect( page ).to have_no_selector( "#membership-#{@membership.id}" )
   end
 end
 
 Then /^I may( not)? review the membership$/ do |negate|
   visit(assigned_reviewable_memberships_url)
   if negate.blank?
-    page.should have_selector( "#membership-#{@membership.id}" )
+    expect( page ).to have_selector( "#membership-#{@membership.id}" )
   else
-    page.should have_no_selector( "#membership-#{@membership.id}" )
+    expect( page ).to have_no_selector( "#membership-#{@membership.id}" )
   end
 end
 
 Then /^I may( not)? decline the membership$/ do |negate|
   visit(position_memberships_url(@position))
   if negate.blank?
-    within("#membership-#{@membership.id}") { page.should have_text('Decline') }
+    within("#membership-#{@membership.id}") { expect( page ).to have_text('Decline') }
   else
     if page.has_selector?("#membership-#{@membership.id}")
-      within("#membership-#{@membership.id}") { page.should have_no_text('Decline') }
+      within("#membership-#{@membership.id}") { expect( page ).to have_no_text('Decline') }
     end
   end
   visit(decline_membership_url(@membership))
@@ -132,9 +132,9 @@ end
 Then /^I may( not)? review the membership for renewal$/ do |negate|
   visit renewable_reviewable_memberships_path
   if negate.blank?
-    page.should have_selector "#membership-#{@membership.id}"
+    expect( page ).to have_selector "#membership-#{@membership.id}"
   else
-    page.should have_no_selector "#membership-#{@membership.id}"
+    expect( page ).to have_no_selector "#membership-#{@membership.id}"
   end
 end
 
@@ -187,22 +187,21 @@ end
 
 Then /^I should( not)? see the modifier error message$/ do |negate|
   if negate.blank?
-    within(".error_messages") { page.should have_text "must have authority to modify the position between" }
+    within(".error_messages") { expect( page ).to have_text "must have authority to modify the position between" }
   else
     @membership = Membership.find( URI.parse(current_url).path.match(/[\d]+$/)[0].to_i )
-    screenshot_and_open_image
-    within('.alert') { page.should have_text('Membership created.') }
+    within('.alert') { expect( page ).to have_text('Membership created.') }
   end
 end
 
 Then /^I should see the new membership$/ do
   within("#membership-#{@membership.id}") do
-    page.should have_text("Position: #{@position.name}")
-    page.should have_text("Period: #{@period.to_s}")
-    page.should have_text("User: #{@candidate.name(:net_id)}")
-    page.should have_text("Starts at: #{@starts_at.to_formatted_s(:us_ordinal)}")
-    page.should have_text("Ends at: #{@ends_at.to_formatted_s(:us_ordinal)}")
-    page.should have_text("Designee for Important Committee: #{@designee.name(:net_id)}")
+    expect( page ).to have_text("Position: #{@position.name}")
+    expect( page ).to have_text("Period: #{@period.to_s}")
+    expect( page ).to have_text("User: #{@candidate.name(:net_id)}")
+    expect( page ).to have_text("Starts at: #{@starts_at.to_formatted_s(:us_ordinal)}")
+    expect( page ).to have_text("Ends at: #{@ends_at.to_formatted_s(:us_ordinal)}")
+    expect( page ).to have_text("Designee for Important Committee: #{@designee.name(:net_id)}")
   end
 end
 
@@ -218,12 +217,12 @@ When /^I update the membership$/ do
 end
 
 Then /^I should see the edited membership$/ do
-  within('.alert') { page.should have_text("Membership updated.") }
+  within('.alert') { expect( page ).to have_text("Membership updated.") }
   within("#membership-#{@membership.id}") do
-    page.should have_text("User: #{@designee.name(:net_id)}")
-    page.should have_text("Starts at: #{@starts_at.to_formatted_s(:us_ordinal)}")
-    page.should have_text("Ends at: #{@ends_at.to_formatted_s(:us_ordinal)}")
-    page.should have_text("Designee for Important Committee: #{@candidate.name(:net_id)}")
+    expect( page ).to have_text("User: #{@designee.name(:net_id)}")
+    expect( page ).to have_text("Starts at: #{@starts_at.to_formatted_s(:us_ordinal)}")
+    expect( page ).to have_text("Ends at: #{@ends_at.to_formatted_s(:us_ordinal)}")
+    expect( page ).to have_text("Designee for Important Committee: #{@candidate.name(:net_id)}")
   end
 end
 
@@ -288,9 +287,9 @@ Then /^I should only find the (\d+)(?:st|nd|rd|th) membership$/ do |position|
   needle = @memberships[pos].id
   within("#memberships") do
     ( @memberships.map(&:id) - [ needle ] ).each do |id|
-      page.should_not have_selector "#membership-#{id}"
+      expect( page ).to_not have_selector "#membership-#{id}"
     end
-    page.should have_selector "#membership-#{needle}"
+    expect( page ).to have_selector "#membership-#{needle}"
   end
 end
 
@@ -314,11 +313,11 @@ end
 
 Then /^I should see the membership declined$/ do
   @membership.reload
-  within(".alert") { page.should have_text( "Membership renewal declined." ) }
+  within(".alert") { expect( page ).to have_text( "Membership renewal declined." ) }
   within("#membership-#{@membership.id}") do
-    page.should have_text "Renewal declined at: #{@membership.declined_at.to_s(:long_ordinal)}"
-    page.should have_text "Renewal declined by: #{@current_user.name(:net_id)}"
-    page.should have_text "No membership for you!"
+    expect( page ).to have_text "Renewal declined at: #{@membership.declined_at.to_s(:long_ordinal)}"
+    expect( page ).to have_text "Renewal declined by: #{@current_user.name(:net_id)}"
+    expect( page ).to have_text "No membership for you!"
   end
 end
 
@@ -330,7 +329,7 @@ Then /^I should see the (join|leave) notice is sent$/ do |notice|
   visit membership_url @membership
   within("#membership-#{@membership.id}") do
     within("#notices") do
-      page.should have_text notice
+      expect( page ).to have_text notice
     end
   end
 end
@@ -360,7 +359,7 @@ end
 
 Then /^the membership should have (a|no) renewal$/ do |renotify|
   @membership.reload
-  @membership.renew_until.should case renotify
+  expect( @membership.renew_until ).to case renotify
   when 'a'
     eql @membership.ends_at + 1.year
   when 'no'
@@ -369,26 +368,26 @@ Then /^the membership should have (a|no) renewal$/ do |renotify|
 end
 
 Then /^I should see renewals confirmed with renotification (en|dis)abled$/ do |renotify|
-  within(".alert") { page.should have_text "Renewal preferences updated." }
+  within(".alert") { expect( page ).to have_text "Renewal preferences updated." }
   @membership.user.reload
   checkpoint = @membership.user.renewal_checkpoint.to_i
   if renotify == 'en'
     target = @original_renewal_checkpoint.to_i
-    checkpoint.should be >= target - 1
-    checkpoint.should be <= target + 1
+    expect( checkpoint ).to be >= target - 1
+    expect( checkpoint ).to be <= target + 1
   else
     target = Time.zone.now.to_i
-    checkpoint.should be >= target - 1.minute.to_i
-    checkpoint.should be <= target + 1.minute.to_i
+    expect( checkpoint ).to be >= target - 1.minute.to_i
+    expect( checkpoint ).to be <= target + 1.minute.to_i
   end
 end
 
 Then /^I may( not)? renew the membership$/ do |negate|
   visit renew_user_memberships_url @membership.user
   if negate.blank?
-    page.should have_control_group "#{@membership.position.name}"
+    expect( page ).to have_control_group "#{@membership.position.name}"
   else
-    page.should have_no_control_group "#{@membership.position.name}"
+    expect( page ).to have_no_control_group "#{@membership.position.name}"
   end
 end
 

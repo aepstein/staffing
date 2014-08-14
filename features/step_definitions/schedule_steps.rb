@@ -8,9 +8,9 @@ Then /^I may( not)? see the schedule$/ do |negate|
   step %{I should#{negate} be authorized}
   visit(schedules_url)
   if negate.blank?
-    page.should have_selector( "#schedule-#{@schedule.id}" )
+    expect( page ).to have_selector( "#schedule-#{@schedule.id}" )
   else
-    page.should have_no_selector( "#schedule-#{@schedule.id}" )
+    expect( page ).to have_no_selector( "#schedule-#{@schedule.id}" )
   end
 end
 
@@ -22,9 +22,9 @@ Then /^I may( not)? create schedules$/ do |negate|
   step %{I should#{negate} be authorized}
   visit(schedules_url)
   if negate.blank?
-    page.should have_text('New schedule')
+    expect( page ).to have_text('New schedule')
   else
-    page.should have_no_text('New schedule')
+    expect( page ).to have_no_text('New schedule')
   end
 end
 
@@ -36,18 +36,18 @@ Then /^I may( not)? update the schedule$/ do |negate|
   step %{I should#{negate} be authorized}
   visit(schedules_url)
   if negate.blank?
-    within("#schedule-#{@schedule.id}") { page.should have_text('Edit') }
+    within("#schedule-#{@schedule.id}") { expect( page ).to have_text('Edit') }
   else
-    page.should have_no_text('Edit')
+    expect( page ).to have_no_text('Edit')
   end
 end
 
 Then /^I may( not)? destroy the schedule$/ do |negate|
   visit(schedules_url)
   if negate.blank?
-    within("#schedule-#{@schedule.id}") { page.should have_text('Destroy') }
+    within("#schedule-#{@schedule.id}") { expect( page ).to have_text('Destroy') }
   else
-    page.should have_no_text('Destroy')
+    expect( page ).to have_no_text('Destroy')
   end
   Capybara.current_session.driver.submit :delete, schedule_url(@schedule), {}
   step %{I should#{negate} be authorized}
@@ -64,10 +64,10 @@ When /^I create a schedule$/ do
 end
 
 Then /^I should see the new schedule$/ do
-  within( ".alert" ) { page.should have_text( "Schedule created." ) }
+  within( ".alert" ) { expect( page ).to have_text( "Schedule created." ) }
   within( "#schedule-#{@schedule.id}" ) do
-    page.should have_text "Name: Annual"
-    page.should have_no_text "No periods."
+    expect( page ).to have_text "Name: Annual"
+    expect( page ).to have_no_text "No periods."
     step %{I should see the following periods:}, table(%{
       | 01/01/2010 | 12/31/2010 |
     })
@@ -82,10 +82,10 @@ When /^I update the schedule$/ do
 end
 
 Then /^I should see the edited schedule$/ do
-  within('.alert') { page.should have_text( "Schedule updated." ) }
+  within('.alert') { expect( page ).to have_text( "Schedule updated." ) }
   within("#schedule-#{@schedule.id}") do
-    page.should have_text "Name: Empty"
-    page.should have_text "No periods."
+    expect( page ).to have_text "Name: Empty"
+    expect( page ).to have_text "No periods."
   end
 end
 
@@ -99,7 +99,7 @@ When /^I "(.+)" the (\d+)(?:st|nd|rd|th) schedule$/ do |text, schedule|
   within("table > tbody > tr:nth-child(#{schedule.to_i})") do
     click_link "#{text}"
   end
-  within(".alert") { page.should have_text("Schedule destroyed.") }
+  within(".alert") { expect( page ).to have_text("Schedule destroyed.") }
 end
 
 Then /^I should see the following schedules:$/ do |table|

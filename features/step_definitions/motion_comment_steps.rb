@@ -27,9 +27,9 @@ Then /^I may( not)? create comments for the motion$/ do |negate|
   step %{I should#{negate} be authorized}
   visit(motion_url(@motion))
   if negate.blank?
-    page.should have_text('Add comment')
+    expect( page ).to have_text('Add comment')
   else
-    page.should have_no_text('Add comment')
+    expect( page ).to have_no_text('Add comment')
   end
 end
 
@@ -42,10 +42,10 @@ Then /^I may( not)? update the motion comment$/ do |negate|
   step %{I should#{negate} be authorized}
   visit(motion_url(@motion))
   if negate.blank?
-    within("#motion-comment-#{@motion_comment.id}") { page.should have_text('Edit') }
+    within("#motion-comment-#{@motion_comment.id}") { expect( page ).to have_text('Edit') }
   else
     if page.has_selector?( "#motion-comment-#{@motion_comment.id}" )
-      within("#motion-comment-#{@motion_comment.id}") { page.should have_no_text('Edit') }
+      within("#motion-comment-#{@motion_comment.id}") { expect( page ).to have_no_text('Edit') }
     end
   end
 end
@@ -53,9 +53,9 @@ end
 Then /^I may( not)? destroy the motion comment$/ do |negate|
   visit(motion_url(@motion))
   if negate.blank?
-    within("#motion-comment-#{@motion_comment.id}") { page.should have_text('Destroy') }
+    within("#motion-comment-#{@motion_comment.id}") { expect( page ).to have_text('Destroy') }
   else
-    page.should have_no_text('Destroy')
+    expect( page ).to have_no_text('Destroy')
   end
   Capybara.current_session.driver.submit :delete, motion_comment_url(@motion_comment), {}
   step %{I should#{negate} be authorized}
@@ -64,9 +64,9 @@ end
 Then /^I may( not)? see the motion comment$/ do |negate|
   visit(motion_url(@motion))
   if negate.blank?
-    page.should have_selector( "#motion-comment-#{@motion_comment.id}" )
+    expect( page ).to have_selector( "#motion-comment-#{@motion_comment.id}" )
   else
-    page.should have_no_selector( "#motion-comment-#{@motion_comment.id}" )
+    expect( page ).to have_no_selector( "#motion-comment-#{@motion_comment.id}" )
   end
 end
 
@@ -85,10 +85,10 @@ When /^I create a motion comment$/ do
 end
 
 Then /^I should see the new motion comment$/ do
-  within( ".alert" ) { page.should have_text( "Motion comment created." ) }
+  within( ".alert" ) { expect( page ).to have_text( "Motion comment created." ) }
   @motion_comment = @motion.motion_comments.last
   within("#motion-comment-#{@motion_comment.id}") do
-    page.should have_text "This is my comment."
+    expect( page ).to have_text "This is my comment."
   end
 end
 
@@ -100,11 +100,11 @@ When /^I update the motion comment$/ do
 end
 
 Then /^I should see the edited motion comment$/ do
-  within( ".alert" ) { page.should have_text( "Motion comment updated." ) }
+  within( ".alert" ) { expect( page ).to have_text( "Motion comment updated." ) }
   visit motion_comment_path( @motion_comment )
-  page.should have_text "Some other comment."
+  expect( page ).to have_text "Some other comment."
   @motion_comment.reload
-  @motion_comment.attachments.count.should eql 0
+  expect( @motion_comment.attachments.count ).to eql 0
 end
 
 Given /^the motion has( no)? comments$/ do |negate|
@@ -123,9 +123,9 @@ end
 
 Then /^I should( not)? see the comments report$/ do |negate|
   if negate.blank?
-    page.response_headers["Content-Disposition"].should eql "inline; filename=\"comments-#{@motion.to_s :file}.pdf\""
+    expect( page.response_headers["Content-Disposition"] ).to eql "inline; filename=\"comments-#{@motion.to_s :file}.pdf\""
   else
-    within(".alert") { page.should have_text 'No comments provided for the motion.' }
+    within(".alert") { expect( page ).to have_text 'No comments provided for the motion.' }
   end
 end
 

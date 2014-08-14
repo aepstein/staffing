@@ -59,10 +59,10 @@ Then /^I may( not)? update the membership request$/ do |negate|
   step %{I should#{negate} be authorized}
   visit(committee_membership_requests_url(@committee))
   if negate.blank?
-    within("#membership-request-#{@membership_request.id}") { page.should have_text('Edit') }
+    within("#membership-request-#{@membership_request.id}") { expect( page ).to have_text('Edit') }
   else
     if page.has_selector?("#membership-request-#{@membership_request.id}")
-      within("#membership-request-#{@membership_request.id}") { page.should have_no_text('Edit') }
+      within("#membership-request-#{@membership_request.id}") { expect( page ).to have_no_text('Edit') }
     end
   end
 end
@@ -70,9 +70,9 @@ end
 Then /^I may( not)? destroy the membership request$/ do |negate|
   visit(committee_membership_requests_url(@committee))
   if negate.blank?
-    within("#membership-request-#{@membership_request.id}") { page.should have_text('Destroy') }
+    within("#membership-request-#{@membership_request.id}") { expect( page ).to have_text('Destroy') }
   else
-    page.should have_no_text('Destroy')
+    expect( page ).to have_no_text('Destroy')
   end
   Capybara.current_session.driver.submit :delete, membership_request_url(@membership_request), {}
   step %{I should#{negate} be authorized}
@@ -83,28 +83,28 @@ Then /^I may( not)? see the membership request$/ do |negate|
   step %{I should#{negate} be authorized}
   visit(committee_membership_requests_url(@committee))
   if negate.blank?
-    page.should have_selector( "#membership-request-#{@membership_request.id}" )
+    expect( page ).to have_selector( "#membership-request-#{@membership_request.id}" )
   else
-    page.should have_no_selector( "#membership-request-#{@membership_request.id}" )
+    expect( page ).to have_no_selector( "#membership-request-#{@membership_request.id}" )
   end
 end
 
 Then /^I may( not)? review the membership request$/ do |negate|
   visit(active_reviewable_membership_requests_url)
   if negate.blank?
-    page.should have_selector( "#membership-request-#{@membership_request.id}" )
+    expect( page ).to have_selector( "#membership-request-#{@membership_request.id}" )
   else
-    page.should have_no_selector( "#membership-request-#{@membership_request.id}" )
+    expect( page ).to have_no_selector( "#membership-request-#{@membership_request.id}" )
   end
 end
 
 Then /^I may( not)? reject the membership request$/ do |negate|
   visit(committee_membership_requests_url(@committee))
   if negate.blank?
-    within("#membership-request-#{@membership_request.id}") { page.should have_text('Reject') }
+    within("#membership-request-#{@membership_request.id}") { expect( page ).to have_text('Reject') }
   else
     if page.has_selector?("#membership-request-#{@membership_request.id}")
-      within("#membership-request-#{@membership_request.id}") { page.should have_no_text('Reject') }
+      within("#membership-request-#{@membership_request.id}") { expect( page ).to have_no_text('Reject') }
     end
   end
   visit(reject_membership_request_url(@membership_request))
@@ -118,10 +118,10 @@ end
 Then /^I may( not)? reactivate the membership request$/ do |negate|
   visit(committee_membership_requests_url(@committee))
   if negate.blank?
-    within("#membership-request-#{@membership_request.id}") { page.should have_text('Reactivate') }
+    within("#membership-request-#{@membership_request.id}") { expect( page ).to have_text('Reactivate') }
   else
     if page.has_selector?("#membership-request-#{@membership_request.id}")
-      within("#membership-request-#{@membership_request.id}") { page.should have_no_text('Reactivate') }
+      within("#membership-request-#{@membership_request.id}") { expect( page ).to have_no_text('Reactivate') }
     end
   end
   Capybara.current_session.driver.submit :put, reactivate_membership_request_url(@membership_request), {}
@@ -131,8 +131,8 @@ end
 Then /^I may( not)? edit the membership request via new action$/ do |negate|
   visit(new_committee_membership_request_url(@committee, user_id: @membership_request.user_id))
   if negate.blank?
-    current_path.should eql edit_membership_request_path( @membership_request )
-    within( '.alert' ) { page.should have_text 'Update and reactivate your existing request.' }
+    expect( current_path ).to eql edit_membership_request_path( @membership_request )
+    within( '.alert' ) { expect( page ).to have_text 'Update and reactivate your existing request.' }
   end
 end
 
@@ -177,24 +177,24 @@ end
 
 Then /^I should( not)? see the creator error message$/ do |negate|
   if negate.blank?
-    within(".error_messages") { page.should have_text "may not request membership in the committee" }
+    within(".error_messages") { expect( page ).to have_text "may not request membership in the committee" }
   else
     @membership_request = MembershipRequest.find( URI.parse(current_url).path.match(/[\d]+$/)[0].to_i )
-    within('.alert') { page.should have_text('Membership request created.') }
+    within('.alert') { expect( page ).to have_text('Membership request created.') }
   end
 end
 
 Then /^I should see the new membership request$/ do
   step %{I should not see the creator error message}
   within("#membership-request-#{@membership_request.id}") do
-    page.should have_text "Committee: #{@committee.name}"
-    page.should have_text "User: #{@current_user.name(:net_id)}"
-    page.should have_text "Desired start date: #{@starts.to_formatted_s(:long_ordinal)}"
-    page.should have_text "Desired end date: #{@ends.to_formatted_s(:long_ordinal)}"
+    expect( page ).to have_text "Committee: #{@committee.name}"
+    expect( page ).to have_text "User: #{@current_user.name(:net_id)}"
+    expect( page ).to have_text "Desired start date: #{@starts.to_formatted_s(:long_ordinal)}"
+    expect( page ).to have_text "Desired end date: #{@ends.to_formatted_s(:long_ordinal)}"
     within("ol#answers") do
-      within("li:nth-of-type(3)") { page.should have_text "What is your favority color? blue" }
-      within("li:nth-of-type(2)") { page.should have_text "Damascus" }
-      within("li:nth-of-type(1)") { page.should have_text "Are you qualified? Yes" }
+      within("li:nth-of-type(3)") { expect( page ).to have_text "What is your favority color? blue" }
+      within("li:nth-of-type(2)") { expect( page ).to have_text "Damascus" }
+      within("li:nth-of-type(1)") { expect( page ).to have_text "Are you qualified? Yes" }
     end
   end
 end
@@ -214,14 +214,14 @@ When /^I update the membership request$/ do
 end
 
 Then /^I should see the updated membership request$/ do
-  within('.alert') { page.should have_text("Membership request updated and active.") }
+  within('.alert') { expect( page ).to have_text("Membership request updated and active.") }
   within("#membership-request-#{@membership_request.id}") do
-    page.should have_text "Desired start date: #{@starts.to_formatted_s(:long_ordinal)}"
-    page.should have_text "Desired end date: #{@ends.to_formatted_s(:long_ordinal)}"
+    expect( page ).to have_text "Desired start date: #{@starts.to_formatted_s(:long_ordinal)}"
+    expect( page ).to have_text "Desired end date: #{@ends.to_formatted_s(:long_ordinal)}"
     within("ol#answers") do
-      within("li:nth-of-type(1)") { page.should have_text "What is your favority color? yellow" }
-      within("li:nth-of-type(2)") { page.should have_text "Carthage" }
-      within("li:nth-of-type(3)") { page.should have_text "Are you qualified? No" }
+      within("li:nth-of-type(1)") { expect( page ).to have_text "What is your favority color? yellow" }
+      within("li:nth-of-type(2)") { expect( page ).to have_text "Carthage" }
+      within("li:nth-of-type(3)") { expect( page ).to have_text "Are you qualified? No" }
     end
   end
 end
@@ -258,12 +258,12 @@ When /^I update the referred membership request$/ do
 end
 
 Then /^I should see the updated referred membership request$/ do
-  within('.alert') { page.should have_text("Request updated.") }
+  within('.alert') { expect( page ).to have_text("Request updated.") }
   within("#membership-request-#{@membership_request.id}") do
-    page.should have_text("Name: Referred membership_request")
-    page.should have_text("This is different")
-    page.should have_text("Whereas and resolved")
-    page.should have_no_text("Sample employee ids")
+    expect( page ).to have_text("Name: Referred membership_request")
+    expect( page ).to have_text("This is different")
+    expect( page ).to have_text("Whereas and resolved")
+    expect( page ).to have_no_text("Sample employee ids")
   end
 end
 
@@ -313,9 +313,9 @@ Then /^I should only find the (\d+)(?:st|nd|rd|th) membership request$/ do |comm
   needle = @membership_requests[pos].id
   within("#membership-requests") do
     ( @membership_requests.map(&:id) - [ needle ] ).each do |id|
-      page.should_not have_selector "#membership-request-#{id}"
+      expect( page ).to_not have_selector "#membership-request-#{id}"
     end
-    page.should have_selector "#membership-request-#{needle}"
+    expect( page ).to have_selector "#membership-request-#{needle}"
   end
 end
 
@@ -347,12 +347,12 @@ end
 
 Then /^I should see the rejected membership request$/ do
   @membership_request.reload
-  within(".alert") { page.should have_text( "Membership request rejected." ) }
+  within(".alert") { expect( page ).to have_text( "Membership request rejected." ) }
   within("#membership-request-#{@membership_request.id}") do
-    page.should have_text "Rejected at: #{@membership_request.rejected_at.to_s(:us_ordinal)}"
-    page.should have_text "Rejected by authority: #{@membership_request.authorities.first.name}"
-    page.should have_text "Rejected by user: #{@current_user.name(:net_id)}"
-    page.should have_text "No membership for you!"
+    expect( page ).to have_text "Rejected at: #{@membership_request.rejected_at.to_s(:us_ordinal)}"
+    expect( page ).to have_text "Rejected by authority: #{@membership_request.authorities.first.name}"
+    expect( page ).to have_text "Rejected by user: #{@current_user.name(:net_id)}"
+    expect( page ).to have_text "No membership for you!"
   end
 end
 
@@ -366,11 +366,11 @@ end
 
 Then /^the membership request should be active$/ do
   @membership_request.reload
-  @membership_request.active?.should be_true
+  expect( @membership_request.active? ).to be_true
 end
 
 Then /^I should see the reactivated membership request$/ do
-  within(".alert") { page.should have_text "Membership request reactivated." }
+  within(".alert") { expect( page ).to have_text "Membership request reactivated." }
 end
 
 When /^the (close|reject) notice has been sent$/ do |notice|
@@ -381,7 +381,7 @@ Then /^I should see the (close|reject) notice is sent$/ do |notice|
   visit membership_request_url @membership_request
   within("#membership-request-#{@membership_request.id}") do
     within("#notices") do
-      page.should have_text notice
+      expect( page ).to have_text notice
     end
   end
 end

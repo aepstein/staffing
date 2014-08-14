@@ -8,9 +8,9 @@ Then /^I may( not)? see the meeting template$/ do |negate|
   step %{I should#{negate} be authorized}
   visit(meeting_templates_url)
   if negate.blank?
-    page.should have_selector( "#meeting-template-#{@meeting_template.id}" )
+    expect( page ).to have_selector( "#meeting-template-#{@meeting_template.id}" )
   else
-    page.should have_no_selector( "#meeting-template-#{@meeting_template.id}" )
+    expect( page ).to have_no_selector( "#meeting-template-#{@meeting_template.id}" )
   end
 end
 
@@ -22,9 +22,9 @@ Then /^I may( not)? create meeting templates$/ do |negate|
   step %{I should#{negate} be authorized}
   visit(meeting_templates_url)
   if negate.blank?
-    page.should have_text('New meeting template')
+    expect( page ).to have_text('New meeting template')
   else
-    page.should have_no_text('New meeting template')
+    expect( page ).to have_no_text('New meeting template')
   end
 end
 
@@ -37,18 +37,18 @@ Then /^I may( not)? update the meeting template$/ do |negate|
   step %{I should#{negate} be authorized}
   visit(meeting_templates_url)
   if negate.blank?
-    within("#meeting-template-#{@meeting_template.id}") { page.should have_text('Edit') }
+    within("#meeting-template-#{@meeting_template.id}") { expect( page ).to have_text('Edit') }
   else
-    page.should have_no_text('Edit')
+    expect( page ).to have_no_text('Edit')
   end
 end
 
 Then /^I may( not)? destroy the meeting template$/ do |negate|
   visit(meeting_templates_url)
   if negate.blank?
-    within("#meeting-template-#{@meeting_template.id}") { page.should have_text('Destroy') }
+    within("#meeting-template-#{@meeting_template.id}") { expect( page ).to have_text('Destroy') }
   else
-    page.should have_no_text('Destroy')
+    expect( page ).to have_no_text('Destroy')
   end
   Capybara.current_session.driver.submit :delete, meeting_template_url(@meeting_template), {}
   step %{I should#{negate} be authorized}
@@ -70,12 +70,12 @@ When /^I create a meeting template$/ do
 end
 
 Then /^I should see the new meeting template$/ do
-  within( ".alert" ) { page.should have_text( "Meeting template created." ) }
+  within( ".alert" ) { expect( page ).to have_text( "Meeting template created." ) }
   within( "#meeting-template-#{@meeting_template.id}" ) do
-    page.should have_text "Meeting template name: Annual"
-    page.should have_no_text "No periods."
-    page.should have_text "Call to Order"
-    page.should have_text "Roll Call"
+    expect( page ).to have_text "Meeting template name: Annual"
+    expect( page ).to have_no_text "No periods."
+    expect( page ).to have_text "Call to Order"
+    expect( page ).to have_text "Roll Call"
   end
 end
 
@@ -87,10 +87,10 @@ When /^I update the meeting template$/ do
 end
 
 Then /^I should see the edited meeting template$/ do
-  within('.alert') { page.should have_text( "Meeting template updated." ) }
+  within('.alert') { expect( page ).to have_text( "Meeting template updated." ) }
   within("#meeting-template-#{@meeting_template.id}") do
-    page.should have_text "Meeting template name: Empty"
-    page.should have_text "No meeting section templates."
+    expect( page ).to have_text "Meeting template name: Empty"
+    expect( page ).to have_text "No meeting section templates."
   end
 end
 
@@ -104,7 +104,7 @@ When /^I "(.+)" the (\d+)(?:st|nd|rd|th) meeting template$/ do |text, meeting_te
   within("table > tbody > tr:nth-child(#{meeting_template.to_i})") do
     click_link "#{text}"
   end
-  within(".alert") { page.should have_text("Meeting template destroyed.") }
+  within(".alert") { expect( page ).to have_text("Meeting template destroyed.") }
 end
 
 Then /^I should see the following meeting templates:$/ do |table|

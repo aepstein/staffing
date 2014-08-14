@@ -8,9 +8,9 @@ Then /^I may( not)? see the quiz$/ do |negate|
   step %{I should#{negate} be authorized}
   visit(quizzes_url)
   if negate.blank?
-    page.should have_selector( "#quiz-#{@quiz.id}" )
+    expect( page ).to have_selector( "#quiz-#{@quiz.id}" )
   else
-    page.should have_no_selector( "#quiz-#{@quiz.id}" )
+    expect( page ).to have_no_selector( "#quiz-#{@quiz.id}" )
   end
 end
 
@@ -22,9 +22,9 @@ Then /^I may( not)? create quizzes$/ do |negate|
   step %{I should#{negate} be authorized}
   visit(quizzes_url)
   if negate.blank?
-    page.should have_text('New quiz')
+    expect( page ).to have_text('New quiz')
   else
-    page.should have_no_text('New quiz')
+    expect( page ).to have_no_text('New quiz')
   end
 end
 
@@ -36,18 +36,18 @@ Then /^I may( not)? update the quiz$/ do |negate|
   step %{I should#{negate} be authorized}
   visit(quizzes_url)
   if negate.blank?
-    within("#quiz-#{@quiz.id}") { page.should have_text('Edit') }
+    within("#quiz-#{@quiz.id}") { expect( page ).to have_text('Edit') }
   else
-    page.should have_no_text('Edit')
+    expect( page ).to have_no_text('Edit')
   end
 end
 
 Then /^I may( not)? destroy the quiz$/ do |negate|
   visit(quizzes_url)
   if negate.blank?
-    within("#quiz-#{@quiz.id}") { page.should have_text('Destroy') }
+    within("#quiz-#{@quiz.id}") { expect( page ).to have_text('Destroy') }
   else
-    page.should have_no_text('Destroy')
+    expect( page ).to have_no_text('Destroy')
   end
   Capybara.current_session.driver.submit :delete, quiz_url(@quiz), {}
   step %{I should#{negate} be authorized}
@@ -67,11 +67,11 @@ When /^I create a quiz$/ do
 end
 
 Then /^I should see the new quiz$/ do
-  within( ".alert" ) { page.should have_text( "Quiz created." ) }
+  within( ".alert" ) { expect( page ).to have_text( "Quiz created." ) }
   within( "#quiz-#{@quiz.id}" ) do
-    page.should have_text "Name: Generic"
+    expect( page ).to have_text "Name: Generic"
     within("#questions") do
-      page.should have_text "An Interesting Question"
+      expect( page ).to have_text "An Interesting Question"
     end
   end
 end
@@ -84,10 +84,10 @@ When /^I update the quiz$/ do
 end
 
 Then /^I should see the edited quiz$/ do
-  within('.alert') { page.should have_text( "Quiz updated." ) }
+  within('.alert') { expect( page ).to have_text( "Quiz updated." ) }
   within("#quiz-#{@quiz.id}") do
-    page.should have_text "Name: Specialized"
-    page.should have_text "No questions."
+    expect( page ).to have_text "Name: Specialized"
+    expect( page ).to have_text "No questions."
   end
 end
 
@@ -101,7 +101,7 @@ When /^I "(.+)" the (\d+)(?:st|nd|rd|th) quiz$/ do |text, quiz|
   within("table > tbody > tr:nth-child(#{quiz.to_i})") do
     click_link "#{text}"
   end
-  within(".alert") { page.should have_text("Quiz destroyed.") }
+  within(".alert") { expect( page ).to have_text("Quiz destroyed.") }
 end
 
 Then /^I should see the following quizzes:$/ do |table|

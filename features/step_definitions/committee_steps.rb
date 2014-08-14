@@ -35,9 +35,9 @@ Then /^I may( not)? see the committee$/ do |negate|
   step %{I should#{negate} be authorized}
   visit(committees_url)
   if negate.blank?
-    page.should have_selector( "#committee-#{@committee.id}" )
+    expect( page ).to have_selector( "#committee-#{@committee.id}" )
   else
-    page.should have_no_selector( "#committee-#{@committee.id}" )
+    expect( page ).to have_no_selector( "#committee-#{@committee.id}" )
   end
 end
 
@@ -49,9 +49,9 @@ Then /^I may( not)? create committees$/ do |negate|
   step %{I should#{negate} be authorized}
   visit(committees_url)
   if negate.blank?
-    page.should have_text('New committee')
+    expect( page ).to have_text('New committee')
   else
-    page.should have_no_text('New committee')
+    expect( page ).to have_no_text('New committee')
   end
 end
 
@@ -63,18 +63,18 @@ Then /^I may( not)? update the committee$/ do |negate|
   step %{I should#{negate} be authorized}
   visit(committees_url)
   if negate.blank?
-    within("#committee-#{@committee.id}") { page.should have_text('Edit') }
+    within("#committee-#{@committee.id}") { expect( page ).to have_text('Edit') }
   else
-    page.should have_no_text('Edit')
+    expect( page ).to have_no_text('Edit')
   end
 end
 
 Then /^I may( not)? destroy the committee$/ do |negate|
   visit(committees_url)
   if negate.blank?
-    within("#committee-#{@committee.id}") { page.should have_text('Destroy') }
+    within("#committee-#{@committee.id}") { expect( page ).to have_text('Destroy') }
   else
-    page.should have_no_text('Destroy')
+    expect( page ).to have_no_text('Destroy')
   end
   Capybara.current_session.driver.submit :delete, committee_url(@committee), {}
   step %{I should#{negate} be authorized}
@@ -116,29 +116,29 @@ When /^I create an committee$/ do
 end
 
 Then /^I should see the new committee$/ do
-  within( ".alert" ) { page.should have_text( "Committee created." ) }
+  within( ".alert" ) { expect( page ).to have_text( "Committee created." ) }
   within( "#committee-#{@committee.id}" ) do
-    page.should have_text "Name: Important Committee"
-    page.should have_text "Contact name: Officials"
-    page.should have_text "Contact email: officials@example.com"
-    page.should have_text "Active? No"
-    page.should have_text "Sponsor? Yes"
-    page.should have_text "Schedule: Annual"
-    page.should have_text "Meeting template: Informal"
-    page.should have_text "Brand: Prestigious"
-    page.should have_text "Publish email: info@example.com"
-    page.should have_text "You will soon be in committee."
-    page.should have_text "Welcome to committee."
-    page.should have_text "You were dropped from the committee."
-    page.should have_text "There were no slots."
-    page.should have_no_text "No enrollments."
+    expect( page ).to have_text "Name: Important Committee"
+    expect( page ).to have_text "Contact name: Officials"
+    expect( page ).to have_text "Contact email: officials@example.com"
+    expect( page ).to have_text "Active? No"
+    expect( page ).to have_text "Sponsor? Yes"
+    expect( page ).to have_text "Schedule: Annual"
+    expect( page ).to have_text "Meeting template: Informal"
+    expect( page ).to have_text "Brand: Prestigious"
+    expect( page ).to have_text "Publish email: info@example.com"
+    expect( page ).to have_text "You will soon be in committee."
+    expect( page ).to have_text "Welcome to committee."
+    expect( page ).to have_text "You were dropped from the committee."
+    expect( page ).to have_text "There were no slots."
+    expect( page ).to have_no_text "No enrollments."
     step %{I should see the following enrollments:}, table(%{
       | Member of Committee | Voting Member | 1 |
     })
     enrollment = @committee.enrollments.first
     within("tr#enrollment-#{enrollment.id}") do
-      within("td:nth-of-type(4)") { page.should have_text "Yes" }
-      within("td:nth-of-type(5)") { page.should have_text "vicechair, monitor" }
+      within("td:nth-of-type(4)") { expect( page ).to have_text "Yes" }
+      within("td:nth-of-type(5)") { expect( page ).to have_text "vicechair, monitor" }
     end
   end
 end
@@ -163,22 +163,22 @@ When /^I update the committee$/ do
 end
 
 Then /^I should see the edited committee$/ do
-  within('.alert') { page.should have_text( "Committee updated." ) }
+  within('.alert') { expect( page ).to have_text( "Committee updated." ) }
   within("#committee-#{@committee.id}") do
-    page.should have_text "Name: No Longer Important Committee"
-    page.should have_text "Contact name: Boss"
-    page.should have_text "Contact email: boss@example.com"
-    page.should have_text "Active? Yes"
-    page.should have_text "Sponsor? No"
-    page.should have_text "Schedule: Semester"
-    page.should have_text "Meeting template: Elaborate"
-    page.should have_text "Brand: Silly"
-    page.should have_text "Publish email: info@example.org"
-    page.should have_text "Pre-welcome message"
-    page.should have_text "Welcome message"
-    page.should have_text "Farewell message"
-    page.should have_text "There were not enough slots."
-    page.should have_text 'No enrollments.'
+    expect( page ).to have_text "Name: No Longer Important Committee"
+    expect( page ).to have_text "Contact name: Boss"
+    expect( page ).to have_text "Contact email: boss@example.com"
+    expect( page ).to have_text "Active? Yes"
+    expect( page ).to have_text "Sponsor? No"
+    expect( page ).to have_text "Schedule: Semester"
+    expect( page ).to have_text "Meeting template: Elaborate"
+    expect( page ).to have_text "Brand: Silly"
+    expect( page ).to have_text "Publish email: info@example.org"
+    expect( page ).to have_text "Pre-welcome message"
+    expect( page ).to have_text "Welcome message"
+    expect( page ).to have_text "Farewell message"
+    expect( page ).to have_text "There were not enough slots."
+    expect( page ).to have_text 'No enrollments.'
   end
 end
 
@@ -192,7 +192,7 @@ When /^I "(.+)" the (\d+)(?:st|nd|rd|th) committee$/ do |text, committee|
   within("table > tbody > tr:nth-child(#{committee.to_i})") do
     click_link "#{text}"
   end
-  within(".alert") { page.should have_text("Committee destroyed.") }
+  within(".alert") { expect( page ).to have_text("Committee destroyed.") }
 end
 
 Then /^I should see the following committees:$/ do |table|
@@ -227,9 +227,9 @@ Then /^I may( not)? request membership in the committee$/ do |negate|
   visit(root_url)
   within("#membership_requests") do
     if negate.blank?
-      page.should have_text "You may browse 1 committee for which you are eligible to request membership."
+      expect( page ).to have_text "You may browse 1 committee for which you are eligible to request membership."
     else
-      page.should have_text "You may browse 0 committees for which you are eligible to request membership."
+      expect( page ).to have_text "You may browse 0 committees for which you are eligible to request membership."
     end
   end
 end

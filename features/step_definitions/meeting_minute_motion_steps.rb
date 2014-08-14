@@ -21,14 +21,14 @@ When /^I create a minute motion for the meeting with (past|current|default) peri
 end
 
 Then /^I should see the new minute motion with (past|current) period$/ do |period|
-  within(".alert") { page.should have_text 'Motion created.' }
+  within(".alert") { expect( page ).to have_text 'Motion created.' }
   if period == 'current'
-    page.should have_text "Period: #{@current.to_s}"
+    expect( page ).to have_text "Period: #{@current.to_s}"
   else
-    page.should have_text "Period: #{@past.to_s}"
+    expect( page ).to have_text "Period: #{@past.to_s}"
   end
   @motion = Motion.find( URI.parse(current_url).path.match(/[\d]+$/)[0].to_i )
-  page.should have_text "Somebody talked about something."
+  expect( page ).to have_text "Somebody talked about something."
 end
 
 When /^I update the minute motion$/ do
@@ -43,16 +43,16 @@ When /^I update the minute motion$/ do
 end
 
 Then /^I should see the updated minute motion$/ do
-  within(".alert") { page.should have_text "Motion updated." }
+  within(".alert") { expect( page ).to have_text "Motion updated." }
 end
 
 Then /^I may( not)? create minute motions for the meeting$/ do |negate|
   create(:period, schedule: @meeting.committee.schedule) if @meeting.period.ends_at < Time.zone.today
   visit meeting_url( @meeting )
   if negate.blank?
-    page.should have_text "Add Minutes"
+    expect( page ).to have_text "Add Minutes"
   else
-    page.should have_no_text "Add Minutes"
+    expect( page ).to have_no_text "Add Minutes"
   end
   visit new_meeting_motion_path( @meeting )
   step %{I should#{negate} be authorized}

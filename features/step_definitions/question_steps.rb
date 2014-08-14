@@ -8,9 +8,9 @@ Then /^I may( not)? see the question$/ do |negate|
   step %{I should#{negate} be authorized}
   visit(questions_url)
   if negate.blank?
-    page.should have_selector( "#question-#{@question.id}" )
+    expect( page ).to have_selector( "#question-#{@question.id}" )
   else
-    page.should have_no_selector( "#question-#{@question.id}" )
+    expect( page ).to have_no_selector( "#question-#{@question.id}" )
   end
 end
 
@@ -22,9 +22,9 @@ Then /^I may( not)? create questions$/ do |negate|
   step %{I should#{negate} be authorized}
   visit(questions_url)
   if negate.blank?
-    page.should have_text('New question')
+    expect( page ).to have_text('New question')
   else
-    page.should have_no_text('New question')
+    expect( page ).to have_no_text('New question')
   end
 end
 
@@ -36,18 +36,18 @@ Then /^I may( not)? update the question$/ do |negate|
   step %{I should#{negate} be authorized}
   visit(questions_url)
   if negate.blank?
-    within("#question-#{@question.id}") { page.should have_text('Edit') }
+    within("#question-#{@question.id}") { expect( page ).to have_text('Edit') }
   else
-    page.should have_no_text('Edit')
+    expect( page ).to have_no_text('Edit')
   end
 end
 
 Then /^I may( not)? destroy the question$/ do |negate|
   visit(questions_url)
   if negate.blank?
-    within("#question-#{@question.id}") { page.should have_text('Destroy') }
+    within("#question-#{@question.id}") { expect( page ).to have_text('Destroy') }
   else
-    page.should have_no_text('Destroy')
+    expect( page ).to have_no_text('Destroy')
   end
   Capybara.current_session.driver.submit :delete, question_url(@question), {}
   step %{I should#{negate} be authorized}
@@ -64,11 +64,11 @@ When /^I create a question$/ do
 end
 
 Then /^I should see the new question$/ do
-  within( ".alert" ) { page.should have_text( "Question created." ) }
+  within( ".alert" ) { expect( page ).to have_text( "Question created." ) }
   within( "#question-#{@question.id}" ) do
-    page.should have_text "Name: Favorite color"
-    page.should have_text "What is your favorite color?"
-    page.should have_text "Text Box"
+    expect( page ).to have_text "Name: Favorite color"
+    expect( page ).to have_text "What is your favorite color?"
+    expect( page ).to have_text "Text Box"
   end
 end
 
@@ -82,12 +82,12 @@ When /^I update the question$/ do
 end
 
 Then /^I should see the edited question$/ do
-  within('.alert') { page.should have_text( "Question updated." ) }
+  within('.alert') { expect( page ).to have_text( "Question updated." ) }
   within("#question-#{@question.id}") do
-    page.should have_text "Name: Favorite dessert"
-    page.should have_text "What is your favorite dessert?"
-    page.should have_text "Disposition: Yes/No"
-    page.should have_text "Global? No"
+    expect( page ).to have_text "Name: Favorite dessert"
+    expect( page ).to have_text "What is your favorite dessert?"
+    expect( page ).to have_text "Disposition: Yes/No"
+    expect( page ).to have_text "Global? No"
   end
 end
 
@@ -101,7 +101,7 @@ When /^I "(.+)" the (\d+)(?:st|nd|rd|th) question$/ do |text, question|
   within("table > tbody > tr:nth-child(#{question.to_i})") do
     click_link "#{text}"
   end
-  within(".alert") { page.should have_text("Question destroyed.") }
+  within(".alert") { expect( page ).to have_text("Question destroyed.") }
 end
 
 Then /^I should see the following questions:$/ do |table|

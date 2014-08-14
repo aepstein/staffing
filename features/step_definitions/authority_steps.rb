@@ -1,8 +1,8 @@
 Then /^I should (not )?see the authority$/ do |negate|
   if negate.blank?
-    page.should have_selector "#authority-#{@authority.id}"
+    expect( page ).to have_selector "#authority-#{@authority.id}"
   else
-    page.should have_no_selector "#authority-#{@authority.id}"
+    expect( page ).to have_no_selector "#authority-#{@authority.id}"
   end
 end
 
@@ -33,9 +33,9 @@ Then /^I may( not)? see the authority$/ do |negate|
   step %{I should#{negate} be authorized}
   visit(authorities_url)
   if negate.blank?
-    page.should have_selector( "#authority-#{@authority.id}" )
+    expect( page ).to have_selector( "#authority-#{@authority.id}" )
   else
-    page.should have_no_selector( "#authority-#{@authority.id}" )
+    expect( page ).to have_no_selector( "#authority-#{@authority.id}" )
   end
 end
 
@@ -47,9 +47,9 @@ Then /^I may( not)? create authorities$/ do |negate|
   step %{I should#{negate} be authorized}
   visit(authorities_url)
   if negate.blank?
-    page.should have_text('New authority')
+    expect( page ).to have_text('New authority')
   else
-    page.should have_no_text('New authority')
+    expect( page ).to have_no_text('New authority')
   end
 end
 
@@ -61,18 +61,18 @@ Then /^I may( not)? update the authority$/ do |negate|
   step %{I should#{negate} be authorized}
   visit(authorities_url)
   if negate.blank?
-    within("#authority-#{@authority.id}") { page.should have_text('Edit') }
+    within("#authority-#{@authority.id}") { expect( page ).to have_text('Edit') }
   else
-    page.should have_no_text('Edit')
+    expect( page ).to have_no_text('Edit')
   end
 end
 
 Then /^I may( not)? destroy the authority$/ do |negate|
   visit(authorities_url)
   if negate.blank?
-    within("#authority-#{@authority.id}") { page.should have_text('Destroy') }
+    within("#authority-#{@authority.id}") { expect( page ).to have_text('Destroy') }
   else
-    page.should have_no_text('Destroy')
+    expect( page ).to have_no_text('Destroy')
   end
   Capybara.current_session.driver.submit :delete, authority_url(@authority), {}
   step %{I should#{negate} be authorized}
@@ -93,14 +93,14 @@ When /^I create an authority$/ do
 end
 
 Then /^I should see the new authority$/ do
-  within( ".alert" ) { page.should have_text( "Authority created." ) }
+  within( ".alert" ) { expect( page ).to have_text( "Authority created." ) }
   within( "#authority-#{@authority.id}" ) do
-    page.should have_text("Name: Supreme Authority")
-    page.should have_text("Committee: First committee")
-    page.should have_text 'You will soon be in the committee.'
-    page.should have_text("Welcome to committee.")
-    page.should have_text("You were dropped from the committee.")
-    page.should have_text("There were no slots.")
+    expect( page ).to have_text("Name: Supreme Authority")
+    expect( page ).to have_text("Committee: First committee")
+    expect( page ).to have_text 'You will soon be in the committee.'
+    expect( page ).to have_text("Welcome to committee.")
+    expect( page ).to have_text("You were dropped from the committee.")
+    expect( page ).to have_text("There were no slots.")
   end
 end
 
@@ -116,14 +116,14 @@ When /^I update the authority$/ do
 end
 
 Then /^I should see the edited authority$/ do
-  within('.alert') { page.should have_text( "Authority updated." ) }
+  within('.alert') { expect( page ).to have_text( "Authority updated." ) }
   within("#authority-#{@authority.id}") do
-    page.should have_text("Name: Subordinate Authority")
-    page.should have_text("Committee: Second committee")
-    page.should have_text 'Pre-welcome message'
-    page.should have_text("Welcome message")
-    page.should have_text("Farewell message")
-    page.should have_text("There were not enough slots.")
+    expect( page ).to have_text("Name: Subordinate Authority")
+    expect( page ).to have_text("Committee: Second committee")
+    expect( page ).to have_text 'Pre-welcome message'
+    expect( page ).to have_text("Welcome message")
+    expect( page ).to have_text("Farewell message")
+    expect( page ).to have_text("There were not enough slots.")
   end
 end
 
@@ -140,7 +140,7 @@ Given /^I "(.+)" the (\d+)(?:st|nd|rd|th) authority$/ do |text, authority|
 end
 
 Then /^I should see the following authorities:$/ do |table|
-  within(".alert") { page.should have_text("Authority destroyed.") }
+  within(".alert") { expect( page ).to have_text("Authority destroyed.") }
   visit(authorities_url)
   table.diff! tableish( 'table#authorities > tbody > tr', 'td:nth-of-type(1)' )
 end

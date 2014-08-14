@@ -1,8 +1,8 @@
 Then /^I should (not )?see the motion$/ do |negate|
   if negate.blank?
-    page.should have_selector "#motion-#{@motion.id}"
+    expect( page ).to have_selector "#motion-#{@motion.id}"
   else
-    page.should have_no_selector "#motion-#{@motion.id}"
+    expect( page ).to have_no_selector "#motion-#{@motion.id}"
   end
 end
 
@@ -97,17 +97,17 @@ Then /^I should see confirmation of the event with(out)? attachment on the motio
     when 'withdraw'; 'withdrawn'
   end
   @motion.reload
-  @motion.status.should eql new_status
+  expect( @motion.status ).to eql new_status
   within(".alert") do
     case @event
     when 'restart'
-      page.should have_text "Motion restarted."
+      expect( page ).to have_text "Motion restarted."
     when 'watch'
-      page.should have_text "You are now watching the motion."
+      expect( page ).to have_text "You are now watching the motion."
     when 'unwatch'
-      page.should have_text "You are no longer watching the motion."
+      expect( page ).to have_text "You are no longer watching the motion."
     else
-      page.should have_text "Motion #{new_status}."
+      expect( page ).to have_text "Motion #{new_status}."
     end
   end
   @final_event = case @event
@@ -121,30 +121,30 @@ Then /^I should see confirmation of the event with(out)? attachment on the motio
   if %w( amend divide refer ).include? @event
     @motion.referred_motions.each do |referred|
       @final_event = referred.motion_events.last
-      @final_event.event.should eql 'propose'
+      expect( @final_event.event ).to eql 'propose'
       step "the final motion event should be correctly recorded without attachment"
-      within("#ancestors") { page.should have_text @motion.name }
+      within("#ancestors") { expect( page ).to have_text @motion.name }
     end
   end
   if %w( unamend ).include? @event
     @final_event = @motion.referring_motion.motion_events.last
-    @final_event.event.should eql 'unamend'
+    expect( @final_event.event ).to eql 'unamend'
     step "the final motion event should be correctly recorded without attachment"
   end
 end
 
 Then /^the final motion event should be correctly recorded with(out)? attachment$/ do |attach|
   if %w( admin staff ).include? @role
-    @final_event.occurrence.should eql( Time.zone.today - 1.day )
+    expect( @final_event.occurrence ).to eql( Time.zone.today - 1.day )
   else
-    @final_event.occurrence.should eql Time.zone.today
+    expect( @final_event.occurrence ).to eql Time.zone.today
   end
-  @final_event.description.should eql 'event details'
+  expect( @final_event.description ).to eql 'event details'
   if attach.blank?
-    @final_event.attachments.length.should eql 1
-    @final_event.attachments.first.description.should eql 'Sample employee ids'
+    expect( @final_event.attachments.length ).to eql 1
+    expect( @final_event.attachments.first.description ).to eql 'Sample employee ids'
   else
-    @final_event.attachments.should be_empty
+    expect( @final_event.attachments ).to be_empty
   end
 end
 
@@ -191,10 +191,10 @@ end
 Then /^I may( not)? (adopt|amend|divide|implement|merge|propose|refer|reject|restart|(?:un)?watch|withdraw) the motion$/ do |negate, event|
   visit(committee_motions_url(@committee))
   if negate.blank?
-    within("#motion-#{@motion.id}") { page.should have_text(event.titleize) }
+    within("#motion-#{@motion.id}") { expect( page ).to have_text(event.titleize) }
   else
     if page.has_selector?("#motion-#{@motion.id}")
-      within("#motion-#{@motion.id}") { page.should have_no_text(event.titleize) }
+      within("#motion-#{@motion.id}") { expect( page ).to have_no_text(event.titleize) }
     end
   end
   unless Motion::EVENTS_PUTONLY.include?( event.to_sym )
@@ -216,9 +216,9 @@ Then /^I may( not)? create motions for the committee$/ do |negate|
   step %{I should#{negate} be authorized}
   visit(committee_motions_url(@committee))
   if negate.blank?
-    page.should have_text('New motion')
+    expect( page ).to have_text('New motion')
   else
-    page.should have_no_text('New motion')
+    expect( page ).to have_no_text('New motion')
   end
 end
 
@@ -230,18 +230,18 @@ Then /^I may( not)? update the motion$/ do |negate|
   step %{I should#{negate} be authorized}
   visit(committee_motions_url(@committee))
   if negate.blank?
-    within("#motion-#{@motion.id}") { page.should have_text('Edit') }
+    within("#motion-#{@motion.id}") { expect( page ).to have_text('Edit') }
   else
-    page.should have_no_text('Edit')
+    expect( page ).to have_no_text('Edit')
   end
 end
 
 Then /^I may( not)? destroy the motion$/ do |negate|
   visit(committee_motions_url(@committee))
   if negate.blank?
-    within("#motion-#{@motion.id}") { page.should have_text('Destroy') }
+    within("#motion-#{@motion.id}") { expect( page ).to have_text('Destroy') }
   else
-    page.should have_no_text('Destroy')
+    expect( page ).to have_no_text('Destroy')
   end
   Capybara.current_session.driver.submit :delete, motion_url(@motion), {}
   step %{I should#{negate} be authorized}
@@ -250,9 +250,9 @@ end
 Then /^I may( not)? see the motion through public listings$/ do |negate|
   visit(public_motions_url)
   if negate.blank?
-    page.should have_selector( "#motion-#{@motion.id}" )
+    expect( page ).to have_selector( "#motion-#{@motion.id}" )
   else
-    page.should have_no_selector( "#motion-#{@motion.id}" )
+    expect( page ).to have_no_selector( "#motion-#{@motion.id}" )
   end
 end
 
@@ -261,9 +261,9 @@ Then /^I may( not)? see the motion$/ do |negate|
   step %{I should#{negate} be authorized}
   visit(committee_motions_url(@committee))
   if negate.blank?
-    page.should have_selector( "#motion-#{@motion.id}" )
+    expect( page ).to have_selector( "#motion-#{@motion.id}" )
   else
-    page.should have_no_selector( "#motion-#{@motion.id}" )
+    expect( page ).to have_no_selector( "#motion-#{@motion.id}" )
   end
 end
 
@@ -307,7 +307,7 @@ When /^I create a motion as (voter|staff|admin)$/ do |relationship|
     select @period.to_s.strip.squeeze(" "), from: 'Period'
     fill_in "Sponsor", with: "#{@sponsor.net_id}"
   else
-    within("form") { page.should have_text('You may not change the period of this motion.') }
+    within("form") { expect( page ).to have_text('You may not change the period of this motion.') }
   end
   fill_in 'Name', with: 'Charter amendment'
   fill_in 'Description', with: 'This is a *big* change.'
@@ -331,20 +331,20 @@ When /^I create a motion as (voter|staff|admin)$/ do |relationship|
 end
 
 Then /^I should see the new motion$/ do
-  within('.alert') { page.should have_text('Motion created.') }
+  within('.alert') { expect( page ).to have_text('Motion created.') }
   within("#motion-#{@motion.id}") do
-    page.should have_text("Committee: Powerful Committee")
-    page.should have_text("Period: #{@period.to_s}")
-    page.should have_text("Name: Charter amendment")
-    page.should have_text("Sponsors: George Washington")
-    page.should have_text("This is a big change.")
-    page.should have_text("Whereas and Resolved")
-    page.should have_text("Sample employee ids")
+    expect( page ).to have_text("Committee: Powerful Committee")
+    expect( page ).to have_text("Period: #{@period.to_s}")
+    expect( page ).to have_text("Name: Charter amendment")
+    expect( page ).to have_text("Sponsors: George Washington")
+    expect( page ).to have_text("This is a big change.")
+    expect( page ).to have_text("Whereas and Resolved")
+    expect( page ).to have_text("Sample employee ids")
   end
   if %w( admin staff ).include? @role
     within("#motion-events > tbody tr:nth-of-type(1)") do
-      within("td:nth-of-type(1)") { page.should have_text Time.zone.today.to_s }
-      within("td:nth-of-type(2)") { page.should have_text "withdraw" }
+      within("td:nth-of-type(1)") { expect( page ).to have_text Time.zone.today.to_s }
+      within("td:nth-of-type(2)") { expect( page ).to have_text "withdraw" }
     end
   end
 end
@@ -363,23 +363,23 @@ When /^I update the motion$/ do
   if %w( admin ).include? @role
     click_link "Remove Motion Event"
   else
-    page.should have_no_text "Remove Motion Event"
+    expect( page ).to have_no_text "Remove Motion Event"
   end
   click_button "Update"
 end
 
 Then /^I should see the edited motion$/ do
-  within('.alert') { page.should have_text("Motion updated.") }
+  within('.alert') { expect( page ).to have_text("Motion updated.") }
   within("#motion-#{@motion.id}") do
-    page.should have_text("Name: Charter change")
-    page.should have_text("This is a big change.")
-    page.should have_text("Whereas and Finally Resolved")
-    page.should have_text("Sponsors: John Adams")
-    page.should have_no_text("George Washington")
-    page.should have_no_text("Sample employee ids")
+    expect( page ).to have_text("Name: Charter change")
+    expect( page ).to have_text("This is a big change.")
+    expect( page ).to have_text("Whereas and Finally Resolved")
+    expect( page ).to have_text("Sponsors: John Adams")
+    expect( page ).to have_no_text("George Washington")
+    expect( page ).to have_no_text("Sample employee ids")
   end
   if %w( admin plain ).include? @role
-    page.should have_no_selector("#motion-events")
+    expect( page ).to have_no_selector("#motion-events")
   end
 end
 
@@ -415,12 +415,12 @@ When /^I update the referred motion$/ do
 end
 
 Then /^I should see the updated referred motion$/ do
-  within('.alert') { page.should have_text("Motion updated.") }
+  within('.alert') { expect( page ).to have_text("Motion updated.") }
   within("#motion-#{@motion.id}") do
-    page.should have_text("Name: Referred motion")
-    page.should have_text("This is different")
-    page.should have_text("Whereas and resolved")
-    page.should have_no_text("Sample employee ids")
+    expect( page ).to have_text("Name: Referred motion")
+    expect( page ).to have_text("This is different")
+    expect( page ).to have_text("Whereas and resolved")
+    expect( page ).to have_no_text("Sample employee ids")
   end
 end
 
@@ -446,12 +446,12 @@ Then /^I may( not)? create motions for the committee through my dashboard$/ do |
   visit home_url
   if negate.blank?
     within("#new-motions") do
-      page.should have_text @committee.name
+      expect( page ).to have_text @committee.name
     end
   else
     if page.has_selector?("#new-motions")
       within("#new-motions") do
-        page.should have_no_text
+        expect( page ).to have_no_text
       end
     end
   end
@@ -462,13 +462,13 @@ Then /^I should( not)? see the motion with the pending meeting$/ do |negate|
   if negate.present?
     if page.has_selector?(motion_selector)
       within(motion_selector) do
-        page.should_not have_selector "a.pending-meeting"
+        expect( page ).to_not have_selector "a.pending-meeting"
       end
     end
   else
     within(motion_selector) do
       within("a.pending-meeting") do
-        page.should have_text "#{@meeting.starts_at.to_s :us_short}"
+        expect( page ).to have_text "#{@meeting.starts_at.to_s :us_short}"
       end
     end
   end

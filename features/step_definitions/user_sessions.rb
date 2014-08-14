@@ -7,7 +7,7 @@ When /^I try to log in with the single sign on$/ do
 end
 
 Then /^I should be prompted to register$/ do
-  within('.alert') { page.should have_text 'You must register to access this page.' }
+  within('.alert') { expect( page ).to have_text 'You must register to access this page.' }
 end
 
 Given /^I log in as the (admin|staff|plain) user$/ do |type|
@@ -41,17 +41,17 @@ Given /^I log out$/ do
 end
 
 Then /^I should be logged in$/ do
-  URI.parse(current_url).path.should eql '/'
+  expect( URI.parse(current_url).path ).to eql '/'
   within '.alert' do
-    page.should have_content "You logged in successfully."
+    expect( page ).to have_content "You logged in successfully."
   end
 end
 
 Then /^I can log out$/ do
   step %{I log out}
-  URI.parse(current_url).path.should eql '/login'
+  expect( URI.parse(current_url).path ).to eql '/login'
   within '.alert' do
-    page.should have_content "You logged out successfully."
+    expect( page ).to have_content "You logged out successfully."
   end
 end
 
@@ -65,6 +65,6 @@ When /^I follow the log in link with forced single sign on$/ do
 end
 
 #Then /^I should automatically log in$/ do
-#  page.should have_text "Welcome, #{@current_user.first_name}"
+#  expect( page ).to have_text "Welcome, #{@current_user.first_name}"
 #end
 
