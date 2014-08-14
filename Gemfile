@@ -44,8 +44,7 @@ group :production do
   gem 'execjs'
 end
 group :development, :test do
-  gem 'rspec', '~> 2.12'
-  gem 'rspec-rails', '~> 2.12'
+  gem 'rspec-rails', '~> 3.0'
   gem 'spring', require: false
   gem 'spring-commands-rspec', require: false
   gem 'spring-commands-cucumber', require: false
