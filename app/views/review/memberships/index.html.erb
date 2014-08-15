@@ -1,35 +1,5 @@
 <h1>Review <%=h params[:action] %> memberships</h1>
 
-<%= form_for q, url: request.fullpath, method: :get do |form| %>
-  <p>
-    <%= form.label :user_name_cont,'User' %>
-    <%= form.text_field :user_name_cont %>
-  </p>
-  <p>
-    <%= form.label :position_committees_name_cont, 'Committee' %>
-    <%= form.text_field :position_committees_name_cont %>
-  </p>
-  <p>
-    <%= form.label :position_authority_name_cont, 'Authority' %>
-    <%= form.text_field :position_authority_name_cont %>
-  </p>
-  <p>
-    <%= form.label :position_name_cont, 'Position' %>
-    <%= form.text_field :position_name_cont %>
-  </p>
-  <p>
-    <%= form.label :starts_at_gt, 'Starts After' %>
-    <%= form.text_field :starts_at_gt %>
-  </p>
-  <p>
-    <%= form.label :ends_at_lt, 'Ends Before' %>
-    <%= form.text_field :ends_at_lt %>
-  </p>
-  <p>
-    <%= submit_tag 'Search' %>
-  </p>
-<% end %>
-
 <p>
 <%= paginate memberships %>
 </p>
