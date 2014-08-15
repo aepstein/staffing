@@ -18,7 +18,10 @@ class MeetingsController < ApplicationController
     end
     scope = scope.where { |m| m.starts_at.gt( starts_at ) } if starts_at
     scope = scope.where { |m| m.starts_at.lt( ends_at ) } if ends_at
-    scope.with_permissions_to(:show).ordered
+    # Filter out what user cannot see unless we are already looking only at
+    # meetings user can see
+    scope = scope.with_permissions_to(:show) unless user
+    scope.ordered
   end
   expose( :meetings ) do
     q.result.page(params[:page])
