@@ -366,7 +366,7 @@ end
 
 Then /^the membership request should be active$/ do
   @membership_request.reload
-  expect( @membership_request.active? ).to be_true
+  expect( @membership_request.active? ).to be true
 end
 
 Then /^I should see the reactivated membership request$/ do
