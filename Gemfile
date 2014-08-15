@@ -1,16 +1,18 @@
 source 'http://rubygems.org'
-gem 'rails', '~> 4.0.0'
+gem 'rails', '~> 4.1.0'
 gem 'mysql2'
 gem 'rake'
 gem 'exception_notification', '~> 4.0'
-gem 'validates_timeliness'
+gem 'jc-validates_timeliness'
 gem 'gettext'
 gem 'squeel', '~> 1.2'
 gem 'ransack'
 gem 'ancestry'
 gem 'cornell_ldap', '>= 1.3.1'
 gem 'bcrypt-ruby'
-gem 'state_machine'
+# Using a fork of state_machine because original maintainer abandoned
+gem 'state_machine',
+  git: 'https://github.com/seuros/state_machine.git'
 gem 'declarative_authorization',
   git: 'git://github.com/aepstein/declarative_authorization.git',
   branch: 'rails4'

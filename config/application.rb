@@ -16,7 +16,6 @@ module Staffing
     config.action_mailer.default_url_options = { 
       host: "assembly.cornell.edu/staffing", protocol: 'https' }
     config.autoload_paths << "#{Rails.root}/app/reports"
-    config.active_record.disable_implicit_join_references = true
     config.assets.enabled = true
     config.assets.version = '1.1'
 

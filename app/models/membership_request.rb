@@ -60,10 +60,14 @@ class MembershipRequest < ActiveRecord::Base
       end
     end
   end
-  has_many :requestable_positions, ->(r) { where [
-    "statuses_mask = 0 OR statuses_mask & ? > 0", r.user.statuses_mask ] },
+  has_many :requestable_positions, ->(r) { where( [
+    "statuses_mask = 0 OR statuses_mask & ? > 0", r.user.statuses_mask ] ) },
     through: :committee
-  has_many :authorities, through: :requestable_positions
+#  has_many :authorities, through: :requestable_positions
+  def authorities
+    Authority.where { |a| a.id.in( requestable_positions.scope.
+      select { authority_id } ) }
+  end
 
   belongs_to :committee, inverse_of: :membership_requests
   belongs_to :user, inverse_of: :membership_requests

@@ -12,12 +12,29 @@ class MotionEvent < ActiveRecord::Base
     end
   end
   has_one :committee, through: :motion
+  
   # These are memberships that have a vote
-  has_many :memberships, ->(e) { where( [ "enrollments.votes > 0 AND " +
+  # (relation is disabled as it no longer seems to work in rails > 4.0)
+#  has_many :memberships, ->(e) { where( [ "enrollments.votes > 0 AND " +
+#    "memberships.starts_at <= :e AND memberships.ends_at >= :e",
+#    e: e.occurrence ] ).distinct }, through: :committee
+  def memberships
+    committee.memberships.where( [ "enrollments.votes > 0 AND " +
     "memberships.starts_at <= :e AND memberships.ends_at >= :e",
-    e: e.occurrence ] ).distinct }, through: :committee
-    
-  has_many :users, -> { distinct }, through: :memberships
+    e: occurrence ] ).distinct
+  end
+
+  # These are users that have a vote    
+  # (relation is disabled as it no longer seems to work in rails > 4.0)
+#  has_many :users, -> { distinct }, through: :memberships, source: :user
+  def users
+    User.where { |u| u.id.in( memberships.select { user_id } ) }
+  end
+  
+  def user_ids
+    users.value_of(:id)
+  end
+  
   attr_readonly :event
 
   accepts_nested_attributes_for :motion_votes, allow_destroy: true
