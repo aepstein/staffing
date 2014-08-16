@@ -32,8 +32,8 @@ class Committee < ActiveRecord::Base
   has_many :memberships, through: :positions do
     def upcoming
       upcoming_period = proxy_association.owner.periods.upcoming
-      return scoped.where { id.eq( nil ) } unless upcoming_period
-      scoped.overlap( upcoming_period.starts_at, upcoming_period.ends_at )
+      return where { id.eq( nil ) } unless upcoming_period
+      overlap( upcoming_period.starts_at, upcoming_period.ends_at )
     end
     def tents(date)
       out = as_of(date).assigned.includes(:user, :enrollments).
@@ -50,7 +50,7 @@ class Committee < ActiveRecord::Base
   end
   has_many :users, through: :memberships do
     def current
-      scoped.where { memberships.starts_at.lte( Time.zone.today ) &&
+      where { memberships.starts_at.lte( Time.zone.today ) &&
         memberships.ends_at.gte( Time.zone.today ) }
     end
   end
