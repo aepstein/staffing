@@ -9,8 +9,8 @@ class Position < ActiveRecord::Base
   
     def upcoming
       upcoming_period = proxy_association.owner.periods.upcoming
-      return scoped.where { id.eq( nil ) } unless upcoming_period
-      scoped.overlap( upcoming_period.starts_at, upcoming_period.ends_at )
+      return where { id.eq( nil ) } unless upcoming_period
+      overlap( upcoming_period.starts_at, upcoming_period.ends_at )
     end
 
     # Repopulate for a period
@@ -151,7 +151,7 @@ class Position < ActiveRecord::Base
   after_update :repopulate_slots!
 
   def emails(group)
-    memberships.send(group).assigned.all(include: [ :user ]).
+    memberships.send(group).assigned.all.includes(:user).
       map { |membership| membership.user.email }
   end
 
